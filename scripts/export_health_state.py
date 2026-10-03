@@ -45,7 +45,43 @@ STATE_JSON = VIZ / "state.json"
 SOURCES = [
     ROOT / "measurement" / "health_ledger.jsonl",
     ROOT / "config" / "arm0_spec.json",
+    ROOT / "config" / "science_state.json",
 ]
+
+# The step-time probe writes one JSON row per step under its own run directory. Reading it here is
+# what lets the page show the 21x as a curve rather than as a sentence: the degradation is a function
+# of step number, so a single number cannot display it.
+PROBE_ROOT = pathlib.Path("E:/2026-AI4S/arms/_probe_step_curve")
+
+
+def step_curve() -> dict:
+    """Per-step seconds from every probe run that has a heartbeat file.
+
+    Returns {} when nothing has run, and the page says so. It never substitutes a projection: two
+    step-time estimates for this project were wrong in opposite directions, and both were estimates.
+    """
+    out = {}
+    if not PROBE_ROOT.is_dir():
+        return out
+    for d in sorted(PROBE_ROOT.iterdir()):
+        f = d / "progress.jsonl"
+        if not f.is_file():
+            continue
+        rows = []
+        for line in f.read_text(encoding="utf-8").splitlines():
+            if not line.strip():
+                continue
+            try:
+                r = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            s = r.get("since_last_s")
+            if isinstance(s, (int, float)):
+                rows.append([r.get("step"), round(s, 2)])
+        if rows:
+            out[d.name] = {"n": len(rows), "points": rows,
+                           "mtime": iso(f.stat().st_mtime)}
+    return out
 
 
 def iso(ts: float) -> str:
@@ -229,6 +265,17 @@ def build_state(arm: pathlib.Path) -> dict:
     led = health.ledger_read()
     launches = [r for r in led if r.get("kind") == "launch"]
     envs = [json.dumps(r.get("environment"), sort_keys=True) for r in launches if r.get("environment")]
+
+    # The scientific content, read from config/science_state.json rather than written here. One home
+    # per number: a figure the dashboard hardcoded would drift from the record the moment the record
+    # changed, and the drift would be invisible because the page looks authoritative either way.
+    sci_path = ROOT / "config" / "science_state.json"
+    try:
+        science = json.loads(sci_path.read_text(encoding="utf-8"))
+        science["_loaded"] = True
+    except Exception as e:                                       # noqa: BLE001
+        science = {"_loaded": False, "_error": f"{type(e).__name__}: {str(e)[:90]}"}
+
     return {
         "generated_at": datetime.datetime.now().isoformat(timespec="seconds"),
         "verdict": overall,
@@ -236,6 +283,8 @@ def build_state(arm: pathlib.Path) -> dict:
         "verdicts": verdicts,
         "arm": arm_state(arm),
         "checks": checks,
+        "science": science,
+        "step_curve": step_curve(),
         "ledger": [{"arm": r.get("arm"), "started_at": r.get("started_at"),
                     "spec_sha256": str(r.get("spec_sha256"))[:12],
                     "seed": r.get("seed")} for r in launches],

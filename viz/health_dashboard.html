@@ -3,104 +3,137 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>JevRSI — pipeline health</title>
+<title>JevRSI -- state of the project</title>
 <style>
-  /* Works both inside the Hermes frame (which injects these vars) and opened standalone from disk
-     (fallbacks). No background/font override when framed; a page opened directly needs its own. */
-  :root{
-    --bg: var(--background, #0b0e13);
-    --fg: var(--foreground, #e6e9ef);
-    --muted: var(--muted-foreground, #8b93a7);
-    --card: var(--card, #151a22);
-    --border: var(--border, #232a36);
-    --accent: var(--accent, #7aa2f7);
-    --ok:#3fb950; --warn:#d29922; --fail:#f85149; --skip:#6e7681;
-    --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
-  }
-  *{box-sizing:border-box}
-  html,body{margin:0;padding:0;background:var(--bg);color:var(--fg);
-    font:13px/1.5 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
-  .wrap{padding:14px 16px 28px;max-width:1180px}
-  h1{font-size:15px;margin:0 0 2px;letter-spacing:.2px}
-  h2{font-size:11px;margin:0 0 8px;color:var(--muted);text-transform:uppercase;letter-spacing:.9px;font-weight:600}
-  .sub{color:var(--muted);font-size:11.5px;margin-bottom:12px}
-  .card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:12px 14px;margin-bottom:10px}
-  .grid{display:grid;gap:10px}
-  .g2{grid-template-columns:1fr 1fr}
-  .g3{grid-template-columns:repeat(3,1fr)}
-  @media(max-width:860px){.g2,.g3{grid-template-columns:1fr}}
+/* ------------------------------------------------------------------------------------------------
+   Presentation rules, and why they are here rather than being taste.
 
-  /* verdict banner — the one thing a reader should see first */
-  .banner{display:flex;align-items:center;gap:12px;border-radius:8px;padding:12px 16px;margin-bottom:12px;
-    border:1px solid var(--border);font-weight:600;font-size:14px}
-  .banner .dot{width:11px;height:11px;border-radius:50%;flex:0 0 auto}
-  .v-OK{background:rgba(63,185,80,.10);border-color:rgba(63,185,80,.45)}
-  .v-WARN{background:rgba(210,153,34,.10);border-color:rgba(210,153,34,.45)}
-  .v-FAIL{background:rgba(248,81,73,.11);border-color:rgba(248,81,73,.5)}
-  .banner .why{font-weight:400;color:var(--muted);font-size:11.5px}
-
-  .kv{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;font-size:12.5px}
-  .kv .k{color:var(--muted)}
-  .kv .v{font-family:var(--mono);font-size:12px;text-align:right}
-
-  .pill{display:inline-block;padding:1px 7px;border-radius:20px;font-size:10.5px;font-weight:600;
-    border:1px solid var(--border);font-family:var(--mono)}
-  .p-run{color:var(--ok);border-color:rgba(63,185,80,.5);background:rgba(63,185,80,.10)}
-  .p-warn{color:var(--warn);border-color:rgba(210,153,34,.5);background:rgba(210,153,34,.10)}
-  .p-fail{color:var(--fail);border-color:rgba(248,81,73,.5);background:rgba(248,81,73,.10)}
-  .p-idle{color:var(--muted)}
-
-  .bar{height:7px;border-radius:5px;background:var(--border);overflow:hidden;margin:7px 0 4px}
-  .bar > i{display:block;height:100%;background:var(--accent)}
-  .bar.mid > i{background:var(--warn)}
-  .bar.hot > i{background:var(--fail)}
-
-  table{width:100%;border-collapse:collapse;font-size:12px}
-  th{text-align:left;color:var(--muted);font-weight:600;font-size:10.5px;text-transform:uppercase;
-     letter-spacing:.7px;padding:4px 8px 4px 0;border-bottom:1px solid var(--border)}
-  td{padding:4px 8px 4px 0;border-bottom:1px solid rgba(35,42,54,.5);font-family:var(--mono);font-size:11.5px}
-  td.name{font-family:inherit}
-
-  .check{display:flex;gap:8px;padding:3px 0;border-bottom:1px solid rgba(35,42,54,.45);font-size:12px}
-  .check:last-child{border-bottom:none}
-  .check .st{flex:0 0 52px;font-family:var(--mono);font-size:10.5px;font-weight:700;padding-top:1px}
-  .s-OK{color:var(--ok)} .s-WARN{color:var(--warn)} .s-FAIL{color:var(--fail)} .s-SKIP{color:var(--skip)}
-  .check .bd{flex:1;min-width:0}
-  .check .detail{color:var(--fg);word-break:break-word}
-  .check .why{color:var(--muted);font-size:11px;margin-top:1px}
-  .tabs{display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap}
-  .tab{cursor:pointer;padding:3px 10px;border:1px solid var(--border);border-radius:6px;
-       font-size:11px;color:var(--muted);background:transparent}
-  .tab[aria-selected=true]{color:var(--fg);border-color:var(--accent)}
-  .foot{color:var(--muted);font-size:11px;margin-top:12px;line-height:1.7}
-  .foot code{font-family:var(--mono);font-size:10.5px;background:var(--card);padding:1px 4px;border-radius:3px}
-  .stale{color:var(--warn)}
-  .missing{color:var(--fail)}
+   1. PRINT-FIRST TYPE. This is a scientific record that may be read on paper, so the type scale is
+      named (--t-*) rather than set per element. Nothing renders below 10 px, which is the 6 pt floor
+      the project's figure standard sets, scaled for a 96 dpi screen.
+   2. OKABE-ITO FOR STATUS. The project's figures use Okabe-Ito. A verdict colour from any other
+      palette would make this page and the manuscript disagree about what "bad" looks like, and the
+      disagreement would be invisible.
+   3. COLOUR IS NEVER THE ONLY SIGNAL. Every state also carries a word, so the page survives a
+      monochrome print and a colourblind reader.
+   4. EVERY NUMBER NAMES ITS SOURCE, inline or in the provenance panel.
+   5. LIGHT BY DEFAULT, because that is what a printed page is; dark follows the OS preference.
+------------------------------------------------------------------------------------------------ */
+:root{
+  --t-title: 21px; --t-h: 12px; --t-body: 13.5px; --t-small: 11.5px; --t-micro: 10px; --t-num: 12.5px;
+  --ok:#0072B2; --warn:#E69F00; --fail:#D55E00; --skip:#999999;         /* Okabe-Ito */
+  --ink:#1a1a1a; --ink-2:#4d4d4d; --ink-3:#767676;
+  --page:#ffffff; --panel:#fbfbfc; --line:#d8dade; --line-2:#eceef1;
+  --mono: ui-monospace, "SFMono-Regular", "Cascadia Mono", Consolas, monospace;
+  --sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root{ --ink:#e8e8e8; --ink-2:#b4b4b4; --ink-3:#8a8a8a;
+         --page:#14161a; --panel:#1a1d22; --line:#2e333b; --line-2:#23272e; }
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--page);color:var(--ink);font:var(--t-body)/1.55 var(--sans)}
+.page{max-width:950px;padding:26px 28px 40px;margin:0 auto}
+.mast{border-bottom:2px solid var(--ink);padding-bottom:10px;margin-bottom:18px}
+.mast h1{font-size:var(--t-title);line-height:1.2;margin:0 0 6px;font-weight:650;letter-spacing:-.01em}
+.mast .q{color:var(--ink-2);font-size:var(--t-body);font-style:italic;max-width:64ch;margin:0 0 9px}
+.mast .meta{color:var(--ink-3);font-size:var(--t-micro);font-family:var(--mono);line-height:1.7}
+.mast .meta b{color:var(--ink-2);font-weight:600}
+.word{font-weight:650;letter-spacing:.02em}
+.w-OK{color:var(--ok)} .w-WARN{color:var(--warn)} .w-FAIL{color:var(--fail)} .w-SKIP,.w-OPEN{color:var(--skip)}
+.verdicts{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px}
+@media(max-width:700px){.verdicts{grid-template-columns:1fr}}
+.verdict{border:1px solid var(--line);background:var(--panel);padding:11px 14px}
+.verdict .lbl{font-size:var(--t-micro);color:var(--ink-3);text-transform:uppercase;letter-spacing:.09em}
+.verdict .val{font-size:18px;margin:3px 0 5px}
+.verdict .why{font-size:var(--t-small);color:var(--ink-2)}
+.verdict.b-OK{border-left:4px solid var(--ok)}
+.verdict.b-WARN{border-left:4px solid var(--warn)}
+.verdict.b-FAIL{border-left:4px solid var(--fail)}
+.verdict.b-OPEN{border-left:4px solid var(--skip)}
+section.panel{border-top:1px solid var(--line);padding:17px 0 7px;margin:0}
+section.panel:first-of-type{border-top:none}
+.panel > h2{font-size:var(--t-h);text-transform:uppercase;letter-spacing:.1em;color:var(--ink-2);
+  font-weight:650;margin:0 0 5px}
+.panel > h2 .pl{display:inline-block;min-width:1.7em;color:var(--ink);font-weight:700}
+.panel > .lede{color:var(--ink-3);font-size:var(--t-small);margin:0 0 13px;max-width:76ch}
+.kv{display:grid;grid-template-columns:minmax(160px,auto) 1fr;gap:2px 16px;font-size:var(--t-small)}
+.kv .k{color:var(--ink-3)}
+.kv .v{text-align:right}
+.kv .v.num{font-family:var(--mono);font-size:var(--t-num);font-variant-numeric:tabular-nums}
+table{width:100%;border-collapse:collapse;font-size:var(--t-small);margin:2px 0 10px}
+caption{caption-side:top;text-align:left;color:var(--ink-3);font-size:var(--t-micro);
+  padding-bottom:6px;text-transform:uppercase;letter-spacing:.07em}
+th{text-align:left;font-weight:650;color:var(--ink-2);font-size:var(--t-micro);
+  text-transform:uppercase;letter-spacing:.07em;padding:6px 10px 6px 0;border-bottom:1px solid var(--line)}
+td{padding:6px 10px 6px 0;border-bottom:1px solid var(--line-2);vertical-align:top}
+td.num,th.num{font-family:var(--mono);font-size:var(--t-num);text-align:right;font-variant-numeric:tabular-nums}
+tr.ours td{background:rgba(230,159,0,.07);font-weight:600}
+tr:last-child td{border-bottom:none}
+.pred{border-left:3px solid var(--line);padding:8px 0 8px 13px;margin-bottom:12px}
+.pred.v-OK{border-left-color:var(--ok)}
+.pred.v-FAIL{border-left-color:var(--fail)}
+.pred.v-OPEN{border-left-color:var(--skip)}
+.pred.v-WARN{border-left-color:var(--warn)}
+.pred .hd{font-size:var(--t-small)}
+.pred .hd .id{font-family:var(--mono);font-weight:700;margin-right:8px}
+.pred .cl{color:var(--ink-2);margin-top:2px}
+.pred .ev{color:var(--ink-2);font-size:var(--t-small);margin-top:4px}
+.pred .cx{color:var(--ink-3);font-size:var(--t-micro);margin-top:4px;font-family:var(--mono)}
+.figure{border:1px solid var(--line);background:var(--panel);padding:13px 15px;margin:11px 0}
+.figure svg{display:block;width:100%;height:auto}
+.figcap{color:var(--ink-2);font-size:var(--t-small);margin-top:10px;line-height:1.6}
+.figcap b{font-weight:650;color:var(--ink)}
+.empty{color:var(--ink-3);font-size:var(--t-small);font-style:italic}
+.check{display:grid;grid-template-columns:58px 1fr;gap:10px;padding:5px 0;
+  border-bottom:1px solid var(--line-2);font-size:var(--t-small)}
+.check:last-child{border-bottom:none}
+.check .st{font-family:var(--mono);font-size:var(--t-micro);font-weight:700;padding-top:2px}
+.check .wy{color:var(--ink-3);font-size:var(--t-micro);margin-top:2px}
+.prov{font-size:var(--t-micro);font-family:var(--mono);color:var(--ink-3);line-height:1.9}
+.prov .miss{color:var(--fail);font-weight:700}
+.prov .old{color:var(--warn)}
+footer.colophon{margin-top:24px;padding-top:11px;border-top:1px solid var(--line);
+  color:var(--ink-3);font-size:var(--t-micro);line-height:1.75}
+footer.colophon code,.empty code{font-family:var(--mono);font-size:var(--t-micro)}
+#banner{display:none;border:1px solid var(--fail);border-left-width:4px;background:var(--panel);
+  padding:9px 13px;margin-bottom:16px;font-size:var(--t-small)}
+#banner.on{display:block}
+#banner code{font-family:var(--mono);font-size:var(--t-micro)}
+@media print{
+  :root{--page:#fff;--ink:#000;--ink-2:#333;--ink-3:#666;--panel:#fff;--line:#bbb;--line-2:#e6e6e6}
+  .page{max-width:none;padding:0}
+  section.panel{break-inside:avoid}
+  .pred,.figure,table,.verdict{break-inside:avoid}
+}
 </style>
 </head>
 <body>
-<div class="wrap">
-  <h1>JevRSI — pipeline health</h1>
-  <div class="sub" id="sub">loading state…</div>
-  <div id="banner" class="banner v-FAIL"><span class="dot"></span><span id="bannerText">no state loaded</span></div>
-  <div id="app"></div>
-  <div class="foot" id="foot"></div>
+<div class="page">
+  <div id="banner"></div>
+  <header class="mast">
+    <h1>JevRSI &middot; state of the project</h1>
+    <p class="q" id="question"></p>
+    <div class="meta" id="mastmeta"></div>
+  </header>
+  <div class="verdicts" id="verdicts"></div>
+  <div id="body"></div>
+  <footer class="colophon" id="colophon"></footer>
 </div>
 
 <script>
-// ---------------------------------------------------------------------------------------------
-// State loading. `fetch()` is blocked on file:// documents, so state arrives as a JS global via a
-// <script src>. Polling re-injects the tag with a cache-buster AND removes the previous element --
-// without the removal the DOM grows by one tag per tick (720/hour at 5 s).
-//
-// There is deliberately no fallback state. A dashboard that invents plausible content is worse than
-// a blank one because it gets believed, and this pipeline's cost of a believed wrong number is GPU
-// time plus agent tokens.
-// ---------------------------------------------------------------------------------------------
+/* ------------------------------------------------------------------------------------------------
+   State loading. `fetch()` is blocked on file:// documents, so state arrives as a JS global via a
+   <script src>. Polling re-injects the tag with a cache-buster AND removes the previous element --
+   without the removal the DOM grows by one tag per tick (720/hour at 5 s).
+
+   There is deliberately no fallback state. A dashboard that invents plausible content is worse than
+   a blank one because it gets believed, and this project's cost of a believed wrong number is GPU
+   time plus agent tokens.
+------------------------------------------------------------------------------------------------ */
 const STATE_JS = 'state.js';
-const POLL_MS = 5000;
+const POLL_MS  = 5000;
 let tagEl = null;
-let firstLoad = true;
 
 function loadState(){
   return new Promise((resolve, reject) => {
@@ -109,210 +142,338 @@ function loadState(){
     s.onload = () => {
       if (tagEl && tagEl.parentNode) tagEl.parentNode.removeChild(tagEl);
       tagEl = s;
+      if (!window.APP_STATE) { reject(new Error('state.js loaded but defined no APP_STATE')); return; }
       resolve(window.APP_STATE);
     };
     s.onerror = () => {
       if (s.parentNode) s.parentNode.removeChild(s);
-      reject(new Error('state.js could not be loaded'));
+      reject(new Error('could not read ' + STATE_JS));
     };
     document.body.appendChild(s);
   });
 }
 
-function esc(v){
-  if (v === null || v === undefined) return '—';
-  return String(v).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-}
-function num(v, d){
-  if (v === null || v === undefined || v === '' ) return '—';
-  const n = Number(v);
-  return Number.isFinite(n) ? n.toFixed(d === undefined ? 4 : d) : esc(v);
-}
-// A key/value row. The value is NOT escaped: callers pass pre-built markup (a phase pill, a
-// formatted number). Callers that pass raw text escape it first.
-function kv(k, v){
-  const val = (v === undefined || v === null || v === '') ? '—' : String(v);
-  return '<span class="k">' + esc(k) + '</span><span class="v">' + val + '</span>';
-}
-function ageStr(s){
-  if (s === null || s === undefined) return '—';
-  if (s < 90) return s.toFixed(0) + 's';
-  if (s < 5400) return (s/60).toFixed(1) + 'm';
-  return (s/3600).toFixed(1) + 'h';
-}
+const esc = v => String(v == null ? '' : v).replace(/[&<>"']/g,
+  c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt = (v, d) => (v == null || v === '' || !Number.isFinite(Number(v)))
+  ? '<span class="empty">not recorded</span>' : Number(v).toFixed(d == null ? 4 : d);
+const MISS = '<span class="empty">not recorded</span>';
 
-const VERDICT_TEXT = {
-  OK:   ['Run health: OK', 'every check that could run passed'],
-  WARN: ['Run health: attention', 'nothing blocking, but something is not as expected'],
-  FAIL: ['Run health: BLOCKING', 'do not spend GPU time until this is resolved'],
+function ageStr(s){
+  if (s == null) return MISS;
+  s = Number(s);
+  if (s < 90) return s.toFixed(0) + ' s';
+  if (s < 5400) return (s / 60).toFixed(1) + ' min';
+  if (s < 172800) return (s / 3600).toFixed(1) + ' h';
+  return (s / 86400).toFixed(1) + ' d';
+}
+const clockOf = iso => iso ? String(iso).replace('T', ' ').slice(0, 19) : '\u2014';
+
+/* A state names itself as well as being coloured, so a monochrome print carries the same
+   information as the screen. */
+const SHORT = {
+  'OK':'OK', 'WARN':'WARN', 'FAIL':'FAIL', 'SKIP':'SKIP', 'PENDING':'PENDING', 'ERROR':'ERROR',
+  'CONFIRMED':'CONFIRMED', 'NOT SUPPORTED':'NOT SUPPORTED',
+  'OPEN \u2014 the source\u2019s own scale trend predicts falsification':'OPEN',
+  'SUPPORTED at 0.8B by the source\u2019s record':'SUPPORTED at 0.8B'
 };
+function word(v){
+  const s = SHORT[v] || v || 'UNKNOWN';
+  const cls = /CONFIRMED|^OK|SUPPORTED/.test(s) ? 'w-OK'
+            : /NOT SUPPORTED|FAIL|ERROR/.test(s) ? 'w-FAIL'
+            : /OPEN|SKIP|PENDING/.test(s) ? 'w-OPEN' : 'w-WARN';
+  return '<span class="word ' + cls + '">' + esc(s) + '</span>';
+}
+const vclass = v => /CONFIRMED|^OK|SUPPORTED/.test(v || '') ? 'OK'
+                  : /NOT SUPPORTED|FAIL|ERROR/.test(v || '') ? 'FAIL'
+                  : /OPEN|SKIP|PENDING/.test(v || '') ? 'OPEN' : 'WARN';
+
+/* Inline SVG so the page has no dependency and prints. This is the only honest way to show a
+   degradation that is a function of how long a run has been going: one number cannot. */
+function stepCurve(sc){
+  const keys = Object.keys(sc || {});
+  if (!keys.length){
+    return '<div class="empty">No probe has written a heartbeat file yet. Run '
+         + '<code>bash scripts/probe_step_curve.sh</code>; this panel picks it up on the next poll.</div>';
+  }
+  const series = keys.map(k => ({name:k, pts: sc[k].points || []})).filter(s => s.pts.length);
+  if (!series.length){
+    return '<div class="empty">The probe directory exists but holds no completed step interval yet.</div>';
+  }
+  const allX = series.flatMap(s => s.pts.map(p => p[0]));
+  const allY = series.flatMap(s => s.pts.map(p => p[1]));
+  const x0 = Math.min.apply(null, allX), x1 = Math.max.apply(null, allX.concat([x0 + 1]));
+  const y0 = 0, y1 = (Math.max.apply(null, allY) || 1) * 1.14;
+  const Wp = 820, Hp = 250, L = 56, R = 16, T = 14, B = 44;
+  const X = v => L + (v - x0) / (x1 - x0) * (Wp - L - R);
+  const Y = v => Hp - B - (v - y0) / (y1 - y0) * (Hp - T - B);
+  const col = ['#0072B2', '#D55E00', '#009E73', '#E69F00'];
+
+  let g = '';
+  for (let i = 0; i <= 4; i++){
+    const v = y0 + (y1 - y0) * i / 4, y = Y(v);
+    g += '<line x1="' + L + '" y1="' + y.toFixed(1) + '" x2="' + (Wp - R) + '" y2="' + y.toFixed(1)
+       + '" stroke="var(--line-2)" stroke-width="1"/>'
+       + '<text x="' + (L - 8) + '" y="' + (y + 3.5).toFixed(1) + '" text-anchor="end" font-size="9.5" '
+       + 'fill="var(--ink-3)" font-family="var(--mono)">' + v.toFixed(0) + '</text>';
+  }
+  g += '<line x1="' + L + '" y1="' + (Hp - B) + '" x2="' + (Wp - R) + '" y2="' + (Hp - B)
+     + '" stroke="var(--line)" stroke-width="1"/>';
+  [x0, Math.round((x0 + x1) / 2), x1].forEach(v => {
+    g += '<text x="' + X(v).toFixed(1) + '" y="' + (Hp - B + 15) + '" text-anchor="middle" '
+       + 'font-size="9.5" fill="var(--ink-3)" font-family="var(--mono)">' + v + '</text>';
+  });
+  g += '<text x="' + (L + (Wp - L - R) / 2) + '" y="' + (Hp - 23) + '" text-anchor="middle" '
+     + 'font-size="10" fill="var(--ink-3)">optimiser step</text>';
+  const ymid = (T + Hp - B) / 2;
+  g += '<text x="15" y="' + ymid + '" text-anchor="middle" font-size="10" fill="var(--ink-3)" '
+     + 'transform="rotate(-90 15 ' + ymid + ')">seconds per step</text>';
+  series.forEach((s, i) => {
+    const pts = s.pts.map(p => X(p[0]).toFixed(1) + ',' + Y(p[1]).toFixed(1)).join(' ');
+    g += '<polyline points="' + pts + '" fill="none" stroke="' + col[i % col.length]
+       + '" stroke-width="1.5" stroke-linejoin="round"/>';
+    if (s.pts.length === 1){
+      g += '<circle cx="' + X(s.pts[0][0]).toFixed(1) + '" cy="' + Y(s.pts[0][1]).toFixed(1)
+         + '" r="2.6" fill="' + col[i % col.length] + '"/>';
+    }
+  });
+  let lx = L + 8;
+  const leg = series.map((s, i) => {
+    const t = '<rect x="' + lx + '" y="' + (Hp - B + 30) + '" width="10" height="2.5" fill="'
+            + col[i % col.length] + '"/>'
+            + '<text x="' + (lx + 14) + '" y="' + (Hp - B + 34) + '" font-size="10" '
+            + 'fill="var(--ink-2)">' + esc(s.name) + ' (n=' + s.pts.length + ')</text>';
+    lx += 24 + String(s.name).length * 6 + 28;
+    return t;
+  }).join('');
+  return '<svg viewBox="0 0 ' + Wp + ' ' + Hp + '" role="img" '
+       + 'aria-label="seconds per optimiser step, per probe run">' + g + leg + '</svg>';
+}
 
 function render(st){
-  if (!st){ return; }
-  const v = st.verdict || 'FAIL';
-  const b = document.getElementById('banner');
-  b.className = 'banner v-' + v;
-  const [t, why] = VERDICT_TEXT[v] || ['unknown', ''];
-  // Two questions, deliberately not merged into one light: is the running arm sound, and could
-  // another arm start. A single verdict would show FAIL for a perfectly healthy arm whenever the
-  // card is busy, and a verdict that is wrong whenever the pipeline is working gets ignored.
-  const launchTxt = st.can_launch === true
-      ? '<span class="pill p-run">can launch</span>'
-      : '<span class="pill p-idle">cannot launch now</span>';
-  document.getElementById('bannerText').innerHTML =
-    esc(t) + ' <span class="why">— ' + esc(why) + '</span> &nbsp;' + launchTxt;
-  document.getElementById('sub').innerHTML =
-    'state generated ' + esc(st.generated_at) +
-    ' · <b>run health</b> status ' + esc(st.verdicts?.status) +
-    ' validate ' + esc(st.verdicts?.validate) +
-    ' · <b>launch readiness</b> preflight ' + esc(st.verdicts?.preflight);
+  const sci = st.science || {};
+  document.getElementById('question').textContent =
+    sci.question || '(the question is not in the state file)';
+  const age = Math.max(0, (Date.now() - new Date(st.generated_at).getTime()) / 1000);
+  document.getElementById('mastmeta').innerHTML =
+      '<b>state written</b> ' + esc(clockOf(st.generated_at)) + ' &nbsp;&middot;&nbsp; <b>age</b> ' + ageStr(age)
+    + ' &nbsp;&middot;&nbsp; <b>backbone</b> ' + esc((sci.backbone || {}).ours || '\u2014')
+    + ' &nbsp;&middot;&nbsp; <b>written by</b> scripts/export_health_state.py';
+
+  /* The two verdicts, kept apart. Merging them would make a healthy running arm read FAIL merely
+     because the card is full, and a verdict that is wrong whenever the pipeline is busy is one that
+     gets ignored. */
+  const rv = st.verdict || 'UNKNOWN';
+  const rvWhy = Object.keys(st.verdicts || {})
+      .filter(k => k === 'status' || k === 'validate')
+      .map(k => k + ' ' + st.verdicts[k]).join(' &middot; ') || 'no run in flight';
+  const cl = st.can_launch ? 'OK' : 'WARN';
+  document.getElementById('verdicts').innerHTML =
+      '<div class="verdict b-' + vclass(rv) + '"><div class="lbl">Run health &mdash; is the arm sound?</div>'
+    + '<div class="val">' + word(rv) + '</div><div class="why">' + rvWhy + '</div></div>'
+    + '<div class="verdict b-' + cl + '"><div class="lbl">Launch capacity &mdash; could another start?</div>'
+    + '<div class="val">' + word(cl) + '</div><div class="why">'
+    + (st.can_launch ? 'preflight passed; the card is free for a new arm'
+                     : 'preflight did not pass, or the card is occupied') + '</div></div>';
+
+  let h = '';
 
   const a = st.arm || {};
-  const el = a.elapsed_min, bud = a.budget_min;
-  // The budget comes from a completed arm's own train_seconds. Until one has finished there is no
-  // budget, and the page says so rather than showing a projection -- two step-time projections for
-  // this project were wrong, in opposite directions, and a bar drawn from a guess is worse than none.
-  const pct = (el !== null && bud) ? Math.min(100, (el/bud)*100) : 0;
-  const barCls = pct > 100 ? 'hot' : (pct > 80 ? 'mid' : '');
-
-  let html = '';
-
-  // --- live arm -------------------------------------------------------------------------------
-  html += '<div class="card"><h2>Live arm</h2><div class="grid g2">';
-  html += '<div class="kv">'
-    + kv('arm', a.name) + kv('phase', '<span class="pill p-' + phaseCls(a.phase_class) + '">' + esc(a.phase) + '</span>')
-    + kv('gpu', (a.gpu_mib >= 0 ? a.gpu_mib + ' MiB / ' + esc(a.gpu_util) + '%' : 'unreadable'))
-    + kv('gpu apps', a.gpu_apps) + kv('model', a.model) + kv('seed', a.seed)
-    + '</div><div class="kv">'
-    + kv('started', a.started_at) + kv('spec', a.spec_sha256)
-    + kv('elapsed', el !== null
-        ? el.toFixed(0) + (bud ? ' min of ~' + bud.toFixed(0) + ' min budget (' + esc(a.budget_source || '') + ')'
-                               : ' min — no budget yet: ' + esc(a.budget_source || 'no completed arm'))
-        : '—')
-    + kv('checkpoint', a.checkpoint ? a.checkpoint.size_gib + ' GiB @ ' + a.checkpoint.written_at : 'not written yet')
-    + kv('records', a.records_file || 'not written yet')
-    + '</div></div>';
-  html += '<div class="bar ' + barCls + '"><i style="width:' + pct.toFixed(1) + '%"></i></div>';
-  html += '<div class="sub" style="margin:0">'
-    + (a.no_resume ? '<b style="color:var(--fail)">no resume</b> — the harness has no continuation path, so an interrupted run repeats all 1500 steps. '
-       : '')
-    + 'Progress percent is not shown: the harness prints nothing during fit(), so only phase and elapsed time are knowable.'
-    + '</div></div>';
-
-  // --- targets vs actuals ---------------------------------------------------------------------
-  const tg = a.targets || {}, ac = a.actual || {};
-  const rowT = (label, theirs, ours, actual, d) =>
-    '<tr><td class="name">' + esc(label) + '</td><td>' + num(theirs, d) + '</td><td>' + num(ours, d)
-    + '</td><td>' + (actual === undefined ? '<span class="missing">pending</span>' : num(actual, d)) + '</td></tr>';
-  html += '<div class="card"><h2>Reference vs anchors vs this arm</h2><table>'
-    + '<tr><th>metric</th><th>their v1.0 (2B)</th><th>our zero-shot (0.6B)</th><th>this arm</th></tr>'
-    + rowT('typed_decisions pooled top-1', tg.their_v1_0_top1, tg.our_zero_shot_top1, ac.top1_candidate_canonical, 4)
-    + rowT('mmlu_pro_1k pooled top-1', tg.their_v1_0_mmlu_top1, tg.our_zero_shot_mmlu_top1, undefined, 4)
-    + rowT('n_train_cases', tg.their_n_train_cases, tg.their_n_train_cases, ac.n_train_cases, 0)
-    + rowT('final_loss', tg.their_final_loss, undefined, ac.final_loss, 4)
-    + rowT('train_seconds', undefined, undefined, ac.train_seconds, 0)
-    + rowT('option-order gap (pp)', tg.their_v1_0_order_gap_pp, tg.our_zero_shot_order_gap_pp,
-           (ac.top1_candidate_canonical != null && ac.top1_candidate_reversed != null)
-             ? Math.abs(ac.top1_candidate_canonical - ac.top1_candidate_reversed) * 100 : undefined, 1)
-    + '</table>'
-    + '<div class="sub" style="margin:9px 0 0">'
-    + 'Their numbers are a 2B backbone more than three times larger; ours is the deliberate independent variable. '
-    + 'The headroom between our zero-shot anchor and their score is what the loop is meant to consume. '
-    + 'The order gap is a hypothesis under test: it is 3.1 pp at zero-shot and 0.0 pp in their release, so it should shrink with training.'
-    + '</div></div>';
-
-  // --- health chain ---------------------------------------------------------------------------
-  const CH = st.checks || {};
-  html += '<div class="card"><h2>Diagnostic chain</h2><div class="tabs">'
-    + ['preflight','status','validate'].map((k,i) =>
-        '<button class="tab" role="tab" aria-selected="' + (i===0) + '" data-p="' + k + '">'
-        + k + ' · ' + esc(st.verdicts?.[k]) + '</button>').join('')
-    + '</div>';
-  ['preflight','status','validate'].forEach((k,i) => {
-    html += '<div class="panel" data-p="' + k + '" style="display:' + (i===0?'block':'none') + '">';
-    const rows = CH[k] || [];
-    if (!rows.length){ html += '<div class="check"><span class="st s-SKIP">[--]</span><span class="bd">no checks</span></div>'; }
-    rows.forEach(r => {
-      html += '<div class="check"><span class="st s-' + (r.status||'SKIP').replace(/[\[\]]/g,'') + '">'
-        + esc(r.status) + '</span><span class="bd"><span class="detail">' + esc(r.name)
-        + (r.detail ? ' — ' + esc(r.detail) : '') + '</span>'
-        + (r.why ? '<div class="why">' + esc(r.why) + '</div>' : '') + '</span></div>';
-    });
-    html += '</div>';
-  });
-  html += '</div>';
-
-  // --- ledger ---------------------------------------------------------------------------------
-  const led = st.ledger || [];
-  html += '<div class="card"><h2>Arm ledger</h2>';
-  if (!led.length){
-    html += '<div class="check"><span class="st s-SKIP">[--]</span><span class="bd">no arm has been launched through the health chain yet</span></div>';
+  h += '<section class="panel"><h2><span class="pl">a</span>The arm on the card</h2>';
+  h += '<p class="lede">The harness has no resume path, so an interrupted run costs all of its steps '
+     + 'again. What is shown is what exists on disk, never a projection of it.</p>';
+  if (!a.name){
+    h += '<div class="empty">No arm directory was supplied to the exporter.</div>';
   } else {
-    const d = st.ledger_drift || {};
-    html += '<table><tr><th>arm</th><th>started</th><th>spec</th><th>seed</th></tr>'
-      + led.map(r => '<tr><td class="name">' + esc(r.arm) + '</td><td>' + esc(r.started_at)
-      + '</td><td>' + esc(r.spec_sha256) + '</td><td>' + esc(r.seed) + '</td></tr>').join('')
-      + '</table>';
-    html += '<div class="sub" style="margin:9px 0 0">'
-      + d.launches + ' launch(es), ' + d.distinct_environments + ' distinct environment fingerprint(s). '
-      + (d.distinct_environments > 1
-          ? '<b class="stale">Environments differ between arms — results across them are not comparable.</b>'
-          : 'One environment across every arm, so comparisons are valid.')
-      + '</div>';
+    h += '<div class="kv">';
+    h += '<div class="k">arm</div><div class="v">' + esc(a.name) + '</div>';
+    h += '<div class="k">phase</div><div class="v">' + word(String(a.phase || '').replace(/ /g, ''))
+       + ' <span style="color:var(--ink-3)">' + esc(a.phase || '') + '</span></div>';
+    h += '<div class="k">GPU memory in use</div><div class="v num">'
+       + (a.gpu_mib == null ? '\u2014' : a.gpu_mib + ' MiB')
+       + ' <span style="color:var(--ink-3)">at ' + (a.gpu_util == null ? '?' : a.gpu_util) + '%</span></div>';
+    h += '<div class="k">processes holding a context</div><div class="v num">'
+       + (a.gpu_apps == null ? '<span class="empty">query did not answer</span>' : a.gpu_apps) + '</div>';
+    if (a.started_at) h += '<div class="k">started</div><div class="v num">' + esc(clockOf(a.started_at)) + '</div>';
+    if (a.elapsed_min != null) h += '<div class="k">elapsed (wall)</div><div class="v num">'
+       + ageStr(a.elapsed_min * 60) + '</div>';
+    if (a.budget_min != null){
+      const frac = Math.min(1, a.elapsed_min / a.budget_min);
+      const cls = frac > 1 ? 'FAIL' : (frac > 0.9 ? 'WARN' : 'OK');
+      h += '<div class="k">measured budget</div><div class="v num">' + (a.budget_min / 60).toFixed(1)
+         + ' h <span class="word w-' + cls + '">' + (frac * 100).toFixed(0) + '% used</span></div>';
+      h += '<div class="k">budget basis</div><div class="v" style="font-size:var(--t-micro);'
+         + 'color:var(--ink-3)">' + esc(a.budget_source || '') + '</div>';
+    } else {
+      h += '<div class="k">measured budget</div><div class="v">' + esc(a.budget_source || '\u2014') + '</div>';
+    }
+    if (a.spec_sha256) h += '<div class="k">spec sha256</div><div class="v num">' + esc(a.spec_sha256) + '&hellip;</div>';
+    if (a.checkpoint) h += '<div class="k">checkpoint</div><div class="v num">' + esc(a.checkpoint.size_gib)
+       + ' GiB at ' + esc(clockOf(a.checkpoint.written_at)) + '</div>';
+    h += '</div>';
   }
-  html += '</div>';
+  h += '</section>';
 
-  document.getElementById('app').innerHTML = html;
-
-  // tabs
-  document.querySelectorAll('.tab').forEach(tb => {
-    tb.addEventListener('click', () => {
-      document.querySelectorAll('.tab').forEach(x => x.setAttribute('aria-selected', 'false'));
-      tb.setAttribute('aria-selected', 'true');
-      document.querySelectorAll('.panel').forEach(p => {
-        p.style.display = (p.dataset.p === tb.dataset.p) ? 'block' : 'none';
-      });
+  const sc = sci.scale || {};
+  h += '<section class="panel"><h2><span class="pl">b</span>Where the 0.6B point sits</h2>';
+  h += '<p class="lede">' + esc((sci.backbone || {}).architecture_difference || '') + '</p>';
+  if (sc.rows){
+    const lg = sc.loop_gain || {};
+    h += '<table><caption>typed_decisions pooled top-1 &mdash; the metric the source&rsquo;s own '
+       + 'verify.json reports. Their figures are theirs; ours are measured by our code.</caption>'
+       + '<thead><tr><th>line</th><th>backbone</th><th class="num">v1.0</th><th class="num">best</th>'
+       + '<th class="num">releases</th><th class="num">loop gain</th></tr></thead><tbody>';
+    sc.rows.forEach(r => {
+      const gain = (r.v1_0 != null && r.best != null) ? (r.best - r.v1_0) : null;
+      h += '<tr class="' + (r.who === 'ours' ? 'ours' : '') + '"><td>' + esc(r.who) + '</td>'
+         + '<td>' + esc(r.backbone) + '</td><td class="num">' + fmt(r.v1_0) + '</td>'
+         + '<td class="num">' + (r.best == null ? MISS : fmt(r.best)) + '</td>'
+         + '<td class="num">' + r.releases + '</td>'
+         + '<td class="num">' + (gain == null ? MISS : (gain > 0 ? '+' : '') + fmt(gain)) + '</td></tr>';
     });
-  });
+    h += '</tbody></table>';
+    if (lg['2B'] != null && lg['0.8B'] != null){
+      h += '<div class="kv"><div class="k">loop gain at 2B / 0.8B</div><div class="v num">+'
+         + fmt(lg['2B']) + ' / +' + fmt(lg['0.8B']) + '</div>'
+         + '<div class="k">what that implies</div><div class="v" style="text-align:left;'
+         + 'color:var(--ink-2)">the loop&rsquo;s leverage itself scales with the backbone &mdash; the '
+         + 'smaller line gained less than half as much and stopped after one release</div></div>';
+    }
+  }
+  if (sc.anchors){
+    h += '<table><caption>anchors</caption><tbody>';
+    sc.anchors.forEach(x => {
+      h += '<tr><td>' + esc(x.what) + '</td><td class="num">' + fmt(x.value) + '</td></tr>';
+    });
+    h += '</tbody></table>';
+  }
+  h += '</section>';
 
-  // --- provenance -----------------------------------------------------------------------------
-  let f = '<b>Provenance.</b> state generated <span class="' + (ageClass(st)) + '">'
-        + esc(st.generated_at) + '</span>';
+  const pr = sci.predictions || {};
+  h += '<section class="panel"><h2><span class="pl">c</span>Pre-registered predictions</h2>';
+  h += '<p class="lede">Written before any arm ran, so the curve cannot be narrated into existence '
+     + 'afterwards. A prediction recorded as unsupported stays in the list rather than being edited '
+     + 'out of it.</p>';
+  (pr.items || []).forEach(p => {
+    h += '<div class="pred v-' + vclass(p.verdict) + '">'
+       + '<div class="hd"><span class="id">' + esc(p.id) + '</span>' + word(p.verdict) + '</div>'
+       + '<div class="cl">' + esc(p.claim) + '</div>'
+       + '<div class="ev">' + esc(p.evidence) + '</div>'
+       + '<div class="cx">cost: ' + esc(p.cost) + '</div></div>';
+  });
+  if (pr.tally) h += '<p class="lede" style="margin-bottom:3px">' + esc(pr.tally) + '</p>';
+  h += '</section>';
+
+  const co = sci.cost || {}, an = co.anomaly || {}, cq = co.consequence || {};
+  h += '<section class="panel"><h2><span class="pl">d</span>Cost &mdash; the largest one this project has</h2>';
+  h += '<p class="lede">Every figure is read from a run&rsquo;s own artefacts. A spend that bought '
+     + 'nothing is recorded rather than omitted, because an unrecorded cost gets repeated.</p>';
+  if (co.entries){
+    h += '<table><caption>GPU-train seconds, as each run recorded them</caption>'
+       + '<thead><tr><th>run</th><th class="num">steps</th><th class="num">train (h)</th>'
+       + '<th class="num">s/step</th><th>what it bought</th></tr></thead><tbody>';
+    co.entries.forEach(e => {
+      h += '<tr><td>' + esc(e.what) + '</td><td class="num">' + e.steps + '</td>'
+         + '<td class="num">' + (e.train_s / 3600).toFixed(2) + '</td>'
+         + '<td class="num">' + (e.train_s / e.steps).toFixed(3) + '</td>'
+         + '<td>' + esc(e.bought) + '</td></tr>';
+    });
+    h += '</tbody></table>';
+  }
+  if (an.factor != null){
+    h += '<div class="figure"><div class="kv" style="font-size:var(--t-body)">'
+       + '<div class="k">arm 0 against the source&rsquo;s own run of the same recipe</div>'
+       + '<div class="v num"><b>' + esc(an.factor) + '&times;</b> slower</div>'
+       + '<div class="k">explained by hardware and model size</div><div class="v num">'
+       + esc(an.explained_by_hardware_and_size) + '&times;</div>'
+       + '<div class="k">unexplained</div><div class="v num"><b class="w-FAIL">'
+       + esc(an.unexplained) + '&times;</b></div></div>'
+       + '<div class="figcap"><b>Why a 100% GPU reading is not evidence of throughput.</b> '
+       + esc(an.note) + '</div>'
+       + '<div class="figcap"><b>Leading hypothesis.</b> ' + esc(an.hypothesis) + '</div></div>';
+  }
+  if (cq.one_arm_h != null){
+    h += '<div class="kv"><div class="k">one training</div><div class="v num">'
+       + esc(cq.one_training_h) + ' h</div>'
+       + '<div class="k">one arm (' + esc(cq.one_arm_note) + ')</div><div class="v num">'
+       + esc(cq.one_arm_h) + ' h</div>'
+       + '<div class="k">&hellip;at 10&times; better</div><div class="v num">'
+       + esc(cq.at_10x_better_h) + ' h</div></div>';
+  }
+  h += '</section>';
+
+  h += '<section class="panel"><h2><span class="pl">e</span>Where the step time goes</h2>';
+  h += '<p class="lede">Per-step seconds from the heartbeat wrapper, which writes one row per '
+     + 'optimiser step. One number cannot show a degradation that is a function of how long a run has '
+     + 'been going, and two step-time estimates for this project were already wrong in opposite '
+     + 'directions.</p>';
+  h += '<div class="figure">' + stepCurve(st.step_curve)
+     + '<div class="figcap"><b>Read this as:</b> a flat line means the step cost is a property of the '
+     + 'recipe; a rising line means it is a property of the run&rsquo;s age, which is what the '
+     + 'allocator hypothesis predicts.</div></div>';
+  h += '</section>';
+
+  const CH = st.checks || {};
+  h += '<section class="panel"><h2><span class="pl">f</span>Diagnostic chain</h2>';
+  h += '<p class="lede">Three questions asked in order, before any GPU time is committed.</p>';
+  ['preflight', 'status', 'validate'].forEach(k => {
+    const rows = CH[k] || [], v = (st.verdicts || {})[k] || 'SKIP';
+    h += '<div style="margin-bottom:10px"><div style="font-size:var(--t-micro);text-transform:uppercase;'
+       + 'letter-spacing:.09em;color:var(--ink-3);margin-bottom:4px">' + esc(k) + ' &mdash; ' + word(v)
+       + '</div>';
+    if (!rows.length) h += '<div class="empty">no rows</div>';
+    rows.forEach(r => {
+      h += '<div class="check"><div class="st w-' + esc((r.status || 'SKIP').replace(/[[\]]/g, ''))
+         + '">' + esc(r.status) + '</div><div><div>' + esc(r.detail || r.name) + '</div>'
+         + (r.why ? '<div class="wy">' + esc(r.why) + '</div>' : '') + '</div></div>';
+    });
+    h += '</div>';
+  });
+  h += '</section>';
+
+  h += '<section class="panel"><h2><span class="pl">g</span>Provenance</h2>';
+  h += '<p class="lede">The mtime of every file this page renders from, so staleness is judgeable. '
+     + 'Data that looks live without being live is the failure this panel exists to prevent.</p>';
+  h += '<div class="prov">';
   (st.sources || []).forEach(s => {
-    f += '<br>' + (s.exists
-      ? '<code>' + esc(s.path) + '</code> · mtime ' + esc(s.mtime) + ' · age ' + ageStr(s.age_s)
-      : '<code>' + esc(s.path) + '</code> · <span class="missing">missing</span>');
+    const nm = String(s.path).split(/[\\/]/).slice(-2).join('/');
+    if (!s.exists){
+      h += '<div class="miss">MISSING &nbsp;' + esc(nm)
+         + ' &nbsp;&mdash; every panel reading it is wrong until it is restored</div>';
+    } else {
+      h += '<div>' + esc(nm) + ' &nbsp;&middot;&nbsp; ' + esc(clockOf(s.mtime)) + ' &nbsp;&middot;&nbsp; '
+         + '<span class="' + (s.age_s > 3600 ? 'old' : '') + '">' + ageStr(s.age_s) + ' old</span></div>';
+    }
   });
-  f += '<br><br>' + (st.notes || []).map(n => esc(n)).join('<br>');
-  f += '<br><br>Re-export with <code>python scripts/health.py dashboard</code>; this page reloads every '
-     + (POLL_MS/1000) + 's.';
-  document.getElementById('foot').innerHTML = f;
+  h += '</div>';
+  if ((st.notes || []).length){
+    h += '<p class="lede" style="margin-top:13px;margin-bottom:0">';
+    (st.notes || []).forEach(n => { h += '&middot; ' + esc(n) + '<br>'; });
+    h += '</p>';
+  }
+  h += '</section>';
+
+  document.getElementById('body').innerHTML = h;
+  document.getElementById('colophon').innerHTML =
+      'JevRSI &middot; page rebuilt to the project&rsquo;s figure standard &middot; Okabe-Ito status '
+    + 'palette, and every state also carries a word so a monochrome print reads the same &middot; no '
+    + 'fabricated fallback: an absent value renders as <i>not recorded</i> &middot; regenerates every '
+    + (POLL_MS / 1000) + ' s from <code>viz/state.js</code>.';
 }
 
-function phaseCls(c){ return c === 'run' ? 'run' : c === 'warn' ? 'warn' : c === 'fail' ? 'fail' : 'idle'; }
-function ageClass(st){
-  const age = (Date.now() - new Date(st.generated_at).getTime()) / 1000;
-  return age > 90 ? 'stale' : '';
+function showBanner(msg){
+  const b = document.getElementById('banner');
+  if (!msg){ b.className = ''; b.innerHTML = ''; return; }
+  b.className = 'on';
+  b.innerHTML = '<b>No live state.</b> ' + msg;
 }
-
-function poll(){
-  loadState().then(st => { firstLoad = false; render(st); })
-             .catch(e => {
-               if (firstLoad){
-                 const b = document.getElementById('banner');
-                 b.className = 'banner v-FAIL';
-                 document.getElementById('bannerText').innerHTML =
-                   'Cannot read state — <span class="why">' + esc(e.message) +
-                   '. Run <code>python scripts/health.py dashboard</code> to generate viz/state.js.</span>';
-               } else {
-                 document.getElementById('sub').innerHTML =
-                   '<span class="missing">state unreadable since ' +
-                   esc(new Date().toLocaleTimeString()) + '</span>';
-               }
-             });
+function tick(){
+  loadState().then(st => { showBanner(null); render(st); })
+    .catch(e => showBanner('Run <code>python scripts/export_health_state.py</code>, then reload. ('
+      + esc(e.message) + ')'));
 }
-poll();
-setInterval(poll, POLL_MS);
+tick();
+setInterval(tick, POLL_MS);
 </script>
 </body>
 </html>

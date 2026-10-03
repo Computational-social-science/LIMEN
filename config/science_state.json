@@ -1,0 +1,98 @@
+{
+  "_what_this_is": "The scientific content the dashboard renders: the question, the pre-registered predictions and their verdicts, the scale comparison against the source, and the cost. Kept here rather than in the HTML so that a number has exactly one home and the dashboard cannot drift from it.",
+  "_provenance_rule": "Every number carries a `src` naming the file or record it was read from. A number whose source cannot be named does not go in this file.",
+
+  "question": "Given the same loop, how far does it carry a smaller tower before it saturates, and what does the arm-by-arm record explain?",
+
+  "backbone": {
+    "ours": "Qwen3-0.6B",
+    "ours_note": "28 layers, all full attention, vocab 151,936, model_type qwen3",
+    "source_v1_0": "Qwen/Qwen3.5-2B-Base",
+    "source_current_arch": "Qwen/Qwen3.5-0.8B-Base",
+    "architecture_difference": "The source's tower is Qwen3.5: hybrid linear:full attention at 3:1, multimodal, vocab 248,320. Ours is Qwen3: 28 full-attention layers, vocab 151,936. Our point therefore differs in architecture family as well as in size, which is the distinction this project exists to test — the source's own down-scaling (2B to 0.8B) held the family fixed.",
+    "src": "E:/2026-AI4S/RSI-Jev/rsijev/arch.py docstring; our config.json for Qwen3-0.6B"
+  },
+
+  "scale": {
+    "_what": "typed_decisions pooled top-1, the metric the source's own verify.json reports. Source figures are theirs; ours are measured by our code.",
+    "rows": [
+      {"who": "source", "backbone": "Qwen3.5-2B-Base",   "v1_0": 0.6525, "best": 0.7925, "releases": 4,
+       "src": "E:/2026-AI4S/v1_published/v1_2b/verify.json; E:/2026-AI4S/RSI-Jev/versions/v1.0.md, v2.0.md"},
+      {"who": "source", "backbone": "Qwen3.5-0.8B-Base", "v1_0": 0.6175, "best": 0.6791, "releases": 1,
+       "note": "\"There is no v2.0 at 0.8B. The recipe was only ever run at 2B.\" and \"the 0.8B line's own keeper is a different recipe at 0.6791, well below 2B\"",
+       "src": "E:/2026-AI4S/RSI-Jev/versions/v1.0.md line 73; v2.0.md line 105; v2.1.md lines 250-251"},
+      {"who": "ours",   "backbone": "Qwen3-0.6B",        "v1_0": 0.5775, "best": null, "releases": 1,
+       "src": "measured; E:/2026-AI4S/arms/arm0/out/arm0.items.jsonl"}
+    ],
+    "anchors": [
+      {"what": "source untrained 2B", "value": 0.428,
+       "src": "E:/2026-AI4S/RSI-Jev/versions/v1.0.md line 95"},
+      {"what": "our zero-shot 0.6B", "value": 0.4025,
+       "src": "measured; report_from_items.py over the arm 0 harness records"}
+    ],
+    "loop_gain": {
+      "_what": "how much the loop added after each line's own v1.0. The source's own scale trend, which is what predicts ours.",
+      "2B": 0.14, "0.8B": 0.0616,
+      "src": "computed from the rows above; 0.7925-0.6525 and 0.6791-0.6175"
+    }
+  },
+
+  "predictions": {
+    "_what": "Written before any arm ran, so the curve cannot be narrated into existence afterwards. A verdict of NOT SUPPORTED stays in the list rather than being edited out.",
+    "items": [
+      {"id": "P1", "claim": "The 0.6B starting point scores below the source's 2B v1.0 on a held-out set, measured by our own code",
+       "verdict": "CONFIRMED",
+       "evidence": "zero-shot 0.4025 and after the v1.0 recipe 0.5775; their 2B v1.0 is 0.6525. Both our points sit below it.",
+       "cost": "no new GPU time — both numbers were already measured for other reasons"},
+      {"id": "P2", "claim": "More arms clear the gate than the four releases the source needed (falsified if the plateau arrives in <= 4 accepted arms)",
+       "verdict": "OPEN — the source's own scale trend predicts falsification",
+       "evidence": "the gate is +0.020 on a 3-seed mean. Loop gain was +0.1400 at 2B and +0.0616 at 0.8B, so the leverage itself scales with the backbone; a log-linear extrapolation to 0.6B gives +0.0370, which is room for 1.8 arms. That is <= 4.",
+       "cost": "this is the only claim that needs arms; one arm is 3 trainings under the source's design"},
+      {"id": "P3", "claim": "Arms that kept at 2B fail at 0.6B, and the reverse",
+       "verdict": "SUPPORTED at 0.8B by the source's record",
+       "evidence": "their 0.8B line's keeper \"is a different recipe\" from the one that kept at 2B.",
+       "cost": "confirming it at 0.6B needs our own arm"},
+      {"id": "P4", "claim": "The bf16 scorer defect does not reproduce",
+       "verdict": "CONFIRMED",
+       "evidence": "our scorer's normaliser casts to fp32 before the multiply, so autocast(bf16) leaves a relative error of 5.8e-03 and does not change the argmax. Their seven failed experiments were their scorer, not the task.",
+       "cost": "no new GPU time"},
+      {"id": "P5", "claim": "Position-collapse is the first failure mode to appear",
+       "verdict": "NOT SUPPORTED",
+       "evidence": "the order gap closed rather than opened: canonical minus reversed was +3.10 pp zero-shot and -0.75 pp after arm 0. A readout collapsing onto option k would widen it. The source's own record agrees: order averaging at inference is null, +0.001.",
+       "cost": "no new GPU time"}
+    ],
+    "tally": "two confirmed, one not supported, one supported at a larger scale, one open — three of five resolved without a run"
+  },
+
+  "cost": {
+    "_what": "Time and compute are this project's largest cost. Every figure here is read from a run's own artefacts, not estimated.",
+    "currency_note": "GPU-train seconds as recorded by each run's own meta.json",
+    "entries": [
+      {"what": "arm 0", "train_s": 62741, "steps": 1500, "gpu": "RTX 4070",
+       "bought": "the v1.0 recipe's number at 0.6B: pooled top-1 0.5775 against a 0.4025 zero-shot anchor, one seed",
+       "src": "E:/2026-AI4S/arms/arm0/checkpoints/meta.json"},
+      {"what": "source v1.0", "train_s": 908, "steps": 1500, "gpu": "H100 80GB",
+       "bought": "their released 2B checkpoint",
+       "src": "E:/2026-AI4S/v1_published/v1_2b/meta.json"}
+    ],
+    "anomaly": {
+      "_what": "arm 0 against the source's own run of the same recipe",
+      "factor": 69.1,
+      "steps": 1500,
+      "batch": 16,
+      "n_train_cases": 6277,
+      "explained_by_hardware_and_size": 3.3,
+      "unexplained": 21,
+      "note": "69x against a model 3.3x smaller. An H100 runs bf16 GEMMs at roughly 10-11x a 4070 and the model is 3.3x smaller, so hardware and size together explain about 3.3x. The GPU reports 100% utilisation throughout, which is not evidence of throughput: it means a kernel was resident during the sampling window, and a stream of small kernels reports 100% too. 4,496 tokens per step through a 0.6B model is ~1.6e13 FLOPs, so 41.8 s is ~390 GFLOPS, or 0.43% of the card's bf16 peak.",
+      "hypothesis": "fragmentation at the edge of VRAM. This project already recorded that at 94% of capacity the allocator thrashes and the same evaluation takes 61 minutes instead of 15.6; arm 0 peaked at 96%. Being tested by a 150-step run whose per-step seconds come from the heartbeat wrapper, against the same run under expandable_segments:True.",
+      "src": "E:/2026-AI4S/autoresearch/evidence/arm0_audit.md"
+    },
+    "consequence": {
+      "one_training_h": 17.43,
+      "one_arm_h": 52.3,
+      "one_arm_note": "3 seeds, matching the source's gate design",
+      "at_10x_better_h": 5.2,
+      "src": "computed from the entries above"
+    }
+  }
+}
