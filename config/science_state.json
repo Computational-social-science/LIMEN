@@ -1,9 +1,7 @@
 {
   "_what_this_is": "The scientific content the dashboard renders: the question, the pre-registered predictions and their verdicts, the scale comparison against the source, and the cost. Kept here rather than in the HTML so that a number has exactly one home and the dashboard cannot drift from it.",
   "_provenance_rule": "Every number carries a `src` naming the file or record it was read from. A number whose source cannot be named does not go in this file.",
-
   "question": "Given the same loop, how far does it carry a smaller tower before it saturates, and what does the arm-by-arm record explain?",
-
   "backbone": {
     "ours": "Qwen3-0.6B",
     "ours_note": "28 layers, all full attention, vocab 151,936, model_type qwen3",
@@ -12,68 +10,116 @@
     "architecture_difference": "The source's tower is Qwen3.5: hybrid linear:full attention at 3:1, multimodal, vocab 248,320. Ours is Qwen3: 28 full-attention layers, vocab 151,936. Our point therefore differs in architecture family as well as in size, which is the distinction this project exists to test — the source's own down-scaling (2B to 0.8B) held the family fixed.",
     "src": "E:/2026-AI4S/RSI-Jev/rsijev/arch.py docstring; our config.json for Qwen3-0.6B"
   },
-
   "scale": {
     "_what": "typed_decisions pooled top-1, the metric the source's own verify.json reports. Source figures are theirs; ours are measured by our code.",
     "rows": [
-      {"who": "source", "backbone": "Qwen3.5-2B-Base",   "v1_0": 0.6525, "best": 0.7925, "releases": 4,
-       "src": "E:/2026-AI4S/v1_published/v1_2b/verify.json; E:/2026-AI4S/RSI-Jev/versions/v1.0.md, v2.0.md"},
-      {"who": "source", "backbone": "Qwen3.5-0.8B-Base", "v1_0": 0.6175, "best": 0.6791, "releases": 1,
-       "note": "\"There is no v2.0 at 0.8B. The recipe was only ever run at 2B.\" and \"the 0.8B line's own keeper is a different recipe at 0.6791, well below 2B\"",
-       "src": "E:/2026-AI4S/RSI-Jev/versions/v1.0.md line 73; v2.0.md line 105; v2.1.md lines 250-251"},
-      {"who": "ours",   "backbone": "Qwen3-0.6B",        "v1_0": 0.5775, "best": null, "releases": 1,
-       "src": "measured; E:/2026-AI4S/arms/arm0/out/arm0.items.jsonl"}
+      {
+        "who": "source",
+        "backbone": "Qwen3.5-2B-Base",
+        "v1_0": 0.6525,
+        "best": 0.7925,
+        "releases": 4,
+        "src": "E:/2026-AI4S/v1_published/v1_2b/verify.json; E:/2026-AI4S/RSI-Jev/versions/v1.0.md, v2.0.md"
+      },
+      {
+        "who": "source",
+        "backbone": "Qwen3.5-0.8B-Base",
+        "v1_0": 0.6175,
+        "best": 0.6791,
+        "releases": 1,
+        "note": "\"There is no v2.0 at 0.8B. The recipe was only ever run at 2B.\" and \"the 0.8B line's own keeper is a different recipe at 0.6791, well below 2B\"",
+        "src": "E:/2026-AI4S/RSI-Jev/versions/v1.0.md line 73; v2.0.md line 105; v2.1.md lines 250-251"
+      },
+      {
+        "who": "ours",
+        "backbone": "Qwen3-0.6B  [arm 0: unusable]",
+        "v1_0": 0.5775,
+        "best": null,
+        "releases": 1,
+        "src": "measured; E:/2026-AI4S/arms/arm0/out/arm0.items.jsonl",
+        "status": "QUARANTINED as evidence (see arm0_status) - kept as a record"
+      }
     ],
     "anchors": [
-      {"what": "source untrained 2B", "value": 0.428,
-       "src": "E:/2026-AI4S/RSI-Jev/versions/v1.0.md line 95"},
-      {"what": "our zero-shot 0.6B", "value": 0.4025,
-       "src": "measured; report_from_items.py over the arm 0 harness records"}
+      {
+        "what": "source untrained 2B",
+        "value": 0.428,
+        "src": "E:/2026-AI4S/RSI-Jev/versions/v1.0.md line 95"
+      },
+      {
+        "what": "our zero-shot 0.6B",
+        "value": 0.4025,
+        "src": "measured; report_from_items.py over the arm 0 harness records"
+      }
     ],
     "loop_gain": {
       "_what": "how much the loop added after each line's own v1.0. The source's own scale trend, which is what predicts ours.",
-      "2B": 0.14, "0.8B": 0.0616,
+      "2B": 0.14,
+      "0.8B": 0.0616,
       "src": "computed from the rows above; 0.7925-0.6525 and 0.6791-0.6175"
     }
   },
-
   "predictions": {
     "_what": "Written before any arm ran, so the curve cannot be narrated into existence afterwards. A verdict of NOT SUPPORTED stays in the list rather than being edited out.",
     "items": [
-      {"id": "P1", "claim": "The 0.6B starting point scores below the source's 2B v1.0 on a held-out set, measured by our own code",
-       "verdict": "CONFIRMED",
-       "evidence": "zero-shot 0.4025 and after the v1.0 recipe 0.5775; their 2B v1.0 is 0.6525. Both our points sit below it.",
-       "cost": "no new GPU time — both numbers were already measured for other reasons"},
-      {"id": "P2", "claim": "More arms clear the gate than the four releases the source needed (falsified if the plateau arrives in <= 4 accepted arms)",
-       "verdict": "OPEN — the source's own scale trend predicts falsification",
-       "evidence": "the gate is +0.020 on a 3-seed mean. Loop gain was +0.1400 at 2B and +0.0616 at 0.8B, so the leverage itself scales with the backbone; a log-linear extrapolation to 0.6B gives +0.0370, which is room for 1.8 arms. That is <= 4.",
-       "cost": "this is the only claim that needs arms; one arm is 3 trainings under the source's design"},
-      {"id": "P3", "claim": "Arms that kept at 2B fail at 0.6B, and the reverse",
-       "verdict": "SUPPORTED at 0.8B by the source's record",
-       "evidence": "their 0.8B line's keeper \"is a different recipe\" from the one that kept at 2B.",
-       "cost": "confirming it at 0.6B needs our own arm"},
-      {"id": "P4", "claim": "The bf16 scorer defect does not reproduce",
-       "verdict": "CONFIRMED",
-       "evidence": "our scorer's normaliser casts to fp32 before the multiply, so autocast(bf16) leaves a relative error of 5.8e-03 and does not change the argmax. Their seven failed experiments were their scorer, not the task.",
-       "cost": "no new GPU time"},
-      {"id": "P5", "claim": "Position-collapse is the first failure mode to appear",
-       "verdict": "NOT SUPPORTED",
-       "evidence": "the order gap closed rather than opened: canonical minus reversed was +3.10 pp zero-shot and -0.75 pp after arm 0. A readout collapsing onto option k would widen it. The source's own record agrees: order averaging at inference is null, +0.001.",
-       "cost": "no new GPU time"}
+      {
+        "id": "P1",
+        "claim": "The 0.6B starting point scores below the source's 2B v1.0 on a held-out set, measured by our own code",
+        "verdict": "CONFIRMED",
+        "evidence": "zero-shot 0.4025 and after the v1.0 recipe 0.5775; their 2B v1.0 is 0.6525. Both our points sit below it.",
+        "cost": "no new GPU time — both numbers were already measured for other reasons"
+      },
+      {
+        "id": "P2",
+        "claim": "More arms clear the gate than the four releases the source needed (falsified if the plateau arrives in <= 4 accepted arms)",
+        "verdict": "OPEN — the source's own scale trend predicts falsification",
+        "evidence": "the gate is +0.020 on a 3-seed mean. Loop gain was +0.1400 at 2B and +0.0616 at 0.8B, so the leverage itself scales with the backbone; a log-linear extrapolation to 0.6B gives +0.0370, which is room for 1.8 arms. That is <= 4.",
+        "cost": "this is the only claim that needs arms; one arm is 3 trainings under the source's design"
+      },
+      {
+        "id": "P3",
+        "claim": "Arms that kept at 2B fail at 0.6B, and the reverse",
+        "verdict": "SUPPORTED at 0.8B by the source's record",
+        "evidence": "their 0.8B line's keeper \"is a different recipe\" from the one that kept at 2B.",
+        "cost": "confirming it at 0.6B needs our own arm"
+      },
+      {
+        "id": "P4",
+        "claim": "The bf16 scorer defect does not reproduce",
+        "verdict": "CONFIRMED",
+        "evidence": "our scorer's normaliser casts to fp32 before the multiply, so autocast(bf16) leaves a relative error of 5.8e-03 and does not change the argmax. Their seven failed experiments were their scorer, not the task.",
+        "cost": "no new GPU time"
+      },
+      {
+        "id": "P5",
+        "claim": "Position-collapse is the first failure mode to appear",
+        "verdict": "NOT SUPPORTED",
+        "evidence": "the order gap closed rather than opened: canonical minus reversed was +3.10 pp zero-shot and -0.75 pp after arm 0. A readout collapsing onto option k would widen it. The source's own record agrees: order averaging at inference is null, +0.001.",
+        "cost": "no new GPU time"
+      }
     ],
     "tally": "two confirmed, one not supported, one supported at a larger scale, one open — three of five resolved without a run"
   },
-
   "cost": {
     "_what": "Time and compute are this project's largest cost. Every figure here is read from a run's own artefacts, not estimated.",
     "currency_note": "GPU-train seconds as recorded by each run's own meta.json",
     "entries": [
-      {"what": "arm 0", "train_s": 62741, "steps": 1500, "gpu": "RTX 4070",
-       "bought": "the v1.0 recipe's number at 0.6B: pooled top-1 0.5775 against a 0.4025 zero-shot anchor, one seed",
-       "src": "E:/2026-AI4S/arms/arm0/checkpoints/meta.json"},
-      {"what": "source v1.0", "train_s": 908, "steps": 1500, "gpu": "H100 80GB",
-       "bought": "their released 2B checkpoint",
-       "src": "E:/2026-AI4S/v1_published/v1_2b/meta.json"}
+      {
+        "what": "arm 0",
+        "train_s": 62741,
+        "steps": 1500,
+        "gpu": "RTX 4070",
+        "bought": "the v1.0 recipe's number at 0.6B: pooled top-1 0.5775 against a 0.4025 zero-shot anchor, one seed",
+        "src": "E:/2026-AI4S/arms/arm0/checkpoints/meta.json"
+      },
+      {
+        "what": "source v1.0",
+        "train_s": 908,
+        "steps": 1500,
+        "gpu": "H100 80GB",
+        "bought": "their released 2B checkpoint",
+        "src": "E:/2026-AI4S/v1_published/v1_2b/meta.json"
+      }
     ],
     "anomaly": {
       "_what": "arm 0 against the source's own run of the same recipe",
@@ -94,5 +140,48 @@
       "at_10x_better_h": 5.2,
       "src": "computed from the entries above"
     }
+  },
+  "arm0_status": {
+    "verdict": "QUARANTINED - unusable as evidence",
+    "_four_independent_reasons": [
+      "1. The instrument was never calibrated. The backbone was changed before the pipeline was ever asked a question whose answer was already known, so a defect anywhere in encode, readout, metric or harness would have looked like a result.",
+      "2. It cannot be reproduced. The harness has no resume and the run cost 17.43 h, so no second copy of this number is obtainable at a cost anyone would pay.",
+      "3. It is one seed. This project's own gate is defined on a 3-seed mean, because per-seed sd is 0.0173; a single seed does not meet the bar the project set for itself.",
+      "4. It trained in a pathological regime. Arm 0 peaked at 11,807 / 12,282 MiB = 96% of VRAM, the regime this project's own check_arm0_spec.py records as allocator-thrashing, and health.py validate has been reporting [FAIL] train_seconds outside [600, 21600] all along."
+    ],
+    "_any_one_is_sufficient": "Any one of the four disqualifies the number. Together they settle it.",
+    "_what_the_artefacts_still_are": "Evidence of what happened and of what it cost -- 17.43 h of an 18.9 h total. The weights, the records and the meta.json are kept. What is withdrawn is the number's use as a data point, not its existence as a record.",
+    "_what_is_not_claimed": "That the weights are wrong. Measured: every layer moved, mean |dw| between 5.8e-05 and 9.7e-05, consistent with lr_base 5e-6 over 1,500 cosine steps, and the metric reproduces from the records. The process is what makes it unusable, and the process is the finding.",
+    "_src": "docs/APPROACH_REDISTILLED.md; evidence/arm0_audit.md; health.py validate"
+  },
+  "from_scratch": {
+    "_what": "The chain, in the order that makes each step checkable by the next. Arm 0 skipped steps 1-3 and went straight to the experiment, which is why its 17.43 h bought one number of unknown standing.",
+    "steps": [
+      {
+        "n": 1,
+        "what": "Calibrate: evaluate the source's own released 0.8B checkpoint with our harness against its published 0.6175 / 0.6210 / 0.2690",
+        "state": "running",
+        "cost": "3.7 GiB download + ~40 min",
+        "settles": "whether our numbers mean what we think. A match makes everything comparable; a mismatch finds the defect for 40 minutes instead of 17 hours"
+      },
+      {
+        "n": 2,
+        "what": "Fix the cost: find the 92x against the source's own 0.8B -- 679 s for the same 1,500 steps -- and remove what is removable",
+        "state": "probe data in hand: 11 step intervals, median 65 s, no trend over the interval",
+        "settles": "whether an arm is hours or a day, which decides whether any arm is runnable"
+      },
+      {
+        "n": 3,
+        "what": "Establish comparability: the source's linear-attention layers run on the fla fused kernel and ours fall back to torch",
+        "state": "measured: transformers warns 'The fast path is not available ... Falling back to torch implementation'",
+        "settles": "what part of any difference is kernel numerics rather than method, since the source's README states numbers compare only within one kernel stack"
+      },
+      {
+        "n": 4,
+        "what": "The decisive comparison: one arm at 0.6B, outside the fitted range, with 3 seeds because the gate is a 3-seed mean",
+        "state": "NOT BEFORE 1-3",
+        "settles": "whether the law extends below 0.8B"
+      }
+    ]
   }
 }

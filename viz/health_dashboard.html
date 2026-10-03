@@ -278,6 +278,55 @@ function render(st){
 
   let h = '';
 
+  /* ---- (0) what is not evidence, and what replaces it. Placed before everything else because a
+     number that has been withdrawn is the most important thing on the page: a reader who saw 0.5775
+     quoted elsewhere must be able to find out here that it no longer counts. ---- */
+  const q = sci.arm0_status || {};
+  if (q.verdict){
+    const quarantined = /QUARANTINED/i.test(q.verdict);
+    h += '<section class="panel"><h2><span class="pl">0</span>Arm 0 &mdash; withdrawn as evidence</h2>';
+    h += '<div class="figure" style="border-left:4px solid var(--fail)">'
+       + '<div style="font-size:var(--t-h);font-weight:650" class="w-FAIL">' + esc(q.verdict) + '</div>';
+    const reasons = q._four_independent_reasons || [];
+    if (reasons.length){
+      h += '<div style="margin-top:9px">';
+      reasons.forEach(r => {
+        const m = String(r).match(/^(\d+)\.\s*(.*)$/s);
+        h += '<div style="display:grid;grid-template-columns:22px 1fr;gap:6px;font-size:var(--t-small);'
+           + 'margin-bottom:6px"><div class="w-FAIL" style="font-family:var(--mono);font-weight:700">'
+           + esc(m ? m[1] : '&bull;') + '</div><div>' + esc(m ? m[2] : r) + '</div></div>';
+      });
+      h += '</div>';
+    }
+    if (q._any_one_is_sufficient)
+      h += '<div class="figcap"><b>Each reason is independently sufficient.</b> '
+         + esc(q._any_one_is_sufficient) + '</div>';
+    if (q._what_the_artefacts_still_are)
+      h += '<div class="figcap"><b>What is kept, and why.</b> ' + esc(q._what_the_artefacts_still_are)
+         + '</div>';
+    if (q._what_is_not_claimed)
+      h += '<div class="figcap"><b>What is not claimed.</b> ' + esc(q._what_is_not_claimed) + '</div>';
+    h += '</div>';
+
+    const fs = sci.from_scratch || {};
+    if ((fs.steps || []).length){
+      h += '<p class="lede" style="margin-top:4px">' + esc(fs._what || '') + '</p>';
+      h += '<table><caption>the chain, in the order that makes each step checkable by the next</caption>'
+         + '<thead><tr><th class="num">#</th><th>step</th><th>state</th>'
+         + '<th class="num">cost</th><th>what it settles</th></tr></thead><tbody>';
+      const stCol = s => /^(running|done)$/i.test(s) ? 'w-OK'
+                       : /^(NOT BEFORE|pending)/i.test(s) ? 'w-OPEN' : 'w-WARN';
+      (fs.steps || []).forEach(s => {
+        h += '<tr><td class="num">' + s.n + '</td><td>' + esc(s.what) + '</td>'
+           + '<td><span class="word ' + stCol(s.state) + '">' + esc(String(s.state).slice(0, 34))
+           + '</span></td><td class="num">' + esc(s.cost || '\u2014') + '</td>'
+           + '<td>' + esc(s.settles) + '</td></tr>';
+      });
+      h += '</tbody></table>';
+    }
+    h += '</section>';
+  }
+
   const a = st.arm || {};
   h += '<section class="panel"><h2><span class="pl">a</span>The arm on the card</h2>';
   h += '<p class="lede">The harness has no resume path, so an interrupted run costs all of its steps '
@@ -325,7 +374,10 @@ function render(st){
        + '<th class="num">releases</th><th class="num">loop gain</th></tr></thead><tbody>';
     sc.rows.forEach(r => {
       const gain = (r.v1_0 != null && r.best != null) ? (r.best - r.v1_0) : null;
-      h += '<tr class="' + (r.who === 'ours' ? 'ours' : '') + '"><td>' + esc(r.who) + '</td>'
+      const qz = r.status && /QUARANTINED/i.test(r.status);
+      h += '<tr class="' + (r.who === 'ours' ? 'ours' : '') + '"'
+         + (qz ? ' style="opacity:.62"' : '') + '><td>' + esc(r.who)
+         + (qz ? ' <span class="word w-FAIL">withdrawn</span>' : '') + '</td>'
          + '<td>' + esc(r.backbone) + '</td><td class="num">' + fmt(r.v1_0) + '</td>'
          + '<td class="num">' + (r.best == null ? MISS : fmt(r.best)) + '</td>'
          + '<td class="num">' + r.releases + '</td>'
