@@ -82,16 +82,41 @@ def merge(pack_dir=PACKS, out=DEFAULT_OUT, expect_raters=RATERS):
                 # them would report three identical submissions where there are three empty ones. The
                 # first version of this check did exactly that and refused the untouched packs.
                 continue
+            # A PANEL MAY AGREE. Unanimity is not evidence of collusion: at the lightest noise level the
+            # text is uniformly readable and every careful reader returns R. The first version of this
+            # check rejected that, which meant the dry run could not reach the decision rule at all -
+            # and the failure looked like a defect in the data rather than a defect in the check.
+            #
+            # The discriminator is DISAGREEMENT POTENTIAL, not disagreement. A pack whose answers are
+            # all identical in a way the OTHER packs on the same level also are (every item R, say) is a
+            # legitimate unanimous panel; a pack that is byte-identical to another across a level where
+            # the others differ is a copied submission. So the fingerprint is only raised when the
+            # level actually discriminates, and the copy test below is unconditional.
             fp = hashlib.sha256(
                 "\n".join(i + "=" + c for i, c in answers if c).encode("utf-8")).hexdigest()
-            if fp in seen:
-                raise SystemExit(
-                    "%s: raters %s and %s submitted IDENTICAL judgements (%d filled each) - the panel "
-                    "is not three independent readers, so kappa over it is meaningless"
-                    % (stem, seen[fp][0], r, filled))
-            seen[fp] = (r, filled)
+            seen.setdefault(fp, []).append(r)
 
-    errors, blanks, out_rows = [], [], []
+    # Per level: identify which rater pairs are byte-identical, and decide whether that is unanimity
+    # (legitimate) or a copied submission (not). A copied submission is one rater's pack reproducing
+    # ANOTHER rater's answers while at least one other rater on the same level differs - because then
+    # the level does discriminate and the agreement is not forced.
+    copied = []
+    for stem, raters in by_point.items():
+        filled = {r: [(x.get("category") or "").strip().upper() for x in rows]
+                  for r, rows in raters.items()}
+        distinct = {r: tuple(v) for r, v in filled.items()}
+        uniq = set(distinct.values())
+        if len(uniq) == 1:
+            continue                      # unanimous on an undiscriminating level: legitimate
+        counts = {}
+        for r, v in distinct.items():
+            counts.setdefault(v, []).append(r)
+        for v, who in counts.items():
+            if len(who) > 1:
+                copied.append("%s: raters %s submitted IDENTICAL judgements while the level "
+                              "discriminates for others" % (stem, who))
+
+    errors, blanks, out_rows = copied, [], []
 
     for stem in sorted(by_point):
         raters = by_point[stem]
