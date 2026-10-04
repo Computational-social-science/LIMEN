@@ -1,0 +1,141 @@
+{
+  "question_under_test": "Is the request clear enough to act on?",
+  "revision": "55cf4c4ebb4ebe31b2550e8bdf3bd21b99753851",
+  "methods": {
+    "noul (as specified)": {
+      "mean_pos": 0.5145,
+      "mean_neg": 0.4378666666666666,
+      "separation": 0.07663333333333333,
+      "accuracy_at_0.5": 0.5
+    },
+    "workaround (neutral A/B)": {
+      "mean_pos": 0.5751666666666666,
+      "mean_neg": 0.7116166666666667,
+      "separation": -0.13645000000000007,
+      "accuracy_at_0.5": 0.3333333333333333
+    }
+  },
+  "verdict": "noul DOES NOT cleanly separate the sets -> the card's warning is live for our items; use the documented workaround and disclose the deviation from the 3.1 wire format",
+  "rows": [
+    {
+      "probe_id": "c2_pos_01",
+      "polarity": "pos",
+      "state": "Hi, I was charged twice for my subscription this month and the second charge was not authorised. Please refund the duplicate charge.",
+      "noul_p_true": 0.7501,
+      "noul_c": 0.7501,
+      "workaround_p_true": 0.7321,
+      "workaround_c": 0.7321,
+      "workaround_argmax": "A"
+    },
+    {
+      "probe_id": "c2_pos_02",
+      "polarity": "pos",
+      "state": "My invoice for March shows a $40 line item I do not recognise. I need it explained and, if it is an error, removed.",
+      "noul_p_true": 0.4855,
+      "noul_c": 0.5145,
+      "workaround_p_true": 0.6837,
+      "workaround_c": 0.6837,
+      "workaround_argmax": "A"
+    },
+    {
+      "probe_id": "c2_pos_03",
+      "polarity": "pos",
+      "state": "I need my account access restored: the password reset email never arrives and I am locked out of the dashboard.",
+      "noul_p_true": 0.7085,
+      "noul_c": 0.7085,
+      "workaround_p_true": 0.7163,
+      "workaround_c": 0.7163,
+      "workaround_argmax": "A"
+    },
+    {
+      "probe_id": "c2_pos_04",
+      "polarity": "pos",
+      "state": "Our team's production service is returning errors for every request since 09:15 this morning. Please escalate this now.",
+      "noul_p_true": 0.1725,
+      "noul_c": 0.8275,
+      "workaround_p_true": 0.2979,
+      "workaround_c": 0.7021,
+      "workaround_argmax": "B"
+    },
+    {
+      "probe_id": "c2_pos_05",
+      "polarity": "pos",
+      "state": "The annual plan renewed today but I cancelled it last week. Please reverse the renewal and confirm by email.",
+      "noul_p_true": 0.3555,
+      "noul_c": 0.6445000000000001,
+      "workaround_p_true": 0.308,
+      "workaround_c": 0.692,
+      "workaround_argmax": "B"
+    },
+    {
+      "probe_id": "c2_pos_06",
+      "polarity": "pos",
+      "state": "I want to change the card on file for my subscription before the next billing date, which is in three days.",
+      "noul_p_true": 0.6149,
+      "noul_c": 0.6149,
+      "workaround_p_true": 0.713,
+      "workaround_c": 0.713,
+      "workaround_argmax": "A"
+    },
+    {
+      "probe_id": "c2_neg_01",
+      "polarity": "neg",
+      "state": "Something is wrong with my account. Please look into it and let me know what you find.",
+      "noul_p_true": 0.566,
+      "noul_c": 0.566,
+      "workaround_p_true": 0.6796,
+      "workaround_c": 0.6796,
+      "workaround_argmax": "A"
+    },
+    {
+      "probe_id": "c2_neg_02",
+      "polarity": "neg",
+      "state": "It is not working. Can you fix it?",
+      "noul_p_true": 0.6301,
+      "noul_c": 0.6301,
+      "workaround_p_true": 0.5561,
+      "workaround_c": 0.5561,
+      "workaround_argmax": "A"
+    },
+    {
+      "probe_id": "c2_neg_03",
+      "polarity": "neg",
+      "state": "I have a problem. Please advise.",
+      "noul_p_true": 0.2475,
+      "noul_c": 0.7525,
+      "workaround_p_true": 0.7418,
+      "workaround_c": 0.7418,
+      "workaround_argmax": "A"
+    },
+    {
+      "probe_id": "c2_neg_04",
+      "polarity": "neg",
+      "state": "There seems to be an issue somewhere. Thanks.",
+      "noul_p_true": 0.3045,
+      "noul_c": 0.6955,
+      "workaround_p_true": 0.6988,
+      "workaround_c": 0.6988,
+      "workaround_argmax": "A"
+    },
+    {
+      "probe_id": "c2_neg_05",
+      "polarity": "neg",
+      "state": "Please review my account and do the needful.",
+      "noul_p_true": 0.6693,
+      "noul_c": 0.6693,
+      "workaround_p_true": 0.7857,
+      "workaround_c": 0.7857,
+      "workaround_argmax": "A"
+    },
+    {
+      "probe_id": "c2_neg_06",
+      "polarity": "neg",
+      "state": "Things are not as they should be. Let me know.",
+      "noul_p_true": 0.2098,
+      "noul_c": 0.7902,
+      "workaround_p_true": 0.8077,
+      "workaround_c": 0.8077,
+      "workaround_argmax": "A"
+    }
+  ]
+}
