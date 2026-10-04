@@ -121,7 +121,7 @@ def main() -> int:
 
     import torch
     import laya
-    from huggingface_hub import constants as hf_constants
+    from huggingface_hub import constants as hub_constants
     from laya import Router
 
     print("=" * 78)
@@ -132,7 +132,7 @@ def main() -> int:
     print(f"torch        : {torch.__version__}  cuda_available={torch.cuda.is_available()}")
     if torch.cuda.is_available():
         print(f"gpu          : {torch.cuda.get_device_name(0)}")
-    print(f"hf endpoint  : {hf_constants.ENDPOINT}")
+    print(f"hf endpoint  : {hub_constants.ENDPOINT}")
     print(f"revision pin : {args.revision}")
 
     router = Router(device=args.device, revision=args.revision)

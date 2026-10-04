@@ -150,6 +150,37 @@ improving the JEV link itself — its kernels, its optimiser, its throughput, it
 than using it to measure something else. That is instrument-tinkering, and it belongs to a different
 programme (it is what R1 did).
 
+## Toolboxes are not contamination (2026-10-04)
+
+**The purification in this document is about the research OBJECT — the direction — and about nothing
+else.** AGENTS, MCP servers, harnesses, verifiers, knowledge-graph tooling, formal-verification
+substrates: these are **research-productivity infrastructure** and are **to be used**, not retired.
+
+Owner's directive, verbatim in intent: **do not refuse accessible toolboxes — AGENTS / MCP / HARNESS
+and the like — that productively serve research productivity.**
+
+**The distinguishing question is one line:** *does this artefact assert what we are working on, or does
+it help us do the work?*
+- It asserts an object → it is drift, and the retirement rules above apply.
+- It helps do the work → **it is a toolbox; keep it, use it, and do not spend programme time polishing
+  it** (the same posture as the JEV link: instrumentation, not an object of study).
+
+**This reverses an earlier over-reach.** `D:/2026-AI4S/AGENTS.md` (the multi-agent / MCP / wiki system
+description) was tentatively raised as "historical material, possibly to be handled". **It is not.** It
+describes tooling. It stays, and where its tooling works it should be used.
+
+**Known live toolboxes (checked 2026-10-04):** Hermes MCP — `arxiv` (21 tools), `semantic-scholar`
+(37 tools), `lwow`; project-declared MCP — analysis, deepxiv, filesystem, github, memory, pandoc,
+playwright, repl, sequential-thinking, tavily; global substrates — BootLoops (`E:/2026-AI4S/bootloops`,
+`~/.bootloops/config.json`), Lean 4 (`~/.elan`), the `understand-anything` plugin.
+
+**Two rules for using them, so the posture stays honest:**
+1. **A toolbox must be verified reachable before it is counted on.** A declaration in a document is not
+   an available tool; a call that returns is. Where a declared server turns out not to be wired into
+   this runtime, say so rather than assuming it.
+2. **A toolbox report is not evidence.** A search, a plot, or a verifier's `PASS` is a tool result;
+   it enters a claim only with its provenance attached.
+
 ## Status of the live object
 
 **Phase I is under way — instrument work only; no hypothesis has been tested.**

@@ -42,7 +42,21 @@ outcomes are both results:
 - **H1.1 and H1.2 both supported** → noise is a material disturbance of understanding **and** control.
 - **H1.1 supported, H1.2 not supported** → errors rise but confidence tracks them; **the control law is
   partially intact.** This is not a failed study; it is the more interesting of the two outcomes for
-  any system that gates on confidence.
+  any system that gates on confidence. *(Mechanistic support, found 2026-10-04: arXiv:2609.35475,
+  "Spontaneous Context Restoration" — models sometimes recover from corrupted inputs, which is one way
+  this branch arises.)*
+
+**⚠️ Pre-emption notice — mandatory before submission.** A mechanism-level search of the 2026 arXiv
+frontier (`docs/GAP_VERDICT.md`) found that **both mechanisms this protocol relies on are already
+published**: the "confidently wrong bypasses abstention" motivation (arXiv:2608.09768) and the
+"gating magnifies disparity across groups" result (arXiv:2010.14134, Jones et al. 2020). The channel
+space is likewise occupied (arXiv:2602.11174 "The Script Tax"; arXiv:2606.20770 "orthographic bias").
+
+**Consequently H1.1 is demoted in the text, and the contribution this report leads with is the
+two-factor interaction** — whether added noise changes the *channel ordering* of coverage, rather than
+merely lowering every channel. `SilentError@τ` and `Coverage@ε` are presented as **inherited
+instrumentation, cited and re-measured**, never as novelties. See `docs/GAP_VERDICT.md` for the quote
+behind each pre-emption and for the narrowed claim that survives.
 
 ## 2. Why this design and not an easier one
 
