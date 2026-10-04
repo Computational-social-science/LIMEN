@@ -33,10 +33,42 @@ among admissible thresholds, so the reported coverage is the best coverage the b
 gap between any other admissible choice and this one is **bounded by monotonicity**, not by luck. It is
 also the least committal: it is the threshold closest to answering, so it reports the most behaviour.
 
-**A machine-checked statement of the mathematical content is attempted at
-`E:/2026-AI4S/lean-nhb` (`docs/LEAN_FORMALIZATION_STATUS.md`).** It is **not** offered as evidence: that
-build does not currently compile and contains **no** `sorry`. The claim below stands on the
-specification, not on the Lean artifact, and the Lean project is reported honestly as incomplete.
+### The mathematical content is now machine-checked
+
+The `lean-nhb` project builds clean: **12 theorems, zero errors, zero `sorry`**, and every one of the
+twelve is verified by Lean's own kernel via `#print axioms` (`scripts/check_lean_axioms.py`), which
+fails on `sorryAx` — the axiom Lean substitutes for a proof it could not find. A grep for the literal
+word would not do: it proves a string is absent, not that a theorem is proved.
+
+**What is proved, and what is not.** Two results carry this rule:
+
+| Result | Statement |
+|---|---|
+| `admissible_mono` | the admissible set `{tau : Risk(tau) <= eps}` is upward closed — so an admissible threshold is **never unique**, which is why a tie-break must be declared at all |
+| `least_admissible_maximises_coverage` | among admissible thresholds, the **least** one maximises `Coverage@eps` |
+
+**The second is the substantive one**, because it is what makes the rule *optimal* rather than merely
+conventional. Getting it right required a correction that is worth recording: a first attempt took
+`a <= b` as a hypothesis and left both `Admissible` hypotheses **unused** — Lean reported them as
+warnings. That version was true but was not the claim: it said any threshold dominates any smaller
+one, an ordering that holds for every pair whether or not either is admissible, and so said nothing
+about admissibility. In the theorem above the ordering is **derived** from least-admissibility, which
+is the only way the budget can do any work at all.
+
+**One limit, stated rather than glossed.** `least_admissible_is_at_least_as_good` shows the guarantee
+is a maximum, **not a strict maximum**: a stricter threshold can admit exactly as much when no
+observation's confidence lies between the two. The rule must therefore be reported as "maximises
+coverage among admissible thresholds", never as "maximises it strictly".
+
+**What is NOT proved, and cannot be.** Nothing here says noise changes any of these quantities. Every
+theorem follows from the protocol's definitions alone — a finite sample of (confidence, correct)
+pairs, the confidence rule, and the gate. The empirical claim that orthographic noise moves the
+rate–error curve is carried as a **named premise** in the manuscript, not as something a theorem can
+establish. A formalization that asserted it would be proving the result by fiat.
+
+**Authority for this section:** `docs/LEAN_FORMALIZATION_STATUS.md`. The tie-break rule itself is
+unchanged by the formalization; what changed is that its justification is now machine-checked rather
+than asserted.
 
 ### The zero-floor case is separately flagged, because it destroys the estimate's meaning
 

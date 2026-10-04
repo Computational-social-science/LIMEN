@@ -539,7 +539,26 @@ Phase I omits $s$ (always $s_{\mathrm{en}}$).
 > **A reported `Coverage@ε` of zero in that situation is a fact about the dev set, not about the model,
 > and must never be read as "the model was perfectly selective."**
 >
-> Authority: `docs/PHASE_I_AMENDMENT_2.md` §B1.
+> **v1.3 ADDENDUM — the rule's optimality is now machine-checked, and one limit is named.** The
+> `lean-nhb` formalisation builds clean (**12 theorems, zero errors, zero `sorry`**, each verified by
+> Lean's kernel via `#print axioms`, which fails on `sorryAx`). Two of its results bear directly on this
+> rule. `admissible_mono` proves the admissible set is **upward closed**, so an admissible threshold is
+> never unique — the premise of the problem this rule solves. `least_admissible_maximises_coverage`
+> proves that **among admissible thresholds the least one maximises `Coverage@ε`**, which is what
+> licenses calling the rule *optimal* rather than merely conventional.
+>
+> **The guarantee is a maximum, not a strict maximum.** `least_admissible_is_at_least_as_good` shows
+> that a stricter threshold may admit exactly as much when no observation's confidence lies between the
+> two. So the rule is to be reported as *"maximises coverage among admissible thresholds"* and **never**
+> as *"maximises it strictly"* — the latter is an overclaim the data can refute.
+>
+> **What the formalisation does NOT establish, and cannot.** Every theorem follows from the definitions
+> alone — the gate, the budget, a finite sample. There is **no theorem here saying that noise changes
+> any of these quantities**; that is the empirical claim, carried as a named premise in §4.4, not
+> something a theorem can prove. The rule itself is unchanged by the formalisation: what changed is that
+> its justification is machine-checked rather than asserted.
+>
+> Authority: `docs/PHASE_I_AMENDMENT_2.md` §B1 · `docs/LEAN_FORMALIZATION_STATUS.md`.
 
 ---
 
