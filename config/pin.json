@@ -1,16 +1,13 @@
 {
   "_what": "Pinned revision record for the Phase I instrument. Satisfies pre-registration item 4 (model ID + commit + SHA256). Written 2026-10-04 from a real local run, not from documentation.",
   "_authority": "CURRENT_OBJECT.md; reasoning in docs/JEV_TOOLBOX_SELECTION.md; measurement in docs/PREDICT_SMOKE_TEST.md",
-
   "model_id": "convaiinnovations/laya",
   "checkpoint": "english-root",
   "license": "Apache-2.0 (code and weights)",
   "publisher": "Convai Innovations",
   "architecture": "ModernBERT-large, non-autoregressive, 421M parameters, 512-token context",
-
   "resolved_revision": "55cf4c4ebb4ebe31b2550e8bdf3bd21b99753851",
   "_revision_note": "The package's own reviewed pin. The mirror's main HEAD is 7b928d82c1e5b70ab3b1c70f2b5b0d8bb1cb76bc; the run resolves to 55cf4c4e, and the run prints the resolved revision itself.",
-
   "weights": {
     "model.safetensors": {
       "bytes": 842609210,
@@ -18,7 +15,6 @@
     },
     "_files_downloaded": 5
   },
-
   "runtime": {
     "package": "laya",
     "version": "0.3.26",
@@ -30,15 +26,13 @@
     "gpu": "NVIDIA GeForce RTX 4070, 12282 MiB",
     "api_key_required": false
   },
-
   "how_to_run": {
     "command": "unset PYTHONPATH && export HF_ENDPOINT=https://hf-mirror.com && C:/Python314/python.exe smoke_predict.py",
-    "workdir": "D:/2026-AI4S/autoresearch/measurement",
+    "workdir": "E:/2026-AI4S/autoresearch/measurement",
     "offline_verified": "HF_HUB_OFFLINE=1 produces a byte-identical stdout in 7 s wall time - the confirmatory path needs no network after the first download",
     "required_workaround_pythonpath": "A foreign venv on PYTHONPATH raises ImportError: cannot import name '_regex'. Unset PYTHONPATH; do not reinstall anything.",
     "required_workaround_endpoint": "huggingface.co times out on this host (measured); https://hf-mirror.com works."
   },
-
   "interface_facts_measured": {
     "probabilities": "returned rounded to 4 decimal places",
     "probabilities_available_for": "choice and score; a noul returns a scalar P(true) plus a confidence",
@@ -46,14 +40,12 @@
     "truncation": "usage reports no truncation and no collapsed options",
     "non_blocking_warning": "one shipped temperature entry (choice:11+) is clamped out of range - it applies to no question in the smoke test"
   },
-
   "open_instrument_defect": {
     "what": "The noul primitive is reported by the model card to sometimes follow its option labels rather than the state. It reproduced on this machine.",
     "evidence": "3/3 items returned a confident 'no' for escalate (c = 0.8783, 0.9698, 0.9358) INCLUDING an item written to be clearly vague and therefore escalate-worthy. The ok question also failed to track the state sensibly: the one clearly actionable item was the only sub-0.5 reading.",
     "consequence": "Pin calibration C2 is now MANDATORY, not optional. Both Phase I noul questions (ok, escalate) are affected. The documented workaround - ask the same question as a two-option choice with neutral keys - must be evaluated on dev and frozen before the confirmatory run.",
     "status": "OPEN. Not fixed, not worked around. Recorded so no confirmatory run starts on an untested noul."
   },
-
   "what_this_pin_does_not_establish": [
     "It is not evidence for any protocol hypothesis; it fixes the instrument.",
     "It is not a comparability claim against any other model, hosted or local.",

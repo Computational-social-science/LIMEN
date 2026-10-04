@@ -25,7 +25,7 @@ PIN
 RUN (this host reaches HuggingFace only through hf-mirror.com; no API key anywhere)
     unset PYTHONPATH
     export HF_ENDPOINT=https://hf-mirror.com
-    C:/Python314/python.exe D:/2026-AI4S/autoresearch/measurement/smoke_predict.py
+    C:/Python314/python.exe E:/2026-AI4S/autoresearch/measurement/smoke_predict.py
 
     The first run downloads the checkpoint into the HuggingFace cache (~808 MB);
     every run after that is offline. `unset PYTHONPATH` is defensive: if the shell
