@@ -1,0 +1,65 @@
+{
+  "instrument": "convaiinnovations/laya",
+  "variant": "root (English). This revision also ships multilingual/ and typed-decisions/ subtrees; the ROOT is the pinned one.",
+  "revision": "55cf4c4ebb4ebe31b2550e8bdf3bd21b99753851",
+  "revision_kind": "immutable commit sha, as pinned by the `laya` package's PINNED_REVISIONS; NOT a branch",
+  "revision_drift_note": "Hub `main` had moved to 7b928d828b7b0e022f929d9bd2e44165aa270148 (2026-10-03) at pin time. main is NOT the pin, and a run must not follow main.",
+  "endpoint": "https://hf-mirror.com",
+  "local_snapshot": "C:/Users/Administrator/.cache/huggingface/hub/models--convaiinnovations--laya/snapshots/55cf4c4ebb4ebe31b2550e8bdf3bd21b99753851",
+  "file_count": 5,
+  "total_bytes": 846195574,
+  "files": [
+    {
+      "path": "model.safetensors",
+      "bytes": 842609210,
+      "sha256": "891102d372688fc2a094dac56a384bc537b87c63f21f9f3dac0be2b7cbc8d86c"
+    },
+    {
+      "path": "rl_agent_config.json",
+      "bytes": 745,
+      "sha256": "ae287b56bbcf5f8c4f4541ae9dfd00c914c4c48b940b8398c3058af37ba92bbd"
+    },
+    {
+      "path": "encoder/config.json",
+      "bytes": 2083,
+      "sha256": "bf3ab80598fdccf414855a2ce80f22859e4492d06ca8a62ddd1cfb63972f8979"
+    },
+    {
+      "path": "tokenizer/tokenizer.json",
+      "bytes": 3583228,
+      "sha256": "6c8aaa9a542084f2457eab775d4eeb51f92a70c0fd9de28d5edb0ddec3c08d30"
+    },
+    {
+      "path": "tokenizer/tokenizer_config.json",
+      "bytes": 308,
+      "sha256": "50044de60daaa73df97d262e15a40d4faf0160e7d742df64b377877a1320dd12"
+    }
+  ],
+  "verified": {
+    "runner": "measurement/smoke_predict.py",
+    "resolved_revision": "55cf4c4ebb4ebe31b2550e8bdf3bd21b99753851",
+    "device": "cuda",
+    "result": "PASS - 3 items, per-option probabilities returned, state_tokens_dropped=0, truncated=false",
+    "verified_at": "2026-10-04T15:32:19"
+  },
+  "shipped_temperature_map": {
+    "entries": {
+      "choice:3-5": 1.7601518630981445,
+      "choice:6-10": 1.0000158548355103,
+      "score:3-5": 1.2514300346374512,
+      "noul:2": 1.983399510383606,
+      "choice:11+": 0.10058280825614929,
+      "choice:2": 1.9063563346862793
+    },
+    "out_of_range": {
+      "choice:11+": 0.10058280825614929
+    },
+    "package_behaviour": "an out-of-range entry is clamped to 0.5 at load, with the warning 'Treat confidence from the affected entries as uncalibrated'",
+    "bearing_on_phase_I": "EXACTLY ONE entry is out of range: choice:11+ = 0.1006, below the 0.5 floor. The Phase I bank uses 2-4 options per choice question, so the entries actually exercised are choice:2 (1.906) and choice:3-5 (1.760) - both in range. The invalid entry is NOT exercised by Phase I. However the warning is emitted at load for the whole map, so it appears in every run log and must not be read as a defect in our runs. Recorded because a reader who sees the warning should find this note.",
+    "consequence": "the dev-fitted temperature refit (C1) is mandatory and regenerates this map on dev."
+  },
+  "drift_record": {
+    "note": "a second, LARGER copy was downloaded at main=7b928d82 (39 files, 2.37 GB) before the package pin was noticed. It is NOT the pin and no runner uses it.",
+    "path": "E:/2026-AI4S/models/laya"
+  }
+}

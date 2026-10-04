@@ -106,9 +106,35 @@ Local inference only; no API on the confirmatory path.
    workaround is decided on dev by measurement and frozen in the amendment — because **changing the
    primitive changes what is measured**.
 
-**The pin is not yet complete.** The revision hash and per-file sha256 are not recorded, so
-pre-registration item 4 is unsatisfied and no confirmatory run may start. This is stated as a defect of
-the current state, not as a plan.
+**The pin is COMPLETE and verified.** At immutable revision
+**`55cf4c4ebb4ebe31b2550e8bdf3bd21b99753851`** — the revision the `laya` package pins, not the
+branch — with **per-file sha256 for all 5 files** recorded in `config/pin_laya.json` (846.20 MB;
+`model.safetensors` = `891102d372688fc2…`). `measurement/smoke_predict.py` was then run **on CUDA at
+that revision** and returned per-option probabilities for three hand-written items with
+`state_tokens_dropped: 0` and `truncated: false`. **The pin is therefore verified by execution, not
+merely by hash.**
+
+**Three facts about the revision that a reader needs:**
+
+1. **The revision carries three variants** — `model.safetensors` (root), `multilingual/`, and
+   `typed-decisions/`. The **root** is what is pinned; saying "Laya" without naming the variant would
+   be ambiguous.
+2. **Hub `main` had drifted** to `7b928d82…` (2026-10-03). It is **not** the pin and no runner follows
+   it. The root weights happen to be byte-identical across the two (`891102d372688fc2…`); the
+   surrounding files differ. The drift is recorded rather than ignored, because a pin that silently
+   tracks a branch is not a pin.
+3. **The shipped temperature map contains exactly one out-of-range entry** — `choice:11+` = `0.1006`,
+   below the package's `[0.5, 5]` floor, which the package clamps to `0.5` while warning *"Treat
+   confidence from the affected entries as uncalibrated."* **Phase I's bank uses 2–4 options, so the
+   entries it exercises are `choice:2` (1.906) and `choice:3-5` (1.760), both in range — the invalid
+   entry is not reachable by this design.** But the warning fires at load for the whole map, so it
+   appears in every run log and **must not be read as a defect in our runs**.
+
+**On the refit, restated because the above sharpens it.** Fact 3 shows the shipped map is not
+universally valid, which is why the dev-fitted temperature refit (C1) is a **mandatory** pre-run step
+rather than a nicety: it replaces the shipped map with one fitted on dev and frozen before the
+confirmatory run. The protocol's confidence *rule* (`c = max_j p_j` for choice; `c = max(p, 1-p)` for
+noul) is unchanged by it.
 
 ## 4. Materials
 
