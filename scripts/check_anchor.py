@@ -82,6 +82,13 @@ EXTERNAL_TOOLCHAIN_MARKERS = (
     "the engine", "the card", "the hub", "the package", "the model repository",
     "model.safetensors", "rl_agent_config", "tokenizer_config", "tokenizer.json",
     "encoder/config", "skill_root", "output contract",
+    # The Lean formalisation is a SIBLING TOOLCHAIN project, exactly like paper2agent_repo: it is a
+    # separate repository (see $NHB_LEAN_ROOT) with its own lakefile, and a document describing it
+    # necessarily names paths inside it. Requiring those to resolve relative to THIS repository would
+    # be wrong in the same way requiring `paper2agent_repo/scripts/x.py` to resolve here would be.
+    # Marked by name so the exemption is auditable rather than a blanket path filter. The markers are
+    # matched per line, so a line that PROMISES a lean-nhb path must also NAME lean-nhb.
+    "lean-nhb", "lean formalisation", "lean formalization", "NHB.PhaseI", "lakefile",
 )
 
 # A path named inside a RETIREMENT record is a historical statement, not a promise. The defect this
