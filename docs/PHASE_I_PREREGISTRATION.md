@@ -18,7 +18,7 @@ Governing document: `protocol/NHB_Orthographic_Channels_JEV_Research_Protocol.md
 | 1 | English only; no script factor in confirmatory tests | **FIXED NOW** | `s = s_en` for every confirmatory cell. No script factor exists in Phase I. No cross-script claim may be made from Phase I evidence (§7, §8). |
 | 2 | Typo classes and λ rates fixed | **PARTLY FIXED** | Classes FIXED: adjacent-key substitution (QWERTY), character transposition, deletion, insertion. Rates **PENDING** the §4.2 readability calibration (see "Open items"). |
 | 3 | Generator seed policy | **FIXED NOW** | The generator is a pure function of `(item_id, λ, seed)`. Seeds are integers. The confirmatory run uses `noise_seed ∈ {0,1,2}` per item and λ; every `(item_id, λ, seed)` triple appears exactly once. The seed list is frozen with the item bank. |
-| 4 | Model ID + commit + SHA256 | **FIXED NOW** | `E:/2026-AI4S/calib/rsi_jev_v1_0_08b`; tower sha256 `60f8ea11…cff67`, scorer sha256 `22cb924e…11a06`, directory manifest sha256 `f9dcc09b…b6675d2`. Full record: `docs/PHASE_I_PIN.md`. |
+| 4 | Model ID + commit + SHA256 | **INCOMPLETE** ⚠️ | **CORRECTED by Amendment 1 §A1.** The retired RSI-Jev 0.8B checkpoint previously recorded here was **wrong** — it was an archived artefact of a retired object, asserted as `FIXED NOW`. The live Phase I instrument is `convaiinnovations/laya` (English root, Apache-2.0, 421 M, revision `55cf4c4e…`). The pin is **NOT frozen**: full revision hash and per-file digests are pending first download. Blocks confirmatory `predict → JSONL`. Authority: `docs/PHASE_I_PIN.md`, `docs/PHASE_I_AMENDMENT_1.md` §A1. |
 | 5 | Q₀ frozen (`intent`, `ok`, `escalate`) | **FIXED NOW** | The three questions of §3.1 are frozen verbatim in the item bank. `intent` is `choice` with per-item `criteria`; `ok` and `escalate` are `noul`. The primary endpoint question is `intent`. |
 | 6 | Confidence rule frozen | **FIXED NOW** | choice: `c = max_j p_j`; noul: `c = max(p, 1-p)`. No alternative functional is computed, reported, or substituted. |
 | 7 | τ ∈ {0.80, 0.90}; ε = 0.05 | **FIXED NOW** | Both τ values are reported everywhere. `Coverage@0.05` uses `τ*` fitted on **dev only** — never on test, never refitted after seeing test. |
@@ -45,12 +45,21 @@ items for readability; select the two levels that bracket the criterion. Record 
 the readability evidence. **This is calibration of an instrument, not a test of a hypothesis, so it
 runs before the pre-registration is sealed and its data is excluded from the confirmatory test set.**
 
-### O2 — N_item (§4.3): requires the discordance rate π_d
+### O2 — N_item (§4.3): **RESOLVED by Amendment 1 §A2** ✅
+
+> **FROZEN: `N_test = 652` items · item bank = `932` items · δ = 5 absolute pp · α = 0.05 two-sided · power = 0.80 · McNemar on the item.**
+>
+> Set by the pilot measurement **π_d = 0.2083** (25/120, Wilson 95 % CI [0.145, 0.289]), computed with
+> **this document's own formula** — which was independently re-implemented and reproduces the table
+> below exactly. Derivation, self-consistency check (MDE at N = 652 is 5.01 pp), and the handling of the
+> **zero-floor** `SilentError@0.9` endpoint are in `docs/PHASE_I_AMENDMENT_1.md` §A2–§A3.
+>
+> **The table below is retained as the derivation's provenance, not as an open item.**
 
 The protocol sets N by power for detecting (a) a **≥5 absolute-point** mid-vs-clean error increase and
 (b) a `SilentError@0.9` increase, at **80% power**. The design is **paired** — the same items appear
 under λ=0, lo, mid — so the correct test is **McNemar**, and its required N depends on the
-**discordance rate** π_d (the share of items that flip), which is **not yet measured**.
+**discordance rate** π_d.
 
 Analytic requirement, two-sided α = 0.05, power = 0.80, δ = 0.05:
 
