@@ -69,6 +69,19 @@ orthographic channel a *structural* variable.
 > perturbation regime changes the channel ORDERING of a gated decision system — whether added noise
 > re-ranks the channels' coverage, rather than merely lowering everyone's.**
 
+**Sharpened by the classical frame (`docs/THEORETICAL_FOUNDATIONS.md`, §C-3).** Each (channel, λ) pair
+defines a **rate–error curve** — coverage against residual error, which is exactly what the protocol's
+`Coverage@ε` / `SilentError@τ` pair samples. The claim above then has a geometric name:
+
+- **parallel shift** — noise lowers every channel's curve by a similar amount and the ordering is
+  preserved; channel differences are static, and noise is a scalar tax on top of them;
+- **crossing** — noise changes which channel sits higher; channel differences are **regime-dependent**,
+  and any static channel ranking is invalid outside the regime it was measured in.
+
+**The programme claims crossing, and crossing is falsifiable on the fitted curves.** This is stronger
+than the earlier phrasing because it is a criterion, not a direction: two curves can be compared without
+needing a significant interaction to be located first.
+
 That is a **two-factor interaction** (channel × noise) on a **control-law** estimand, in a
 **generation-free typed-decision** subject, on a **pre-registered** locked split. Interactions are
 where pre-emption is least likely and where the statistical design earns its keep: a main-effect design

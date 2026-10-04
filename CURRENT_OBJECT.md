@@ -37,6 +37,16 @@ retirements below.
 `Coverage@ε(λ)` — share of items answered while holding accepted-item error at ≤ ε. Plain accuracy is
 not the endpoint; the control law is.
 
+**Theoretical frame (2026-10-04).** Shannon's noisy-channel coding theorem plus the cybernetics
+classics (Ashby's requisite variety; Conant & Ashby's good-regulator theorem; Wiener) are the
+programme's foundational reference frame — **and it is load-bearing, not decorative.** Under it the gate
+`g_τ` is a code, `Coverage@ε` is the rate, `SilentError@τ` is the residual error, and the programme's
+surviving claim becomes a **geometric one: do the channels' rate–error curves shift in parallel under
+noise, or do they cross?** Mapping, four concrete changes, and five explicit refusals:
+`docs/THEORETICAL_FOUNDATIONS.md`. **The frame supplies no empirical content** — nothing about an LLM's
+typo behaviour follows from a theorem about the existence of codes, and "capacity" may only be used as
+"effective capacity estimated from the observed rate–error curve".
+
 ---
 
 ## Retired — do not work on these
