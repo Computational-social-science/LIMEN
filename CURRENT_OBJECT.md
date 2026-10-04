@@ -129,9 +129,22 @@ These were built during R1 but are not about R1's object. The current object nee
 
 ## Status of the live object
 
-**Not yet started.** The protocol is a draft for staged pre-registration (version 1.1). As of
-2026-10-04 no Phase I artefact exists: no pinned checkpoint recorded with commit and SHA256, no item
-bank, no `N_en` typo generator, no JSONL, no analysis. The work ahead is the protocol's §13 runbook.
+**Phase I is under way — instrument work only; no hypothesis has been tested.**
 
-**Nothing in this repository is cited as evidence for any claim in the protocol.** The protocol
-carries its own pre-registration (§12) and its own artefact freeze (§4.6).
+| Step (§13 runbook) | State | Record |
+|---|---|---|
+| 1. Pin System One checkpoint | **DONE** | `docs/PHASE_I_PIN.md` — the 0.8B release, tower sha256 `60f8ea11…cff67`, scorer `22cb924e…11a06`, manifest `f9dcc09b…b6675d2`. Independently reproduced on this machine (0.6180 vs its recorded 0.6175, a one-question difference in 2,000). |
+| 2. English intent items + gold | **NOT STARTED** | The bank is new work; no existing corpus on this machine supplies it (see the pre-registration, O3). |
+| 3. `N_en` noise generator | **NOT STARTED** | Classes fixed (QWERTY-adjacent substitution, transposition, deletion, insertion); λ rates pending a readability calibration (O1). |
+| 4. `predict → JSONL` | **NOT STARTED** | Schema is the protocol's §3.5; no earlier code produces it. |
+| 5–6. Fit τ\*, test H1.1–H1.3 | **NOT STARTED** | N pending a pilot measurement of the discordance rate and the clean SilentError baseline (O2). |
+| 7. Freeze all artefacts | **NOT STARTED** | — |
+
+The Phase I pre-registration is drafted at `docs/PHASE_I_PREREGISTRATION.md`: **nine of the twelve
+§12 items are FIXED NOW**, and three are **PENDING** because the protocol's own sequencing requires a
+measurement first (λ rates from a readability calibration; N from a pilot discordance rate; the item
+bank). Nothing PENDING may be guessed later and called pre-registered — each must be frozen by an
+amendment filed **before** the confirmatory run, naming the measurement that set it.
+
+**Nothing in this repository is cited as evidence for any claim in the protocol.** The protocol carries
+its own pre-registration (§12) and its own artefact freeze (§4.6).
