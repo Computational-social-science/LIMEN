@@ -98,6 +98,17 @@ cannot see it, which is exactly why it is still open.
 
 ## 5. Consequences for the programme — the honest list
 
+> **⚠️ POSTURE CORRECTED 2026-10-04.** The list below was written under the assumption that a
+> pre-emption bars novelty. The programme owner corrected that: **published ≠ correct**, and
+> challenging a published conclusion is itself the gap sought. Pre-emption is therefore **not a bar to
+> novelty but the obligation to engage** — and the engagement is where the contribution lives. The
+> pre-emptions in §1–§3 stand as **fact**; what changes is that they are **claimants to be tested**,
+> not authorities to defer to. Full corrected posture and the six-question review instrument:
+> `docs/CRITICAL_REVIEW_PROTOCOL.md`. The most concrete instance: treating an abbreviation's polysemy
+> as hallucination merges **fabrication** with **a legitimate reading that disagrees with the
+> annotator's intent** — two constructs with different signatures, measurably separable, and merged in
+> the published operationalisation.
+
 1. **Phase I, as written, is not a gap.** Its own text already concedes this (*"necessary infrastructure
    science … not a diluted substitute for Phase II"*). The Stage 1 must **state that plainly**, cite the
    pre-emptions above, and present Phase I as **instrument validation for the interaction test** —

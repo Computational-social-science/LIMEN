@@ -191,6 +191,35 @@ playwright, repl, sequential-thinking, tavily; global substrates — BootLoops (
 2. **A toolbox report is not evidence.** A search, a plot, or a verifier's `PASS` is a tool result;
    it enters a claim only with its provenance attached.
 
+## Published work is a claimant or an instrument — never an authority (2026-10-04)
+
+**Owner's directive, verbatim in intent:** *not every conclusion or mechanism in SCIENCE/NATURE
+literature holds; treating the polysemy of an abbreviation as LLM hallucination is precisely a
+conclusion we want to challenge — and exactly the scientific gap we are after, for critical review.*
+
+**A published result enters this programme in one of exactly two roles, and the role must be declared:**
+
+- **an instrument** — a tool or method we use (a calibration procedure, an estimator, a benchmark). It
+  is cited with its **provenance**.
+- **a claimant** — an assertion we are testing. It is cited with its **scope condition**.
+
+**It is never an authority.** The inference *published ⇒ correct* is forbidden, and a venue is not
+evidence.
+
+**Consequence for the kind of gap this programme seeks.** The gap is not "nobody measured X" (a coverage
+gap); it is **"the published X is mis-specified, and here is the measurement that shows where its
+signature and its target come apart"** — a construct/taxonomic gap. Pre-emption is therefore **not a bar
+to novelty but the obligation to engage**, and `docs/GAP_VERDICT.md` is amended accordingly.
+
+**The worked instance, because it is our own object:** classifying an abbreviation's polysemy as
+*hallucination* merges **fabrication** with **a legitimate reading that disagrees with the annotator's
+intent**. Being different constructs they have different signatures, and the merge is measurable — the
+review instrument is `docs/CRITICAL_REVIEW_PROTOCOL.md`.
+
+**Drift signal for this rule:** any live document that imports a published *conclusion* into this
+programme's premises without declaring it a claimant, or that treats a venue as evidence of
+correctness.
+
 ## Status of the live object
 
 **Phase I is under way — instrument work only; no hypothesis has been tested.**

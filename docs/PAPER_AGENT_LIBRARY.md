@@ -56,9 +56,23 @@ on turning papers into agents, agent failure modes, agentic data) are about the 
 reference frame — converting them would build agents about agents, not serve the science. The
 NeurIPS/ICLR/ACL/AAAI/EACL items are outside the requested venue family.
 
-## 3. What the agents are for — the three questions they must answer
+## 3. What the agents are for — ⚠️ SUPERSEDED 2026-10-04
 
-Recorded so the library does not become a shelf:
+> **This section was written under a posture the programme owner has since corrected.** It treated the
+> papers as **reference frames to adopt**. They are instead **claimants to be tested**: published ≠
+> correct, and challenging a published conclusion *is* the gap the programme seeks. The library's
+> purpose is therefore **interrogation**, not background reading.
+>
+> **The replacement is `docs/CRITICAL_REVIEW_PROTOCOL.md`** — six questions per paper (claim,
+> mechanism, operationalisation, scope, overreach, our entry), with an explicit discrimination check: a
+> paper that survives all six as well-scoped is **not** a gap. The three questions below survive only
+> as *topics* for those six; they are no longer the instrument.
+>
+> The worked instance of the correction: **treating an abbreviation's polysemy as hallucination**
+> merges fabrication with a legitimate reading that disagrees with the annotator's intent — two
+> constructs with different signatures, and the merger is measurable.
+
+**Three topics the interrogation should reach (retained from the superseded framing):**
 
 1. **Calibration.** Is the confidently-wrong failure measured the way we intend to measure it, and has
    anyone already run the experiment our H1.2 proposes? (Papers 1, 2, 4)
