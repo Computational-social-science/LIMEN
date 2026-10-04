@@ -1,0 +1,78 @@
+{
+  "seed": 0,
+  "n_per_level": 60,
+  "levels": [
+    {
+      "role": "lo",
+      "lambda_target": 0.05,
+      "wer": 0.2159,
+      "word_recoverability": 0.9362,
+      "char_lost": 0.0011,
+      "sentence_recoverability": 0.9583,
+      "realised_edit_rate": 0.0503
+    },
+    {
+      "role": "lo",
+      "lambda_target": 0.06,
+      "wer": 0.2467,
+      "word_recoverability": 0.9168,
+      "char_lost": 0.001,
+      "sentence_recoverability": 0.9417,
+      "realised_edit_rate": 0.0588
+    },
+    {
+      "role": "lo",
+      "lambda_target": 0.07,
+      "wer": 0.2635,
+      "word_recoverability": 0.9085,
+      "char_lost": 0.0016,
+      "sentence_recoverability": 0.9167,
+      "realised_edit_rate": 0.0661
+    },
+    {
+      "role": "lo",
+      "lambda_target": 0.08,
+      "wer": 0.2784,
+      "word_recoverability": 0.8817,
+      "char_lost": 0.0021,
+      "sentence_recoverability": 0.8167,
+      "realised_edit_rate": 0.0798
+    },
+    {
+      "role": "mid",
+      "lambda_target": 0.12,
+      "wer": 0.2962,
+      "word_recoverability": 0.8176,
+      "char_lost": 0.0026,
+      "sentence_recoverability": 0.6417,
+      "realised_edit_rate": 0.1218
+    },
+    {
+      "role": "mid",
+      "lambda_target": 0.14,
+      "wer": 0.2968,
+      "word_recoverability": 0.8108,
+      "char_lost": 0.0017,
+      "sentence_recoverability": 0.6083,
+      "realised_edit_rate": 0.1336
+    },
+    {
+      "role": "mid",
+      "lambda_target": 0.16,
+      "wer": 0.2968,
+      "word_recoverability": 0.7659,
+      "char_lost": 0.0025,
+      "sentence_recoverability": 0.3833,
+      "realised_edit_rate": 0.1599
+    },
+    {
+      "role": "mid",
+      "lambda_target": 0.18,
+      "wer": 0.2968,
+      "word_recoverability": 0.7487,
+      "char_lost": 0.0024,
+      "sentence_recoverability": 0.3417,
+      "realised_edit_rate": 0.1736
+    }
+  ]
+}

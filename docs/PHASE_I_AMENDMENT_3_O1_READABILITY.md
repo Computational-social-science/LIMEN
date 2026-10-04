@@ -122,20 +122,92 @@ The third row matters most: if `mid` never becomes hard enough, no choice of λ 
 criterion, and the honest response is to say so rather than to extend the ladder past the band until it
 does. **The ladder is not extended beyond 0.18 without an amendment.**
 
-## 5. Why three measures and not one
+## 5. Why the human panel decides and the automatic measures only explain
 
 The obvious cheap alternative is an automatic readability score. It is rejected as the *decision*
 criterion for one reason: it is not the quantity the protocol names. §12 says *human-readable*, and a
-metric that scores character-level entropy answers a different question. **It is still recorded**, as a
-secondary column — normalised edit distance and token-level perplexity under a fixed reference model —
-because a human judgement that cannot be related to any quantity is harder to reproduce. The human panel
-decides; the automatic measures explain.
+metric that scores character-level entropy answers a different question. **It is still recorded**,
+because a human judgement that cannot be related to any quantity is harder to reproduce. The human
+panel decides; the automatic measures explain.
 
-## 6. Cost and what this buys
+### 5.1 Measured, and it changed the instrument
 
-120 items × 2 conditions × 3 raters = **720 ratings**, each a three-way choice on a short text —
-roughly 25–40 minutes per rater. No GPU, no model, no API. It is the cheapest open item on the board and
-it is the one standing between the programme and a sealed pre-registration.
+`scripts/o1_auto_indices.py` computes four indices on all eight grid points, 60 dev items each,
+`seed = 0`. No model is loaded, so nothing here can drift with a checkpoint.
+
+| role | λ | WER | word recoverability | char lost | sentence recoverability | realised rate |
+|---|---|---|---|---|---|---|
+| lo | 0.05 | 0.216 | 0.936 | 0.0011 | **0.958** | 0.050 |
+| lo | 0.06 | 0.247 | 0.917 | 0.0010 | 0.942 | 0.059 |
+| lo | 0.07 | 0.264 | 0.909 | 0.0016 | 0.917 | 0.066 |
+| lo | 0.08 | 0.278 | 0.882 | 0.0021 | 0.817 | 0.080 |
+| mid | 0.12 | 0.296 | 0.818 | 0.0026 | **0.642** | 0.122 |
+| mid | 0.14 | 0.297 | 0.811 | 0.0017 | 0.608 | 0.134 |
+| mid | 0.16 | 0.297 | 0.766 | 0.0025 | 0.383 | 0.160 |
+| mid | 0.18 | 0.297 | 0.749 | 0.0024 | 0.342 | 0.174 |
+
+**WER SATURATES AND THEREFORE CANNOT SEPARATE THE `mid` GRID.** From λ = 0.12 upward the word error rate
+moves by less than 0.001 — 0.2962, 0.2968, 0.2968 — while the realised edit rate keeps climbing from
+0.122 to 0.174. The standard measure has stopped responding to the manipulation. `char_lost` is worse
+still: it sits between 0.0010 and 0.0026 across the whole ladder and moves non-monotonically, so it
+carries no signal at all.
+
+**This is the concrete argument for the protocol's ordering.** If WER had been the criterion, the four
+`mid` grid points would have been indistinguishable and the calibration would have had nothing to
+choose between — not because the levels are equivalent to a reader, but because the measure stopped
+moving. A human panel is not a luxury added to an automatic method here; it is the only instrument in
+this set that still discriminates.
+
+**Sentence recoverability is the one automatic index that keeps discriminating**, falling 0.642 → 0.342
+across exactly the range where WER is flat. It is the share of sentences retaining at least 80 % of
+their words within edit distance 1. It is recorded as a secondary column and is **not** promoted to a
+decision criterion: it is a proportion computed from the item, whereas the protocol's requirement is a
+judgement about reading, and the two agree often enough to be informative and not often enough to
+decide.
+
+### 5.2 What the numbers say about the grid, before any human rating
+
+Read as evidence rather than as a decision:
+
+- **`lo` at 0.05 leaves 96 % of sentences intact**, which is consistent with "readable" and would be
+  consistent with "too easy to be a disturbance" if the panel agrees. The grid is correctly placed to
+  distinguish those.
+- **`mid` at 0.12 already sits at 64 % sentence recoverability**, which is plausibly the "wobbly"
+  region. If the panel's median at 0.12 is already **W** with a tail, the rule may be satisfied at the
+  **first** grid point, and the upper three become unnecessary.
+- **If the panel's median at 0.18 is still R**, the finding is about §4.2's edit classes rather than
+  about λ, exactly as §4 anticipates. Sentence recoverability at 0.342 says the text is heavily
+  damaged while nearly every word survives at distance 1 — which is a *specific* mechanism
+  (character-level corruption rather than word destruction) and is worth stating in that case.
+
+**None of this is a result.** It is a prediction with a stated uncertainty, made before the ratings
+exist, so that the panel's answer can be compared against it rather than rationalised after the fact.
+
+## 6. Cost, and how the ladder is actually walked
+
+Measured from the generated packs: **24 packs, 60 items each, 1 440 item-ratings in total** — 480 per
+rater if the whole grid is rated, at a median of 366 characters per item (both texts together).
+
+**The whole grid is NOT the plan; it is the budget ceiling.** The rule scans `lo` upward and `mid`
+upward and takes the **first** grid point that satisfies it, so the expected cost is far lower:
+
+| what is rated | item-ratings |
+|---|---|
+| `lo` at 0.05 and `mid` at 0.12 — the first point of each, if both pass | **360** |
+| `lo` through 0.08 and `mid` at 0.12 — the likely case if `lo` needs one step | 540 |
+| the entire grid, both ladders exhausted | 1 440 |
+
+At a three-way choice on a ~180-character pair, roughly 25–40 minutes per 60 items, so the expected
+total is **about 30–60 minutes per rater**, and the ceiling is about two hours. No GPU, no model, no API.
+
+**Why walk upward rather than rating everything.** Each additional grid point costs three raters a full
+panel, and the decision rule only needs the first point that passes. Rating the whole grid in advance
+would also create a temptation the protocol should not have: with eight measured levels in hand, it
+becomes easy to pick the one whose numbers look best rather than the first one the rule accepts. The
+scan order is fixed in advance precisely so that the choice cannot be made after seeing the panel.
+
+**The `--score` path exists for either route.** Rate what the walk asks for, then
+`python scripts/merge_ratings.py` followed by `python scripts/o1_calibration.py --score`.
 
 ## 7. Decisions this document needs from you
 
