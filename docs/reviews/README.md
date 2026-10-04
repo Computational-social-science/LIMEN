@@ -13,7 +13,7 @@ to be checked, not believed.
 | 1 | Evaluating LLMs for accuracy **incentivizes hallucinations** | Nature 2026 | `reviewed_with_limitations` — 23/23 pages reviewed, 25 adjudications | **GAP FOUND** |
 | 2 | LLMs as **uncertainty-calibrated optimizers** | NMI 2026 | `reviewed_with_limitations` — 63/63 pages, 21 diagnostics adjudicated | **GAP FOUND** |
 | 3 | A cognitive approach to **human–AI complementarity** | NRP 2025 | `reviewed_with_limitations` — 15/15 pages | **NOT TESTABLE AS WRITTEN** |
-| 4 | **Detecting hallucinations using semantic entropy** | Nature 2024 | **`unreviewed`** — 31 pages extracted, page-by-page review **not** performed | *pending* |
+| 4 | **Detecting hallucinations using semantic entropy** | Nature 2024 | **`unreviewed`** — 31 pages extracted, page-by-page review **not** performed | **WELL-SCOPED, and its own theory implies our claim** |
 
 ## The conversion-quality difference is not cosmetic
 
@@ -52,6 +52,35 @@ locatable, quotable, and attached to a specific measurement that would settle it
 
 **Record 3 is the negative control and is worth as much as the other two.** It shows the instrument can
 return *no gap* — which is the only reason to trust the two it did return.
+
+## The result that changed the programme's shape
+
+**Record 4 is not an overreach. It is the opposite, and it is the most useful thing the library
+produced.** The canonical semantic-entropy detector **explicitly declines to cover our case and
+explicitly says that merging it with genuine fabrication is unhelpful** — in its own words, twice
+(verified quotations in `review_4_semantic_entropy_2024.md`):
+
+- "We believe that **combining these distinct mechanisms in the broad category hallucination is
+  unhelpful** … it does not guarantee factuality because it does not help when LLM outputs are
+  systematically bad."
+- "Our method **explicitly does not directly address situations in which LLMs are confidently wrong**
+  because they have been trained with objectives that systematically produce dangerous behaviour … These
+  represent **different underlying mechanisms — despite similar 'symptoms'** — and need to be handled
+  separately."
+
+**Our object — a model that consistently expands an abbreviation to an attested but unintended sense —
+is a SYSTEMATIC error by this paper's own taxonomy.** So the framework **predicts low semantic entropy
+and a "not a confabulation" verdict**, i.e. it predicts our case is outside what it detects.
+
+**This relocates the contribution.** It is no longer "published work conflates the two constructs" —
+which was a claim about error. It is:
+
+> **A published framework states this distinction in its own theory, and nobody has tested whether its
+> implementation honours it at that boundary.**
+
+Narrower, falsifiable, and it requires nobody to have erred. It also changes what a falsified result
+would mean: if the detector *does* flag our case, then the implementation does not honour the theory's
+own stated scope, which is a real and publishable finding about the framework — not a null.
 
 ## Honest limits
 
