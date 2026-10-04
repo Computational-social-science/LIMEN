@@ -82,10 +82,32 @@ RETIRED_RUN_PATTERNS = [
      "re-enters the retired arm"),
 ]
 
-# ---------------------------------------------------------------- C: retired concepts
-# A live file naming one of these must ALSO declare the retirement in the same file.
-#
-# Deliberately an OBJECT list, not a vocabulary list. `Laya` is NOT here: it is a model name, not a
+# ---------------------------------------------------------------- D: Lean sorry/admit/axiom
+# Lean core-only file MUST NOT contain sorry, admit, or axiom. The project's discipline is
+# zero such constructs. A Lean file with sorry compiles but proves nothing - it is the exact
+# failure this project exists to prevent.
+LEAN_SORRY_ADMIT_AXIOM = re.compile(r"(?<![\"'`])\b(sorry|admit|axiom)\b(?![\"'`])")
+
+
+def check_lean_sorry_admit(files: list[Path], root: Path) -> list[str]:
+    """Lean core-only files must NOT contain sorry, admit, or axiom outside comments/strings."""
+    findings = []
+    for f in files:
+        rel = f.relative_to(root).as_posix()
+        if rel in SELF_EXEMPT:
+            continue
+        if f.suffix != ".lean":
+            continue
+        try:
+            text = f.read_text(encoding="utf-8", errors="replace")
+        except OSError:
+            continue
+        for i, line in enumerate(text.splitlines(), 1):
+            for m in LEAN_SORRY_ADMIT_AXIOM.finditer(line):
+                findings.append(
+                    f"[D] {rel}:{i} Lean file contains prohibited keyword: {m.group(1)} -> {line.strip()[:120]}"
+                )
+    return findings
 # retired object. The R1 programme used a Laya root and the current protocol legitimately names one as
 # a candidate checkpoint to pin (§3.2, "pick one and pin"). Listing a model name here would fire on
 # the object's own document and force an edit to the protocol to silence it — which is tampering, not
@@ -264,6 +286,18 @@ def negative_test(root: Path) -> int:
                     not any("__drift_negative_control__" in f for f in findings)))
     scratch.unlink()
 
+    # Class D: a Lean file containing sorry/admit/axiom (the discipline this project enforces).
+    # The scratch file is a .lean file so the checker examines it; it must fire.
+    lean_scratch = root / "docs" / "__drift_negative_control__.lean"
+    lean_scratch.write_text(
+        "-- probe\n\n"
+        "theorem fake : False := by sorry\n",
+        encoding="utf-8")
+    findings = check_lean_sorry_admit(tracked_and_live_files(root) + [lean_scratch], root)
+    results.append(("Lean sorry/admit/axiom is caught",
+                    any("__drift_negative_control__" in f and "sorry" in f for f in findings)))
+    lean_scratch.unlink()
+
     if scratch.exists():
         scratch.unlink()
 
@@ -292,7 +326,8 @@ def main() -> int:
 
     files = tracked_and_live_files(root)
 
-    findings = check_artifacts(root) + check_instructions(files, root) + check_concepts(files, root)
+    findings = (check_artifacts(root) + check_instructions(files, root) +
+                check_concepts(files, root) + check_lean_sorry_admit(files, root))
 
     if args.verbose:
         print(f"scanned {len(files)} live files under {root}")
