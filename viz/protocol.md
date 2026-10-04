@@ -562,6 +562,23 @@ Phase I omits $s$ (always $s_{\mathrm{en}}$).
 
 ---
 
+---
+
+### 4.4b Lean 反馈环：机器检查改变了协议的三个核心判断
+
+本协议的数学部分不仅被形式化，更在形式化过程中被**修正**。`lean-nhb` 形式化（`E:/2026-AI4S/lean-nhb/NHB/PhaseI/Core.lean`，13 定理，零错误，零 `sorry`，全部经 `check_lean_axioms.py` 经内核 `#print axioms` 验证）不仅是事后存档，它在构建过程中**发现并修正了协议的三个实质性错误**：
+
+| 协议原声称 | Lean 反馈结果 | 协议修正 |
+|-----------|---------------|----------|
+| §6：`SilentError@τ` 是 "non-decreasing in τ" | `risk_mono` 证明：`Risk` 随 τ **下降**（non-increasing） | §6 改为 non-increasing，引用 `risk_mono`；并在 Core.lean 中保留 `protocol_said_nondecreasing_is_FALSE` 由 `decide` 证伪旧句 |
+| §6 "最小可采阈值最大化 coverage" | 首版定理留用了两个 `Admissible` 假设未被用到；Lean 报警告 | 重述为 **IsLeastAdmissible → 推导出顺序**，令排序**从**可采性推导而非假设；`least_admissible_maximises_coverage` 完整成立 |
+| §6 未预见：小 dev 集上 budget 崩塌为 0 | `budget_collapses_to_zero_on_small_dev`：N<20 时 floor(0.05·N)=0，最小可采 τ=10 且 Coverage=0（全关门）；紧邻其下的 τ=9 **只保留错误** | §6 增加 degeneracy 条款：budget 为 0 时最小可采阈值可能是"全关门"；§4.4a 增加声明：Δτ* 可能度量的是"门何时完全关"而非选择性 limen 的移动 |
+
+**反馈环也修正了守卫自身的三个缺陷**：(1) `check_lean_status_freshness` 报"检查了 6 项"实则静默跳过 2 项 —— 现无法推导即失败；(2) `LEAN_PATH` 少一层 `lean/`，守卫只是碰巧能用；(3) `depends on axioms: [...]` 正则漏匹配 `does not depend on any axioms`，导致 `decide` 定理（零公理）被误报为未覆盖。
+
+**结果**：协议现在不仅声称其数学是正确的，而且声称其数学**被机器检查过，且在这个过程中被修正过**。形式化不再是附录，而是**修正协议的反馈环**。
+
+
 ## 7. What Phase I contributes to the global thesis
 
 | Global thesis element | Phase I role |

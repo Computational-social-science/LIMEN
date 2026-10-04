@@ -155,6 +155,9 @@ def negative_test(lean_root: pathlib.Path) -> int:
         #    need its own module wiring and could fail for the wrong reason.
         (lean_root / "NHB" / "PhaseI" / "Core.lean").write_text(
             orig + "\ntheorem __neg_control__ : True := by sorry\n", encoding="utf-8")
+        # Must rebuild so the olean reflects the sorry theorem
+        import subprocess
+        subprocess.run(["lake", "build"], cwd=lean_root, capture_output=True, timeout=300)
         f2 = check(lean_root, lean_root / "NHB" / "PhaseI" / "Core.lean")
         r2 = ("a sorry-proved theorem is caught", any("__neg_control__" in x for x in f2))
         print(f"  [{'OK' if r2 else 'MISS'}] {r2}")

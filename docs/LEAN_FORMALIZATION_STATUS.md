@@ -95,6 +95,8 @@ several meet the budget. The mathematics needed to close that is small and entir
 | `least_admissible_maximises_coverage` | the §B1 tie-break rule, proved in full (§B1 below) |
 | `least_admissible_is_at_least_as_good` | the guarantee is a maximum, **not** a strict one |
 | `protocol_said_nondecreasing_is_FALSE` | the §6 wording "non-decreasing in τ" is **refuted by `decide`** |
+| `budget_collapses_to_zero_on_small_dev` | protocol's ε=0.05 gives floor(0.05·N)=0 for N<20; least admissible is a shut gate (Coverage=0); not covered by degeneracy clause |
+| `the_threshold_below_the_limen_keeps_only_the_error` | τ one step below the fitted limen keeps ONLY the error and nothing else — maximally anti-selective pocket just below the limen |
 
 That last row matters for the paper: it makes explicit that the noisy-channel framing's `P_e` and the
 protocol's `SilentError@tau` estimand name the same number, not two related ones.
