@@ -13,3 +13,6 @@ __pycache__/
 measurement/out/
 *.items.jsonl
 *.trial.jsonl
+
+# paper2agent conversion scratch (working dirs, not deliverables)
+.p2a-work/

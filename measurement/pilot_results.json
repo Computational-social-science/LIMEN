@@ -131,12 +131,14 @@
    "flips_clean_to_mid": {
     "right_to_wrong": 16,
     "wrong_to_right": 6,
-    "wrong_to_wrong": 10
+    "wrong_both": 10,
+    "wrong_both_label_changed": 3
    },
    "flips_clean_to_lo": {
     "right_to_wrong": 6,
     "wrong_to_right": 4,
-    "wrong_to_wrong": 12
+    "wrong_both": 12,
+    "wrong_both_label_changed": 0
    }
   },
   "silent_error": {

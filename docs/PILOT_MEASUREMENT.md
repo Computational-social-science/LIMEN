@@ -37,7 +37,8 @@ C:/Python314/python.exe …/scratch/pilot_laya/score_pilot.py   # 360 trials →
 C:/Python314/python.exe …/scratch/pilot_laya/analyze_pilot.py # writes measurement/pilot_results.json
 ```
 
-Runtime: model load ≈ 40 s; 360 trials ≈ 10.5 s. Re-prediction determinism check: 3 (item, λ) pairs
+Runtime (measured): checkpoint load ≈ 8 s (import + `load("english")`, warm local cache); 360 trials
+≈ 10.5 s (≈ 0.03 s/trial). Re-prediction determinism check: 3 (item, λ) pairs
 re-run at the end of the session — answers identical in all 3.
 
 **Artefacts.** `measurement/pilot_items.jsonl` (sha256 `21a18e39c0323648e1daea8b0b119f93466107f9f0d8b07c3234fbde42c37e83`,
@@ -221,12 +222,18 @@ chase; the operative constraint is sample size, not a pin that cannot move.
    workflows; this bank measures a single 2–4-way routing decision and is not comparable. Item novelty
    against training corpora was **not** audited (no access); a dev-stage contamination cross-check is
    recommended before the confirmatory bank is finalised — this is a stated limitation, not a claim.
-6. **Probe precedent.** Three tooling-probe states (a `predict` smoke test) were scored before the bank
-   was authored, two of them thematically similar to a few bank items. Inference is stateless (no
-   memory across calls; no training), so there is no leakage channel, and pilot items are excluded from
-   the confirmatory set regardless. Noted for completeness.
+6. **Probe precedent.** Tooling-probe states were scored around this run (a `predict` smoke test before
+   the bank was authored, a timing probe after scoring finished), some of them thematically similar to
+   a few bank items. Inference is stateless (no memory across calls; no training), so there is no
+   leakage channel, and pilot items are excluded from the confirmatory set regardless. Noted for
+   completeness.
 7. **Routing behaved as pinned.** All 360 trials routed to `english` / `convaiinnovations/laya`
    ("English Latin text"); no trial fell to another checkpoint, and no state was truncated at any λ.
+8. **Cross-record agreement (concurrent workstream).** Written during this pilot by a parallel
+   workstream, the programme's pin record (`config/pin.json`, `docs/PREDICT_SMOKE_TEST.md`) resolves the
+   same revision (`55cf4c4e…`), the same package versions, and the same 4-dp probability fact, and
+   independently marks C2 (`noul` label-following) as a mandatory pre-confirmatory calibration. No
+   conflict with anything recorded here.
 
 ---
 
