@@ -3,8 +3,11 @@
 > **A pre-registered, phased protocol integrating System One / JEV-ecosystem tooling.**
 > Version 1.1 — English typos first, then cross-script expansion.
 
-**Read `CURRENT_OBJECT.md` before doing anything here.** It is the single authority on the live
-object, the retirements, and the drift signals. This file only introduces the object.
+**This file is the mainline statement of the programme's task.** `CURRENT_OBJECT.md` is subordinate to
+it and records the object's status, its retirements and its drift signals; where the two disagree about
+**what the programme is doing**, this file wins. Where `CURRENT_OBJECT.md` disagrees about a fact
+(pin state, what exists, what is blocked), `CURRENT_OBJECT.md` wins, because it is the one that is
+checked against the repository.
 
 ---
 
@@ -81,9 +84,26 @@ The protocol names its own non-goals, and they bind this repository:
 
 ## Status
 
-**Not yet started.** The protocol is a draft for staged pre-registration. As of 2026-10-04 there is no
-pinned checkpoint with a recorded commit and SHA256, no item bank, no `N_en` typo generator, no JSONL
-and no analysis. The work ahead is §13 of the protocol.
+**Instrument work is substantially complete; no hypothesis has been tested, and no confirmatory data
+may be collected yet.**
+
+| | State |
+|---|---|
+| Instrument pin | **COMPLETE & VERIFIED.** Revision `55cf4c4e…`, per-file sha256, and executed on CUDA. |
+| Noise generator `N_en` | **BUILT & VERIFIED** over 1080 rows. λ levels still open (O1). |
+| `predict → JSONL` runner | **BUILT & VERIFIED.** 1080 rows in 10 s, 0 failures. |
+| Item bank (932 items) | **BUILT.** Gold is a construction invariant; `template_id` recorded at build time. |
+| Pre-registration | **Amendments 1 and 2 filed.** `N_test = 652` frozen. |
+| H1.1–H1.3 | **NOT TESTED.** Blocked until the pre-registration is sealed. |
+
+**Two items block the seal:** O1 (the λ readability calibration — *"who reads, and what counts as
+readable"* must be stated before the ladder is scored) and O3's human pass over the bank. `N_test = 652`
+and the bank of 932 are **frozen and not to be revised**.
+
+**An earlier version of this section stated there was "no pinned checkpoint … no item bank, no `N_en`
+typo generator, no JSONL and no analysis".** Every one of those now exists. The staleness is recorded
+here rather than silently overwritten, because it is the kind of claim that survives for months if
+nobody checks it — which is precisely why the drift guard now verifies path references.
 
 ## Licence and provenance
 

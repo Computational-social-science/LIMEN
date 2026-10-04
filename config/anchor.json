@@ -1,0 +1,17 @@
+{
+  "role": "GLOBAL ANCHOR - the programme's research objective. All other documents are subordinate.",
+  "path": "protocol/NHB_Orthographic_Channels_JEV_Research_Protocol.md",
+  "version": "1.2",
+  "sha256": "347d90fb90ab52836950940744d2cf78304198b061b61b3545edf5522d3090ff",
+  "bytes": 24380,
+  "lines": 485,
+  "version_consistency": {
+    "header": "1.2",
+    "section_14": "1.2",
+    "end_marker": "1.2",
+    "consistent": true
+  },
+  "objective_is": "sections 0.1 (thesis) and 1 (formal system model). A document disagreeing with those is drift, not a variant.",
+  "does_not_anchor": "instruments, toolboxes, run logs, review records - admitted on the three criteria in docs/INSTRUMENT_POSTURE.md and used as shipped",
+  "recorded_at": "2026-10-04"
+}

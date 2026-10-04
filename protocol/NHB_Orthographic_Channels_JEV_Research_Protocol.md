@@ -3,15 +3,46 @@
 ## A Pre-Registered, Phased Protocol Integrating System One / JEV-Ecosystem Tooling
 
 **Document type:** Detailed research protocol (*Nature Human Behaviour*–oriented framing)  
-**Version:** 1.1 (phased: **English typo first**, then cross-script / multilingual expansion)  
+**Version:** 1.2 (English typo first, then cross-script / multilingual expansion)  
 **Status:** Draft for staged pre-registration  
 **Compute envelope:** Single consumer GPU admissible; zero paid API on confirmatory path  
 **Primary interface class:** Typed decision models (System One):  
 \(\texttt{state} \times \texttt{questions} \mapsto\) distributions over caller-defined options  
 
+> **v1.2 records three decisions that earlier work had already made.** The protocol is the research
+> objective, so a change to it may not be made only in a downstream document — if an amendment
+> contradicts the protocol, the protocol is what must move. **The three changes are marked
+> `v1.2 CHANGE` at the point they apply**, and each names the amendment that motivated it. They are
+> the *only* substantive changes from v1.1; nothing else in the design moved.  
+
 ---
 
 ## 0. Thesis and staging principle
+
+> ## THE GLOBAL ANCHOR
+>
+> **This protocol is the programme's global anchor.** Every other document in this repository —
+> pre-registration, amendments, the item-bank spec, the manuscript, the review records, the dashboards —
+> is **subordinate to it** and derives from it.
+>
+> **What that means mechanically, and how it is enforced:**
+>
+> 1. **A change to the research objective is a change to THIS file.** If work elsewhere reaches a
+>    conclusion that contradicts this protocol, the protocol is what moves — a downstream amendment
+>    cannot silently redefine the objective. Every such change is marked `vN CHANGE` at the point it
+>    applies and names the document that motivated it, so the protocol's own history stays legible.
+> 2. **The objective's identity is checked mechanically.** A guard verifies that this file is present,
+>    that its recorded sha256 matches, and that the version in §14 agrees with the version in the
+>    header. A file that drifts from the anchor is drift by definition.
+> 3. **"What are we working on?" has exactly one answer, and it is §0–§1 of this file.** If any other
+>    document's summary of the objective disagrees with §0–§1, this file wins without discussion.
+> 4. **What does NOT anchor here, deliberately.** Instruments, toolboxes, run logs and review records are
+>    *inputs and outputs* of the programme, not the programme. They are admitted on the three criteria in
+>    `docs/INSTRUMENT_POSTURE.md` (usable, scientific, reproducible) and then used as shipped. **The
+>    anchor states what is being asked; it does not state how the asking is instrumented.**
+>
+> **Current anchor identity:** `protocol/NHB_Orthographic_Channels_JEV_Research_Protocol.md`,
+> version **1.2**. Its sha256 is recorded in `config/anchor.json` and verified by the drift guard.
 
 ### 0.1 Thesis
 
@@ -92,22 +123,48 @@ Phase I **does not** claim to test writing-system bias. It claims: under English
 ```text
 state:     <English text, clean or typo-perturbed in Phase I>
 questions: {
-  intent:   { type: "choice", instructions: "...", criteria: { ... } },
-  ok:       { type: "noul",   instructions: "Is the request clear enough to act on?" },
-  escalate: { type: "noul",   instructions: "Should a human handle this?" }
+  intent:   { type: "choice", instructions: "...", criteria: { ... } }
 }
 → probs, conf per question id
 ```
+
+> **v1.2 CHANGE 1 — Q0 is `intent` alone; `ok` and `escalate` are DROPPED from Phase I.**
+>
+> The v1.1 wire format specified three questions. Measurement at the pinned revision
+> (`docs/C2_NOUL_VALIDITY.md`) found the `noul` primitive **scores exactly chance** — 6/12 correct,
+> separation +0.077 — and that its documented two-option workaround is **worse than chance and inverted**
+> (−0.137 separation, 0.333 accuracy), with the two methods disagreeing by up to **0.60** on identical
+> input. A procedure that disagrees with its own documented alternative is not measurement-stable.
+>
+> **What this changes and what it does not.** `Acc`, `SilentError@τ` and `Coverage@ε` all require gold,
+> and gold exists only for `intent`; the gate `g_τ` acts on `intent`'s confidence. **H1.1–H1.3 are
+> unaffected.** The cost is that this protocol no longer measures a deferral or escalation judgement.
+> **This is a real reduction in scope and is stated as one**, not absorbed silently.
+>
+> **If a deferral question is wanted later it must be a `choice`** with checkable options
+> (`answer` / `ask for more information`), added by a later amendment — never substituted after seeing
+> results. Authority: `docs/PHASE_I_AMENDMENT_2.md` §B4.
 
 ### 3.2 Pinned stack (confirmatory)
 
 | Item | Specification |
 |------|----------------|
-| Primary model | Open System One checkpoint usable on English states (English Laya root **or** multilingual checkpoint forced on English—**pick one and pin**) |
-| Weights | Commit hash + SHA256 |
+| Primary model | **PINNED: the English root of `convaiinnovations/laya`** (Apache-2.0, 421 M, ModernBERT-large, non-autoregressive) |
+| Revision | **DECIDED: `55cf4c4ebb4ebe31b2550e8bdf3bd21b99753851`** — the revision the `laya` package pins. **The Hub's `main` had drifted to `7b928d82…` and is NOT the pin.** |
+| Weights | Commit hash + per-file SHA256, recorded in `config/pin_laya.json` (5 files, 846.20 MB) |
+| Variant | The **root**, named explicitly: that revision also ships `multilingual/` and `typed-decisions/` subtrees, so "Laya" alone is ambiguous |
 | Training | **Frozen** \(\theta\) in Phase I–II confirmatory arms |
 | API | Local only for confirmatory path |
+| Verification | **Executed**, not merely hashed: `measurement/smoke_predict.py` ran on CUDA at that revision and returned per-option probabilities, `truncated: false` |
 | Optional contrast | Second checkpoint or one generative forced-choice baseline (secondary) |
+
+> **v1.2 CHANGE 2 — the pin is decided, where v1.1 left it as "pick one and pin".**
+> The v1.1 text offered "English Laya root **or** multilingual checkpoint forced on English — pick
+> one". The root was pinned, verified by execution, and the multilingual variant was **not** chosen.
+> **The instrument is used exactly as shipped** (`docs/INSTRUMENT_POSTURE.md`): a temperature refit was
+> considered and **rejected**, because refitting the confidence `c` that enters `g_τ` would substitute a
+> different instrument and measure that instead. Authority: `docs/PHASE_I_PIN.md`,
+> `docs/PHASE_I_AMENDMENT_1.md` §A1.
 
 **Phase I recommendation:** pin **one** English-capable System One artifact; do not vary router language logic until Phase II.
 
@@ -275,6 +332,28 @@ Optional mechanism arm: router `forced_en` vs `forced_multi` vs `auto` under \(s
 
 Phase I omits \(s\) (always \(s_{\mathrm{en}}\)).
 
+> **v1.2 CHANGE 3 — the fitting rule for \(\tau^\star\) is stated, including the case where it does not
+> exist.**
+>
+> v1.1 said only "fitted on dev" and never said *which* threshold is reported when several meet the
+> budget. **An admissible threshold is never unique:** `Risk(τ)` is monotone non-increasing in τ, so if τ
+> meets the budget then every τ′ ≥ τ meets it too. The admissible set is upward closed and typically has
+> no distinguished element. **This is not hypothetical** — the pilot's clean `SilentError@0.9` was
+> **0/120**, making `Risk(τ) = 0` across the whole grid and *every* τ admissible.
+>
+> **The rule:** \(\tau^\star_\varepsilon\) is the **least admissible threshold**, i.e. the loosest gate
+> whose accepted-error rate fits ε. This is the only convention under which `Coverage@ε` is **maximised**
+> among admissible thresholds, so the gap from any other choice is bounded by monotonicity rather than by
+> luck.
+>
+> **And the case where the rule yields nothing.** If `Risk(τ) = 0` for every τ in the grid, the budget
+> does not select a threshold at all. Then `Coverage@ε` is reported as **undefined, with the reason
+> stated**, and the one-sided 95 % upper bound on the noisy silent-error rate is reported instead.
+> **A reported `Coverage@ε` of zero in that situation is a fact about the dev set, not about the model,
+> and must never be read as "the model was perfectly selective."**
+>
+> Authority: `docs/PHASE_I_AMENDMENT_2.md` §B1.
+
 ---
 
 ## 7. What Phase I contributes to the global thesis
@@ -285,9 +364,20 @@ Phase I omits \(s\) (always \(s_{\mathrm{en}}\)).
 | Control law (SilentError, coverage) | **Instrumented** via System One |
 | Structural bias across scripts | **Not tested** (deferred to Phase II) |
 | Feedback / accommodation | Optional later Study C |
-| JEV tooling validity | **Validated** under typo stress |
+| JEV tooling validity | **ADMITTED, not validated** — see below |
 
 Phase I is therefore **necessary infrastructure science** for the control-systems claim, not a diluted substitute for Phase II.
+
+> **On the last row — a wording correction that matters.** v1.1 said JEV tooling validity would be
+> **"validated"** under typo stress. That is not what this programme does, and the word implies a
+> research output that is not claimed. The programme's rule is a three-criterion **admission test**
+> (`docs/INSTRUMENT_POSTURE.md`): **usable**, **scientific**, **reproducible** — each answered with
+> evidence, and each passing means **use the component exactly as shipped**.
+>
+> **Admission is not validation.** A validated instrument would be an object of study, benchmarked and
+> improved, which is precisely what this programme forbids: the instrument is one tool on one link of a
+> pipeline. **The pilot exercised the instrument under noise; that is an exercise, not a validation.**
+> The row is corrected rather than deleted so the change of posture is visible.
 
 ---
 
@@ -337,18 +427,28 @@ Phase I is therefore **necessary infrastructure science** for the control-system
 
 ## 12. Phase I pre-registration checklist
 
-- [ ] English only; no script factor in confirmatory tests  
-- [ ] Typo classes and \(\lambda\) rates fixed  
-- [ ] Generator seed policy  
-- [ ] Model ID + commit + SHA256  
-- [ ] \(Q_0\) frozen (`intent`, `ok`, `escalate`)  
-- [ ] Confidence rule frozen  
-- [ ] \(\tau \in \{0.80,0.90\}\), \(\varepsilon=0.05\)  
-- [ ] Dev/test split by item  
-- [ ] Primary endpoints H1.1–H1.3  
-- [ ] FAILURES policy  
-- [ ] No confirmatory training  
-- [ ] Explicit statement: structural cross-script claims reserved for Phase II  
+The checklist as the **protocol** states it, with the current state of each item. **The protocol states
+the requirement; the state column is maintained by `docs/PHASE_I_PREREGISTRATION.md` and its
+amendments.** A protocol item may not be marked satisfied by a downstream document alone.
+
+| # | Protocol requirement | State | Where decided |
+|---|---|---|---|
+| 1 | English only; no script factor in confirmatory tests | **FIXED** | `docs/PHASE_I_PREREGISTRATION.md` §12 |
+| 2 | Typo classes and λ rates fixed | **CLASSES FIXED · λ PENDING** | O1 — needs the readability calibration, which must state *who reads* and *what counts as readable* |
+| 3 | Generator seed policy | **FIXED** | pure function of `(item_id, λ, seed)`; `seeds ∈ {0,1,2}` |
+| 4 | Model ID + commit + SHA256 | **FIXED** | v1.2 CHANGE 2 — `55cf4c4e…`, `config/pin_laya.json`, verified by execution |
+| 5 | **\(Q_0\) frozen** | **FIXED — as `intent` alone** | **v1.2 CHANGE 1.** v1.1 said `(intent, ok, escalate)`; `ok` and `escalate` are **dropped**, since the `noul` primitive measured at chance (`docs/C2_NOUL_VALIDITY.md`). This checklist entry is therefore **amended by the protocol itself**, not by a downstream note. |
+| 6 | Confidence rule frozen | **FIXED** | §3.3 — `c = max_j p_j` for choice; `c = max(p, 1−p)` for noul |
+| 7 | τ ∈ {0.80, 0.90}, ε = 0.05 | **FIXED** | §3.4. **`τ*` fitting rule is now stated by v1.2 CHANGE 3.** |
+| 8 | Dev/test split by item | **FIXED** | 30/70 by `item_id` |
+| 9 | Primary endpoints H1.1–H1.3 | **FIXED** | §4.4; co-primaries are H1.2 and H1.3 |
+| 10 | FAILURES policy | **FIXED** | every attempted trial recorded; failures logged, never dropped |
+| 11 | No confirmatory training | **FIXED** | θ frozen; no fine-tuning, no QLoRA, no adapter |
+| 12 | Cross-script claims reserved for Phase II | **FIXED** | §0.2, §5.2; §5.1 gates Phase II |
+| — | **Item bank** | **BUILT** (932 items, gold a construction invariant) | O3 — human pass still outstanding |
+| — | **N_item** | **FROZEN: N_test = 652** | O2, with Erratum 1 — the corrected π_d is 0.1833; 652 is conservative |
+
+**The seal is blocked by exactly two things:** O1 (the λ readability calibration) and O3's human pass.
 
 ---
 
@@ -370,13 +470,16 @@ Phase I is therefore **necessary infrastructure science** for the control-system
 
 | Field | Value |
 |-------|--------|
-| Version | 1.1 |
+| **Role** | **THE PROGRAMME'S GLOBAL ANCHOR.** All other documents are subordinate; see the note at the head of §0 |
+| Version | **1.2** |
+| v1.2 changes | (1) `Q0` is `intent` alone; (2) the pin is decided — Laya English root at `55cf4c4e…`; (3) the `τ*` fitting rule is stated, including when it yields nothing. Nothing else moved from v1.1 |
 | Staging | **Phase I English typo → Phase II cross-script** |
-| Primary DVs (I) | Acc, SilentError@τ, Coverage@ε vs \(\lambda\) |
+| Primary DVs (I) | Acc, SilentError@τ, Coverage@ε vs \(\lambda\), **all over `intent`** |
 | Primary DVs (II) | Script × noise interaction; cross-channel SilentError / coverage |
-| Tooling | Frozen JEV-compatible System One |
+| Tooling | One JEV-compatible System One component, **admitted on three criteria and used as shipped** — not validated, not tuned |
 | Thesis | Coupled control under normal orthographic disturbance; structural bias tested only from Phase II |
+| Anchor identity | sha256 recorded in `config/anchor.json`, verified by `scripts/check_object_drift.py` |
 
 ---
 
-*End of protocol v1.1*
+*End of protocol v1.2*

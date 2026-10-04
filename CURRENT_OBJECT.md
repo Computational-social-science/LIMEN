@@ -1,8 +1,12 @@
 # CURRENT OBJECT
 
-**This file is the single authority on what this repository is working on and what it has retired.
-Every other document is subordinate to it. If a live file disagrees with this one, this one wins and
-the other file is drift.**
+**This file records what the programme is working on, what it has retired, and what state it is in.**
+It is subordinate to the **global anchor** —
+`protocol/NHB_Orthographic_Channels_JEV_Research_Protocol.md` — which holds the objective itself
+(§0–§1 there is the only answer to "what are we working on?"). Where this file disagrees with that
+protocol **about the objective**, the protocol wins. Where this file disagrees with **another
+document about a fact** — what exists, what is pinned, what is blocked — this file wins, because its
+claims are checked against the repository by `scripts/check_anchor.py`.
 
 ---
 
@@ -102,19 +106,43 @@ it was removed from this repository's tree.
 
 ---
 
-## Live instruments — kept, and why
+## Live instruments — verified to exist, 2026-10-04
 
-These were built during R1 but are not about R1's object. The current object needs them.
+**This table is a claim that can be checked, so it is checked.** Every path below was verified to
+exist at the repository root on 2026-10-04. A path that fails verification is removed from this table
+and recorded in `docs/INSTRUMENT_LEDGER.md`.
 
-| Path | Role under the current object |
-|---|---|
-| `paths.py`, `config/paths.json` | Path SSOT and environment precedence. Unchanged responsibility. |
-| `scripts/calibrate_against_release.py` | Loads a **pinned** System One checkpoint and evaluates it against a published record. This is the protocol's "pin the artefact" step (§3.2) — the tool that establishes a checkpoint is loaded correctly before any noise is applied. |
-| `measurement/report_from_items.py` | Recovers metrics from a trial record. Extend it with `SilentError@τ` and `Coverage@ε`; do not fork a second reporter. |
-| `measurement/build_synth_split.py` | Builds typed-question splits over `choice` / `noul` / `score`. The protocol's `Q0` (`intent`, `ok`, `escalate`) is the same question-type machinery. |
-| `scripts/health.py` | Run-health diagnostics for long jobs. |
-| `scripts/run_with_heartbeat.py` | Heartbeat wrapper for long jobs; terminal record written in `finally`. |
-| `TOOLS.md`, `docs/BOOTLOOPS.md` | Tooling and the shared BootLoops substrate. |
+| Path | Role under the current object | Verified |
+|---|---|---|
+| `measurement/typo_noise.py` | The Phase I noise process `N_en`: four edit classes, a pure function of `(item_id, λ, seed)`. | ✓ |
+| `measurement/run_phase1.py` | The confirmatory `predict → JSONL` runner (§3.5 schema), resumable, failures recorded not dropped. | ✓ |
+| `measurement/smoke_predict.py` | The minimal end-to-end check that the pinned checkpoint runs locally and returns per-option probabilities. | ✓ |
+| `measurement/c2_noul_validity.py` | The `noul` primitive's measurement-validity check. | ✓ |
+| `measurement/item_bank.jsonl` + `item_bank_manifest.json` | The confirmatory item bank, gold as a construction invariant, with its counts. | ✓ |
+| `measurement/pilot_items.jsonl`, `pilot_results.json` | The 120-item pilot and its 360-trial record; the measurement that set O2. | ✓ |
+| `measurement/trials_pilot_replay.jsonl` | The 1080-row independent replay; the measurement that exposed the π_d definition error. | ✓ |
+| `scripts/build_item_bank.py` | The deterministic bank builder (O3, option C). | ✓ |
+| `scripts/check_object_drift.py` | The mechanical contamination guard. **Known to be incomplete — see its audit.** | ✓ |
+| `config/pin_laya.json` | The instrument pin: revision plus per-file sha256. | ✓ |
+| `config/pin.json` | The earlier pin record, superseded in substance by `pin_laya.json`. | ✓ |
+
+### Removed from this table on 2026-10-04 — they were listed as "kept" and were not
+
+**An earlier version of this section listed nine paths under the heading "Live instruments — kept, and
+why", and asserted that "the current object needs them".** On verification, **all nine did not exist**
+at the repository root; every one of them is under
+`archive/R1_jevrsi_loop_objective_2026-10-04/`:
+
+`paths.py` · `config/paths.json` · `scripts/calibrate_against_release.py` ·
+`measurement/report_from_items.py` · `measurement/build_synth_split.py` · `scripts/health.py` ·
+`scripts/run_with_heartbeat.py` · `TOOLS.md` · `docs/BOOTLOOPS.md`
+
+**This is recorded rather than quietly corrected, because it is the more informative defect.** The R1
+archival moved the files and left the authority document promising them — a promise the repository
+could not keep and nobody checked. **The lesson is a missing mechanical check, not a missing sentence:
+a live document that references a path must have that path verified to exist, and the drift guard did
+not do this.** The replacements above were each verified; `docs/INSTRUMENT_LEDGER.md` records what each
+retired instrument did and where it went.
 
 ---
 
