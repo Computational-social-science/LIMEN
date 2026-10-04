@@ -1,53 +1,68 @@
 # Review records — the critical-review instrument applied
 
-Three papers from the reference-frame library have been run through the six-question instrument of
+Four papers from the reference-frame library have been run through the six-question instrument of
 `docs/CRITICAL_REVIEW_PROTOCOL.md`. This file is the index; each record is a separate file.
 
-**All three reviews were produced on the free route** (`nvidia/nemotron-3-ultra-550b-a55b:free`), and
-**all three were verified before being believed**: the load-bearing quotations were re-checked against
-the source `paper.md` by literal string search before any verdict was recorded. The verification is
-recorded inside each file, including where a check **failed to confirm** something.
+**All four reviews were produced on the free route** (`nvidia/nemotron-3-ultra-550b-a55b:free`), and
+the load-bearing quotations are re-checked against the source `paper.md` before any verdict is
+recorded — a free model producing grounded work is a result worth stating, but it is a result that has
+to be checked, not believed.
 
-| # | Paper | Venue | Verdict | What it turned on |
+| # | Paper | Venue | Conversion quality | Verdict |
 |---|---|---|---|---|
-| 1 | Evaluating LLMs for accuracy **incentivizes hallucinations** | Nature 2026 | **GAP FOUND** | The construct is defined over inputs with a **single correct answer** — the paper says so — and it opens with an **ambiguous abbreviation**, three models returning three different specific expansions, which it calls fabrication. Quoted, with the sidestep at line 26 and the label at line 24. |
-| 2 | LLMs as **uncertainty-calibrated optimizers** | NMI 2026 | **GAP FOUND** | Joint GP–LLM training yields a calibrated **GP surrogate** (low NLPD); the paper's framing extends that to the **LLM itself** becoming uncertainty-calibrated. **Nothing in it measures the LLM's own uncertainty** — and the reviewer's key negative claim is corroborated by a search: the string `verbalized` occurs **0 times** in the source. |
-| 3 | A cognitive approach to **human–AI complementarity** | NRP 2025 | **NOT TESTABLE AS WRITTEN** | A Perspective: it measures nothing. **The discrimination check did its job** — the hypothesis that deferral is packaged as a solved capability was **not supported**: the paper explicitly flags "determine when to defer" as an open need (verified, 2 occurrences; "further development is needed", 1). The reviewer declined to manufacture a gap. |
+| 1 | Evaluating LLMs for accuracy **incentivizes hallucinations** | Nature 2026 | `reviewed_with_limitations` — 23/23 pages reviewed, 25 adjudications | **GAP FOUND** |
+| 2 | LLMs as **uncertainty-calibrated optimizers** | NMI 2026 | `reviewed_with_limitations` — 63/63 pages, 21 diagnostics adjudicated | **GAP FOUND** |
+| 3 | A cognitive approach to **human–AI complementarity** | NRP 2025 | `reviewed_with_limitations` — 15/15 pages | **NOT TESTABLE AS WRITTEN** |
+| 4 | **Detecting hallucinations using semantic entropy** | Nature 2024 | **`unreviewed`** — 31 pages extracted, page-by-page review **not** performed | *pending* |
 
-## The pattern, and why it is not one finding repeated three times
+## The conversion-quality difference is not cosmetic
 
-Reviews 1 and 2 share a **shape**: a result that is valid *inside a scope* is described in a way that
-extends it *outside* that scope, and in both cases the extension is the sentence a reader remembers.
+**Record 4 sits one tier below the other three, and that tier is recorded rather than smoothed over.**
 
-But the scopes differ and so do the fixes:
+Its `verify` reports `status: "unreviewed"`, `all_sources_agent_reviewed: false`, and the build was run
+with `--draft`. A spot scan found **0** bare page numbers, **0** glued table digits, **0** superscript
+residue, **0** private-use-area characters and **0** duplicated headings, and all 25 artifact checks
+report `matches_source_conversion: true` — so gross extraction damage is unlikely, and the mechanical
+layer is sound.
 
-- **In review 1 the scope condition is about the INPUT** — a single correct answer per prompt. The
-  discriminating measurement is therefore lexical: build a sense inventory and ask whether the model's
-  expansions are attested.
-- **In review 2 the scope condition is about WHICH OBJECT IS CALIBRATED** — a surrogate, not the model.
-  The discriminating measurement is a property of the model, measured directly (verbalized confidence,
-  logits, conformal), not of the fitted surrogate.
+**But the review layer is absent**, and the review layer is where the previous three conversions found
+real defects: 25 adjudications in record 1, 21 diagnostics in record 2, column-order repairs and a
+rebuilt references section in record 3. **So record 4's figures and complex tables may be mis-transcribed,
+and any claim resting on one is marked `[UNVERIFIED: table/figure extraction]` rather than asserted.**
 
-**Collapsing these into "papers overclaim" would lose the only part that matters**, which is that the
-overreach is locatable, quotable, and in each case attached to a specific measurement that would
-settle it.
+**Why it matters for this programme specifically.** Record 4 is the paper closest to our construct
+claim — it is the canonical semantic-entropy detector, and our claim is that such a detector is
+mis-specified on inputs with several valid readings. A mis-transcribed number in exactly that paper
+would be worse than no paper, so the caveat travels with every use of it rather than living only here.
 
-**Review 3 is the negative control and is worth as much as the other two.** It shows the instrument can
-return *no gap* — which is the only reason to trust the two gaps it did return.
+## The pattern across the three completed records, and why it is not one finding repeated
+
+Records 1 and 2 share a **shape**: a result valid *inside a scope* is described in a way that leaves it,
+and in both cases the sentence a reader remembers is the one that overreaches.
+
+But the scopes differ and so do the measurements that would settle them:
+
+- **In record 1 the scope condition is about the INPUT** — one correct answer per prompt. The
+  discriminating measurement is lexical: build a sense inventory, ask whether expansions are attested.
+- **In record 2 the scope condition is about WHICH OBJECT IS CALIBRATED** — a surrogate, not the model.
+  The discriminating measurement is of the model itself.
+
+Collapsing these into "papers overclaim" would discard the only part that matters: that the overreach is
+locatable, quotable, and attached to a specific measurement that would settle it.
+
+**Record 3 is the negative control and is worth as much as the other two.** It shows the instrument can
+return *no gap* — which is the only reason to trust the two it did return.
 
 ## Honest limits
 
 1. **These are readings of text, not measurements.** They establish what each paper says. They do
-   **not** establish that any specific alleged overreach has an empirical consequence. Review 1's
-   falsification condition in particular is **untested** until a sense inventory exists.
-2. **The verdicts are not equally strong.** Review 3's verdict is a statement about the paper's genre
-   and is nearly unappealable; reviews 1 and 2 rest on a reading of framing against scope, which a
-   defender could contest by pointing to a passage the reviewer did not quote. **The quote-level
-   verification reduces that risk without eliminating it.**
-3. **Review 3's text carried vocabulary from a retired object** ("FDLH", "associativity ×
-   confusability", "self-referential mistranslation") — the reviewer answered in this programme's frame
-   but imported a discarded one. Those passages were replaced with this programme's own endpoints and
-   **the correction is recorded inside the file**, not silently applied. The verdict is unaffected: it
-   rests on the paper's own quoted text.
-4. **A free model produced these.** That is why the quotes were checked. It is also worth stating that
-   the checks passed — the cheap route produced grounded work at zero marginal cost.
+   **not** establish that any alleged overreach has an empirical consequence. Record 1's falsification
+   condition in particular is **untested** until a sense inventory exists
+   (`docs/CORPUS_LOCATION_STATUS.md`).
+2. **The verdicts are not equally strong.** Record 3 is nearly unappealable; records 1 and 2 rest on a
+   reading of framing against scope, which a defender could contest with a passage the reviewer did not
+   quote. Quote-level verification reduces that risk without eliminating it.
+3. **Record 3's text carried vocabulary from a retired object** and was corrected **in place with the
+   correction recorded inside the file** — a correction nobody can see is not a correction.
+4. **A free model produced these.** That is why the quotes were checked. The checks passed, which is the
+   useful part: the cheap route produced grounded work at zero marginal cost.
