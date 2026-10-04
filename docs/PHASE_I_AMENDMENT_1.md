@@ -28,16 +28,22 @@ entirely. The entry was not stale-by-omission; it affirmatively asserted the ret
 | | |
 |---|---|
 | Model | `convaiinnovations/laya` — English root |
-| Hub revision used | `55cf4c4e…` (full hash to be recorded on download) |
+| Hub revision used | `55cf4c4ebb4ebe31b2550e8bdf3bd21b99753851` (immutable commit sha; `main` is **not** the pin) |
 | Licence | Apache-2.0 |
 | Parameters / architecture | 421 M, ModernBERT-large encoder, non-autoregressive |
 | Install | `pip install laya` |
-| Status | **CHOICE MADE · PIN INCOMPLETE** — per-file SHA256 and the full revision hash are **pending first download** (`config/pin.json` is OPEN) |
-| Authority | `docs/PHASE_I_PIN.md` |
+| Status | **COMPLETE · VERIFIED AGAINST DISK** — all 5 files present with matching per-file SHA256 (846.20 MB total) |
+| Authority | `docs/PHASE_I_PIN.md` · `config/pin_laya.json` |
 
-**Status change.** §12 item 4 moves from `FIXED NOW` to **`INCOMPLETE`**. It cannot be `FIXED NOW`
-until the revision hash and per-file digests are recorded. Confirmatory `predict → JSONL` is **blocked**
-on this and was already recorded as blocked in `CURRENT_OBJECT.md`.
+**Status change, closed 2026-10-04.** This row previously read **CHOICE MADE · PIN INCOMPLETE**, with
+confirmatory `predict → JSONL` recorded as **blocked** on the missing digests. The download has since
+completed and the pin is no longer a claim but a **measurement**: every one of the five files was
+re-hashed from disk and matched `config/pin_laya.json` byte for byte (846,195,574 B total;
+`model.safetensors` = `891102d372688fc2…`). `scripts/check_pin_integrity.py` re-runs that comparison
+and fails loudly on any drift, including the case where the snapshot is missing altogether.
+
+**So the block is lifted.** What remains open for §12 item 4 is nothing about the instrument; the
+remaining Phase I blocks are the O1 λ-calibration decisions, which are about the stimulus, not the tool.
 
 **Disclosure.** This correction changes which artefact the programme runs on. It is disclosed here
 rather than silently edited, because the previous pin appears in an earlier committed version of the
