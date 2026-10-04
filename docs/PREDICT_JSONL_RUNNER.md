@@ -35,20 +35,38 @@ A silent zero there is the kind of default that survives into an analysis unnoti
 
 The generator's contract states that `lam` is the **target mean number of edits per character**; the
 realised rate is a draw from that mean, so a single condition's achieved corruption **differs from its
-label**. Measured: at `λ = 0.05` the realised rates averaged **0.0620** over the 15 rows of that
-condition — a 24 % overshoot.
+label**.
 
-**Consequence, stated now rather than discovered later.** An analysis that treats `λ` as the achieved
-corruption will attribute some of the *realised-rate* variation to the *rate factor*, which inflates
-apparent noise effects. Two defensible handlings, to be fixed in the amendment before the confirmatory
-run:
+**Measured over the full 120-item replay** (`measurement/trials_pilot_replay.jsonl`, 1080 rows):
 
-1. **Report the realised-rate distribution per λ** alongside every λ effect, so a reader can see how
-   much spread sat under each label; and
-2. **Use `realised_edit_rate` as a covariate** in the model, with `λ` retained as the assigned factor.
+| λ label | n | mean realised | median | min | max | SD | bias |
+|---|---|---|---|---|---|---|---|
+| 0.00 | 120 | 0.0000 | 0.0000 | 0.0000 | 0.0000 | 0.0000 | — |
+| 0.05 | 120 | **0.0502** | 0.0473 | 0.0000 | 0.1310 | **0.0258** | **+0.4 %** |
+| 0.12 | 120 | **0.1148** | 0.1142 | 0.0339 | 0.2278 | **0.0355** | **−4.4 %** |
+
+> **Correction to an earlier figure in this document.** A 30-row sample first suggested a **24 %
+> overshoot** at λ = 0.05. That was a **small-sample artefact**: the generator's mean is well calibrated
+> (+0.4 % and −4.4 % at the two levels). **The real feature is the SPREAD, not a bias** — at λ = 0.05 the
+> realised rate ranges from **0.0000** (an item that received no edit at all) to **0.1310**, with
+> SD ≈ 0.026. The correction is recorded rather than quietly overwritten, because the original claim was
+> drafted from 15 rows and would have been cited.
+
+**Consequence, stated now rather than discovered later.** At λ = 0.05 an item can receive **zero** edits,
+so some "noisy" trials are **byte-identical to their clean counterpart** (guaranteed at λ = 0, where the
+rate is exactly 0 and the op list is empty). An analysis that treats `λ` as the achieved corruption will
+attribute *realised-rate* variation to the *rate factor*, which inflates apparent noise effects. Two
+defensible handlings, to be fixed in the amendment before the confirmatory run:
+
+1. **Report the realised-rate distribution per λ** alongside every λ effect (the table above is the
+   template), so a reader can see how much spread sat under each label; and
+2. **Use `realised_edit_rate` as a covariate** in the model, with `λ` retained as the assigned factor —
+   and, because of the zero-edit tail, consider reporting the **share of trials with zero ops** per λ as
+   a separate quantity, since those trials are controls by accident.
 
 Either is acceptable; **choosing after seeing the confirmatory results is not.** The runner records
-`realised_edit_rate` on every row precisely so this choice remains open and cheap.
+`realised_edit_rate` and the full `typo_ops` list on every row precisely so this choice remains open and
+cheap.
 
 ## Honest limits
 
