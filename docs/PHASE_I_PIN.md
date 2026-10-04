@@ -28,11 +28,13 @@ retired programme is not in the running. Selection reasoning and evidence:
 | Weights | HuggingFace `convaiinnovations/laya` |
 | Confirmatory path | **Local only. No API, no key.** |
 
-**Pinned revision — NOT YET RECORDED, so this pin is INCOMPLETE.** §12 item 4 requires commit +
-SHA256. The exact HuggingFace revision hash, the sha256 of every downloaded weight file, and the
-resolved `laya` package version go into `config/pin.json` when the first download completes. Until
-that file exists this document records a *choice*, not a *pin*, and the pre-registration may not be
-sealed.
+**Pinned revision — RECORDED 2026-10-04, so pre-registration item 4 is now SATISFIED.** The full
+record is `config/pin.json`: revision **`55cf4c4ebb4ebe31b2550e8bdf3bd21b99753851`** (the package's own
+reviewed pin; the mirror's `main` HEAD is `7b928d82…`), `model.safetensors` **842,609,210 B**, sha256
+**`891102d372688fc2a094dac56a384bc537b87c63f21f9f3dac0be2b7cbc8d86c`**, 5 files, `laya` **0.3.26**.
+Established by a **real local run** (`docs/PREDICT_SMOKE_TEST.md`), verified fully offline
+(`HF_HUB_OFFLINE=1` gives a byte-identical stdout in 7 s), with **no API key** — the confirmatory path
+needs no network after the first download.
 
 ## The family, and why Phase I takes the root
 
@@ -98,6 +100,19 @@ state"*, returning a confident "no" for clearly positive input (upstream issue #
 workaround: ask the same question as a two-option `choice` with neutral keys. Phase I uses `noul` for
 `ok` and `escalate`. **Changing the primitive changes what is measured**, so this is decided on dev by
 measurement and frozen in the pre-run amendment.
+
+> **🔴 THIS DEFECT REPRODUCED ON THIS MACHINE (2026-10-04), so C2 is now MANDATORY, not optional.**
+> On three hand-written English items the `escalate` question returned a confident **"no"** every time
+> — `c` = 0.8783, 0.9698, 0.9358 — **including an item written to be clearly vague and therefore
+> escalate-worthy.** The `ok` question also failed to track the state sensibly: the one clearly
+> actionable item was the only sub-0.5 reading. **Both Phase I `noul` questions are affected.** The
+> two-option-`choice` workaround must be built and evaluated on dev, and the choice frozen, before any
+> confirmatory run. Evidence: `docs/PREDICT_SMOKE_TEST.md`; status recorded as **OPEN** in
+> `config/pin.json`.
+>
+> **Note for honesty:** a vague request answered with a confident "no, do not escalate" *is* the
+> phenomenon this protocol measures. Three items make it an **anecdote, not a result** — the protocol
+> must earn that finding on a powered design, and must not cite this smoke test as evidence for it.
 
 ## What this pin does NOT establish
 
