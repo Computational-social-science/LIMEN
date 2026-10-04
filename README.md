@@ -22,7 +22,7 @@ The programme therefore asks, in order:
 1. **Phase I.** Under English orthography, is keyboard-faithful typo noise a material disturbance of
    a typed-decision model's **understanding and control** — not merely a generation nuisance?
 2. **Phase II.** For matched intentions and comparable noise intensity, do the laws of
-   \((p, c, a)\) differ across orthographic channels beyond sampling error?
+   $(p, c, a)$ differ across orthographic channels beyond sampling error?
 
 The long-run target is cross-script structural bias. It is **not** claimed in Phase I.
 
@@ -39,13 +39,13 @@ Plain accuracy is not the endpoint. The protocol's estimands are the **control l
 
 | Quantity | Definition |
 |---|---|
-| \(\mathrm{Acc}(\lambda)\) | share of test items answered correctly, against noise intensity \(\lambda\) |
-| \(\mathrm{SilentError@}\tau(\lambda)\) | share that are **wrong and confident** — \(c \ge \tau\) on a wrong answer |
-| \(\mathrm{Coverage@}\varepsilon(\lambda)\) | share answered while holding accepted-item error at \(\le \varepsilon\) |
+| $\mathrm{Acc}(\lambda)$ | share of test items answered correctly, against noise intensity $\lambda$ |
+| $\mathrm{SilentError@}\tau(\lambda)$ | share that are **wrong and confident** — $c \ge \tau$ on a wrong answer |
+| $\mathrm{Coverage@}\varepsilon(\lambda)$ | share answered while holding accepted-item error at $\le \varepsilon$ |
 
-with the frozen confidence rule (choice: \(c = \max_j p_j\); noul: \(c = \max(p, 1-p)\)) and the gate
-\(g_\tau\): answer when \(c \ge \tau\), otherwise defer. \(\tau \in \{0.80, 0.90\}\) is pre-registered;
-the \(\tau^\star\) used for coverage is fitted **on dev only**.
+with the frozen confidence rule (choice: $c = \max_j p_j$; noul: $c = \max(p, 1-p)$) and the gate
+$g_\tau$: answer when $c \ge \tau$, otherwise defer. $\tau \in \{0.80, 0.90\}$ is pre-registered;
+the $\tau^\star$ used for coverage is fitted **on dev only**.
 
 ## The interface
 
@@ -69,7 +69,7 @@ The protocol names its own non-goals, and they bind this repository:
 - no confirmatory fine-tuning or QLoRA — the confirmatory arms **freeze θ**;
 - no paid API on the confirmatory path; local inference only;
 - no writing-system claim from English evidence;
-- no universal \(\lambda\) across languages without justification;
+- no universal $\lambda$ across languages without justification;
 - no leaderboard maximisation.
 
 ## Where things are

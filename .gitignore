@@ -16,3 +16,13 @@ measurement/out/
 
 # paper2agent conversion scratch (working dirs, not deliverables)
 .p2a-work/
+
+# Generated manuscript output. The HTML is derived from the anchor and stamped with its
+# sha256; the KaTeX distribution is third-party and copied in by the build.
+viz/katex/
+  # third-party KaTeX distribution, copied in by the build; never hand-edited
+viz/manuscript.html
+  # generated: rebuild with scripts/build_manuscript_html.py
+# NOTE: viz/protocol.md is deliberately NOT ignored. It is the byte-for-byte copy the build
+# read, and it is the recovery source - an entire section was once deleted by a bad edit and
+# restored from it. A backup excluded from version control is not a backup.

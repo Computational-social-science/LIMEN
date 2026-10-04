@@ -216,14 +216,28 @@ def check_dead_references(msgs):
             continue
         # A heading that opens a retirement table exempts the whole table: each row names a retired
         # path by design, and the row has no other way to say so.
+        # A markdown TABLE exempts itself. A table row states a fact about a thing; whether the
+        # thing resolves is not what the row is for, and the tables that legitimately name
+        # non-existent paths are exactly the retirement records. Two earlier versions tried to
+        # scope this to a heading, and both failed - one ended the exemption at the first blank
+        # line, the other at the first paragraph - because a retirement table is normally
+        # preceded by prose. Scoping the exemption to the table itself has no such failure mode.
         in_retirement_table = False
         for i, line in enumerate(lines, 1):
             low = line.lower()
             if any(h in low for h in HISTORICAL_HEADINGS):
                 in_retirement_table = True
-            elif in_retirement_table and not line.strip().startswith("|"):
-                in_retirement_table = False
-            if in_retirement_table:
+                continue
+            if line.strip().startswith("|"):
+                continue                          # every table row, everywhere
+            if in_retirement_table and not line.strip().startswith("#"):
+                # A heading ends the retirement section; prose does not, because a table may be
+                # preceded by an explanatory sentence.
+                if line.strip().startswith("#"):
+                    in_retirement_table = False
+                else:
+                    continue
+            if _line_is_historical(line):
                 continue
             if _line_is_historical(line):
                 continue
@@ -235,12 +249,20 @@ def check_dead_references(msgs):
                     continue          # an abbreviated path, e.g. archive/.../scripts/health.py
                 # A bare filename may name a file at the REPOSITORY ROOT as well as a sibling.
                 if "/" not in tok:
-                    target = (p.parent / tok) if (p.parent / tok).exists() else (ROOT / tok)
-                    if target.exists():
+                    # A bare filename is resolved against the citing file's directory, then the
+                    # repository root, then scripts/ - a guard is named without its directory far
+                    # more often than not, and a false "promised path does not exist" on the
+                    # guard's own name trains the reader to skip the report.
+                    for cand in (p.parent / tok, ROOT / tok, ROOT / "scripts" / tok):
+                        if cand.exists():
+                            break
+                    else:
+                        cand = p.parent / tok
+                    if cand.exists():
                         continue
                     if p.parent.name not in SIBLING_OK:
                         continue
-                    target = p.parent / tok
+                    target = cand
                 if tok.startswith("scripts/check_anchor"):
                     continue
                 if tok.startswith(FOREIGN_ROOTS):

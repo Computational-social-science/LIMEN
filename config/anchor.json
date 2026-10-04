@@ -1,17 +1,19 @@
 {
   "role": "GLOBAL ANCHOR - the programme's research objective. All other documents are subordinate.",
   "path": "protocol/NHB_Orthographic_Channels_JEV_Research_Protocol.md",
-  "version": "1.2",
-  "sha256": "347d90fb90ab52836950940744d2cf78304198b061b61b3545edf5522d3090ff",
-  "bytes": 24380,
-  "lines": 485,
+  "version": "1.3",
+  "sha256": "4eee55399628cfbc163a67f502dd8397fbf9a4c9519665c91281925e1f3dac0b",
+  "bytes": 40532,
+  "lines": 674,
   "version_consistency": {
-    "header": "1.2",
-    "section_14": "1.2",
-    "end_marker": "1.2",
+    "header": "1.3",
+    "section_14": "1.3",
+    "end_marker": "1.3",
     "consistent": true
   },
-  "objective_is": "sections 0.1 (thesis) and 1 (formal system model). A document disagreeing with those is drift, not a variant.",
+  "objective_is": "sections 0.1 (thesis), 0.3 (LIMEN) and 0.4 (claim, mechanism, objective, non-claim). A document disagreeing with those is drift, not a variant.",
   "does_not_anchor": "instruments, toolboxes, run logs, review records - admitted on the three criteria in docs/INSTRUMENT_POSTURE.md and used as shipped",
-  "recorded_at": "2026-10-04"
+  "recorded_at": "2026-10-04",
+  "rendered_manifest": "viz/manuscript.html (generated; carries this sha256 in its header)",
+  "equation_apparatus": "All 9 display equations carry the three-part apparatus a journal reader needs: a purpose sentence, the equation, and a note defining every symbol in terms the protocol already defines elsewhere. Equation numbers are implicit in document order; the renderer emits them."
 }

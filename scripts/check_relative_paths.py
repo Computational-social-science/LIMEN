@@ -35,9 +35,13 @@ import re
 import sys
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-SKIP_DIRS = {".git", "archive", "node_modules", "__pycache__", ".p2a-work", "dist", ".venv"}
+# Live files only. `viz/` is generated build output: `manuscript.html` is derived from the anchor
+# and stamped with its sha256, and `viz/katex/` is a vendored third-party distribution whose minified
+# bundle contains regular-expression fragments such as `l:/^` that the drive pattern would read as a
+# path on drive `l`. Neither is a file whose portability this project controls.
+SKIP_DIRS = {".git", "archive", "node_modules", "__pycache__", ".p2a-work", "dist", ".venv", "viz"}
 SKIP_SUFFIX = {".pdf", ".docx", ".png", ".jpg", ".jpeg", ".zip", ".gz", ".safetensors", ".ico",
-               ".xlsx", ".pptx", ".pyc"}
+               ".xlsx", ".pptx", ".pyc", ".woff", ".woff2", ".ttf", ".eot"}
 
 # Windows drive paths, POSIX absolute paths, and UNC paths.
 ABS = re.compile(
@@ -96,8 +100,73 @@ def scrub(text: str) -> str:
     """
     text = re.sub(r"```.*?```", lambda m: "\n" * m.group(0).count("\n"), text, flags=re.S)
     text = re.sub(r"`[^`\n]*`", lambda m: " " * len(m.group(0)), text)
-    text = re.sub(r"[A-Za-z][A-Za-z0-9+.-]*://[^\s`'\"|<>)]+", lambda m: " " * len(m.group(0)), text)
+    text = re.sub(r"[A-Za-z][A-Za-z0-9+.-]*://[^\s`'\"\|<>)]+", lambda m: " " * len(m.group(0)), text)
     text = re.sub(r"^#!.*$", lambda m: " " * len(m.group(0)), text)
+
+    # LaTeX in a Markdown document. `g_\tau:\quad` and `\\ ` (a row break) both contain a
+    # letter-colon-backslash that the drive pattern reads as a path on drive `t`. That is TeX, not a
+    # path - and the artefact under test in a `.md` file IS the LaTeX - so any span between math
+    # delimiters is pattern text and is scrubbed before the scan.
+    text = re.sub(r"\$\$.*?\$\$", lambda m: " " * len(m.group(0)), text, flags=re.S)
+    text = re.sub(r"(?<!\$)\$[^$\n]*\$(?!\$)", lambda m: " " * len(m.group(0)), text)
+
+    # A regex literal can contain something that looks like a machine path - e.g. a drive-letter
+    # class `[A-Za-z]:[\\/]` or the fragment `n:\*\*`. That is pattern text, not a path, so any span
+    # inside an r-string is blanked before the scan.
+    text = re.sub("r\"[^\"\\n]*\"", lambda m: " " * len(m.group(0)), text)
+
+    # A drive letter is a token START, so the character before it must not be a word character.
+    # `false:/true:` is a wire-format token in prose: the `e` is mid-word, so this is not a drive.
+    # The lookbehind below is what makes that distinction, and its absence is why the guard fired on
+    # a noul option pair - a comment describing the opposite of what the pattern did.
+    text = re.sub(r"(?<=[A-Za-z0-9_./\\]):/(?!/)(?=[A-Za-z])", " ", text)
+
+    # `Looked in:\n  "` in a Python string literal contains the two characters `:` and a backslash
+    # followed by `n`, which the drive pattern reads as drive `n`. A real drive path continues with
+    # path characters (`D:\new\file`), whereas an escape sequence is followed by whitespace or a
+    # closing quote - so requiring a path character after the separator separates the two without
+    # weakening the rule on any path this project could actually contain.
+    text = re.sub(r":[\\/][ntr](?=[\s\"'`)\]])", " ", text)
+
+    # A LaTeX COMMAND or delimiter. `\lambda`, `\Delta\tau^\star`, `\href` and the inline delimiter
+    # `\(s\)` all contain a backslash followed by characters that read as a path - and the guarders
+    # and the builder legitimately carry such literals, because their job is to compare against the
+    # anchor's LaTeX.
+    #
+    # The `(?<![A-Za-z]:)` guard is load-bearing and its absence is a hole, not a cosmetic issue:
+    # without it, `C:\new\file` loses `\new` to the TeX rule, the colon is left with nothing after it,
+    # and a REAL absolute path passes the scan. That was measured, not assumed. A drive letter is a
+    # token start; a TeX command never follows one.
+    #
+    # A command may carry subscript and superscript groups, and those groups may themselves contain
+    # commands (`\Delta\tau^\star`, `s_{\mathrm{en}}`). Matching a command plus ONE optional group
+    # therefore leaves the tail exposed, and the tail of `\tau^\star` reads as a path on drive `t`.
+    # Repeating the optional group is what makes the whole expression disappear - and that is what the
+    # `*` quantifier below does. An earlier version had `?` and fired on four legitimate TeX literals.
+    text = re.sub(r"(?<![A-Za-z]:)(?<![A-Za-z0-9_./\\])\\[A-Za-z]+(?:(?:\^|_)?\{[^{}\n]*\})*",
+                  " ", text)
+    # The inline delimiter form `\(` / `\)`: a backslash then punctuation, never a path separator.
+    text = re.sub(r"(?<![A-Za-z]:)(?<![A-Za-z0-9_./\\])\\(?![A-Za-z])[()\[\]]", " ", text)
+    # The same forms written with an ESCAPED backslash, which is how they appear inside a Python
+    # source file: four backslashes in the source are two in the string it builds. Without this the
+    # guard fires on every LaTeX literal a guard or a builder legitimately carries. The repeated
+    # optional group is needed here for the same reason as above: `\\Delta\\tau^\\star` leaves its
+    # tail exposed otherwise, and the tail reads as a path on drive `t`.
+    text = re.sub(r"(?<![A-Za-z]:)(?<![A-Za-z0-9_./\\\\])\\\\\\\\(?:[A-Za-z]+(?:(?:\^|_)?\{[^{}\n]*\})*"
+                  r"|(?![A-Za-z])[()\[\]])", " ", text)
+
+    # TeX groups NEST, and one pass cannot strip them all: `s_{\mathrm{en}}` loses `\mathrm{en}` to
+    # the command rule but leaves `s_{` and `}`, and the residue can still expose a drive-looking
+    # token. A measured probe - a file holding both a real `D:/` path and `s_{\mathrm{en}}` - showed
+    # exactly those leftovers. Scrubbing to a FIXED POINT removes them, and the fixed point is also what
+    # makes the result idempotent: running the guard twice must find what running it once found.
+    for _ in range(4):
+        before = text
+        text = re.sub(r"(?<![A-Za-z0-9_./\\])\{[^{}\n]*\}", " ", text)
+        text = re.sub(r"(?<![A-Za-z0-9_./\\])\\[A-Za-z]+", " ", text)
+        text = re.sub(r"(?<![A-Za-z0-9_./\\])\\(?![A-Za-z])[()\[\]]", " ", text)
+        if text == before:
+            break
     return text
 
 
