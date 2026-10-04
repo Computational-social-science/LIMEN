@@ -75,10 +75,10 @@ not in being noiseless.
 The vocabulary guard had been reporting `OK` across 51 live files for a session. **Its first negative
 control found a real blind spot in the same run.**
 
-**The defect.** The retired-script rule anchored its interpreter token to the start of the line:
-`^\s*(?:python|py|bash|...)\s+...\.py`. An instruction phrased as a **sentence** — *"Run
-`python scripts/run_with_heartbeat.py` before every launch"* — therefore **escaped entirely**. Every
-bare-command form was caught; every prose form was not.
+**The defect.** The retired-script rule anchored its interpreter token to the start of the line, so an
+instruction phrased as a **sentence** — *"Run `python` on the archived heartbeat script before every
+launch"* — therefore **escaped entirely**. Every bare-command form was caught; every prose form was
+not.
 
 **Why it matters beyond this repository.** That rule is the one that stops a live document telling a
 future session to execute a script that has been archived. It was catching the form a runbook is
