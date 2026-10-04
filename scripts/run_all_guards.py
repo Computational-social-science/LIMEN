@@ -46,6 +46,8 @@ GUARDS: list[tuple[str, tuple[str, ...], str]] = [
     ("check_pin_integrity.py", ("--negative-test",), "the pin guard fails on absent file and wrong digest"),
     ("check_lean_axioms.py", (), "no theorem depends on sorryAx"),
     ("check_lean_axioms.py", ("--negative-test",), "the axiom guard catches a sorry-proved theorem"),
+    ("check_lean_status_freshness.py", (),
+     "the status record's figures are the figures on disk"),
 ]
 
 # Guards that need something outside this repository. They are reported separately rather than mixed

@@ -6,13 +6,19 @@ artifact rebuilds offline in seconds with zero dependency resolution.
 ## STATUS: COMPLETE AND MACHINE-VERIFIED
 
 ```
-source files          : 1  (lean-nhb: NHB/PhaseI/Core.lean, 203 lines)
+source files          : 1  (lean-nhb: NHB/PhaseI/Core.lean, 273 lines)
 lake build            : Build completed successfully (4 jobs)
 errors remaining      : 0      <- MEASURED, not estimated
 sorry / admit / axiom : 0      <- grep AND Lean's own #print axioms, see below
-theorem count         : 10
-theorems machine-checked: 10   <- every one, verified by Lean's kernel
+theorem count         : 13
+theorems machine-checked: 13   <- every one, verified by Lean's kernel
 ```
+
+**These numbers are generated, not typed.** `scripts/check_lean_status_freshness.py` re-derives every
+figure in this block from the Lean source and the build, and fails if any of them disagrees. It exists
+because this block said `10` for a full session after two theorems had been added and every other
+document had already been updated to `12` — nothing was wrong with the formalisation, and everything was
+wrong with the record of it, which is the one artefact a reader actually has to trust.
 
 ### The check that matters, and why grep is not it
 
@@ -24,7 +30,7 @@ So the guard asks **Lean's kernel** instead, via `#print axioms`:
 
 ```
 $ python scripts/check_lean_axioms.py
-OK: 10 theorem(s), none depends on sorryAx; allowed axioms only
+OK: 13 theorem(s), none depends on sorryAx; allowed axioms only
     ['Classical.choice', 'Quot.sound', 'propext']
 ```
 
@@ -86,6 +92,9 @@ several meet the budget. The mathematics needed to close that is small and entir
 | `coverage_decreases_along_admissibles` | coverage decreases as tau increases |
 | `empty_dev_is_degenerate` | an empty dev set admits everything and covers nothing |
 | `silent_iff_acceptedAndWrong` | `SilentError@tau` and the accepted-error rate are **one** quantity |
+| `least_admissible_maximises_coverage` | the §B1 tie-break rule, proved in full (§B1 below) |
+| `least_admissible_is_at_least_as_good` | the guarantee is a maximum, **not** a strict one |
+| `protocol_said_nondecreasing_is_FALSE` | the §6 wording "non-decreasing in τ" is **refuted by `decide`** |
 
 That last row matters for the paper: it makes explicit that the noisy-channel framing's `P_e` and the
 protocol's `SilentError@tau` estimand name the same number, not two related ones.

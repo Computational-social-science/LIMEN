@@ -77,7 +77,7 @@ def print_axioms(lean_file: pathlib.Path, lean_root: pathlib.Path,
     # Absent output reads exactly like "axiom-free" - a false green, which is the one failure mode
     # this check exists to prevent. Two things guard against it here: LEAN_PATH is set explicitly to
     # the build output, and an empty result raises rather than passing silently.
-    env["LEAN_PATH"] = str(lean_root / ".lake" / "build" / "lib")
+    env["LEAN_PATH"] = str(lean_root / ".lake" / "build" / "lib" / "lean")
 
     # On Windows the executable is `lake.exe`; asking for `lake` makes subprocess raise WinError 2,
     # because PATH lookup there does not append PATHEXT. A first version of this check silently found
@@ -94,16 +94,26 @@ def print_axioms(lean_file: pathlib.Path, lean_root: pathlib.Path,
         scratch.unlink(missing_ok=True)
 
     out = proc.stdout + proc.stderr
-    if "depends on axioms" not in out:
+    if "depends on" not in out and "does not depend on" not in out:
         raise RuntimeError(
             f"`{lake} env lean` returned no `#print axioms` lines (rc={proc.returncode}). The check "
             f"would report every theorem as axiom-free by ABSENCE OF EVIDENCE, which is how a sorry "
             f"would slip through. Output was:\n{out[:800]}")
+
+    # TWO WORDINGS, AND THE SECOND ONE MATTERS. Lean prints
+    #     'name' depends on axioms: [propext, Quot.sound]
+    # but for a theorem proved by `decide` with no classical reasoning it instead prints
+    #     'name' does not depend on any axioms
+    # A regex matching only the first form classifies the cleanest possible result as "not covered",
+    # which is what happened here: protocol_said_nondecreasing_is_FALSE is a `decide` theorem, it was
+    # reported as unmeasured, and the guard was reporting a gap that did not exist.
     result = {}
     for m in re.finditer(r"'([\w.]+)' depends on axioms: \[([^\]]*)\]", out):
         name = m.group(1).rsplit(".", 1)[-1]
         deps = [d.strip() for d in m.group(2).split(",") if d.strip()]
         result[name] = deps
+    for m in re.finditer(r"'([\w.]+)' does not depend on any axioms", out):
+        result.setdefault(m.group(1).rsplit(".", 1)[-1], [])
     return result
 
 

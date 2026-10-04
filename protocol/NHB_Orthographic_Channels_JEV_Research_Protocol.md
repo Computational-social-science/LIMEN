@@ -507,7 +507,7 @@ $$
 \mathrm{SilentError@}\tau(s,\lambda) = \frac{1}{|\mathcal{T}|}\sum \mathbb{1}\{\hat y \neq y^\star \wedge c \ge \tau\}
 $$
 
-where $c \ge \tau$ is the gate's own commit condition (equation (5)). **This metric carries the programme's thesis**, because it counts only trials on which the model both committed and was wrong — the subset no accuracy figure can see. It is $P_e$ in the noisy-channel reading of §0.1. Note it is **non-decreasing in $\tau$**, which is why §3.4 pre-registers $\tau$ rather than choosing it after seeing the curve, and why $\tau^\star_\varepsilon$ must be fit on **dev** only (§4.4a).
+where $c \ge \tau$ is the gate's own commit condition (equation (5)). **This metric carries the programme's thesis**, because it counts only trials on which the model both committed and was wrong — the subset no accuracy figure can see. It is $P_e$ in the noisy-channel reading of §0.1. Note it is **non-increasing in $\tau$** — a stricter gate cannot admit more errors — and **verified by machine**, not merely argued: `risk_mono` in the `lean-nhb` formalisation proves $a \le b \Rightarrow \mathrm{Risk}\, b \le \mathrm{Risk}\, a$ over the protocol's own definitions (`scripts/check_lean_axioms.py` reports no `sorryAx`). **The direction matters and an earlier draft had it backwards**, saying "non-decreasing": Lean's kernel settles it, and on a two-item sample $\{\{c{=}3, \mathrm{wrong}\}, \{c{=}9, \mathrm{wrong}\}\}$ the count runs $2, 1, 1, 0$ at $\tau = 2, 5, 9, 10$ — falling, not rising. This is also why §3.4 pre-registers $\tau$ rather than choosing it after seeing the curve, and why $\tau^\star_\varepsilon$ must be fit on **dev** only (§4.4a).
 
 
 $$
