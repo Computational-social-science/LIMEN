@@ -52,6 +52,15 @@ in A2 are consistent with the corrected entry, not with the wrong one.
 **Measured inputs** (GPU pilot, pinned Laya English root, λ ∈ {0, 0.05, 0.12}, `noise_seed = 0`,
 120 items, 360 trials, 0 failures; `measurement/pilot_results.json`, sha256 `f7373c79…`):
 
+> **⚠️ ERRATUM — read `docs/PHASE_I_ERRATUM_1_PI_D.md` before using π_d from this table.**
+> The π_d below was **over-counted** by including items that were wrong on **both** sides of the pair
+> (so-called "relabels": the argmax moved to another non-gold option, leaving the binary outcome
+> unchanged). **The McNemar-correct value is π_d = 22/120 = 0.1833**, requiring `N_test = 574`.
+> **The frozen `N_test = 652` is nevertheless KEPT**, because in this formula a larger π_d demands a
+> larger N, so the over-count pushed N **upwards** — the error is conservative, not under-powering.
+> Found by an independent replay of the pilot through `measurement/run_phase1.py`, which reproduced the
+> clean accuracy to the item (104/120, difference +0.0000) and the raw flip counts exactly.
+
 | Quantity | Measured | Interval |
 |---|---|---|
 | π_d, clean → mid | **0.2083** (25/120) | Wilson 95% [0.145, 0.289] |
