@@ -56,7 +56,7 @@
     },
     "package_behaviour": "an out-of-range entry is clamped to 0.5 at load, with the warning 'Treat confidence from the affected entries as uncalibrated'",
     "bearing_on_phase_I": "EXACTLY ONE entry is out of range: choice:11+ = 0.1006, below the 0.5 floor. The Phase I bank uses 2-4 options per choice question, so the entries actually exercised are choice:2 (1.906) and choice:3-5 (1.760) - both in range. The invalid entry is NOT exercised by Phase I. However the warning is emitted at load for the whole map, so it appears in every run log and must not be read as a defect in our runs. Recorded because a reader who sees the warning should find this note.",
-    "consequence": "the dev-fitted temperature refit (C1) is mandatory and regenerates this map on dev."
+    "consequence": "NO refit is applied. The instrument is used AS SHIPPED: the research question is about this instrument's control law, and refitting c would substitute a different instrument. See docs/INSTRUMENT_POSTURE.md."
   },
   "drift_record": {
     "note": "a second, LARGER copy was downloaded at main=7b928d82 (39 files, 2.37 GB) before the package pin was noticed. It is NOT the pin and no runner uses it.",

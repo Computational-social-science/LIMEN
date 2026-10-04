@@ -95,11 +95,13 @@ Local inference only; no API on the confirmatory path.
 **Two facts about this instrument are load-bearing and are disclosed here rather than buried:**
 
 1. **It ships over-confident.** Its own model card reports a mean ECE of 0.466 falling to 0.081 after a
-   temperature refit per (question type, option count). **The refit is part of setting up the
-   instrument, not part of the test:** it is fitted on dev, frozen before the confirmatory run, and its
-   data is excluded from the test set. The protocol's confidence *rule* (`c = max_j p_j` for choice;
-   `c = max(p, 1-p)` for noul) is unchanged. Without this step the `SilentError@τ` estimate would be an
-   artefact of the model's optimism rather than a property of its control behaviour.
+   temperature refit per (question type, option count). **The refit will NOT be applied.** The
+   instrument is used **as shipped**, and the reason is not economy: the research question is about
+   *this* instrument's control law, and `c` enters that law directly. Passing `p` through a map fitted
+   on our own dev data would measure the control law of **a different instrument** -- one we built --
+   and would swap the object of study mid-protocol. **So the shipped over-confidence is reported as
+   the instrument's real property**, with the vendor's own figures quoted as the vendor's. See
+   `docs/INSTRUMENT_POSTURE.md`.
 2. **Its `noul` primitive is reported to sometimes follow its option labels rather than the state.** The
    card documents a workaround (ask the same question as a two-option `choice` with neutral keys). Since
    Phase I uses `noul` for two of its three questions, the choice between direct `noul` and the
@@ -130,11 +132,12 @@ merely by hash.**
    entry is not reachable by this design.** But the warning fires at load for the whole map, so it
    appears in every run log and **must not be read as a defect in our runs**.
 
-**On the refit, restated because the above sharpens it.** Fact 3 shows the shipped map is not
-universally valid, which is why the dev-fitted temperature refit (C1) is a **mandatory** pre-run step
-rather than a nicety: it replaces the shipped map with one fitted on dev and frozen before the
-confirmatory run. The protocol's confidence *rule* (`c = max_j p_j` for choice; `c = max(p, 1-p)` for
-noul) is unchanged by it.
+**On the temperature map, restated because the above sharpens it -- and corrected.** Fact 3 does not
+schedule a repair. The out-of-range entry (`choice:11+`) is **unreachable at 2-4 options**, so it
+cannot touch a Phase I number, and the map is **left exactly as shipped**. An earlier version of this
+section called a dev-fitted refit **mandatory**; that was the wrong posture and is withdrawn. A refit
+would substitute a different instrument and measure that instead. The shipped properties are
+**disclosed as limitations**, not removed -- `docs/INSTRUMENT_POSTURE.md`.
 
 ## 4. Materials
 
@@ -165,8 +168,8 @@ threats it survived is not a Stage 1.
 | **CONSTRUCT VALIDITY — the accuracy is too high to be the intended task** ⚠️ | **MATERIALISED.** 0.8667 stands against the model card's claimed **0.362** for this checkpoint — a 24-point gap — and *exceeds* the card's fine-tuned figure (0.766). The likeliest cause is that the protocol's own §3.1 `criteria` field names each option's decision rule, making the intent task easy. | Recorded as a **measured** finding, not a contingency. Decision on retaining `criteria` is **open** and is the programme owner's (Amendment 1 §A4); it **must be settled before the confirmatory run**, because it determines what the headline endpoint measures. |
 | **Gold-label subjectivity** | **PARTIAL.** Ambiguity-as-rejection was applied (12 items rejected, ~9 %, reported). But gold was **agent-assigned with no human pass** — a departure from this table's stated standard. | Disclosed, not smoothed. A human pass or a consistency audit is now a **required** step, not a mitigation. Inter-annotator agreement cannot be reported until it exists. |
 | **Construction bias in a newly built bank** | The bank's counts per domain, per option-count and per split are published. | Adjudication codebook written before labelling; option count varies so chance accuracy is not constant; structure published. |
-| **Instrument miscalibration** | Partially exercised: the raw (unrefit) distribution was used, and clean `SilentError@0.9` came out **0.0000**. | The temperature refit is a **mandatory** pre-run step (Amendment 1 §A5), not optional — an unrefit `SilentError@τ` is an artefact of the model's optimism. Raw and refitted distributions both reported. |
-| **Primitive substitution** | Not decided (needs the refit first). | Decided on dev, frozen in the amendment, **disclosed as a deviation from the protocol's literal wire format** if taken. |
+| **Instrument miscalibration** | Partially exercised: the raw (unrefit) distribution was used, and clean `SilentError@0.9` came out **0.0000**. | **No refit is applied** (`docs/INSTRUMENT_POSTURE.md`). The shipped `c` is the instrument's real behaviour, which is what the claim is about. The shipped over-confidence is reported as a disclosed property; the vendor's after-refit ECE is quoted as the vendor's figure, not adopted as ours. |
+| **Primitive substitution** | Not yet decided on dev -- and this one is measurement validity, not tuning: if `noul` follows its labels the numbers are void. | Decided on dev, frozen in the amendment, **disclosed as a deviation from the protocol's literal wire format** if taken. |
 | **Contamination of the fine-tune's domain** | Not applicable to the root checkpoint, which is what was pinned. | This is why the **root** checkpoint is pinned, not `laya-typed-decisions` — and the revision `7b928d82…` contains **three** variants, so the pin names the root explicitly rather than saying "Laya" (`docs/PHASE_I_PIN.md`). |
 | **Inference-unit inflation** | Pilot MDE at N = 120 was **11.67 pp**, and the observed 8.33-pp drop was **not** significant. The pilot is therefore reported as a **non**-finding. | Item-level inference with item random intercepts; N now frozen at 652 for a 5-pp δ (Amendment 1 §A2). |
 | **Phase creep** | — | Phase II files its own pre-registration only after Phase I instruments are frozen; Phase I is never re-opened afterwards. |
@@ -217,7 +220,7 @@ measurement that set it.
 | **O3** | The confirmatory item bank | Built to the frozen spec; **size now bound at 932 by O2**. Four design approvals outstanding (`docs/ITEM_BANK_SPEC.md`): domain scope, option counts, bank size, gold labeller. | **OPEN** |
 | **A4(3)** | Whether `criteria` is weakened | Programme owner's decision (Amendment 1 §A4). Weakening **invalidates the N above** and forces a re-pilot. | **OPEN — blocks the seal** |
 | **S12-4** | The instrument pin | Revision hash + per-file sha256 recorded at immutable revision `7b928d82…`; the **root** variant named explicitly, since the revision contains three. | **IN PROGRESS** |
-| **C1/C2** | `noul` calibration | Temperature refit on dev, and the decision between direct `noul` and the two-option `choice` workaround. Mandatory before the run. | **OPEN** |
+| **C2** | the `noul` primitive | The decision between direct `noul` and the two-option `choice` workaround, on dev evidence. **Measurement validity, not instrument tuning.** (C1, the temperature refit, is **dropped** -- `docs/INSTRUMENT_POSTURE.md`.) | **OPEN** |
 
 ## 8. Scale of work, and why a single consumer GPU suffices
 

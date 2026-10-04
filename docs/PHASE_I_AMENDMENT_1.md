@@ -161,12 +161,18 @@ because it determines what the headline endpoint means.
 
 ## A5 — What remains OPEN after this amendment
 
+> **Posture correction (2026-10-04).** An earlier version of this table listed a temperature refit as
+> **mandatory**. That was instrument *optimisation*, which this programme's rule forbids: the object of
+> study is the **shipped** instrument's control law, and refitting `c` would measure a different one.
+> The refit is **dropped**; the shipped map is **disclosed** instead. Full ruling:
+> `docs/INSTRUMENT_POSTURE.md`.
+
 | Item | State |
 |---|---|
 | **O1** — λ levels (§4.2) | **OPEN.** Needs the readability calibration: who reads, and what counts as readable, must be stated before the ladder is scored. |
 | **O3** — item bank (§4.3) | **OPEN.** Four design approvals outstanding in `docs/ITEM_BANK_SPEC.md` (domain scope, option counts, bank size, gold labeller). Bank size is now **bound by A2 at 932**. |
 | **§12 item 4** — model pin | **INCOMPLETE** (revision hash + per-file digests pending download; blocks confirmatory prediction). |
-| **C1 / C2 calibration of `noul`** | **OPEN.** The pilot applied the shipped softening temperatures as-is and flagged that `escalate` noul is strongly confident-no; calibration is mandatory before the confirmatory run and is not a design change. |
+| **C2 -- the `noul` primitive** | **OPEN.** The pilot applied the shipped temperatures as-is and flagged that `escalate` noul is strongly confident-no. The remaining question is whether `noul` follows **the state or its labels** -- measurement validity, decided on dev. **C1 (a temperature refit) is DROPPED as instrument optimisation**; the instrument is used as shipped and its properties disclosed (`docs/INSTRUMENT_POSTURE.md`). |
 
 **This amendment does not seal the pre-registration.** Sealing requires A4(3) to be decided, O1 and O3
 to be frozen, and the pin to be completed. Until then the confirmatory run may not start.

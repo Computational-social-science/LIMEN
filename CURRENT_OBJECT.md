@@ -230,11 +230,11 @@ correctness.
 | 2. English intent items + gold | **SPEC WRITTEN, NOT BUILT** | `docs/ITEM_BANK_SPEC.md`; four approval points left open for the researcher (domain scope, option counts, bank size, who labels gold). |
 | 3. `N_en` noise generator | **IN PROGRESS (delegated)** | Classes fixed (QWERTY-adjacent substitution, transposition, deletion, insertion); λ rates pending a readability calibration (O1). |
 | 4. `predict → JSONL` | **IN PROGRESS (delegated)** | Schema is the protocol's §3.5. The runner must reach Laya, not the superseded pin. |
-| 5–6. Fit τ\*, test H1.1–H1.3 | **BLOCKED** | O2 **RESOLVED** (`docs/PHASE_I_AMENDMENT_1.md` §A2: π_d = 0.2083 → `N_test = 652`, bank = 932) and §12 item 4 (the pin) is now **FIXED NOW**. Still blocked on: **the item bank** (O3 — 4 design approvals outstanding, now bound at 932 items), **the λ rates** (O1 — readability calibration), **A4(3)** — whether to weaken the `criteria` field, which would invalidate the frozen N and force a re-pilot — and **C1/C2** (the `noul` / temperature-refit calibration, now known to be mandatory because the shipped map has an out-of-range entry). The pre-registration is **not sealed** and the confirmatory run may not start. |
+| 5–6. Fit τ\*, test H1.1–H1.3 | **BLOCKED** | O2 **RESOLVED** (`docs/PHASE_I_AMENDMENT_1.md` §A2: π_d = 0.2083 → `N_test = 652`, bank = 932) and §12 item 4 (the pin) is now **FIXED NOW**. Still blocked on: **the item bank** (O3 — 4 design approvals outstanding, now bound at 932 items), **the λ rates** (O1 — readability calibration), **A4(3)** — whether to weaken the `criteria` field, which would invalidate the frozen N and force a re-pilot — and **C2** -- the `noul` primitive's measurement validity. **C1 (a temperature refit) is DROPPED**: the instrument is used **as shipped**, because refitting `c` would measure a different instrument (`docs/INSTRUMENT_POSTURE.md`). The pre-registration is **not sealed** and the confirmatory run may not start. |
 | 7. Freeze all artefacts | **NOT STARTED** | — |
 
 **Two pin-time calibrations are outstanding and belong before the seal** (`docs/PHASE_I_PIN.md`):
-a temperature refit per (question type, option count) — the checkpoint ships over-confident — and a
+**no** temperature refit (the checkpoint is used as shipped; `docs/INSTRUMENT_POSTURE.md`) and a
 decision on whether `noul` is used directly or via the documented two-option-`choice` workaround.
 Both are decided on dev and frozen; neither may be revisited after the confirmatory results are seen.
 

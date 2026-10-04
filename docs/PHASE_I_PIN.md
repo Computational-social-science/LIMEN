@@ -84,20 +84,26 @@ result["routing"]["model"]
 
 ## Instrument calibration this pin requires — belongs to the pin, not to the test
 
-The model card discloses two defects that bear directly on the protocol's instrument. **Both are
-calibrated on dev only, before the pre-registration is sealed; their data is excluded from the
-confirmatory test set; neither may be revisited after the confirmatory results are seen.**
+The model card discloses two things that bear directly on the protocol's instrument. **One is a
+limitation to disclose; the other is a validity question to settle.** Neither is a tuning step — see
+`docs/INSTRUMENT_POSTURE.md`.
 
-**C1 — temperature refit.** The card states the model *"ships over-confident"* and that *"refitting one
-temperature per (question type, option count) moves mean ECE 0.466 → 0.081"* on this checkpoint. The
-gate `g_τ` and the `SilentError@τ` estimand both consume `c`; an uncalibrated `c` would make the
-control-law measurement an artefact of the model's optimism. The refit is instrument setup.
-**The protocol's §3.3 confidence *rule* is unchanged** (`c = max_j p_j` for choice, `c = max(p, 1-p)`
-for noul); what changes is the distribution the rule is applied to, declared and frozen here.
+**C1 — temperature refit: DROPPED.** The card states the model *"ships over-confident"* and that
+*"refitting one temperature per (question type, option count) moves mean ECE 0.466 → 0.081"*. An
+earlier version of this document scheduled that refit as instrument setup. **That was the wrong
+posture and is withdrawn.** The gate `g_τ` and the `SilentError@τ` estimand both consume `c`, and the
+research question is about **this instrument's** control law; passing `c` through a map fitted on this
+programme's dev data would substitute a different instrument and measure that instead. **The
+instrument is used as shipped.** Its shipped over-confidence is **reported as a disclosed property**,
+with the vendor's after-refit figure quoted as the vendor's, not adopted as ours. The protocol's §3.3
+confidence *rule* (`c = max_j p_j` for choice, `c = max(p, 1-p)` for noul) is applied unchanged to the
+shipped distribution.
 
-**C2 — `noul` sanity.** The card warns that `noul` *"can follow its option labels instead of the
-state"*, returning a confident "no" for clearly positive input (upstream issue #156), and documents a
-workaround: ask the same question as a two-option `choice` with neutral keys. Phase I uses `noul` for
+**C2 — `noul` sanity: OPEN, and it is measurement validity, not tuning.** The card warns that `noul`
+*"can follow its option labels instead of the state"*, returning a confident "no" for clearly positive
+input (upstream issue #156), and documents a workaround: ask the same question as a two-option
+`choice` with neutral keys. **If the primitive does not measure what §3.1 says it measures, every
+number computed from it is void** — which is why this one stays. Phase I uses `noul` for
 `ok` and `escalate`. **Changing the primitive changes what is measured**, so this is decided on dev by
 measurement and frozen in the pre-run amendment.
 

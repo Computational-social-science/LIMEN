@@ -115,17 +115,17 @@ swapped mid-phase.
 
 ## Instrument calibration this pin requires (belongs to the pin, not to the test)
 
-Laya ships over-confident. Two calibrations are therefore part of **setting up the instrument**, on
-**dev only**, and are frozen before the confirmatory run:
+Laya ships over-confident. Under the admission test of `docs/INSTRUMENT_POSTURE.md`, **that is a
+disclosed property of an ADMITTED component — not a calibration task.** Nothing here is tuned.
 
-| Item | Why | Where it goes |
+| Item | Status | Why |
 |---|---|---|
-| **Temperature refit per (question type, option count)** | Card: mean ECE 0.466 → 0.081 after refit | Pre-run amendment; applied to the frozen `c` used by `g_τ` |
-| **`noul` sanity check** | Card: `noul` can follow its option labels and answer a confident "no" on clearly positive input (#156), with a documented workaround (ask as a two-option `choice` with neutral keys) | Pre-run amendment: either the direct `noul`, or the documented workaround — decided by measurement on dev, then frozen |
+| **Temperature refit per (question type, option count)** | **DROPPED** | Card: mean ECE 0.466 → 0.081 after refit. **Not performed.** The research question is about *this* instrument's control law, and `c` enters that law; refitting `c` on our dev data would substitute a different instrument. The **shipped** ECE is reported as the instrument's real property; the vendor's after-refit figure is quoted as the vendor's. |
+| **`noul` sanity check** | **OPEN — measurement validity, not tuning** | Card: `noul` can follow its option labels and answer a confident "no" on clearly positive input (#156), with a documented workaround (ask as a two-option `choice` with neutral keys). **If the primitive does not measure what §3.1 says, every number from it is void** — which is why this one stays. Decided by measurement on dev, then frozen. |
 
-Both are **instrument calibration**, so they run before the pre-registration is sealed and their data
-is excluded from the confirmatory test set. Neither may be revisited after the confirmatory results
-are seen.
+**The temperature refit was previously scheduled here as instrument setup. That was the wrong posture
+and is withdrawn** (`docs/INSTRUMENT_POSTURE.md`): this programme judges a tool on three criteria —
+usable, scientific, reproducible — and then uses it as shipped. It does not improve it.
 
 ## What this decision retires
 
