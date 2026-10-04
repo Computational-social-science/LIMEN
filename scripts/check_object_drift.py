@@ -66,12 +66,16 @@ RETIRED_ARTIFACTS = [
 # carries CRLF…") matched an earlier, looser form of the first rule. Requiring `python`/`py`/`bash`/
 # `sh`/`make`/`pytest` before the name keeps the rule to genuine invocations.
 RETIRED_RUN_PATTERNS = [
-    (re.compile(
-        r"^\s*(?:python[0-9.]*|py|bash|sh|make|pytest)\s+"          # interpreter required
-        r"(?:-m\s+)?(?:\./|\.\./)*(?:scripts/)?"
-        r"(check_arm0_spec|check_edit_guard|quarantine_arm0|audit_dashboard|build_v1_env|"
-        r"export_health_state|health|run_with_heartbeat|calibrate_against_release)\.py\b"),
-     "runs a retired script"),
+    # The line may begin with prose — "Run `python scripts/x.py` first" — so the interpreter token
+          # is required but NOT anchored to the start of the line. **Anchoring it was a real blind spot,
+          # and the negative control is what found it:** the guard reported OK across a repository for a
+          # day while any instruction phrased as a sentence rather than as a bare command escaped it.
+          (re.compile(
+              r"(?:python[0-9.]*|py|bash|sh|make|pytest)\s+"
+              r"(?:-m\s+)?(?:\./|\.\./)*(?:scripts/)?"
+              r"(check_arm0_spec|check_edit_guard|quarantine_arm0|audit_dashboard|build_v1_env|"
+              r"export_health_state|health|run_with_heartbeat|calibrate_against_release)\.py\b"),
+           "runs a retired script"),
     (re.compile(r"^\s*(?:from|import)\s+(?:jevrsi|rsijev)\b"),
      "imports a retired package"),
     (re.compile(r"^\s*git\s+(?:revert|reset|checkout)\b.*\barm0\b"),
@@ -211,13 +215,81 @@ def check_concepts(files: list[Path], root: Path) -> list[str]:
     return findings
 
 
+def negative_test(root: Path) -> int:
+    """Prove the guard fires. A guard that has never failed is not a guard.
+
+    Three classes are exercised, one defect each, injected into a scratch file that is deleted
+    afterwards. The repository's own files are never modified, so the control cannot leave the tree in
+    a state where a real defect is masked.
+
+    A guard that reports findings on a clean tree, or stays silent on an injected defect, is itself
+    the defect this function exists to catch.
+    """
+    scratch = root / "docs" / "__drift_negative_control__.md"
+    results = []
+
+    baseline = (check_artifacts(root)
+                + check_instructions(tracked_and_live_files(root), root)
+                + check_concepts(tracked_and_live_files(root), root))
+    results.append(("clean tree reports no drift", len(baseline) == 0))
+
+    # Class C: a retired CONCEPT asserted without a retirement marker anywhere in the file.
+    scratch.write_text(
+        "# probe\n\n"
+        "The arm0 harness is the model this repository trains.\n",
+        encoding="utf-8")
+    findings = check_concepts(tracked_and_live_files(root), root)
+    results.append(("retired concept asserted without a marker is caught",
+                    any("__drift_negative_control__" in f for f in findings)))
+    scratch.unlink()
+
+    # Class B: an instruction to RUN a retired script.
+    scratch.write_text(
+        "# probe\n\n"
+        "Run `python scripts/run_with_heartbeat.py` before every launch.\n",
+        encoding="utf-8")
+    findings = check_instructions(tracked_and_live_files(root), root)
+    results.append(("instruction to run a retired script is caught",
+                    any("__drift_negative_control__" in f for f in findings)))
+    scratch.unlink()
+
+    # Class C negative-of-negative: the SAME concept WITH a retirement marker must NOT fire,
+    # because naming what was retired is the opposite of drift.
+    scratch.write_text(
+        "# probe\n\n"
+        "This documents a RETIRED object. JevRSI is retired and is not a target.\n",
+        encoding="utf-8")
+    findings = check_concepts(tracked_and_live_files(root), root)
+    results.append(("retired concept WITH a retirement marker does not fire",
+                    not any("__drift_negative_control__" in f for f in findings)))
+    scratch.unlink()
+
+    if scratch.exists():
+        scratch.unlink()
+
+    print("negative control:")
+    ok = True
+    for name, passed in results:
+        print(f"  [{'OK' if passed else 'MISS'}] {name}")
+        ok = ok and passed
+    print(f"  scratch removed: {'YES' if not scratch.exists() else 'NO'}")
+    print(f"\n  {'ALL CONTROLS PASS' if ok else 'CONTROL FAILURE — the guard is not trustworthy'}")
+    return 0 if ok else 1
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--root", default=".", help="repository root")
     ap.add_argument("--verbose", action="store_true")
+    ap.add_argument("--negative-test", action="store_true",
+                    help="inject each defect class and require the guard to fire on all of them")
     args = ap.parse_args()
 
     root = Path(args.root).resolve()
+
+    if args.negative_test:
+        return negative_test(root)
+
     files = tracked_and_live_files(root)
 
     findings = check_artifacts(root) + check_instructions(files, root) + check_concepts(files, root)

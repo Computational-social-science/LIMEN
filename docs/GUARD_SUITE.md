@@ -5,7 +5,7 @@ failed is not a guard, so every one of these can be asked to prove it fails.
 
 | Guard | Checks | Negative control |
 |---|---|---|
-| `scripts/check_object_drift.py` | **Vocabulary.** Retired-object terms appearing in live files. | injects each rule class |
+| `scripts/check_object_drift.py` | **Vocabulary.** Retired-object terms appearing in live files. | **`--negative-test`**: clean tree, concept without a marker, instruction to run a retired script, and the negative-of-negative (concept WITH a retirement marker must NOT fire) |
 | `scripts/check_relative_paths.py` | **Rule 1 of `global-research-project-rules`** — no absolute paths. | injects an absolute path into a script and into a document |
 | `scripts/check_anchor.py` | **Anchor integrity** — the objective is present, version-coherent, uncontradicted, and its promised paths resolve. | injects hash drift, version disagreement, a dead reference, an authority claim |
 
@@ -69,3 +69,26 @@ fragment of a regular expression, and a Windows path that is part of a longer li
 advisory rather than blocking, and they are the residue of a heuristic scan. A perfect scanner for
 "is this a path" is not achievable by pattern alone, and the guard's value is in the blocking cases,
 not in being noiseless.
+
+## What the drift guard's negative control immediately found
+
+The vocabulary guard had been reporting `OK` across 51 live files for a session. **Its first negative
+control found a real blind spot in the same run.**
+
+**The defect.** The retired-script rule anchored its interpreter token to the start of the line:
+`^\s*(?:python|py|bash|...)\s+...\.py`. An instruction phrased as a **sentence** — *"Run
+`python scripts/run_with_heartbeat.py` before every launch"* — therefore **escaped entirely**. Every
+bare-command form was caught; every prose form was not.
+
+**Why it matters beyond this repository.** That rule is the one that stops a live document telling a
+future session to execute a script that has been archived. It was catching the form a runbook is
+written in (a command block) and missing the form a runbook is *read* in (a sentence).
+
+**Why the fix is in the guard and not in the probe.** The probe was written as a sentence on purpose,
+because a probe that only tests the form already covered proves nothing. The pattern was un-anchored
+from the interpreter token, and **both** forms were then verified to fire, so relaxing it did not
+weaken the detection it already had.
+
+**The general lesson, which is the reason this is recorded rather than just fixed.** A guard that has
+never been asked to fail is being trusted on the strength of its own output. This one printed a clean,
+confident `OK` for a session while missing a whole syntactic class of the thing it exists to catch.
