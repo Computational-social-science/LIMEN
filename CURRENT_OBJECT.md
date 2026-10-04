@@ -127,18 +127,46 @@ These were built during R1 but are not about R1's object. The current object nee
 
 ---
 
+## The JEV link is instrumentation, not an object of study (2026-10-04)
+
+The pipeline this programme measures with is a **toolbox**. Choosing it is **not a research question**
+and it is **not to be optimised**. The criterion, fixed by the programme owner, is:
+
+> **the best option in the current JEV ecosystem that is free of academic controversy and openly
+> accessible — then use it and leave it alone.**
+
+Selected: **`convaiinnovations/laya`** (English root, Apache-2.0, 421M). Full reasoning and evidence:
+`docs/JEV_TOOLBOX_SELECTION.md`; the pin: `docs/PHASE_I_PIN.md`.
+
+**Two consequences, recorded so they are not re-litigated:**
+
+1. **The instrument's internals are not a target.** If it is slow or awkward, we do not optimise it —
+   we report the constraint, and if it blocks a measurement we say so.
+2. **The instrument must be pinnable.** A pre-registered protocol needs a fixed artefact with a
+   recorded revision and hashes, not a moving "best model". A pin without a revision is not a pin.
+
+**Drift signal for this rule:** any live file that proposes measuring, benchmarking, tuning or
+improving the JEV link itself — its kernels, its optimiser, its throughput, its architecture — rather
+than using it to measure something else. That is instrument-tinkering, and it belongs to a different
+programme (it is what R1 did).
+
 ## Status of the live object
 
 **Phase I is under way — instrument work only; no hypothesis has been tested.**
 
 | Step (§13 runbook) | State | Record |
 |---|---|---|
-| 1. Pin System One checkpoint | **DONE** | `docs/PHASE_I_PIN.md` — the 0.8B release, tower sha256 `60f8ea11…cff67`, scorer `22cb924e…11a06`, manifest `f9dcc09b…b6675d2`. Independently reproduced on this machine (0.6180 vs its recorded 0.6175, a one-question difference in 2,000). |
-| 2. English intent items + gold | **NOT STARTED** | The bank is new work; no existing corpus on this machine supplies it (see the pre-registration, O3). |
-| 3. `N_en` noise generator | **NOT STARTED** | Classes fixed (QWERTY-adjacent substitution, transposition, deletion, insertion); λ rates pending a readability calibration (O1). |
-| 4. `predict → JSONL` | **NOT STARTED** | Schema is the protocol's §3.5; no earlier code produces it. |
-| 5–6. Fit τ\*, test H1.1–H1.3 | **NOT STARTED** | N pending a pilot measurement of the discordance rate and the clean SilentError baseline (O2). |
+| 1. Pin System One checkpoint | **CHOICE MADE; PIN INCOMPLETE** | `docs/PHASE_I_PIN.md` — `convaiinnovations/laya`, English root, Apache-2.0, 421M. **The revision hash + per-file sha256 are not yet recorded**, so §12 item 4 is not satisfied and the pre-registration may not be sealed. `config/pin.json` is written when the first download completes. |
+| 2. English intent items + gold | **SPEC WRITTEN, NOT BUILT** | `docs/ITEM_BANK_SPEC.md`; four approval points left open for the researcher (domain scope, option counts, bank size, who labels gold). |
+| 3. `N_en` noise generator | **IN PROGRESS (delegated)** | Classes fixed (QWERTY-adjacent substitution, transposition, deletion, insertion); λ rates pending a readability calibration (O1). |
+| 4. `predict → JSONL` | **IN PROGRESS (delegated)** | Schema is the protocol's §3.5. The runner must reach Laya, not the superseded pin. |
+| 5–6. Fit τ\*, test H1.1–H1.3 | **BLOCKED** | N pending a pilot measurement of the discordance rate and the clean SilentError baseline (O2); the pilot needs the pinned revision and the item bank. |
 | 7. Freeze all artefacts | **NOT STARTED** | — |
+
+**Two pin-time calibrations are outstanding and belong before the seal** (`docs/PHASE_I_PIN.md`):
+a temperature refit per (question type, option count) — the checkpoint ships over-confident — and a
+decision on whether `noul` is used directly or via the documented two-option-`choice` workaround.
+Both are decided on dev and frozen; neither may be revisited after the confirmatory results are seen.
 
 The Phase I pre-registration is drafted at `docs/PHASE_I_PREREGISTRATION.md`: **nine of the twelve
 §12 items are FIXED NOW**, and three are **PENDING** because the protocol's own sequencing requires a
