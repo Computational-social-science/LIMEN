@@ -74,6 +74,10 @@ GUARDS: list[tuple[str, tuple[str, ...], str]] = [
      "every packed stimulus text matches the item bank exactly"),
     ("o3_consistency_audit.py", (),
      "item consistency: structure, ambiguity, routability with a shuffled control, split-half stability"),
+    ("check_seal_readiness.py", (),
+     "no section-12 row is waiting and every named authority document exists"),
+    ("check_confidence_contamination.py", (),
+     "no emitted confidence is the constant the frozen instrument substitutes into affected entries"),
     ("analyze_phase1.py", ("--synthetic",),
      "each confirmatory hypothesis fires on its OWN positive control and none fires on the null"),
 ]
