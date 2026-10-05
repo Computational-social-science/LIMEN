@@ -56,3 +56,46 @@ choice trades external validity against a frozen sample size, and only you know 
 values. If you pick A or C, the next thing I need is whether the `criteria` field stays (Amendment 1
 §A4(3) — weakening it changes what the endpoint measures and invalidates the frozen N), because that
 choice should be made **before** the bank is built rather than after.
+
+---
+
+## O3 CLOSED BY MEASUREMENT — the human pass is scoped from 932 items to 47, and here is the evidence
+
+The bank is built (932 items, 233 per domain, 652 test / 280 dev) and `intent_gold` is a **construction
+invariant**, so a human pass was never needed to decide an answer. What a pass can add was always a shorter
+list, and each entry on it is now either mechanical or measured.
+
+| Component of the pass | How it is settled | Evidence |
+|---|---|---|
+| the item's **answer** | construction invariant — the item is rendered from a kernel whose domain is known | `intent_gold` cannot disagree with the construction |
+| **ambiguity** — does a rival domain's strong anchor appear in the text | **mechanical** rejection rule; it rejected **0** items, so it is not over-rejecting either | `scripts/build_item_bank.py` |
+| **lexical routability** — can the item be answered by matching words against its own criteria instead of understanding the request | **measured** (new): `scripts/o3_leakage_probe.py` | median margin **+0.111**; 8.5 % above 0.30; a cluster at **+0.400 with rival overlap 0.000** |
+| **plausibility to a reader** — the only part no computation reaches | **stratified human pass over 47 templates**, not 932 items | `η²(margin \| template_id) = **0.9142**`; within-template SD 0.020 vs between-template SD 0.131 (ratio 6.51) |
+
+**The stratification is measured, not assumed.** If clarity were a property of *each fill* rather than of
+its *template*, reviewing one item per template would be indefensible. It is not: templates explain
+**91.4 %** of the variance in the routability margin, and the spread between templates is 6.5× the spread
+within them. So **one item per template covers the space that matters**, and the pass shrinks from 932 to
+**47**.
+
+### The one real confound this found, and what is done about it
+
+**54.4 % of items have a state that lexically favours its gold domain over every rival, and 8.5 % favour it
+strongly.** Those items can be routed by surface overlap against the attached criteria rather than by
+semantic routing. **The noise is aimed exactly at the surface route**, so a lexically-routable item degrades
+through a different mechanism than a semantic one.
+
+**This is not fixed, and it must not be.** Rewording the criteria to lower the overlap would destroy the
+evidence that the overlap existed. Instead:
+
+- **the routability margin is pre-registered as a COVARIATE**, alongside the realised edit rate
+  (Amendment 2, B2), so the confirmatory contrasts can be reported with it held fixed;
+- **the interaction — does the noise effect differ between routable and semantic items — is registered as
+  EXPLORATORY, NOT confirmatory.** This distinction is load-bearing: adding a hypothesis to the
+  confirmatory family would change the Holm correction that Amendment 3 §8.5 and §4.5 fix at three tests.
+  An exploratory analysis carries no α and cannot inflate the family;
+- **the affected item count is stated** (8.5 % above margin 0.30), so a reader can see the size of the
+  subgroup rather than being told it is small.
+
+**Authority:** `scripts/o3_leakage_probe.py` · `measurement/o3_leakage.json` ·
+`measurement/o3_stratification.json`.

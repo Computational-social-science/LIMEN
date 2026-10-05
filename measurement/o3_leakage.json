@@ -1,0 +1,123 @@
+{
+  "n": 932,
+  "median_margin": 0.1111111111111111,
+  "mean_margin": 0.09694802098235575,
+  "share_margin_gt_0.20": 0.18454935622317598,
+  "share_margin_le_0": 0.4560085836909871,
+  "by_domain_median": {
+    "billing": 0.16666666666666666,
+    "access": 0.2,
+    "urgency": 0.1111111111111111,
+    "info": 0.0
+  },
+  "worst": [
+    {
+      "item_id": "ph1_access_0006",
+      "domain": "access",
+      "gold": "access",
+      "leak_gold": 0.4,
+      "leak_rival": 0.0,
+      "margin": 0.4,
+      "n_options": 2
+    },
+    {
+      "item_id": "ph1_access_0015",
+      "domain": "access",
+      "gold": "access",
+      "leak_gold": 0.4,
+      "leak_rival": 0.0,
+      "margin": 0.4,
+      "n_options": 2
+    },
+    {
+      "item_id": "ph1_access_0021",
+      "domain": "access",
+      "gold": "access",
+      "leak_gold": 0.4,
+      "leak_rival": 0.0,
+      "margin": 0.4,
+      "n_options": 2
+    },
+    {
+      "item_id": "ph1_access_0030",
+      "domain": "access",
+      "gold": "access",
+      "leak_gold": 0.4,
+      "leak_rival": 0.0,
+      "margin": 0.4,
+      "n_options": 2
+    },
+    {
+      "item_id": "ph1_access_0043",
+      "domain": "access",
+      "gold": "access",
+      "leak_gold": 0.4,
+      "leak_rival": 0.0,
+      "margin": 0.4,
+      "n_options": 3
+    },
+    {
+      "item_id": "ph1_access_0052",
+      "domain": "access",
+      "gold": "access",
+      "leak_gold": 0.4,
+      "leak_rival": 0.0,
+      "margin": 0.4,
+      "n_options": 3
+    },
+    {
+      "item_id": "ph1_access_0058",
+      "domain": "access",
+      "gold": "access",
+      "leak_gold": 0.4,
+      "leak_rival": 0.0,
+      "margin": 0.4,
+      "n_options": 3
+    },
+    {
+      "item_id": "ph1_access_0066",
+      "domain": "access",
+      "gold": "access",
+      "leak_gold": 0.4,
+      "leak_rival": 0.0,
+      "margin": 0.4,
+      "n_options": 2
+    },
+    {
+      "item_id": "ph1_access_0094",
+      "domain": "access",
+      "gold": "access",
+      "leak_gold": 0.4,
+      "leak_rival": 0.0,
+      "margin": 0.4,
+      "n_options": 3
+    },
+    {
+      "item_id": "ph1_access_0096",
+      "domain": "access",
+      "gold": "access",
+      "leak_gold": 0.4,
+      "leak_rival": 0.0,
+      "margin": 0.4,
+      "n_options": 2
+    },
+    {
+      "item_id": "ph1_access_0106",
+      "domain": "access",
+      "gold": "access",
+      "leak_gold": 0.4,
+      "leak_rival": 0.0,
+      "margin": 0.4,
+      "n_options": 3
+    },
+    {
+      "item_id": "ph1_access_0111",
+      "domain": "access",
+      "gold": "access",
+      "leak_gold": 0.4,
+      "leak_rival": 0.0,
+      "margin": 0.4,
+      "n_options": 2
+    }
+  ]
+}

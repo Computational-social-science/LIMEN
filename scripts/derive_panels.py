@@ -37,6 +37,10 @@ ANCHOR = ROOT / "protocol/NHB_Orthographic_Channels_JEV_Research_Protocol.md"
 STATE_MAP = [
     ("FIXED — as `intent` alone", "yes", "frozen; `ok` and `escalate` dropped"),
     ("FIXED", "yes", "frozen"),
+    # `ACCEPTED` must precede `BUILT`: the item-bank row moved from "BUILT; human pass outstanding" to
+    # "ACCEPTED; pass scoped to 47 templates". Both prefixes are kept so the renderer stays correct if a
+    # row ever moves back, and the unmapped-state guard in the build is what caught the change.
+    ("ACCEPTED", "yes", "accepted; plausibility pass scoped to 47 templates"),
     ("BUILT", "part", "built; human pass outstanding"),
     ("CLASSES FIXED · λ PENDING", "part", "classes frozen; λ pending on the readability calibration"),
     ("FROZEN", "yes", "frozen"),
@@ -57,7 +61,7 @@ def stat_cards(text):
     """The scalar design parameters, each traceable to the section that fixes it."""
     ver = _grab(r"\*\*Version:\*\*\s*([0-9.]+)", text, "version")
     ntest = _grab(r"FROZEN: N_test = (\d+)", text, "N_test")
-    bank = _grab(r"\*\*BUILT\*\* \((\d+) items", text, "bank size")
+    bank = _grab(r"\*\*(?:BUILT|ACCEPTED)\*\* \((\d+) items", text, "bank size")
     seeds = _grab(r"seeds ∈ \{([0-9,\s]+)\}", text, "seeds")
     eps = _grab(r"\\varepsilon\s*=\s*([0-9.]+)", text, "epsilon")
     # The corrected discordance lives in the section-12 row for N_item, written as "the corrected
