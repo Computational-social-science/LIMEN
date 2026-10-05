@@ -50,6 +50,10 @@ GUARDS: list[tuple[str, tuple[str, ...], str]] = [
      "every document's theorem count matches the kernel"),
     ("check_manuscript_html.py", (),
      "the rendered page is not lying: numbering, sentinels, math integrity, note completeness"),
+    ("build_provenance_table.py", ("--check",),
+     "every PROVED claim in the provenance table names a kernel-verified theorem"),
+    ("build_provenance_table.py", ("--negative-test",),
+     "the provenance generator refuses a claim whose proof was never done"),
 ]
 
 # Guards that need something outside this repository. They are reported separately rather than mixed

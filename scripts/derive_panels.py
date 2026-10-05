@@ -86,7 +86,7 @@ def stat_cards(text):
 
 def checklist(text):
     """The section 12 table, row by row, with an explicit badge per state."""
-    m = re.search(r"^## 12\..*?^\| # \|.*?\n((?:^\|.*\n)+)", text, re.S | re.M)
+    m = re.search(r"^## 12\..*?^\| # \|.*?\n((?:^\|[^\n]*\n)+)", text, re.S | re.M)
     if not m:
         MISSING.append("section 12 checklist table")
         return []
