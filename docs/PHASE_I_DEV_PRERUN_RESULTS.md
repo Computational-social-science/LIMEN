@@ -161,3 +161,59 @@ effect, with the observed effect roughly twice that.
    which is the strongest form the finding could take before the confirmatory run.
 
 **Confidence contamination re-checked over the full sample: 0 of 2,520 rows carry the substituted constant.**
+
+
+---
+
+## 7. The conditional formulation was proposed, then measured, then refuted by the same data
+
+**Option (a) — restate H1.2 on `CondErr@τ` — was recommended in this document's §4 on a mechanism argument:
+noise deflates confidence, so a fixed-τ silent-error rate must fall, and the quantity that should rise is the
+error rate *among admitted trials*. That argument was made without measuring `CondErr`. It was then
+measured, and it is wrong.**
+
+| τ | clean `CondErr` | λ = 0.18 | difference | z |
+|---|---|---|---|---|
+| 0.80 | 0.0854 (51/597) | 0.0886 (31/350) | +0.0031 | **0.17** — no significant change |
+| 0.90 | 0.0826 (30/363) | 0.0718 (13/181) | −0.0108 | **−0.45** — no significant change |
+
+**`CondErr` does not rise either. It is statistically flat at both thresholds.** The reason is a selection
+effect the mechanism argument missed: noise deflates confidence, so the trials that still clear τ = 0.9 are
+the ones the model is most certain of, and **noise-induced errors are disproportionately NOT among them**.
+Filtering the same errors by any of three formulations gives the same answer:
+
+| formulation | clean | λ = 0.18 | direction |
+|---|---|---|---|
+| `SilentError@0.9` (errors admitted, per trial) | 0.0357 | 0.0107 | falls |
+| `CondErr@0.9` (errors among admitted) | 0.0826 | 0.0718 | flat |
+| admitted errors as a share of ALL errors | 10/35 = **0.286** | 3/68 = **0.044** | falls |
+
+### A second obstacle, measured: `CondErr@τ` is not a paired quantity
+
+The admitted set differs between arms — 121 items clean, 61 under noise, **intersection 51**. So the
+denominator of `CondErr` changes with the condition, the within-item pairing that §4.5 relies on does not
+exist for it, and **the exact paired permutation estimator does not apply**. Putting H1.2 on `CondErr` would
+therefore require a different estimator *and* a direction the data does not support.
+
+### So what does the pre-run actually support?
+
+**Every formulation points the same way, and it is the opposite of the premise the programme was built to
+test: typo noise's damage is concentrated in what the model declines to answer, not in what it confidently
+gets wrong.** Accuracy falls 11.8 points and coverage halves — while the error rate among admitted trials is
+flat and the share of errors that pass the gate *falls* from 0.286 to 0.044.
+
+That is a reportable claim, and it is a falsifiable one. It is also **not a directional hypothesis in the
+same form as H1.2**, so it cannot simply be substituted in:
+
+1. **Equivalence hypothesis** — `CondErr@τ` is invariant to noise within a pre-registered margin. Supported
+   by the data, but needs a margin chosen *now*, and needs the non-paired estimator above.
+2. **Drop H1.2 from the confirmatory family**, report `CondErr@τ` as a co-reported descriptive quantity, and
+   let Phase I's confirmatory family be H1.1 (accuracy) and H1.3 (coverage) — **both of which are per-item
+   binaries and therefore genuinely paired**.
+3. **Coverage-matched contrast** — hold the gate's coverage fixed across arms and ask whether the conditional
+   error then rises. This is the question the mechanism argument was really about, and it cannot be answered
+   by a fixed-τ design, because under noise a fixed τ *is* a more selective gate.
+
+**Option (a) is withdrawn. It is recorded here rather than deleted because the argument for it was plausible,
+it was acted on, and the measurement is what settled it — which is the sequence this whole document exists to
+demonstrate.**
