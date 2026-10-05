@@ -281,3 +281,73 @@ is a coherent, falsifiable, and reportable position — and **(c) is the only on
 into a pre-registered claim**, at the cost of a second estimator.
 
 **All of this is dev, non-confirmatory, and computed without running the model. The decision is the user's.**
+
+
+---
+
+## 9. (b) versus (c), priced — and a third option that dominates both
+
+### First, a correction to this document's own §8
+
+§8 reported the **"smallest declarable margin"** for an equivalence claim as 2.59 pts at τ = 0.9 and treated
+it as the margin the design could use. **That number is a confidence-interval statement at the observed
+point; it is not a margin with 80 % power.** `scripts/probe_h12_decision.py` computes the actual TOST power
+curve, and at a 2.6-pt margin the power is **0.228** — the design would fail to conclude equivalence roughly
+three times in four even if the conditional error really is flat.
+
+> **This is the same class of error as the withdrawn option (a): a plausible number used without converting
+> it into the quantity the decision depends on.** It is recorded rather than silently fixed because it is the
+> second time in this document that converting units reversed a conclusion.
+
+### (c) priced honestly
+
+| τ | margin for 80 % power | as a share of baseline | to hold 2.6 pts would need |
+|---|---|---|---|
+| 0.80 | **3.41 pts** | **40 %** of 8.54 | 1.8× more trials |
+| 0.90 | **5.00 pts** | **60 %** of 8.26 | 6.7× more trials |
+
+**A margin that is 60 % of the baseline it bounds is a weak claim**: at τ = 0.9 it says the conditional error
+moves by less than 5 points when the baseline is 8.3, which permits the rate to almost double. (c) is
+runnable, but what it would assert at usable power is thinner than §8 implied.
+
+### (b) priced honestly, and it is not free
+
+Holm with three hypotheses tests the smallest p against α/3 = 0.0167. **Drop H1.2 and the first threshold
+becomes α/2 = 0.025 — the decision rule for the hypotheses that remain is loosened by 1.50×.** No conclusion
+changes at the measured effects (both remaining contrasts are ~1.0 power), but the pre-registered threshold
+is no longer the one H1.1 and H1.3 were evaluated against, and a reviewer may reasonably ask why a hypothesis
+left the family.
+
+### The third option, found while pricing (c): a directional claim that needs no margin
+
+If noise deflates confidence generally, then "noise errors carry lower confidence" is a trivial level shift.
+**It is not a level shift.** Within each arm, comparing the confidence of correct against incorrect trials:
+
+| λ | median `c` correct | median `c` error | separation | **within-arm AUC** | share of errors the gate rejects |
+|---|---|---|---|---|---|
+| 0.00 | 0.8924 | 0.7930 | +0.0994 | **0.653** | 0.714 |
+| 0.05 | 0.8712 | 0.6773 | +0.1939 | **0.697** | 0.760 |
+| 0.18 | 0.8001 | 0.5314 | **+0.2687** | **0.773** | **0.936** |
+
+**Correct trials' median confidence falls too (0.8924 → 0.8001) — but the errors' median falls more than
+twice as far (0.7930 → 0.5314). The separation and the AUC rise monotonically, and the share of errors the
+gate rejects rises from 0.714 to 0.936.**
+
+**`H1.2′ — the confidence gate becomes MORE discriminative under noise.`** Why this dominates both (b) and (c):
+
+1. **It is directional**, so it needs no equivalence margin and no second inferential framework.
+2. **It has ample power** — the dev effect is large (AUC 0.773 on 204 error trials at λ = 0.18; median
+   difference 0.262, permutation p < 1e-4) and the confirmatory window is larger.
+3. **It keeps the frozen three-test family**, so no multiplicity threshold moves.
+4. **It is a mechanism, not a null** — it *explains* why the conditional error is flat instead of merely
+   asserting that it is.
+5. **It is scale-free.** The within-arm AUC is invariant to any monotone transform of `c`, so it does not
+   depend on the instrument's confidence being calibrated on an absolute scale — **which is exactly the
+   fragility the library's invalid-temperature warning creates.** (c), by contrast, bounds a rate at an
+   absolute τ and therefore rests on the calibration the warning questions.
+
+**And it is the sharpest form of the critical-review claim this programme exists to make: the "silent error"
+premise fails because noise-induced errors are LOUD, not silent.** Accuracy falls 11.8 points and coverage
+halves, while 93.6 % of the new errors announce themselves below the gate.
+
+**All dev, non-confirmatory, computed without running the model.**
