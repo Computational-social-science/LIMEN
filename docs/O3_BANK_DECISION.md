@@ -99,3 +99,49 @@ evidence that the overlap existed. Instead:
 
 **Authority:** `scripts/o3_leakage_probe.py` · `measurement/o3_leakage.json` ·
 `measurement/o3_stratification.json`.
+
+
+---
+
+## THE HUMAN PASS IS WITHDRAWN — consistency is measured from the items, not from agreement between people
+
+An earlier revision of this document scoped the pass to 47 templates and proposed to check it with
+inter-rater kappa. **Both are withdrawn.**
+
+**Why kappa was the wrong instrument.** Kappa measures whether two raters agree. That is a property of the
+raters as much as of the items: it collapses when the categories are unevenly used, it depends on how many
+people are asked, and **a high kappa is perfectly compatible with both raters being wrong the same way.**
+Agreement is not validity. A bank whose items are all obviously ambiguous would earn a high kappa from two
+attentive readers.
+
+**What replaces it: `scripts/o3_consistency_audit.py`, six automatic checks, no raters.**
+
+| | Check | Result |
+|---|---|---|
+| A | structure — unresolved slots, duplicate states inside a template, options/criteria integrity, gold among the options | **all zero** |
+| B | ambiguity — a rival domain's criteria fully present in a state | **0** |
+| C | routability — leave-one-out nearest-centroid classifier over the states of the OTHER items in each domain | **1.000** against chance 0.250 |
+| D | **control** — the same classifier on shuffled labels | **0.252** against chance 0.250 |
+| E | **reliability — split-half stability**, the kappa replacement | halves 1.000 / 1.000; max domain-mean gap **0.005** against a total spread of 0.040 |
+| F | invariance — the margin depends on the clean text only, so it must be identical across seeds | **True** |
+
+**Reliability is now a property of the measurement rather than of two people.** The audit is run
+independently on two halves of the bank and the halves must agree (E). Unlike kappa this cannot be inflated
+by shared bias, and unlike a panel it does not need anyone.
+
+**Check D is what makes C readable.** A classifier that scores above chance on shuffled labels is measuring
+its own bias, and then every number in C means nothing. It scores 0.252 against a chance rate of 0.250, so
+C is a measurement.
+
+### The finding C produces, stated precisely
+
+**Domain membership is recoverable from bag-of-words ALONE, perfectly (1.000).** That is a
+**separability** statement, not a solvability one: a solver sees the state and the four criteria — not other
+items' states — so the solver-visible figure is the criteria margin already measured (**median +0.111;
+8.5 % above 0.30**).
+
+**But the separability result matters for the experiment.** The four domains are lexically disjoint, so a
+lexical shortcut to the right answer exists at the corpus level, and **the typo noise attacks exactly that
+shortcut.** An observed degradation under noise is therefore compatible with two mechanisms — the shortcut
+breaking, or understanding degrading — and the routability margin is the covariate that separates them
+(§4.5). This is the sharpest reason that covariate is in the model rather than in a footnote.

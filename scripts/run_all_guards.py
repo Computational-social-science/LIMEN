@@ -72,6 +72,8 @@ GUARDS: list[tuple[str, tuple[str, ...], str]] = [
      "no unresolved slot, no duplicate state within a template, options match criteria, gold among options"),
     ("fix_item_bank_capitalization.py", ("--verify-packs",),
      "every packed stimulus text matches the item bank exactly"),
+    ("o3_consistency_audit.py", (),
+     "item consistency: structure, ambiguity, routability with a shuffled control, split-half stability"),
     ("analyze_phase1.py", ("--synthetic",),
      "each confirmatory hypothesis fires on its OWN positive control and none fires on the null"),
 ]

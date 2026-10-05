@@ -3,7 +3,7 @@
 ## A Pre-Registered, Phased Protocol Integrating System One / JEV-Ecosystem Tooling
 
 **Document type:** Detailed research protocol (*Nature Human Behaviour*–oriented framing)  
-**Version:** 1.12 (English typo first, then cross-script / multilingual expansion)  
+**Version:** 1.13 (English typo first, then cross-script / multilingual expansion)  
 **Status:** Draft for staged pre-registration  
 **Compute envelope:** Single consumer GPU admissible; zero paid API on confirmatory path  
 **Primary interface class:** Typed decision models (System One):  
@@ -18,6 +18,7 @@ $\texttt{state} \times \texttt{questions} \mapsto$ distributions over caller-def
 >
 > | Version | Changes | Status |
 > |---|---|---|
+> | **1.13** | **Estimator named**: §4.5 now specifies **exact paired permutation tests** instead of "paired / mixed models with item random intercepts", and enforces the DIRECTION of each hypothesis (a significant movement in the opposite direction is barred from the family rather than counted as support). **O3 closed without a human pass**: six automatic consistency checks with a shuffled-label control, reliability carried by **split-half stability**; **inter-rater kappa is rejected** as the reliability instrument. The seal is no longer blocked by O3 | **names the estimator that runs; removes the last human dependency** |
 > | **1.12** | §4.5 gains **two pre-registered covariates** (`realised_edit_rate`, **lexical routability margin**) and registers the routability × noise **interaction as EXPLORATORY**, so the confirmatory family stays at three tests. The item bank is also corrected: 69 states opened with a lowercase letter, **all of them in three urgency templates**, which would have made a domain-by-formatting confound — found by the new mechanical template audit and fixed semantics-preservingly, with **0 packed stimuli affected** | **adds covariates; adds NO confirmatory hypothesis** |
 > | **1.11** | **O3 scoped by measurement**: the plausibility pass shrinks from 932 items to **47**, one per template, justified by `η²(margin \| template) = 0.9142`; lexical routability is measured (median +0.111, 8.5 % above 0.30) and pre-registered as a **covariate**, with the routability × noise interaction registered as **exploratory** so the confirmatory family stays at three tests | **scopes a pre-registration item; adds no confirmatory hypothesis** |
 > | **1.10** | **O1 CLOSED**: §12 item 2 moves to `FIXED` — λ_lo = 0.05, λ_mid = 0.18 selected by the noisy-channel recoverability index against the published Rayner (2006) anchor (0.4480), separation 6.07 pooled seed SD. The seal is now blocked by O3 alone | **closes a pre-registration item; the criterion is stated on a measured axis and is fully determined by it** |
@@ -407,7 +408,21 @@ Exact rates fixed in pre-registration after a short calibration so that items re
 
 ### 4.5 Phase I analysis
 
-- Paired / mixed models with item random intercepts; factor $\lambda$.  
+- **Estimator: EXACT PAIRED PERMUTATION TESTS, named here rather than left to the analysis code.** The
+  design is within-item, so every contrast pairs on `(item_id, noise_seed)` and the permutation
+  distribution is over within-pair sign flips — exact under exchangeability, no distributional assumption,
+  no asymptotic approximation. **This replaces the earlier "paired / mixed models with item random
+  intercepts".** A paired test is the limiting case of a random-intercept model whose only random effect is
+  the item, and it is the form that actually runs: `scripts/analyze_phase1.py` implements it and
+  `--synthetic` shows each of H1.1, H1.2 and H1.3 firing on its own positive control and none firing on the
+  null. **A pre-registration must name the estimator that runs**; naming a model no code implements is how a
+  plan and its analysis drift apart without anyone noticing.
+- **Direction is part of each hypothesis and is enforced.** H1.1 predicts accuracy FALLS, H1.2 that
+  `SilentError@0.9` RISES, H1.3 that `Coverage@ε` FALLS. A contrast significant in the OPPOSITE direction is
+  recorded as such and is barred from the Holm family rather than counted as support — a two-sided p cannot
+  tell you which way a significant movement went, and the first implementation of H1.1 had that sign
+  inverted until its own positive control failed.
+
 - Bootstrap CIs on SilentError and Coverage contrasts.  
 - **Holm across the confirmatory family, stated here rather than by reference (v1.5).** The family is
   exactly these three tests, tested at the family-wise level $\alpha = 0.05$ after Holm: H1.1,
@@ -885,10 +900,10 @@ amendments.** A protocol item may not be marked satisfied by a downstream docume
 | 10 | FAILURES policy | **FIXED** | every attempted trial recorded; failures logged, never dropped |
 | 11 | No confirmatory training | **FIXED** | θ frozen; no fine-tuning, no QLoRA, no adapter |
 | 12 | Cross-script claims reserved for Phase II | **FIXED** | §0.2, §5.2; §5.1 gates Phase II |
-| — | **Item bank** | **ACCEPTED** (932 items; gold a construction invariant) | O3 **closed by measurement**: the human pass is scoped to **47 templates**, not 932 items — answers are construction invariants, ambiguity is mechanical (0 rejections), lexical routability is measured (median margin +0.111; 8.5 % above 0.30) and pre-registered as a **covariate**, and `η²(margin \| template) = 0.9142` justifies the stratification. `docs/O3_BANK_DECISION.md` |
+| — | **Item bank** | **ACCEPTED** (932 items; consistency measured, no human pass) | O3 closed: six automatic checks (`scripts/o3_consistency_audit.py`) — structure clean, rival criteria absent, routability measured **with a shuffled-label control at chance**, and **split-half stability** as the reliability measure. **Inter-rater kappa is rejected as the reliability instrument**: it measures agreement between people, collapses on uneven categories, and is compatible with two raters sharing a bias. `docs/O3_BANK_DECISION.md` |
 | — | **N_item** | **FROZEN: N_test = 652** | O2, with Erratum 1 — the corrected π_d is 0.1833; 652 is conservative |
 
-**The seal is blocked by ONE stratified pass:** 47 items, one per template, for plausibility alone — every other component of O3 is mechanical or measured (`docs/O3_BANK_DECISION.md`). **O1 is closed** by Amendment 3 v3 — the criterion is stated on the noisy-channel recoverability axis, the floor is a published human result, and the two rates are determined by the rule rather than chosen. Authority: `docs/PHASE_I_AMENDMENT_3_O1_READABILITY.md` §8 · `measurement/o1_validation/RESULTS.md` §9–13 · guarded by `scripts/check_o1_anchor.py`.
+**THE SEAL IS NOT BLOCKED BY O3.** Consistency is measured from the items by six automatic checks with a control, and reliability is carried by split-half stability rather than by rater agreement — so **no human pass remains** (`docs/O3_BANK_DECISION.md`). **O1 is closed** by Amendment 3 v3, and **O3 is closed by measurement**. What remains before the confirmatory run is operational, not scientific: the pinned-instrument end-to-end pre-run on dev.
 
 ---
 
@@ -954,7 +969,8 @@ Generated by `scripts/build_provenance_table.py` from the kernel-verified set of
 | Field | Value |
 |-------|--------|
 | **Role** | **THE PROGRAMME'S GLOBAL ANCHOR.** All other documents are subordinate; see the note at the head of §0 |
-| Version | **1.12** |
+| Version | **1.13** |
+| v1.13 changes | §4.5 estimator = exact paired permutation + direction enforcement; O3 closed automatically (`scripts/o3_consistency_audit.py`), kappa rejected |
 | v1.12 changes | §4.5 covariates + exploratory interaction; item-bank capitalisation corrected (69 states, 3 urgency templates, 0 packed stimuli affected) |
 | v1.11 changes | O3 scoped: stratified pass over 47 templates; routability margin pre-registered as a covariate and the interaction as exploratory (`docs/O3_BANK_DECISION.md`) |
 | v1.10 changes | §12 item 2 → `FIXED`; the O1 criterion restated on the recoverability axis with a published anchor (`docs/PHASE_I_AMENDMENT_3_O1_READABILITY.md` §8) |
@@ -1057,4 +1073,4 @@ Generated by `scripts/build_provenance_table.py` from the kernel-verified set of
 
 ---
 
-*End of protocol v1.12*
+*End of protocol v1.13*

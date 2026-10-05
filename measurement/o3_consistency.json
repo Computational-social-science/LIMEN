@@ -1,0 +1,37 @@
+{
+  "A_structure": {
+    "duplicate states within a template": 0,
+    "state opens lowercase": 0,
+    "unresolved slot": 0,
+    "options/criteria mismatch": 0,
+    "gold absent from options": 0
+  },
+  "B_rival_criteria_fully_present": 0,
+  "C_routability": {
+    "accuracy": 1.0,
+    "chance": 0.25
+  },
+  "D_shuffled_control": {
+    "accuracy": 0.2521459227467811,
+    "chance": 0.25
+  },
+  "E_split_half": {
+    "accuracy_half_a": 1.0,
+    "accuracy_half_b": 1.0,
+    "per_domain_margin_a": {
+      "access": 0.15329833118971556,
+      "billing": 0.1663014205910443,
+      "info": 0.1606356671630415,
+      "urgency": 0.1926132470936951
+    },
+    "per_domain_margin_b": {
+      "access": 0.15412547912354876,
+      "billing": 0.1616882032616202,
+      "info": 0.15767755963752753,
+      "urgency": 0.19290052930551532
+    },
+    "max_domain_mean_gap": 0.004613217329424102,
+    "domain_mean_spread": 0.039602198115799764
+  },
+  "F_margin_seed_invariant": true
+}
