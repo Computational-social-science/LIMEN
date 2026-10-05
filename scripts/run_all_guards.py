@@ -66,6 +66,12 @@ GUARDS: list[tuple[str, tuple[str, ...], str]] = [
      "the O1 readability floor is the published anchor, and the ladder clears it"),
     ("check_o1_anchor.py", ("--negative-test",),
      "the anchor guard refuses a floor above every ladder point"),
+    ("o3_leakage_probe.py", ("--self-test",),
+     "the routability margin answers known-answer cases correctly"),
+    ("o3_leakage_probe.py", ("--template-audit",),
+     "no unresolved slot, no duplicate state within a template, options match criteria, gold among options"),
+    ("fix_item_bank_capitalization.py", ("--verify-packs",),
+     "every packed stimulus text matches the item bank exactly"),
 ]
 
 # Guards that need something outside this repository. They are reported separately rather than mixed
