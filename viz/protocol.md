@@ -3,7 +3,7 @@
 ## A Pre-Registered, Phased Protocol Integrating System One / JEV-Ecosystem Tooling
 
 **Document type:** Detailed research protocol (*Nature Human Behaviour*–oriented framing)  
-**Version:** 1.4 (English typo first, then cross-script / multilingual expansion)  
+**Version:** 1.5 (English typo first, then cross-script / multilingual expansion)  
 **Status:** Draft for staged pre-registration  
 **Compute envelope:** Single consumer GPU admissible; zero paid API on confirmatory path  
 **Primary interface class:** Typed decision models (System One):  
@@ -18,6 +18,7 @@ $\texttt{state} \times \texttt{questions} \mapsto$ distributions over caller-def
 >
 > | Version | Changes | Status |
 > |---|---|---|
+> | **1.5** | (1) **§6.1 defines the conditional quantities** — `CondErr`/`CondAcc`, the two things the hypotheses name and eqs (7)–(9) never defined; (2) **§4.5 states the confirmatory family in the protocol** instead of by reference to the OSF entry; (3) **a declared dependency**: H1.3 disjunct 2 is the complement of the H1.1 co-report, so they are not independent evidence; (4) the H1.1 co-report is fixed as **descriptive, not a fourth test** | **additive; family unchanged at three tests, no frozen value moved** |
 > | **1.4** | (1) equation (7) is stated as **underspecified on deferred trials**, with both readings (defers-as-errors / defers-dropped) named and shown to disagree — machine-checked by `acc_is_not_diagnostic_of_understanding`; (2) **H1.1 paired with the conditional accuracy** in reporting, because the bare inequality is satisfied by confidence deflation alone; (3) §4.4b records what machine-checking changed | **additive; no frozen value moved, no endpoint added** |
 > | **1.3** | (1) LIMEN named as the gate's threshold (§0.3), with what the name does and does not carry; (2) the **claim** stated directly (§0.4); (3) the **limen-shift diagnostic** $\Delta\tau^\star$ added as a *reported, non-confirmatory* quantity (§4.4a) | additive; **no frozen value moved** |
 > | 1.2 | (1) `Q0` is `intent` alone; (2) the pin is decided — Laya English root at `55cf4c4e…`; (3) the `τ*` fitting rule is stated, including when it yields nothing | — |  
@@ -49,7 +50,7 @@ $\texttt{state} \times \texttt{questions} \mapsto$ distributions over caller-def
 >    anchor states what is being asked; it does not state how the asking is instrumented.**
 >
 > **Current anchor identity:** `protocol/NHB_Orthographic_Channels_JEV_Research_Protocol.md`,
-> version **1.4**. Its sha256 is recorded in `config/anchor.json` and verified by the drift guard.
+> version **1.5**. Its sha256 is recorded in `config/anchor.json` and verified by the drift guard.
 
 ### 0.1 Thesis
 
@@ -387,7 +388,7 @@ Exact rates fixed in pre-registration after a short calibration so that items re
   primary endpoint because it is the endpoint a reader expects, and **paired in reporting** with the
   conditional figure that decides which reading is at work.  
 - **H1.2:** $\mathrm{SilentError@}0.9(\lambda_{\mathrm{mid}}) > \mathrm{SilentError@}0.9(0)$.  
-- **H1.3:** Under dev-fit $\tau^\star$ at $\varepsilon=0.05$, $\mathrm{Coverage}(\lambda_{\mathrm{mid}}) < \mathrm{Coverage}(0)$ on test **or** error among accepted rises (pre-register which is co-primary).
+- **H1.3:** Under dev-fit $\tau^\star$ at $\varepsilon=0.05$, $\mathrm{Coverage}(\lambda_{\mathrm{mid}}) < \mathrm{Coverage}(0)$ on test **or** `CondErr@τ` rises — the quantity now defined in §6.1 as "error among accepted" (pre-register which is co-primary).
 
 **Interpretation if supported:** typo noise is a material disturbance of System One **understanding and control**, not merely a generation nuisance.  
 **Interpretation if H1.1 holds but H1.2 fails:** errors rise but confidence tracks—control law partially healthy.  
@@ -397,7 +398,26 @@ Exact rates fixed in pre-registration after a short calibration so that items re
 
 - Paired / mixed models with item random intercepts; factor $\lambda$.  
 - Bootstrap CIs on SilentError and Coverage contrasts.  
-- Pre-register Holm across H1.1–H1.3 family as defined in the OSF entry.
+- **Holm across the confirmatory family, stated here rather than by reference (v1.5).** The family is
+  exactly these three tests, tested at the family-wise level $\alpha = 0.05$ after Holm: H1.1,
+  $\mathrm{Acc}(\lambda_{\mathrm{mid}}) < \mathrm{Acc}(0)$; H1.2,
+  $\mathrm{SilentError@}0.9(\lambda_{\mathrm{mid}}) > \mathrm{SilentError@}0.9(0)$; H1.3, the disjunction
+  of §4.4. **The H1.1 co-report is descriptive and is NOT a fourth test**: it is reported with its
+  interval and is never used as the basis of a significance claim. It is what a reader consults to see
+  *which* reading of §6 eq (7) is at work, and that question is answered by the interval, not by a
+  p-value.
+- **A declared dependency, and why Holm survives it.** H1.3's second disjunct is `CondErr@τ` and the
+  H1.1 co-report is `CondAcc@τ = 1 − CondErr@τ` (§6.1, equation (10)). They are therefore **one
+  quantity**, and the family is not three independent tests. Holm requires no independence assumption —
+  it controls the family-wise error rate under arbitrary dependence — so the procedure is unchanged.
+  What changes is the reading: H1.1 and the second disjunct of H1.3 **cannot provide independent
+  evidence**, and §5's discussion must not treat them as though they did. If the confirmatory family were
+  ever revised to add `CondAcc` as a test, the two would have to be merged into one test, not carried
+  alongside each other.
+- **Why the family is stated in the protocol.** A pre-registration whose family is defined by reference to
+  another document cannot be checked against the family actually tested, and the anchor rule this
+  protocol applies elsewhere — that the authoritative statement lives in the artefact, not downstream of
+  it — applies to its own analysis plan first. v1.4 delegated this line to the OSF entry; v1.5 fixes it.
 
 ### 4.6 Phase I deliverables
 
@@ -452,12 +472,12 @@ against the control-law claim on its own.** Its only job is to make the gate's o
 
 ### 4.4b What machine-checking changed in this protocol
 
-The mathematics of §3.4, §4.4a and §6 is formalised in `lean-nhb` (`NHB/PhaseI/Core.lean`): **17
+The mathematics of §3.4, §4.4a and §6 is formalised in `lean-nhb` (`NHB/PhaseI/Core.lean`): **19
 theorems, zero errors, zero `sorry`**, each verified by Lean's own kernel through `#print axioms`,
 which fails on `sorryAx` — the axiom Lean substitutes for a proof it could not find. A grep for the
 literal word would not do: it proves a string is absent, not that a theorem is proved.
 
-**The formalisation is not an appendix. It is a feedback loop, and it changed the protocol.** Four
+**The formalisation is not an appendix. It is a feedback loop, and it changed the protocol.** Five
 substantive corrections came out of it, and each is recorded at the point it applies rather than only
 here.
 
@@ -467,6 +487,7 @@ here.
 | §6/v1.2 CHANGE 3: the least admissible threshold maximises coverage | `least_admissible_maximises_coverage` proves it — but only when the ordering is **derived from** least-admissibility. A first version assumed `a ≤ b` and left both `Admissible` hypotheses unused; Lean's linter reported them, which is how the gap surfaced | The rule stands, and its justification is now machine-checked. `least_admissible_is_at_least_as_good` adds the limit the protocol must respect: the guarantee is a **maximum, not a strict maximum** |
 | §6 degeneracy: covered the case where *every* threshold is admissible | `budget_collapses_to_zero_on_small_dev` exhibits the **opposite** degeneracy. With ε = 0.05 and a dev set below twenty trials, `floor(0.05·N) = 0` and the only admissible thresholds are those that admit nothing: `admissibleIn 0 0 12 dev = [10, 11, 12]`, so τ\* = 10 and `Coverage@ε = 0` | §6's degeneracy clause extended to name both ends. See below | | §6's degeneracy clause extended to name both ends. See below |
 | §6 eq (7): `Acc` is defined by a sum over every trial | `acc_is_not_diagnostic_of_understanding` shows the sum is **underspecified on deferred trials** — and that the two readings move **oppositely** on samples with identical answer-correctness (Acc falls 2/3→1/3 while conditional accuracy rises 2/3→1/1) | §6/v1.4 CHANGE 1 names both readings; **H1.1 is co-reported with the conditional accuracy**, because the bare inequality is satisfied by confidence deflation alone |
+| §4.4 H1.3 names "error among accepted" and §4.5 defines the family "as defined in the OSF entry" | `cond_error_complements_cond_accuracy` shows H1.3's second disjunct is the **complement of the H1.1 co-report** — one quantity, so not independent evidence; and a family defined outside the protocol cannot be checked against the family tested | §6.1 defines both quantities; §4.5 states the family in the protocol and declares the dependency; §12 item 9 fixes the co-report as descriptive rather than a fourth test |
 
 **Why the third one matters for §4.4a specifically.** The budget can collapse to zero for two opposite
 reasons — the gate is *too lenient to ever err* (the clean zero floor already measured on this
@@ -591,6 +612,30 @@ $$
 
 where $\tau^\star_\varepsilon$ is the least threshold whose **dev**-set SilentError is at most $\varepsilon = 0.05$ (least, because the tie-break maximises coverage — Amendment 2, B1). **Coverage is the Rate of the same channel**: the fraction of trials on which the gate transmits at all. Read as a pair, (SilentError, Coverage) traces a rate–error curve — so a claim that noise leaves the curve unchanged becomes testable rather than rhetorical, which is what H1.3 tests.
 
+### 6.1 The conditional quantities (v1.5)
+
+Equations (7)–(9) all have $|\mathcal{T}|$ in the denominator, so all three are affected by how often the
+gate declines to answer. The two quantities the hypotheses refer to when they need to hold the
+denominator fixed were never written down. They are defined here once, and their relationship is the
+reason H1.1 and H1.3 are not independent.
+
+$$
+\mathrm{CondErr@}\tau(s,\lambda) = \frac{\sum \mathbb{1}\{\hat y \neq y^\star \wedge c \ge \tau\}}{\sum \mathbb{1}\{c \ge \tau\}},
+\qquad
+\mathrm{CondAcc@}\tau(s,\lambda) = 1 - \mathrm{CondErr@}\tau(s,\lambda).
+$$
+
+The denominator is the count of trials the gate **committed on**, not $|\mathcal{T}|$. `CondErr` is the
+quantity §4.4's H1.3 names as "error among accepted"; `CondAcc` is the quantity the H1.1 co-report names.
+**By equation (10) they are one quantity, not two** — so a rise in one is a fall in the other by
+algebra, and the confirmatory family carries a declared dependency rather than two independent chances
+(see §4.5). `lean-nhb` checks the complementarity on the correction witness
+(`cond_error_complements_cond_accuracy`) and checks that one movement of confidence alone drives
+$\mathrm{Acc}$ **down** while `CondErr` goes **down** as well and `CondAcc` goes **up**
+(`one_movement_three_readings`). Read together: the $|\mathcal{T}|$-denominator metrics and the
+conditional metrics can report opposite conclusions from identical answer-correctness, which is why
+both are reported and why the family's shape must be stated rather than implied.
+
 
 Phase I omits $s$ (always $s_{\mathrm{en}}$).
 
@@ -634,7 +679,7 @@ Phase I omits $s$ (always $s_{\mathrm{en}}$).
 > Authority: `docs/PHASE_I_AMENDMENT_2.md` §B1 · `docs/LEAN_FORMALIZATION_STATUS.md` §4.4b.
 >
 > **v1.3 ADDENDUM — the rule's optimality is now machine-checked, and one limit is named.** The
-> `lean-nhb` formalisation builds clean (**17 theorems, zero errors, zero `sorry`**, each verified by
+> `lean-nhb` formalisation builds clean (**19 theorems, zero errors, zero `sorry`**, each verified by
 > Lean's kernel via `#print axioms`, which fails on `sorryAx`). Two of its results bear directly on this
 > rule. `admissible_mono` proves the admissible set is **upward closed**, so an admissible threshold is
 > never unique — the premise of the problem this rule solves. `least_admissible_maximises_coverage`
@@ -743,7 +788,7 @@ amendments.** A protocol item may not be marked satisfied by a downstream docume
 | 6 | Confidence rule frozen | **FIXED** | §3.3 — `c = max_j p_j` for choice; `c = max(p, 1−p)` for noul |
 | 7 | τ ∈ {0.80, 0.90}, ε = 0.05 | **FIXED** | §3.4. **`τ*` fitting rule is now stated by v1.2 CHANGE 3.** |
 | 8 | Dev/test split by item | **FIXED** | 30/70 by `item_id` |
-| 9 | Primary endpoints H1.1–H1.3 | **FIXED** | §4.4; co-primaries are H1.2 and H1.3 |
+| 9 | Primary endpoints H1.1–H1.3; confirmatory family = exactly these three, Holm, $\alpha=0.05$ | **FIXED** | §4.4; co-primaries are H1.2 and H1.3; the H1.1 `CondAcc` co-report is **descriptive, not a fourth test**; H1.3 disjunct 2 is the complement of that co-report and is therefore **not independent evidence** (§4.5, §6.1) |
 | 10 | FAILURES policy | **FIXED** | every attempted trial recorded; failures logged, never dropped |
 | 11 | No confirmatory training | **FIXED** | θ frozen; no fine-tuning, no QLoRA, no adapter |
 | 12 | Cross-script claims reserved for Phase II | **FIXED** | §0.2, §5.2; §5.1 gates Phase II |
@@ -773,7 +818,8 @@ amendments.** A protocol item may not be marked satisfied by a downstream docume
 | Field | Value |
 |-------|--------|
 | **Role** | **THE PROGRAMME'S GLOBAL ANCHOR.** All other documents are subordinate; see the note at the head of §0 |
-| Version | **1.4** |
+| Version | **1.5** |
+| v1.5 changes | (1) §6.1 conditional quantities defined, eq (10); (2) §4.5 Holm family stated in the protocol; (3) H1.3/H1.1 declared dependency; (4) H1.1 co-report fixed as descriptive. **Additive — the family stays at three tests.** |
 | v1.4 changes | (1) **eq (7) underspecified on deferred trials** — both readings named and shown to move oppositely on identical correctness (`lean-nhb`: `acc_is_not_diagnostic_of_understanding`); (2) **H1.1 co-reported with conditional accuracy**; (3) §4.4b: what machine-checking changed. **Additive — no frozen value moved and no confirmatory endpoint was added.** |
 | v1.3 changes | (1) **LIMEN** named as the gate's threshold (§0.3), with four things the name explicitly does not assert; (2) the **thesis, mechanism, objective and non-claim** stated directly (§0.4), with a constraint on how the objective may be worded per phase; (3) the **limen-shift diagnostic** $\Delta\tau^\star$ added as a **reported, non-confirmatory** quantity (§4.4a); (4) §3.4 states exactly what the gate reads. **Additive only — no frozen value moved and no confirmatory endpoint was added.** |
 | v1.2 changes | (1) `Q0` is `intent` alone; (2) the pin is decided — Laya English root at `55cf4c4e…`; (3) the `τ*` fitting rule is stated, including when it yields nothing |
@@ -787,4 +833,4 @@ amendments.** A protocol item may not be marked satisfied by a downstream docume
 
 ---
 
-*End of protocol v1.4*
+*End of protocol v1.5*
