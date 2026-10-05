@@ -134,6 +134,39 @@ def claimed(doc: pathlib.Path) -> dict:
             "sorry": sorry, "lines": lines, "axioms_reported": axioms_reported}
 
 
+# Documents that also quote the theorem count. The protocol is the one that matters most: it is the
+# programme's global anchor, so a stale number there is read as authoritative by every other artefact.
+# This check exists because the protocol said "12 theorems" while the file had 15 - the count was
+# updated in one place and the anchor kept the old figure, and no guard was watching the anchor.
+COUNT_CLAIM = re.compile(r"(\d+)\s+theorems?, zero errors")
+COUNT_DOCS = (
+    "protocol/NHB_Orthographic_Channels_JEV_Research_Protocol.md",
+    "docs/PHASE_I_AMENDMENT_2.md",
+    "docs/LEAN_FORMALIZATION_STATUS.md",
+)
+
+
+def check_count_claims(measured: dict, root: pathlib.Path | None = None) -> list[str]:
+    """Every document that quotes a theorem count must quote the same, current one."""
+    out: list[str] = []
+    n = measured.get("theorems")
+    if n is None:
+        return out
+    base = root or REPO_ROOT
+    for rel in COUNT_DOCS:
+        p = base / rel
+        if not p.exists():
+            continue
+        text = p.read_text(encoding="utf-8")
+        for m in COUNT_CLAIM.finditer(text):
+            said = int(m.group(1))
+            if said != n:
+                line = text[:m.start()].count("\n") + 1
+                out.append(f"[FRESH] {rel}:{line} says \"{m.group(0)}\" but the kernel reports {n} "
+                           f"theorem proved - a stale count in a document others treat as authority")
+    return out
+
+
 def compare(measured: dict, said: dict) -> list[str]:
     out: list[str] = []
     pairs = [
@@ -195,7 +228,7 @@ def main() -> int:
         return 1
 
     said = claimed(STATUS_DOC)
-    findings = compare(measured, said)
+    findings = compare(measured, said) + check_count_claims(measured, REPO_ROOT)
 
     if findings:
         print(f"STALE: {len(findings)} figure(s) in {STATUS_DOC.name} disagree with the build")

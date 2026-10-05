@@ -155,6 +155,16 @@ def scrub(text: str) -> str:
     text = re.sub(r"(?<![A-Za-z]:)(?<![A-Za-z0-9_./\\\\])\\\\\\\\(?:[A-Za-z]+(?:(?:\^|_)?\{[^{}\n]*\})*"
                   r"|(?![A-Za-z])[()\[\]])", " ", text)
 
+    # `\\Word` - a double backslash then a command name - is LaTeX inside a Python string, not a
+    # UNC path, so scrubbing it is safe. The negative lookahead keeps a REAL UNC host alive: a UNC
+    # is `\\host\share`, so its host segment is always followed by another backslash, and without
+    # the lookahead the scrub eats `\\host` and leaves `\share` for the ABS rule below to miss.
+    # That lookahead was added on the reasoning, not on a demonstration: I could not build a probe
+    # that isolates the UNC branch, because the guard blanks `r"..."` literals and my own test
+    # strings were over-escaped. So the UNC branch is worth one dedicated probe before it is
+    # trusted - it is recorded here as UNVERIFIED rather than presented as working.
+    text = re.sub(r"\\[A-Za-z]+(?!\\)", " ", text)
+
     # TeX groups NEST, and one pass cannot strip them all: `s_{\mathrm{en}}` loses `\mathrm{en}` to
     # the command rule but leaves `s_{` and `}`, and the residue can still expose a drive-looking
     # token. A measured probe - a file holding both a real `D:/` path and `s_{\mathrm{en}}` - showed

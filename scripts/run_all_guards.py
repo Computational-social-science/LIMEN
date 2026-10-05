@@ -47,7 +47,9 @@ GUARDS: list[tuple[str, tuple[str, ...], str]] = [
     ("check_lean_axioms.py", (), "no theorem depends on sorryAx"),
     ("check_lean_axioms.py", ("--negative-test",), "the axiom guard catches a sorry-proved theorem"),
     ("check_lean_status_freshness.py", (),
-     "the status record's figures are the figures on disk"),
+     "every document's theorem count matches the kernel"),
+    ("check_manuscript_html.py", (),
+     "the rendered page is not lying: numbering, sentinels, math integrity, note completeness"),
 ]
 
 # Guards that need something outside this repository. They are reported separately rather than mixed

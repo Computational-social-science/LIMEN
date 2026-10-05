@@ -477,14 +477,29 @@ class Renderer:
             self.display.append((n, self._kept[int(m.group(2))].strip()[2:-2].strip()))
             out.append("<!--EQBLOCK:" + str(n) + "-->")
 
-            # the note: the first non-blank line BELOW the block
+            # the note: EVERY consecutive non-blank line below the block, not just the first.
+            #
+            # Claiming one line truncated a note mid-sentence and left its remainder as ordinary body
+            # text. Two equations hit it: (5)'s note is 5 source lines and (6)'s is 2, so the page
+            # rendered `<p class="eq-note">… between clean and</p><p>noisy input, …</p>` - the styled
+            # note box ended and the rest of the sentence appeared as loose prose. Nothing errored, and
+            # the equation count, the note count and the numbering cross-check were all still correct,
+            # which is why reading the sentence is what found it.
+            #
+            # A continuation stops at a blank line, at anything that starts a block, or at the next
+            # placeholder, so a note can never swallow the following paragraph or a display equation.
             k = i + 1
             while k < len(lines) and not lines[k].strip():
                 k += 1
             if k < len(lines) and lines[k].strip().startswith(NOTE_STARTS):
-                self.notes[n] = lines[k].strip()
+                j = k
+                while (j + 1 < len(lines) and lines[j + 1].strip()
+                       and not lines[j + 1].lstrip().startswith(
+                           ("#", ">", "$$", "-", "*", "|", "<!--", SENTINEL))):
+                    j += 1
+                self.notes[n] = "\n".join(lines[x].strip() for x in range(k, j + 1))
                 out.append("<!--EQNOTE:" + str(n) + "-->")
-                i = k + 1
+                i = j + 1
             else:
                 i += 1
 
@@ -508,20 +523,38 @@ class Renderer:
                     + "$$</div><span class='eq-num'>(" + str(n) + ")</span></div>")
 
         def restore_inline(text):
-            # A captured note is still Markdown SOURCE, so it can contain placeholders. Handing it to
-            # renderInline while a sentinel is still embedded produces a note with replacement
-            # characters where every symbol should be - the page looked fine and read as garbage.
             return PH.sub(put, text)
+
+        def render_then_restore(text):
+            """Render Markdown FIRST, restore placeholders SECOND.
+
+            This order is the whole fix, and the previous version had it backwards. The note is
+            Markdown source that still contains placeholders, so:
+
+            - Restoring first hands `renderInline` a string with BARE `$...$` mathematics in it.
+              Markdown does not know about `$`, so the underscores inside the maths are live emphasis
+              markers. Equation (2)'s note contains `$\\mathcal{N}_s$` and later `$s =
+              s_{\\mathrm{en}}$`, and the parser paired those two underscores into an `<em>` spanning
+              eleven words, destroying both expressions. The page still rendered and still counted its
+              expressions, so nothing looked wrong unless you read that sentence.
+            - Rendering first keeps every expression as an opaque placeholder while the parser runs,
+              then restores it into finished HTML. Verified: `<em>` count 1 -> 0 on that note, with 0
+              U+FFFD and 0 sentinel residue.
+
+            The comment this replaces was written for the opposite order and warned that rendering
+            with a sentinel embedded `produces a note with replacement characters where every symbol
+            should be`. That does not reproduce: the Private Use Area codepoint passes through
+            `renderInline` unharmed, which is exactly why the whole-document path relies on it.
+            """
+            return PH.sub(put, inline_render(text))
 
         def eq_note(m):
             n = int(m.group(1))
-            body = restore_inline(self.notes.get(n, ""))
-            return '<p class="eq-note">' + inline_render(body).strip() + "</p>"
+            return '<p class="eq-note">' + render_then_restore(self.notes.get(n, "")).strip() + "</p>"
 
         def eq_purpose(m):
             n = int(m.group(1))
-            body = restore_inline(self.purposes.get(n, ""))
-            return '<p class="eq-purpose">' + inline_render(body).strip() + "</p>"
+            return '<p class="eq-purpose">' + render_then_restore(self.purposes.get(n, "")).strip() + "</p>"
 
         def put(m):
             # A display placeholder is restored as `$$ … $$`, an inline one as `$ … $`. The

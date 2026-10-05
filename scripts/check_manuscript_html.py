@@ -33,6 +33,7 @@ NEGATIVE CONTROL
 from __future__ import annotations
 
 import argparse
+from html import unescape as html_unescape
 import hashlib
 import pathlib
 import re
@@ -164,6 +165,114 @@ def negative_test():
         print(f"  [{'OK' if fired else 'MISS'}] {label:28} -> {detail[:74]}")
     print(f"\n  {ok}/{len(cases)} negative controls fired")
     return 0 if ok == len(cases) else 1
+
+
+
+@check
+def c8_math_not_torn_by_markup(msgs, html, raw):
+    r"""No emphasis or code tag may sit INSIDE an inline expression.
+
+    The defect this exists for: the builder restored `$...$` mathematics into an equation NOTE and
+    then handed that string to `renderInline`. Markdown does not know about `$`, so the underscores in
+    `$\mathcal{N}_s$` and `$s = s_{\mathrm{en}}$` were live emphasis markers and the parser paired
+    them across eleven words, producing `<em>` spanning both expressions. The page still rendered, its
+    equation count was right, its note count was right and the citation cross-check passed - the only
+    way to see it was to read the sentence. So it is now a check.
+
+    How it decides: split on `$`. A tag at an ODD index in that split is between an opening and a
+    closing dollar, i.e. inside mathematics. Display blocks are `$$`-delimited and are not counted
+    here, because their bodies are opaque by then.
+    """
+    parts = html.split("$")
+    bad = 0
+    for idx in range(1, len(parts) - 1, 2):
+        if re.search(r"</?(?:em|code|strong)\b", parts[idx]):
+            bad += 1
+    if bad:
+        msgs.append(f"C8 {bad} markup tag(s) sit inside an inline expression - Markdown parsed bare "
+                    f"`$...$` mathematics and tore it (the equation-note path did exactly this)")
+
+
+@check
+def c9_no_literal_tab(msgs, html, raw):
+    r"""A literal TAB in the page means a backslash escape was consumed somewhere upstream.
+
+    `\t` in LaTeX means a trailing-space command or nothing at all, but a raw 0x09 inside `$f_\theta$`
+    is a damaged expression: the source carried a real tab where `\t` was intended, and the browser
+    collapses it to whitespace so `f_<TAB>heta` reads as `f_ heta` instead of `f_theta`. Invisible on
+    screen, wrong in the LaTeX.
+    """
+    n = html.count("\t")
+    if n:
+        m = re.search(r".{0,30}\t.{0,20}", html)
+        msgs.append(f"C9 {n} literal TAB character(s) in the page (first near "
+                    f"{m.group(0)!r}) - a `\\t` escape was consumed as a real tab")
+
+
+@check
+def c10_equation_notes_complete(msgs, html, raw):
+    r"""Every equation note in the SOURCE must appear in full in the page.
+
+    A note is multi-line Markdown. The builder claimed only its FIRST line, so a note of five source
+    lines was emitted truncated at the first newline and its remainder fell through as ordinary body
+    prose - `<p class="eq-note">... between clean and</p><p>noisy input, ...</p>`. Two equations were
+    affected and every count-based check still passed. This compares text, not counts, because counts
+    were exactly what failed to notice.
+    """
+    NOTE_STARTS = ("where ", "The second form is", "with $\\tau", "Phase I omits")
+    lines = raw.split("\n")
+    notes = []
+    i = 0
+    while i < len(lines):
+        if lines[i].strip() == "$$":
+            j = i + 1
+            while j < len(lines) and lines[j].strip() != "$$":
+                j += 1
+            k = j + 1
+            while k < len(lines) and not lines[k].strip():
+                k += 1
+            if k < len(lines) and lines[k].strip().startswith(NOTE_STARTS):
+                e = k
+                while (e + 1 < len(lines) and lines[e + 1].strip()
+                       and not lines[e + 1].lstrip().startswith(("#", ">", "$$", "-", "*", "|"))):
+                    e += 1
+                notes.append(" ".join(lines[x].strip() for x in range(k, e + 1)))
+            i = j + 1
+        else:
+            i += 1
+
+    def norm(s):
+        """Reduce Markdown AND LaTeX noise to plain words on both sides.
+
+        Both sides must lose the same things or every note reads as truncated. The source carries
+        `**bold**`, backticks and `$`-delimited TeX; the page carries `<strong>`/`<em>` tags and the
+        same TeX. Stripping tags from one side and Markdown markers from the other, then removing the
+        TeX punctuation that survives rendering, is what makes the comparison about the WORDS.
+        """
+        # BLOCK tags become a space; INLINE tags become empty. Replacing every tag with a space
+        # instead put one before the punctuation that followed it - `<strong>x</strong>:` normalised
+        # to "x :" against the source's "x:", and `<strong>dev</strong>-set` to "dev -set" against
+        # "dev-set". Those two artifacts produced six false "truncated" findings on a page whose notes
+        # were complete, which is the failure mode this whole file exists to avoid: a guard that cries
+        # wolf trains its reader to ignore it.
+        s = html_unescape(s)                     # page: &quot; &amp; &lt; &gt; -> their characters
+        s = re.sub(r"</?(?:p|div|li|ul|ol|td|th|tr|h[1-6]|br|blockquote)\b[^>]*>", " ", s)
+        s = re.sub(r"<[^>]+>", "", s)
+        s = s.replace("**", "").replace("`", "")  # source: markdown emphasis / code
+        s = re.sub(r"[\\${}]", "", s)          # both: TeX punctuation
+        s = re.sub(r"\s+", " ", s)
+        return s.strip()
+
+    page = norm(html)
+    for n, note in enumerate(notes, 1):
+        want = norm(note)
+        if want and want not in page:
+            # find the longest prefix that IS present, to show where it was cut
+            have = 0
+            while have < len(want) and want[:have + 1] in page:
+                have += 1
+            msgs.append(f"C10 equation note {n} is truncated in the page: only the first {have} of "
+                        f"{len(want)} characters appear (cut near {want[have:have + 45]!r})")
 
 
 def main() -> int:

@@ -6,12 +6,12 @@ artifact rebuilds offline in seconds with zero dependency resolution.
 ## STATUS: COMPLETE AND MACHINE-VERIFIED
 
 ```
-source files          : 1  (lean-nhb: NHB/PhaseI/Core.lean, 273 lines)
+source files          : 1  (lean-nhb: NHB/PhaseI/Core.lean, 315 lines)
 lake build            : Build completed successfully (4 jobs)
 errors remaining      : 0      <- MEASURED, not estimated
 sorry / admit / axiom : 0      <- grep AND Lean's own #print axioms, see below
-theorem count         : 13
-theorems machine-checked: 13   <- every one, verified by Lean's kernel
+theorem count         : 15
+theorems machine-checked: 15   <- every one, verified by Lean's kernel
 ```
 
 **These numbers are generated, not typed.** `scripts/check_lean_status_freshness.py` re-derives every
@@ -30,7 +30,7 @@ So the guard asks **Lean's kernel** instead, via `#print axioms`:
 
 ```
 $ python scripts/check_lean_axioms.py
-OK: 13 theorem(s), none depends on sorryAx; allowed axioms only
+OK: 15 theorem(s), none depends on sorryAx; allowed axioms only
     ['Classical.choice', 'Quot.sound', 'propext']
 ```
 

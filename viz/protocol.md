@@ -48,7 +48,7 @@ $\texttt{state} \times \texttt{questions} \mapsto$ distributions over caller-def
 >    anchor states what is being asked; it does not state how the asking is instrumented.**
 >
 > **Current anchor identity:** `protocol/NHB_Orthographic_Channels_JEV_Research_Protocol.md`,
-> version **1.2**. Its sha256 is recorded in `config/anchor.json` and verified by the drift guard.
+> version **1.3**. Its sha256 is recorded in `config/anchor.json` and verified by the drift guard.
 
 ### 0.1 Thesis
 
@@ -187,7 +187,7 @@ downstream stages**, so $\lambda$ cannot move $\mathrm{Acc}$ without also moving
 control across $\lambda$, precisely because the chain carries the disturbance from end to end.
 
 **The coupling, stated as the hypothesis.** Phase I does not ask "does noise hurt accuracy". It asks
-whether a disturbance entering at $E$ **propagates through $f_	heta$ into the gate $g_\tau$** in a way
+whether a disturbance entering at $E$ **propagates through $f_\theta$ into the gate $g_\tau$** in a way
 that changes not only *what* is answered but *whether* the model commits — which is precisely the
 separation between H1.1 (accuracy falls) and H1.2 (confidence does not track it).
 
@@ -444,6 +444,46 @@ against the control-law claim on its own.** Its only job is to make the gate's o
 
 ---
 
+### 4.4b What machine-checking changed in this protocol
+
+The mathematics of §3.4, §4.4a and §6 is formalised in `lean-nhb` (`NHB/PhaseI/Core.lean`): **15
+theorems, zero errors, zero `sorry`**, each verified by Lean's own kernel through `#print axioms`,
+which fails on `sorryAx` — the axiom Lean substitutes for a proof it could not find. A grep for the
+literal word would not do: it proves a string is absent, not that a theorem is proved.
+
+**The formalisation is not an appendix. It is a feedback loop, and it changed the protocol.** Three
+substantive corrections came out of it, and each is recorded at the point it applies rather than only
+here.
+
+| What the protocol said | What the kernel returned | What changed |
+|---|---|---|
+| §6: `SilentError@τ` is "non-decreasing in τ" | `risk_mono` proves it **falls**: `Risk b ≤ Risk a` when `a ≤ b`. On `{c=3, wrong}, {c=9, wrong}` the count runs `2, 1, 1, 0` at τ = 2, 5, 9, 10 | §6 corrected to **non-increasing**. The wrong direction was load-bearing for the §3.4 argument that τ is pre-registered rather than chosen after seeing the curve, so a reader trusting the old wording reasoned about the gate backwards |
+| §6/v1.2 CHANGE 3: the least admissible threshold maximises coverage | `least_admissible_maximises_coverage` proves it — but only when the ordering is **derived from** least-admissibility. A first version assumed `a ≤ b` and left both `Admissible` hypotheses unused; Lean's linter reported them, which is how the gap surfaced | The rule stands, and its justification is now machine-checked. `least_admissible_is_at_least_as_good` adds the limit the protocol must respect: the guarantee is a **maximum, not a strict maximum** |
+| §6 degeneracy: covered the case where *every* threshold is admissible | `budget_collapses_to_zero_on_small_dev` exhibits the **opposite** degeneracy. With ε = 0.05 and a dev set below twenty trials, `floor(0.05·N) = 0` and the only admissible thresholds are those that admit nothing: `admissibleIn 0 0 12 dev = [10, 11, 12]`, so τ\* = 10 and `Coverage@ε = 0` | §6's degeneracy clause extended to name both ends. See below |
+
+**Why the third one matters for §4.4a specifically.** The budget can collapse to zero for two opposite
+reasons — the gate is *too lenient to ever err* (the clean zero floor already measured on this
+instrument), or *too strict to ever answer*. §4.4a reports a `Δτ*` measured between two fitted
+thresholds, and if both ends are shut gates then the diagnostic describes **when the gate closes**, not
+whether selectivity moved. The two degeneracies must therefore be distinguished at reporting time, not
+averaged into one "undefined".
+
+**And the pocket immediately below the limen is the worst gate on the grid.**
+`the_threshold_below_the_limen_keeps_only_the_error` shows that on that sample τ = 9 — one step under
+the fitted limen — admits exactly the single confidently-wrong trial and rejects all seven correct
+ones. "Just under the fitted threshold" is not a near-optimal gate; it is the maximally anti-selective
+one. Nothing in the protocol previously said so.
+
+**What the formalisation does NOT establish, and cannot.** Every theorem follows from the definitions
+alone — the gate, the budget, a finite sample. There is **no theorem saying that noise changes any of
+these quantities**. That is the empirical claim, carried as a named premise in §4.4, and asserting it
+in Lean would be proving the result by fiat.
+
+**Authority:** `docs/LEAN_FORMALIZATION_STATUS.md` · `scripts/check_lean_axioms.py` ·
+`scripts/check_lean_status_freshness.py`.
+
+---
+
 ## 5. Phase II — Cross-script / multilingual extension
 
 ### 5.1 Entry criteria (gates from Phase I)
@@ -533,14 +573,33 @@ Phase I omits $s$ (always $s_{\mathrm{en}}$).
 > among admissible thresholds, so the gap from any other choice is bounded by monotonicity rather than by
 > luck.
 >
-> **And the case where the rule yields nothing.** If `Risk(τ) = 0` for every τ in the grid, the budget
-> does not select a threshold at all. Then `Coverage@ε` is reported as **undefined, with the reason
-> stated**, and the one-sided 95 % upper bound on the noisy silent-error rate is reported instead.
-> **A reported `Coverage@ε` of zero in that situation is a fact about the dev set, not about the model,
-> and must never be read as "the model was perfectly selective."**
+> **And the case where the rule yields nothing — which has TWO opposite forms, and they must not be
+> reported the same way.**
+>
+> **(a) The budget is met everywhere because the gate cannot err.** If `Risk(τ) = 0` for every τ in the
+> grid, the budget does not select a threshold at all. Then `Coverage@ε` is reported as **undefined,
+> with the reason stated**, and the one-sided 95 % upper bound on the noisy silent-error rate is
+> reported instead. **A reported `Coverage@ε` of zero in that situation is a fact about the dev set,
+> not about the model, and must never be read as "the model was perfectly selective."** This is the
+> clean zero floor already measured on this instrument (`SilentError@0.9 = 0/120`).
+>
+> **(b) The budget is met ONLY by a gate that admits nothing.** The opposite degeneracy, and the
+> protocol did not previously name it. With `ε = 0.05` and a dev set below twenty trials,
+> `floor(0.05·N) = 0`, so the budget is zero — and then the least admissible threshold is the loosest
+> gate whose accepted-error count is zero, which can be a gate that **defers on every item**. The
+> `lean-nhb` theorem `budget_collapses_to_zero_on_small_dev` exhibits it: on an eight-trial dev sample
+> the admissible set is `{10, 11, 12}`, so `τ* = 10` and `Coverage@ε = 0`.
+>
+> The two are indistinguishable from the reported number — both give `Coverage@ε = 0` — and they mean
+> opposite things: (a) says *the model was right whenever it committed*, (b) says *the model was never
+> asked to commit*. A run must therefore report **which** degeneracy it hit, together with the dev-set
+> size and the budget, and must never report the bare zero. §4.4a depends on this: a `Δτ*` computed
+> between two (b)-type gates describes when the gate closes, not whether selectivity moved.
+>
+> Authority: `docs/PHASE_I_AMENDMENT_2.md` §B1 · `docs/LEAN_FORMALIZATION_STATUS.md` §4.4b.
 >
 > **v1.3 ADDENDUM — the rule's optimality is now machine-checked, and one limit is named.** The
-> `lean-nhb` formalisation builds clean (**12 theorems, zero errors, zero `sorry`**, each verified by
+> `lean-nhb` formalisation builds clean (**15 theorems, zero errors, zero `sorry`**, each verified by
 > Lean's kernel via `#print axioms`, which fails on `sorryAx`). Two of its results bear directly on this
 > rule. `admissible_mono` proves the admissible set is **upward closed**, so an admissible threshold is
 > never unique — the premise of the problem this rule solves. `least_admissible_maximises_coverage`
@@ -563,21 +622,6 @@ Phase I omits $s$ (always $s_{\mathrm{en}}$).
 ---
 
 ---
-
-### 4.4b Lean 反馈环：机器检查改变了协议的三个核心判断
-
-本协议的数学部分不仅被形式化，更在形式化过程中被**修正**。`lean-nhb` 形式化（`E:/2026-AI4S/lean-nhb/NHB/PhaseI/Core.lean`，13 定理，零错误，零 `sorry`，全部经 `check_lean_axioms.py` 经内核 `#print axioms` 验证）不仅是事后存档，它在构建过程中**发现并修正了协议的三个实质性错误**：
-
-| 协议原声称 | Lean 反馈结果 | 协议修正 |
-|-----------|---------------|----------|
-| §6：`SilentError@τ` 是 "non-decreasing in τ" | `risk_mono` 证明：`Risk` 随 τ **下降**（non-increasing） | §6 改为 non-increasing，引用 `risk_mono`；并在 Core.lean 中保留 `protocol_said_nondecreasing_is_FALSE` 由 `decide` 证伪旧句 |
-| §6 "最小可采阈值最大化 coverage" | 首版定理留用了两个 `Admissible` 假设未被用到；Lean 报警告 | 重述为 **IsLeastAdmissible → 推导出顺序**，令排序**从**可采性推导而非假设；`least_admissible_maximises_coverage` 完整成立 |
-| §6 未预见：小 dev 集上 budget 崩塌为 0 | `budget_collapses_to_zero_on_small_dev`：N<20 时 floor(0.05·N)=0，最小可采 τ=10 且 Coverage=0（全关门）；紧邻其下的 τ=9 **只保留错误** | §6 增加 degeneracy 条款：budget 为 0 时最小可采阈值可能是"全关门"；§4.4a 增加声明：Δτ* 可能度量的是"门何时完全关"而非选择性 limen 的移动 |
-
-**反馈环也修正了守卫自身的三个缺陷**：(1) `check_lean_status_freshness` 报"检查了 6 项"实则静默跳过 2 项 —— 现无法推导即失败；(2) `LEAN_PATH` 少一层 `lean/`，守卫只是碰巧能用；(3) `depends on axioms: [...]` 正则漏匹配 `does not depend on any axioms`，导致 `decide` 定理（零公理）被误报为未覆盖。
-
-**结果**：协议现在不仅声称其数学是正确的，而且声称其数学**被机器检查过，且在这个过程中被修正过**。形式化不再是附录，而是**修正协议的反馈环**。
-
 
 ## 7. What Phase I contributes to the global thesis
 
