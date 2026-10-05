@@ -166,3 +166,43 @@ reaching any theorem. Corrected to `globs = ["NHB"]`.
 - **Five defects were found in this file** -- a `sorry` written into a draft, an assumed `Nat.find`,
   `Bool`/`Prop` mixed in one position, the wrong error count, and now a guard that measured nothing.
   None was a mathematical problem, and all five would have shipped silently under a weaker workflow.
+
+
+---
+
+## ScaleFree.lean — the design justification for H1.2′, as a theorem
+
+**Added with the v1.19 replacement of H1.2 by H1.2′.** the formalization repository's PhaseI/ScaleFree module, core-only, no Mathlib.
+
+H1.2′ measures the gate's discriminability as the within-arm AUC and was chosen over an equivalence bound on
+a rate **because it is scale-free**. `laya`'s own library warns that this checkpoint's temperatures are invalid
+and that affected confidences are uncalibrated, so *"this hypothesis does not depend on the calibration"* has
+to be a theorem rather than an argument.
+
+| theorem | statement | `#print axioms` |
+|---|---|---|
+| `winsAux_map_of_strictMono` | **the ordered-pair count, hence the AUC, is invariant under any strictly increasing rescaling of the confidence scale** | **no axioms** |
+| `lt_iff_of_strictMono` | a strictly increasing map on `Nat` reflects order as well as preserving it | — |
+| `countLt_map` | the inner count is unchanged by such a map | **no axioms** |
+
+**`#print axioms` reports that none of the three depends on any axiom at all** — stronger than the
+no-`sorryAx` bar the Core module is held to, since it rules out every axiom rather than one.
+
+### What the formalization cost, and what it taught
+
+Everything below is a Lean-4-core fact that had to be discovered rather than assumed, and each is the sort of
+thing that silently invalidates a proof written from memory:
+
+- **`lemma` is not a command in Lean core.** The keyword is provided by Mathlib. Without it the parser fails
+  with *"unexpected identifier; expected 'def', 'theorem', …"* on the line that follows, which points at the
+  wrong place. `theorem` is the core keyword.
+- **`if_pos` / `if_neg` are deprecated** in this toolchain (`ite_eq_left` / `ite_eq_right` are the current
+  names); the old forms still work but warn.
+- **A `rw` cannot rewrite a proposition a `Decidable` instance depends on.** Rewriting the condition of an
+  `ite` fails with *"motive is not type correct"*, because the instance is an argument of the `ite`. The
+  repair is to branch with `by_cases` and close each branch with `ite_eq_left` / `ite_eq_right`, which never
+  performs the dependent rewrite.
+- **`#print axioms` needs the fully qualified name** outside the namespace that declares the theorem.
+
+**`lean-nhb` is now under version control** (root commit `20c472e`), closing a structural risk that had already
+cost a zero-byte truncation of the Core module once. `.lake/` is ignored.

@@ -417,6 +417,11 @@ Exact rates fixed in pre-registration after a short calibration so that items re
   > 0.714 → 0.936 and the within-arm AUC rises 0.6533 → 0.7734. H1.2' states that as a directional claim.
   > It is **scale-free**, so it does not rest on the absolute calibration that `laya`'s invalid-temperature
   > warning puts in question — unlike the withdrawn conditional form, which bounded a rate at an absolute τ.
+  > **Scale-free, and machine-checked:** `NHB/PhaseI/ScaleFree.lean` proves
+  > `winsAux_map_of_strictMono` — the ordered-pair count, hence the AUC, is invariant under any strictly
+  > increasing rescaling of the confidence scale — and `#print axioms` reports it depends on **no axioms at
+  > all**. That is the formal discharge of the claim that H1.2' is unaffected by the instrument's
+  > uncalibrated confidence.
   > Estimator verified on dev with positive and negative controls (`scripts/analyze_h12_auc.py`). Authority:
   > `docs/PHASE_I_DEV_PRERUN_RESULTS.md` §7–§10. **The test split is untouched.**
 - **H1.3:** Under dev-fit $\tau^\star$ at $\varepsilon=0.05$, $\mathrm{Coverage}(\lambda_{\mathrm{mid}}) < \mathrm{Coverage}(0)$ on test **or** `CondErr@τ` rises — the quantity now defined in §6.1 as "error among accepted" (pre-register which is co-primary).
