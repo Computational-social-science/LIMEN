@@ -72,6 +72,8 @@ GUARDS: list[tuple[str, tuple[str, ...], str]] = [
      "no unresolved slot, no duplicate state within a template, options match criteria, gold among options"),
     ("fix_item_bank_capitalization.py", ("--verify-packs",),
      "every packed stimulus text matches the item bank exactly"),
+    ("analyze_phase1.py", ("--synthetic",),
+     "each confirmatory hypothesis fires on its OWN positive control and none fires on the null"),
 ]
 
 # Guards that need something outside this repository. They are reported separately rather than mixed
