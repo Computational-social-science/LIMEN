@@ -112,6 +112,7 @@ CLAIMS: list[tuple[str, str, str, str]] = [
     ("`λ_lo` does not degrade accuracy", "MEASURED", "0.9071", "against clean 0.8750 — `lo` is genuinely unperturbed"),
     ("`SilentError@0.9` does not rise under noise", "MEASURED", "0.0107", "it FALLS, which is why H1.2 is flagged at §4.4"),
     ("the pinned instrument's confidence carries no substitution", "MEASURED", "2,520", "0 of 2,520 rows carry the constant 0.5 the library warns about"),
+    ("the confidence gate becomes more discriminative under noise", "MEASURED", "0.1201", "within-arm AUC 0.6533 -> 0.7734, paired permutation p = 2e-4 — the basis of H1.2'"),
 ]
 
 STATUS_MARK = {"PROVED": "**PROVED**", "MEASURED": "**MEASURED**",

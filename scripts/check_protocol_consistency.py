@@ -36,7 +36,9 @@ ANCHOR = ROOT / "protocol/NHB_Orthographic_Channels_JEV_Research_Protocol.md"
 ANCHOR_JSON = ROOT / "config/anchor.json"
 
 # The confirmatory family, as frozen. A change here is a change to the claim, not to the prose.
-FROZEN_ENDPOINTS = ("H1.1", "H1.2", "H1.3")
+# `H1.2` carries a prime after the v1.19 replacement: the label changed because the HYPOTHESIS changed,
+# and the guard follows the label rather than the other way round.
+FROZEN_ENDPOINTS = ("H1.1", "H1.2'", "H1.3")
 
 
 def check_version(msgs, t: str):
@@ -213,7 +215,7 @@ def check_endpoints(msgs, t: str):
     # The hypotheses are written `- **H1.1:** ...` - the closing `**` follows the COLON, so a
     # pattern expecting `**H1.1**` finds nothing and reports an empty family. That bug hid behind a
     # check that then passed for the wrong reason.
-    found = tuple(re.findall(r"\*\*(H1\.\d)[:\*]", seg))
+    found = tuple(re.findall(r"\*\*(H1\.\d'?)[:\*]", seg))
     if found != FROZEN_ENDPOINTS:
         msgs.append(("E", 0, f"confirmatory family is {found}, expected {FROZEN_ENDPOINTS}"))
 

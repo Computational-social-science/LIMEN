@@ -3,7 +3,7 @@
 ## A Pre-Registered, Phased Protocol Integrating System One / JEV-Ecosystem Tooling
 
 **Document type:** Detailed research protocol (*Nature Human Behaviour*–oriented framing)  
-**Version:** 1.18 (English typo first, then cross-script / multilingual expansion)  
+**Version:** 1.20 (English typo first, then cross-script / multilingual expansion)  
 **Status:** Draft for staged pre-registration  
 **Compute envelope:** Single consumer GPU admissible; zero paid API on confirmatory path  
 **Primary interface class:** Typed decision models (System One):  
@@ -402,28 +402,23 @@ Exact rates fixed in pre-registration after a short calibration so that items re
   committed answers* rises, on two samples with identical answer-correctness. It is retained as a
   primary endpoint because it is the endpoint a reader expects, and **paired in reporting** with the
   conditional figure that decides which reading is at work.  
-- **H1.2:** $\mathrm{SilentError@}0.9(\lambda_{\mathrm{mid}}) > \mathrm{SilentError@}0.9(0)$.  
-  > **v1.14 — DIRECTION CONTRADICTED BY THE PINNED INSTRUMENT ON DEV; AMENDMENT PENDING.** The dev
-  > pre-run (`docs/PHASE_I_DEV_PRERUN_RESULTS.md`) measured `SilentError@0.9` **falling** 0.0357 → 0.0107
-  > from λ = 0 to λ = 0.18, against this hypothesis. The mechanism is already proved in this protocol:
-  > `risk_mono` (§15) makes `SilentError@τ` non-increasing in τ, and noise deflates confidence (median c
-  > 0.886 → 0.765), so fewer trials clear the gate at all (coverage 0.432 → 0.218) and the admitted-and-wrong
-  > share falls with them. **A fixed-τ silent-error rate cannot rise under a confidence-deflating
-  > manipulation.** The quantity that rises is the conditional one, `CondErr@τ` (§6.1), which already
-  > exists. **Do not run H1.2 as written** — the analysis code enforces direction and would record a correct
-  > measurement as a violation. **The amendment to restate H1.2 on `CondErr@0.9` was
-  > proposed, then MEASURED on this same dev data, then WITHDRAWN**: `CondErr@0.9` is statistically flat
-  > (0.0826 → 0.0718, z = −0.45) and `CondErr@0.8` likewise (0.0854 → 0.0886, z = 0.17). **Neither the
-  > fixed-τ nor the conditional error rate rises**, because noise-induced errors are disproportionately
-  > made at LOW confidence and are therefore not admitted; errors passing the gate fall from 0.286 to
-  > 0.044 of all errors. `CondErr@τ` is also **not a paired quantity** (admitted sets 121 vs 61, overlap
-  > 51), so the §4.5 estimator does not apply to it. **Options (c) equivalence and (d) coverage-matched were then PROBED on the same dev trials
-  > before adoption, as (a) had not been: (d) is REFUTED — no coverage level from q = 0.15 to 0.50 makes the
-  > conditional error rise significantly — while (c) is TESTABLE, with a projected smallest declarable
-  > margin of 2.59 pts on `CondErr@0.9` against a clean value of 8.3 pts, at the cost of a second estimator
-  > (unpaired) beside §4.5's paired permutation. **No amendment is accepted; H1.2 remains flagged as
-  > un-runnable as written and the decision is open.** See
-  > `docs/PHASE_I_DEV_PRERUN_RESULTS.md` §7. The test split is untouched.
+- **H1.2':** the confidence gate's discriminability **increases** with typo noise. The estimand is the
+  within-arm AUC between correct and incorrect trials, `AUC(λ) = P(c_correct > c_error | λ)`, and the
+  hypothesis is `AUC(λ_mid) > AUC(0)` — the gate separates right from wrong **more** sharply under noise.
+  **Estimator: the exact within-unit paired permutation of §4.5**, by the same exchangeability argument, so
+  no second estimator is introduced. **Family membership unchanged:** H1.2' replaces H1.2 inside the frozen
+  three-test Holm family at FWER α = 0.05, so the thresholds H1.1 and H1.3 are judged against are the ones
+  already pre-registered.
+  > **v1.19 — H1.2 REPLACED. The original fixed-τ direction was contradicted by the pinned instrument on dev
+  > (`SilentError@0.9` FALLS, 0.0357 → 0.0107), the conditional restatement was proposed, measured and
+  > WITHDRAWN (`CondErr@0.9` is flat, z = −0.45), and the coverage-matched form was REFUTED (no level
+  > significant). What survives — across four independent probes — is that **noise destroys accuracy and
+  > coverage while the errors it causes arrive below the gate**: the share of errors the gate rejects rises
+  > 0.714 → 0.936 and the within-arm AUC rises 0.6533 → 0.7734. H1.2' states that as a directional claim.
+  > It is **scale-free**, so it does not rest on the absolute calibration that `laya`'s invalid-temperature
+  > warning puts in question — unlike the withdrawn conditional form, which bounded a rate at an absolute τ.
+  > Estimator verified on dev with positive and negative controls (`scripts/analyze_h12_auc.py`). Authority:
+  > `docs/PHASE_I_DEV_PRERUN_RESULTS.md` §7–§10. **The test split is untouched.**
 - **H1.3:** Under dev-fit $\tau^\star$ at $\varepsilon=0.05$, $\mathrm{Coverage}(\lambda_{\mathrm{mid}}) < \mathrm{Coverage}(0)$ on test **or** `CondErr@τ` rises — the quantity now defined in §6.1 as "error among accepted" (pre-register which is co-primary).
 
 **Interpretation if supported:** typo noise is a material disturbance of System One **understanding and control**, not merely a generation nuisance.  
@@ -972,8 +967,9 @@ Generated by `scripts/build_provenance_table.py` from the kernel-verified set of
 | `λ_lo` does not degrade accuracy | **MEASURED** | 0.9071 | against clean 0.8750 — `lo` is genuinely unperturbed |
 | `SilentError@0.9` does not rise under noise | **MEASURED** | 0.0107 | it FALLS, which is why H1.2 is flagged at §4.4 |
 | the pinned instrument's confidence carries no substitution | **MEASURED** | 2,520 | 0 of 2,520 rows carry the constant 0.5 the library warns about |
+| the confidence gate becomes more discriminative under noise | **MEASURED** | 0.1201 | within-arm AUC 0.6533 -> 0.7734, paired permutation p = 2e-4 — the basis of H1.2' |
 
-**16 proved · 5 measured on the pinned instrument · 6 assumed · 6 to be tested.** The third column is the whole point: a reader can see which conclusions rest on the kernel, which on a pre-run the instrument actually produced, which on a premise the design chose, and which on the confirmatory run that has not happened yet. A **PROVED** row names a theorem the kernel checked and a **MEASURED** row quotes a value the pre-run reported; the generator fails if either is absent, so this table cannot claim a proof that was never done or a measurement quoted from nowhere.
+**16 proved · 6 measured on the pinned instrument · 6 assumed · 6 to be tested.** The third column is the whole point: a reader can see which conclusions rest on the kernel, which on a pre-run the instrument actually produced, which on a premise the design chose, and which on the confirmatory run that has not happened yet. A **PROVED** row names a theorem the kernel checked and a **MEASURED** row quotes a value the pre-run reported; the generator fails if either is absent, so this table cannot claim a proof that was never done or a measurement quoted from nowhere.
 
 <!-- PROVENANCE:END -->
 
@@ -998,7 +994,9 @@ Generated by `scripts/build_provenance_table.py` from the kernel-verified set of
 | Field | Value |
 |-------|--------|
 | **Role** | **THE PROGRAMME'S GLOBAL ANCHOR.** All other documents are subordinate; see the note at the head of §0 |
-| Version | **1.18** |
+| Version | **1.20** |
+| v1.20 changes | §12.1 34 claims, H1.2' measurement added |
+| v1.19 changes | H1.2 → H1.2' (gate discriminability rises under noise); estimator reuses §4.5; frozen family and thresholds unchanged |
 | v1.18 changes | (c)/(d) testability probed on dev (`docs/PHASE_I_DEV_PRERUN_RESULTS.md` §8); (d) refuted, (c) testable at the cost of a second estimator |
 | v1.17 changes | option (a) for H1.2 measured and withdrawn (`docs/PHASE_I_DEV_PRERUN_RESULTS.md` §7); H1.2 flag updated; decision open |
 | v1.16 changes | §12.1 extended to four statuses (PROVED / MEASURED / ASSUMED / TO BE TESTED) with MEASURED rows validated against the pre-run results document |
@@ -1151,4 +1149,4 @@ remains before it is the H1.2 amendment and nothing else.
 
 ---
 
-*End of protocol v1.18*
+*End of protocol v1.20*
