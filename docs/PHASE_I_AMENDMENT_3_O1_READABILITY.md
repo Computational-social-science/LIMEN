@@ -101,32 +101,41 @@ the boundary where the programme's two conditions live, and it cannot distinguis
 "broken". `W` is the category that carries the information: the hypothesis is that `lo` is mostly R with
 some W, and that `mid` is mostly W with some X. A rule that cannot express that cannot test it.
 
-**The frozen decision rule.** With `n = 60` items per level (drawn from the **dev** split only — never
-from test). The reliability clause is now the rater's own validated one — **pairwise concordance ≥ 0.80 with
-position-A rate within 0.15 of 0.5** — rather than Fleiss' κ, because there is one rater and a single rater
-cannot have inter-rater agreement. `κ ≥ 0.60` is retained as the **floor for any human spot-check** that is
-run against the rater, where it remains the right statistic:
+**The frozen decision rule (v2 — ordinal tail, 2026-10-05).** With `n = 60` dev items per grid point
+(**dev only** — never test). The rater is pairwise and blind; every judgement is made against the item's
+**own clean version**, so the score is a per-item difficulty relative to that item, not a position on a
+shared absolute scale.
+
+For each dev item and each grid λ, the λ-version and the clean version are presented **twice, both sides**,
+and the item scores `s = (number of times the λ-version is called harder) / 2`, so `s ∈ {0, 0.5, 1}`.
 
 | Level | Accept iff | Otherwise |
 |---|---|---|
-| **λ_lo** | median category **R** and `P(X) ≤ 0.10` | lower λ and re-run |
-| **λ_mid** | median category **W** and `0.15 ≤ P(X) ≤ 0.60` | raise λ if the median is still R; lower λ if `P(X) > 0.60` |
+| **λ_lo** | `P(s = 1) ≤ 0.10` — the noisy text is essentially never harder than the clean one | lower λ and re-run |
+| **λ_mid** | `median(s) = 1` **and** `P(s_mid = 1 and s_mid > p90(s_lo)) ∈ [0.15, 0.60]` | raise λ if the median is 0; lower λ if the share exceeds 0.60 |
 
-**Why `mid` needs both a median and a tail, and why the tail is two-sided.** The first draft of this
-rule asked `mid` for a median of W *or* R together with `P(X) ≥ 0.25`. Scoring a synthetic panel through
-it showed the flaw immediately: a panel in which **every** item is W has median W and `P(X) = 0`, so it
-failed a rule that demanded a large lost fraction — correctly, because an item nobody fails to read is
-not a hard item. But loosening the median to "W or R" would then accept that same panel, which is worse.
-The fixed rule requires `mid` to sit **between** the two states: typically wobbly, with a real minority
-genuinely lost. The upper bound matters for the opposite reason — past it, the text is broken rather than
-stressed, and a protocol that ran it anyway would be measuring comprehension failure, not a disturbance
-effect. **This is why the ladder is not simply pushed upward until something satisfies a threshold.**
+**Why the tail is ordinal and no longer `P(X)`.** The previous rule asked for `0.15 ≤ P(X) ≤ 0.60`, where
+`X` meant *the intended content is not recoverable*. That needs an **absolute** cut, and the validation
+found none: the absolute rater emitted `X` **zero times in 120 sentences** at one configuration and
+mis-called 14 of the 40 most-ambiguous sentences at another, with weighted κ 0.073 / 0.137 against a floor
+of 0.60. **An absolute threshold on an instrument that cannot place a text on an absolute scale is a
+number about the instrument, not about the text.**
 
-**And the band the protocol already suggested (§4.2: ~5–8 % and ~12–18 %) is the search range**, searched
-on a fixed grid inside it — `lo ∈ {0.05, 0.06, 0.07, 0.08}`, `mid ∈ {0.12, 0.14, 0.16, 0.18}` — so the
-search is finite and is reported in full whether or not it succeeds. **The first grid point that
-satisfies the rule is taken**, scanning `lo` upward and `mid` upward; there is no discretion after the
-grid is fixed.
+The replacement keeps the intent — *`mid` must be genuinely stressed, not destroyed* — and expresses it in
+the only currency the instrument was validated to carry. The upper bound is still two-sided on purpose:
+past 0.60, the text is broken rather than stressed, and a protocol that ran it anyway would be measuring
+comprehension failure rather than a disturbance effect.
+
+**What was validated, and what was not.** Pairwise ordering against *this study's own* manipulation scored
+**0.967** with position-A rate 0.500. Against a foreign human annotation it scored **0.714** (short of the
+0.80 floor). So the rule is written on the within-item comparison — the validated part — and **the transfer
+limitation is carried as a stated limitation, not as agreement**. Full evidence:
+`measurement/o1_validation/RESULTS.md`.
+
+**The band the protocol suggested (§4.2: ~5–8 % and ~12–18 %) is the search range**, searched on a fixed
+grid — `lo ∈ {0.05, 0.06, 0.07, 0.08}`, `mid ∈ {0.12, 0.14, 0.16, 0.18}` — so the search is finite and
+reported in full whether or not it succeeds. **The first grid point that satisfies the rule is taken**,
+scanning `lo` upward and `mid` upward; there is no discretion after the grid is fixed.
 
 **Why the rule is written on the MEDIAN and on `P(X)`.** The median states the typical experience, which
 is what "human-readable" means in the protocol's sentence. `P(X)` states the tail, because a level at
@@ -258,24 +267,29 @@ scan order is fixed in advance precisely so that the choice cannot be made after
 3. **Accept that `mid` failing to reach the band is a finding about the edit classes**, not a licence to
    raise λ past 0.18. **ACCEPTED.** The ladder is not extended beyond 0.18 without an amendment.
 
-## 8. What is still open, and why §12 item 2 stays `λ PENDING`
+## 8. O1 is now CLOSED as a decision; only the run remains
 
-The median half of the criterion is supported: the rater orders this study's manipulation reliably, so
-"`mid` is harder than `lo`" and "the median item at `mid` is W rather than R" are answerable.
+The criterion is frozen: **median `s = 1` and an ordinal two-sided tail**, on a pairwise blind rater whose
+within-item ordering was validated at 0.967 with no position bias.
 
-The **tail half is not**. `0.15 ≤ P(X) ≤ 0.60` needs an *absolute* cut — how many items are genuinely lost —
-and no configuration produced a trustworthy absolute `X` rate: the first model never emitted `X` at all, and
-the transfer corpus cannot calibrate the rate cleanly because its spread is inflated by
-paraphrase-equivalent corrections, which is disagreement about wording rather than about meaning.
+**Nothing further has to be decided.** What remains is to *walk the ladder* — rate the 60 dev items at each
+grid point and take the first point satisfying the rule — which is a run, not a judgement call. Two
+outcomes are both informative and neither is a licence to extend the ladder past 0.18:
 
-**Therefore one of two things must be written down before the seal:**
+- **a grid point satisfies both** ⇒ λ_lo and λ_mid are frozen and §12 item 2 can move to `FIXED`;
+- **no `mid` point reaches median 1 with the tail inside [0.15, 0.60]** ⇒ **the edit classes are too
+  gentle**, which is evidence about §4.2's class list rather than about λ (§4 above already anticipated
+  this, and the decision recorded against it stands: the response is to say so, not to raise λ).
 
-- **anchor the `X` cut on the external human data** — fix the jfleg spread value at which annotators
-  effectively lost the meaning, and carry that cut across to the ranking of our items; or
-- **restate the criterion ordinally**, replacing `P(X)` with a rank-based tail (e.g. the share of `mid`
-  items ranked harder than the 90th percentile of the `lo` items), which needs no absolute anchor and is
-  evaluable with the instrument that was actually validated.
+**Carried limitations, stated rather than buried:**
 
-Both are amendments and neither is assumed here. **Until one is accepted, §12 item 2 stays `λ PENDING` and
-no confirmatory data may be generated.** This document replaces "who reads" with a measured instrument; it
-does not close O1.
+1. **Transfer to a human annotation is moderate (0.714, floor 0.80).** The instrument is validated on its
+   own manipulation and only partly on foreign human judgements.
+2. **Temperature 0 is not determinism on this server** — 24 repeated items agreed 22/24, because continuous
+   batching changes the numerics.
+3. **The configuration is part of the instrument.** Reasoning on and reasoning off answer differently on the
+   same sentence (`R` versus `W`), so the frozen configuration travels with the labels.
+4. **The automatically computed indices remain recorded and non-deciding** (WER saturates above λ = 0.12, so
+   it could not have separated the `mid` grid in any case).
+
+**Authority:** `measurement/o1_validation/RESULTS.md` · `scripts/o1_agent_rater.py` (`--calibrate`).

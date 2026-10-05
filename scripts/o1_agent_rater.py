@@ -593,6 +593,133 @@ def mode_pairwise_lambda(sample: int, model: str | None, thinking: bool | None,
     return 0
 
 
+PACKS = REPO_ROOT / "measurement" / "o1_packs"
+LO_GRID = (0.05, 0.06, 0.07, 0.08)
+MID_GRID = (0.12, 0.14, 0.16, 0.18)
+
+
+def _read_pack(lam: float) -> list[dict]:
+    """The frozen stimulus pack for one grid point: item_id, clean, perturbed.
+
+    The packs are read rather than regenerated so that the automated calibration and any human spot-check
+    see byte-identical inputs. Regenerating would be equivalent only as long as the generator is frozen -
+    true today, and exactly the kind of assumption that stops being true without anyone noticing.
+    """
+    import csv
+    cands = sorted(PACKS.glob(f"o1_*_lam{int(round(lam * 100)):03d}_raterA.csv"))
+    if not cands:
+        raise SystemExit(f"no pack for lambda={lam}; expected "
+                         f"{PACKS}/o1_*_lam{int(round(lam * 100)):03d}_raterA.csv")
+    lines = [l for l in cands[0].read_text(encoding="utf-8").splitlines() if not l.startswith("#")]
+    rows = list(csv.DictReader(lines))
+    return [{"item_id": r["item_id"], "clean": r["clean"], "perturbed": r["perturbed"]} for r in rows]
+
+
+def score_point(lam: float, model: str | None, thinking: bool | None, workers: int = WORKERS) -> dict:
+    """Per-item difficulty score at one lambda, from BOTH SIDES presented.
+
+    s_i = (number of presentations on which the perturbed text is called harder) / 2, so s in {0, 0.5, 1}.
+    Both sides are presented because a single presentation cannot separate "the perturbed text is harder"
+    from "the rater prefers the first slot"; the earlier validation found position-A at 0.500 on this
+    instrument, and that has to keep being true for the calibration to mean anything.
+    """
+    rows = _read_pack(lam)
+    prompts = []
+    expect = []
+    for k, r in enumerate(rows):
+        if k % 2 == 0:
+            prompts.append((r["perturbed"], r["clean"]))     # perturbed in slot A -> harder is A
+            expect.append("A")
+        else:
+            prompts.append((r["clean"], r["perturbed"]))     # perturbed in slot B -> harder is B
+            expect.append("B")
+
+    res: list[dict | None] = [None] * len(prompts)
+
+    def one(i: int) -> None:
+        for attempt in (1, 2):
+            try:
+                res[i] = call_pairwise(prompts[i][0], prompts[i][1], model=model, thinking=thinking)
+                return
+            except AuthFailure:
+                raise
+            except Exception as exc:                                          # noqa: BLE001
+                if attempt == 2:
+                    res[i] = {"choice": None, "raw": f"{type(exc).__name__}"}
+
+    with cf.ThreadPoolExecutor(max_workers=workers) as pool:
+        list(pool.map(one, range(len(prompts))))
+
+    per_item = {r["item_id"]: 0.0 for r in rows}
+    pos_a = n = 0
+    for (r, k), exp, o in zip(((r, k) for k, r in enumerate(rows)), expect, res):
+        ch = o["choice"] if o else None
+        if ch is None:
+            continue
+        n += 1
+        if ch == "A":
+            pos_a += 1
+        if ch == "S":
+            per_item[r["item_id"]] += 0.5
+        elif ch == exp:
+            per_item[r["item_id"]] += 1.0
+    scores = [per_item[r["item_id"]] for r in rows]
+    return {"lambda": lam, "n": n, "scores": scores,
+            "p_harder": sum(1 for s in scores if s == 1.0) / len(scores),
+            "median": statistics.median(scores), "position_A_rate": pos_a / n if n else float("nan")}
+
+
+def mode_calibrate(model: str | None, thinking: bool | None) -> int:
+    """Walk the ladder and apply the frozen rule of Amendment 3 v2. Reports; decides nothing itself."""
+    print("  calibration: 60 dev items per grid point, scored against each item's own clean version")
+    print(f"    instrument: {model or MODEL}  thinking={ENABLE_THINKING if thinking is None else thinking}"
+          f"  temperature={TEMPERATURE}  blind, both sides")
+    pts = {}
+    for lam in sorted(set(LO_GRID) | set(MID_GRID)):
+        r = score_point(lam, model, thinking)
+        pts[lam] = r
+        print(f"    lambda={lam:<5} P(s=1)={r['p_harder']:.3f}  median={r['median']:.2f}"
+              f"  posA={r['position_A_rate']:.3f}  n={r['n']}")
+
+    def first(pool, pred):
+        for lam in pool:
+            if pred(pts[lam]):
+                return lam
+        return None
+
+    lam_lo = first(LO_GRID, lambda r: r["p_harder"] <= 0.10)
+    if lam_lo is None:
+        print("\n  [RESULT] no lo grid point reaches P(s=1) <= 0.10. The edit classes are too harsh at the")
+        print("           lowest rate tried; the honest response is to report that, not to lower lambda.")
+        out = {"lo": None, "mid": None, "points": {str(k): v for k, v in pts.items()}}
+    else:
+        p90_lo = sorted(pts[lam_lo]["scores"])[int(0.9 * (len(pts[lam_lo]["scores"]) - 1))]
+        print(f"\n  lo  : lambda={lam_lo}  (P(s=1)={pts[lam_lo]['p_harder']:.3f} <= 0.10)"
+              f"   p90(s_lo)={p90_lo}")
+
+        def mid_ok(r):
+            share = sum(1 for s in r["scores"] if s == 1.0 and s > p90_lo) / len(r["scores"])
+            return r["median"] == 1.0 and 0.15 <= share <= 0.60
+
+        lam_mid = first(MID_GRID, mid_ok)
+        for lam in MID_GRID:
+            share = sum(1 for s in pts[lam]["scores"] if s == 1.0 and s > p90_lo) / len(pts[lam]["scores"])
+            print(f"    mid lambda={lam:<5} median={pts[lam]['median']:.2f}  tail={share:.3f}"
+                  f"  {'<- ACCEPTED' if mid_ok(pts[lam]) else ''}")
+        out = {"lo": lam_lo, "mid": lam_mid, "p90_s_lo": p90_lo,
+               "points": {str(k): v for k, v in pts.items()}}
+        if lam_mid is None:
+            print("\n  [RESULT] no mid grid point reaches median 1 with the tail inside [0.15, 0.60].")
+            print("           Per Amendment 3 that is a finding about the EDIT CLASSES, not a licence to")
+            print("           extend the ladder past 0.18.")
+        else:
+            print(f"\n  [RESULT] lambda_lo = {lam_lo}, lambda_mid = {lam_mid}  ->  section 12 item 2 can move")
+            print("           to FIXED by an amendment recording these two values.")
+    (VALIDATION / "calibration.json").write_text(json.dumps(out, indent=2), encoding="utf-8")
+    print(f"\n  written to {VALIDATION / 'calibration.json'}")
+    return 0 if out.get("mid") else 1
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=(__doc__ or "").split("\n")[0])
     ap.add_argument("--selftest", action="store_true", help="known-answer controls for the metrics")
@@ -601,6 +728,8 @@ def main() -> int:
     ap.add_argument("--lambdas", default="0.05,0.12,0.18")
     ap.add_argument("--model", help="override the frozen model (comparison only)")
     ap.add_argument("--thinking", choices=("on", "off"), help="override thinking (comparison only)")
+    ap.add_argument("--calibrate", action="store_true",
+                    help="walk the frozen O1 ladder and apply the Amendment 3 v2 rule")
     ap.add_argument("--pairwise-external", type=int, metavar="N",
                     help="pairwise vs the human spread ordering on jfleg")
     ap.add_argument("--pairwise-lambda", type=int, metavar="N",
@@ -612,7 +741,7 @@ def main() -> int:
     if args.selftest:
         return selftest()
 
-    if not (args.external or args.sensitivity or args.determinism
+    if not (args.external or args.sensitivity or args.determinism or args.calibrate
             or args.pairwise_external or args.pairwise_lambda):
         ap.print_help()
         return 2
@@ -636,6 +765,8 @@ def _run_modes(args, rc: int) -> int:
         rc |= mode_pairwise_external(args.pairwise_external, args.model, th)
     if args.pairwise_lambda:
         rc |= mode_pairwise_lambda(args.pairwise_lambda, args.model, th)
+    if args.calibrate:
+        rc |= mode_calibrate(args.model, th)
     if args.determinism:
         rows = [json.loads(l) for l in (VALIDATION / "jfleg_human_labels.jsonl")
                 .read_text(encoding="utf-8").splitlines()][::max(1, 1501 // args.determinism)][:args.determinism]
