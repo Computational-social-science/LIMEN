@@ -106,9 +106,16 @@ CLAIMS: list[tuple[str, str, str, str]] = [
     ("the Phase II cross-script law", "TESTED", "§4.4 H2.1–H2.2", "reserved for Phase II"),
     ("the λ rates are readable at the intended level", "TESTED", "O1, Amendment 3 v3",
      "closed by rule: λ_lo = 0.05 and λ_mid = 0.18 selected against the published Rayner (2006) anchor"),
+# ---- measured, on the dev split before the seal; each number must appear in the results doc ----
+    ("the paired discordance rate `π_d`", "MEASURED", "0.2036", "against the 0.1833 that froze `N`; higher, and favourable"),
+    ("the minimum detectable effect at 80 % power", "MEASURED", "5.41 accuracy points", "against the 5.0-point target this design pre-registered"),
+    ("`λ_lo` does not degrade accuracy", "MEASURED", "0.9071", "against clean 0.8750 — `lo` is genuinely unperturbed"),
+    ("`SilentError@0.9` does not rise under noise", "MEASURED", "0.0107", "it FALLS, which is why H1.2 is flagged at §4.4"),
+    ("the pinned instrument's confidence carries no substitution", "MEASURED", "2,520", "0 of 2,520 rows carry the constant 0.5 the library warns about"),
 ]
 
-STATUS_MARK = {"PROVED": "**PROVED**", "ASSUMED": "*ASSUMED*", "TESTED": "**TO BE TESTED**"}
+STATUS_MARK = {"PROVED": "**PROVED**", "MEASURED": "**MEASURED**",
+               "ASSUMED": "*ASSUMED*", "TESTED": "**TO BE TESTED**"}
 
 
 def verified_theorems() -> set[str]:
@@ -136,6 +143,26 @@ def build_table(theorems: set[str]) -> str:
         for name in [a.strip() for a in authority.split(",")]:
             if name not in theorems:
                 missing.append(f"{claim!r} cites {name!r}, which is not a verified theorem")
+    unmeasured: list[str] = []
+    results = (REPO_ROOT / "docs" / "PHASE_I_DEV_PRERUN_RESULTS.md")
+    body = results.read_text(encoding="utf-8") if results.exists() else ""
+    for claim, status, authority, _ in CLAIMS:
+        if status != "MEASURED":
+            continue
+        if not body:
+            unmeasured.append(f"{claim!r} is MEASURED but the pre-run results document is absent")
+            continue
+        for token in [a.strip() for a in authority.split(",") if a.strip()]:
+            if token not in body:
+                unmeasured.append(f"{claim!r} cites {token!r}, which does not appear in "
+                                  f"docs/PHASE_I_DEV_PRERUN_RESULTS.md")
+    if unmeasured:
+        print("FAIL: a claim is marked MEASURED against a number the pre-run did not report.")
+        for m in unmeasured:
+            print("  -", m)
+        print("\nA measurement quoted from nowhere is the same defect as a proof that was never done.")
+        sys.exit(1)
+
     if missing:
         print("FAIL: a claim is marked PROVED against a theorem that does not exist.")
         for m in missing:
@@ -160,12 +187,18 @@ def build_table(theorems: set[str]) -> str:
     for claim, status, authority, note in CLAIMS:
         auth = f"`{authority}`" if status == "PROVED" else authority
         lines.append(f"| {claim} | {STATUS_MARK[status]} | {auth} | {note} |")
-    counts = {s: sum(1 for _, st, _, _ in CLAIMS if st == s) for s in ("PROVED", "ASSUMED", "TESTED")}
+    counts = {s: sum(1 for _, st, _, _ in CLAIMS if st == s)
+              for s in ("PROVED", "MEASURED", "ASSUMED", "TESTED")}
     lines += [
         "",
-        f"**{counts['PROVED']} proved · {counts['ASSUMED']} assumed · {counts['TESTED']} to be tested.** "
-        f"The third column is the whole point: a reader can see which conclusions rest on the kernel, "
-        f"which on a premise the design chose, and which on the run that has not happened yet.",
+        f"**{counts['PROVED']} proved · {counts['MEASURED']} measured on the pinned instrument · "
+        f"{counts['ASSUMED']} assumed · {counts['TESTED']} to be tested.** "
+        f"The third column is the whole point: a reader can see which conclusions rest on the kernel, which "
+        f"on a pre-run the instrument actually produced, which on a premise the design chose, and which on "
+        f"the confirmatory run that has not happened yet. A **PROVED** row names a theorem the kernel "
+        f"checked and a **MEASURED** row quotes a value the pre-run reported; the generator fails if either "
+        f"is absent, so this table cannot claim a proof that was never done or a measurement quoted from "
+        f"nowhere.",
         "",
         END,
     ]
