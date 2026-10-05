@@ -89,3 +89,39 @@ answering the question the protocol's own §0.4 says the programme is for.
 
 **Until that amendment is accepted, `H1.2` must not be run as written**, because the analysis code enforces
 direction and would record a correct measurement as a direction violation.
+
+
+---
+
+## 5. Power recomputed on the measured values — and the frozen `N` is correctly sized
+
+`scripts/phase1_power.py` recomputes Phase I power from what the pre-run measured rather than from what the
+pilot assumed. McNemar is a binomial test on the *discordant* pairs, so power depends on `N · π_d` and on the
+conditional split `π = c / (b + c)`, not on `N` directly.
+
+| | |
+|---|---|
+| expected discordant pairs at N = 652 | 652 × 0.2036 = **132.7** |
+| conditional asymmetry measured | 45 with the hypothesis vs 12 against → **π = 0.7895** |
+| Holm-adjusted α (three-test family) | 0.05 / 3 = **0.0167** |
+| **achieved power at N = 652** | **1.0000** |
+| **minimum detectable effect at 80 % power** | **π = 0.6328 → 5.41 accuracy points** |
+| the effect this design pre-registered | **5.0 points** |
+
+**The minimum detectable effect is 5.41 points against a pre-registered target of 5.0 — a match to within a
+point.** So the frozen `N` is sized for exactly the effect it said it cared about, and the measured effect
+(11.8 points, roughly twice the target) is why achieved power reads ~1.0. **The pre-run says the target was
+the conservative choice, not the optimistic one.**
+
+### A correction made mid-analysis, recorded because it changed the answer
+
+**The first draft of the power script reported the design as "OVER-powered, 5.11×"** — obtained by comparing
+against the *measured* effect rather than against the *pre-registered target*. That comparison is wrong: a
+design is sized for the effect it declares, and a larger observed effect does not make the sizing a defect.
+The script now translates `π` into accuracy points, and the conclusion reverses:
+
+> **5.41 points against a 5.0-point target is correct sizing. 5.11× is what falls out of testing the design
+> against a number it never claimed to be powered for.**
+
+**`N = 652` needs no erratum**, and the honest description of what it buys is: 80 % power at a 5.4-point
+effect, with the observed effect roughly twice that.
