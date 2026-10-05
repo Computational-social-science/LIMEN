@@ -3,7 +3,7 @@
 ## A Pre-Registered, Phased Protocol Integrating System One / JEV-Ecosystem Tooling
 
 **Document type:** Detailed research protocol (*Nature Human Behaviour*–oriented framing)  
-**Version:** 1.7 (English typo first, then cross-script / multilingual expansion)  
+**Version:** 1.8 (English typo first, then cross-script / multilingual expansion)  
 **Status:** Draft for staged pre-registration  
 **Compute envelope:** Single consumer GPU admissible; zero paid API on confirmatory path  
 **Primary interface class:** Typed decision models (System One):  
@@ -18,6 +18,11 @@ $\texttt{state} \times \texttt{questions} \mapsto$ distributions over caller-def
 >
 > | Version | Changes | Status |
 > |---|---|---|
+> | **1.8** | §4.4a's bootstrap CI on `Δτ*` **withdrawn** — the estimator is a least-crossing
+functional and the bootstrap has no general coverage for it, and at the boundary the clean arm
+occupies it is degenerate. Replaced by the **exact admissible-set interval** `[τ*, τ_max]`,
+machine-checked by `admissible_iff_limen_le` | **withdraws a planned procedure; no frozen value
+moved, §4.4a stays reported and non-confirmatory** |
 > | **1.7** | **§12.1 claim provenance** added — a derived table mapping every substantive claim to **PROVED** (naming a kernel-verified theorem), *ASSUMED* (a premise the design chose) or **TO BE TESTED** (the run decides). The generator fails if a PROVED row names a theorem that does not exist, so the table cannot claim a proof that was never done | **additive; presentation only, no frozen value moved** |
 > | **1.6** | (1) **§4.4a corrected**: at the clean end the least-admissible rule returns a **design constant**, not an estimate — `Δτ*` is one estimate minus a constant and its clean endpoint carries no sampling variability; (2) the `Δτ* < 0` branch is **normally unattainable** and must be checked, not assumed; (3) `Δτ* = 0` **does not identify "no disturbance"** — a tolerance-absorbed disturbance reports identically | **additive; §4.4a stays reported and non-confirmatory** |
 > | **1.5** | (1) **§6.1 defines the conditional quantities** — `CondErr`/`CondAcc`, the two things the hypotheses name and eqs (7)–(9) never defined; (2) **§4.5 states the confirmatory family in the protocol** instead of by reference to the OSF entry; (3) **a declared dependency**: H1.3 disjunct 2 is the complement of the H1.1 co-report, so they are not independent evidence; (4) the H1.1 co-report is fixed as **descriptive, not a fourth test** | **additive; family unchanged at three tests, no frozen value moved** |
@@ -485,8 +490,38 @@ temptation to promote it is exactly the failure this design is built to avoid.
 
 - It is **not** in the H1.1–H1.3 family, so **Holm correction as specified in §4.5 does not apply** and it
   is **not** covered by the α = 0.05 confirmatory claim.
-- It is reported **with a bootstrap CI** and is interpreted descriptively. A CI excluding 0 is a
-  *description of the dev-fitted threshold's behaviour*, **not** a hypothesis test about the population.
+- It is reported **with an exact set-valued interval**, not a bootstrap CI. See v1.8 CHANGE 1 below:
+  $\Delta\tau^\star$ is a difference of two least-crossing estimators, and the bootstrap is not valid for
+  that functional. The interval reported is the **admissible set** on the grid, which is exact and carries
+  no distributional claim, so there is nothing for an interval to be inconsistent about. An interval that
+  excludes 0 remains a *description of the dev-fitted threshold's behaviour*, **not** a hypothesis test
+  about the population.
+
+> **v1.8 CHANGE 1 — the bootstrap CI on `Δτ*` is withdrawn; the admissible set is reported instead.**
+>
+> `τ*` is the **least** threshold whose dev silent-error is at most $\varepsilon$. That makes it a
+> least-crossing (argmin-type) functional: it depends on the data through the *location of a first
+> crossing*, not through a smooth average. Such functionals are not Hadamard-differentiable, so the
+> nonparametric bootstrap does not consistently estimate their sampling distribution — a percentile
+> interval built from resampling has no general coverage property, however carefully it is described.
+>
+> **And in this study the failure is not hypothetical.** v1.6 established that the clean arm sits at the
+> floor, so one endpoint of the difference is pinned to a boundary rather than estimated. A bootstrap
+> interval at a boundary is degenerate rather than merely imprecise.
+>
+> **The interval does not need to be bootstrapped, because it can be written down.** Admissibility is
+> upward closed in $\tau$ (`admissible_mono`), so the set of thresholds consistent with the dev data is
+> an interval; `lean-nhb` proves the exact form —
+> **$\tau$ is admissible if and only if $\tau \ge \tau^\star$** (`admissible_iff_limen_le`). §4.4a
+> therefore reports the interval $[\tau^\star,\ \tau_{\max}]$ on the grid
+> (`AdmissibleInterval`), where $\tau_{\max}$ is the largest confidence in the sample. This is a
+> set-valued statement about the data in hand: exact, resampling-free, and silent about a population
+> distribution that the estimator cannot support a claim about.
+>
+> **What is lost, stated plainly.** A set-valued interval cannot be reported as a value "$\pm$" an
+> error, and it does not shrink with $n$ the way a standard error does. That is the honest cost of
+> reporting a quantity whose estimator has no regular limit; the alternative was an interval that looked
+> conventional and meant less.
 - **Why it must stay non-confirmatory.** $\tau^\star$ is a *fitted* quantity on a finite dev set: its
   sampling variability, and the degeneracy when no threshold is admissible, are properties of the
   estimator rather than of the instrument. Promoting it would import the estimator's behaviour into a
@@ -510,12 +545,12 @@ against the control-law claim on its own.** Its only job is to make the gate's o
 
 ### 4.4b What machine-checking changed in this protocol
 
-The mathematics of §3.4, §4.4a and §6 is formalised in `lean-nhb` (`NHB/PhaseI/Core.lean`): **22
+The mathematics of §3.4, §4.4a and §6 is formalised in `lean-nhb` (`NHB/PhaseI/Core.lean`): **23
 theorems, zero errors, zero `sorry`**, each verified by Lean's own kernel through `#print axioms`,
 which fails on `sorryAx` — the axiom Lean substitutes for a proof it could not find. A grep for the
 literal word would not do: it proves a string is absent, not that a theorem is proved.
 
-**The formalisation is not an appendix. It is a feedback loop, and it changed the protocol.** Six
+**The formalisation is not an appendix. It is a feedback loop, and it changed the protocol.** Seven
 substantive corrections came out of it, and each is recorded at the point it applies rather than only
 here.
 
@@ -527,6 +562,7 @@ here.
 | §6 eq (7): `Acc` is defined by a sum over every trial | `acc_is_not_diagnostic_of_understanding` shows the sum is **underspecified on deferred trials** — and that the two readings move **oppositely** on samples with identical answer-correctness (Acc falls 2/3→1/3 while conditional accuracy rises 2/3→1/1) | §6/v1.4 CHANGE 1 names both readings; **H1.1 is co-reported with the conditional accuracy**, because the bare inequality is satisfied by confidence deflation alone |
 | §4.4 H1.3 names "error among accepted" and §4.5 defines the family "as defined in the OSF entry" | `cond_error_complements_cond_accuracy` shows H1.3's second disjunct is the **complement of the H1.1 co-report** — one quantity, so not independent evidence; and a family defined outside the protocol cannot be checked against the family tested | §6.1 defines both quantities; §4.5 states the family in the protocol and declares the dependency; §12 item 9 fixes the co-report as descriptive rather than a fourth test |
 | §4.4a: "two estimated thresholds, not two measurements of one thing" | `clean_pins_at_floor` + `delta_tau_reduces_to_the_noisy_selector` show that with the clean arm at the floor — the measured regime, silent-error 0.0000 — the clean selector returns a **design constant**, so `Δτ*` is one estimate minus a constant; `same_diagnostic_from_different_arms` shows `Δτ*=0` cannot distinguish no disturbance from a tolerance-absorbed one | v1.6 CHANGE 1 corrects the sentence and adds a reporting requirement: the dev silent-error curve is reported alongside, so a zero is read against what was excluded |
+| §4.4a: "It is reported with a bootstrap CI" | `admissible_iff_limen_le` shows the interval is **exactly writable down** — τ is admissible iff τ ≥ τ* — so bootstrapping a least-crossing estimator (not Hadamard-differentiable, and boundary-degenerate here) was never necessary | v1.8 CHANGE 1 withdraws the bootstrap and reports the exact admissible set `[τ*, τ_max]` |
 
 **Why the third one matters for §4.4a specifically.** The budget can collapse to zero for two opposite
 reasons — the gate is *too lenient to ever err* (the clean zero floor already measured on this
@@ -718,7 +754,7 @@ Phase I omits $s$ (always $s_{\mathrm{en}}$).
 > Authority: `docs/PHASE_I_AMENDMENT_2.md` §B1 · `docs/LEAN_FORMALIZATION_STATUS.md` §4.4b.
 >
 > **v1.3 ADDENDUM — the rule's optimality is now machine-checked, and one limit is named.** The
-> `lean-nhb` formalisation builds clean (**22 theorems, zero errors, zero `sorry`**, each verified by
+> `lean-nhb` formalisation builds clean (**23 theorems, zero errors, zero `sorry`**, each verified by
 > Lean's kernel via `#print axioms`, which fails on `sorryAx`). Two of its results bear directly on this
 > rule. `admissible_mono` proves the admissible set is **upward closed**, so an admissible threshold is
 > never unique — the premise of the problem this rule solves. `least_admissible_maximises_coverage`
@@ -842,7 +878,7 @@ amendments.** A protocol item may not be marked satisfied by a downstream docume
 
 ### 12.1 Claim provenance — what is proved, what is assumed, what is tested
 
-Generated by `scripts/build_provenance_table.py` from the kernel-verified set of **22 theorems**. A row marked **PROVED** names a theorem the kernel checked; the generator fails if such a theorem does not exist, so this table cannot claim a proof that was never done. **No row here is marked PROVED for a statement that noise changes Accuracy, SilentError or Coverage** — those are the empirical claims, and no theorem can settle them.
+Generated by `scripts/build_provenance_table.py` from the kernel-verified set of **23 theorems**. A row marked **PROVED** names a theorem the kernel checked; the generator fails if such a theorem does not exist, so this table cannot claim a proof that was never done. **No row here is marked PROVED for a statement that noise changes Accuracy, SilentError or Coverage** — those are the empirical claims, and no theorem can settle them.
 
 | Claim as the protocol states it | Status | Authority | Note |
 |---|---|---|---|
@@ -860,6 +896,7 @@ Generated by `scripts/build_provenance_table.py` from the kernel-verified set of
 | `Acc` cannot separate 'understood less' from 'committed less' | **PROVED** | `acc_is_not_diagnostic_of_understanding, one_movement_three_readings` | the H1.1 correction |
 | §6.1's `CondErr` and `CondAcc` are one quantity | **PROVED** | `cond_error_complements_cond_accuracy` | the declared dependency in the confirmatory family |
 | at the clean end the fitted selector returns a design constant | **PROVED** | `clean_pins_at_floor, delta_tau_reduces_to_the_noisy_selector` | the §4.4a correction |
+| the set of thresholds consistent with the dev data is exactly an interval from the limen up | **PROVED** | `admissible_iff_limen_le` | the exact interval §4.4a reports in place of a bootstrap |
 | `Δτ* = 0` does not identify 'no disturbance' | **PROVED** | `same_diagnostic_from_different_arms` | tolerance-absorbed disturbance reports identically |
 | the gate commits on `argmax p` | *ASSUMED* | §3.4 | a definitional choice; a different rule would move every number |
 | `c = max_j p_j` is comparable across conditions | *ASSUMED* | §3.3 | a calibration assumption about the instrument, not a theorem |
@@ -874,7 +911,7 @@ Generated by `scripts/build_provenance_table.py` from the kernel-verified set of
 | the Phase II cross-script law | **TO BE TESTED** | §4.4 H2.1–H2.2 | reserved for Phase II |
 | the λ rates are readable at the intended level | **TO BE TESTED** | O1 calibration | blocks the seal until the calibration is decided |
 
-**15 proved · 6 assumed · 6 to be tested.** The third column is the whole point: a reader can see which conclusions rest on the kernel, which on a premise the design chose, and which on the run that has not happened yet.
+**16 proved · 6 assumed · 6 to be tested.** The third column is the whole point: a reader can see which conclusions rest on the kernel, which on a premise the design chose, and which on the run that has not happened yet.
 
 <!-- PROVENANCE:END -->
 
@@ -899,7 +936,8 @@ Generated by `scripts/build_provenance_table.py` from the kernel-verified set of
 | Field | Value |
 |-------|--------|
 | **Role** | **THE PROGRAMME'S GLOBAL ANCHOR.** All other documents are subordinate; see the note at the head of §0 |
-| Version | **1.7** |
+| Version | **1.8** |
+| v1.8 changes | §4.4a bootstrap CI withdrawn and replaced by the exact admissible-set interval (`admissible_iff_limen_le`, `AdmissibleInterval`). **Withdraws a procedure; no frozen value moved.** |
 | v1.7 changes | §12.1 claim provenance table, generated by `scripts/build_provenance_table.py` and guarded by `--check` plus a negative control. **Additive, presentation only.** |
 | v1.6 changes | (1) §4.4a's "two estimated thresholds" corrected — the clean endpoint is a design constant; (2) the tightening branch is normally unattainable; (3) `Δτ*=0` is an identification failure, not an absence — report the dev silent-error curve alongside. **Additive.** |
 | v1.5 changes | (1) §6.1 conditional quantities defined, eq (10); (2) §4.5 Holm family stated in the protocol; (3) H1.3/H1.1 declared dependency; (4) H1.1 co-report fixed as descriptive. **Additive — the family stays at three tests.** |
@@ -916,4 +954,4 @@ Generated by `scripts/build_provenance_table.py` from the kernel-verified set of
 
 ---
 
-*End of protocol v1.7*
+*End of protocol v1.8*

@@ -75,6 +75,9 @@ CLAIMS: list[tuple[str, str, str, str]] = [
     ("at the clean end the fitted selector returns a design constant", "PROVED",
      "clean_pins_at_floor, delta_tau_reduces_to_the_noisy_selector",
      "the §4.4a correction"),
+    ("the set of thresholds consistent with the dev data is exactly an interval from the limen up",
+     "PROVED", "admissible_iff_limen_le",
+     "the exact interval §4.4a reports in place of a bootstrap"),
     ("`Δτ* = 0` does not identify 'no disturbance'", "PROVED", "same_diagnostic_from_different_arms",
      "tolerance-absorbed disturbance reports identically"),
 

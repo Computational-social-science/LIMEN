@@ -1,14 +1,14 @@
 {
   "role": "GLOBAL ANCHOR - the programme's research objective. All other documents are subordinate.",
   "path": "protocol/NHB_Orthographic_Channels_JEV_Research_Protocol.md",
-  "version": "1.7",
-  "sha256": "5b6e88bd4008c16cbf3c15633d6aa16afb26c4f149544d101e8eabfb32503e39",
-  "bytes": 66345,
-  "lines": 919,
+  "version": "1.8",
+  "sha256": "0a6965e0ebaba6bee85d3b4b0ca8d29b804836e3f790790354204a0909f0d345",
+  "bytes": 69832,
+  "lines": 957,
   "version_consistency": {
-    "header": "1.7",
-    "section_14": "1.7",
-    "end_marker": "1.7",
+    "header": "1.8",
+    "section_14": "1.8",
+    "end_marker": "1.8",
     "consistent": true
   },
   "objective_is": "sections 0.1 (thesis), 0.3 (LIMEN) and 0.4 (claim, mechanism, objective, non-claim). A document disagreeing with those is drift, not a variant.",
