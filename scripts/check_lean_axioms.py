@@ -69,22 +69,8 @@ def print_axioms(lean_file: pathlib.Path, lean_root: pathlib.Path,
     scratch = lean_file.parent / "__axiom_query__.lean"
     scratch.write_text(script, encoding="utf-8")
 
-    env = dict(os.environ)
-    elan_bin = pathlib.Path.home() / ".elan" / "bin"
-    env["PATH"] = str(elan_bin) + os.pathsep + env.get("PATH", "")
-    # `lake env lean` alone does NOT put the project's own build output on the search path, so
-    # `import NHB.PhaseI.Core` fails with "unknown module prefix" and the query returns NOTHING.
-    # Absent output reads exactly like "axiom-free" - a false green, which is the one failure mode
-    # this check exists to prevent. Two things guard against it here: LEAN_PATH is set explicitly to
-    # the build output, and an empty result raises rather than passing silently.
-    env["LEAN_PATH"] = str(lean_root / ".lake" / "build" / "lib" / "lean")
-
-    # On Windows the executable is `lake.exe`; asking for `lake` makes subprocess raise WinError 2,
-    # because PATH lookup there does not append PATHEXT. A first version of this check silently found
-    # NO axioms for every theorem - which reads exactly like "the proofs are axiom-free" unless you
-    # notice the count, and would have let a sorry through.
-    lake = next((p for p in (elan_bin / "lake.exe", elan_bin / "lake") if p.exists()),
-                pathlib.Path("lake"))
+    env = lean_env(lean_root)
+    lake = lake_bin()
 
     try:
         proc = subprocess.run(
@@ -117,7 +103,50 @@ def print_axioms(lean_file: pathlib.Path, lean_root: pathlib.Path,
     return result
 
 
-def check(lean_root: pathlib.Path, lean_file: pathlib.Path) -> list[str]:
+def lean_env(lean_root: pathlib.Path) -> dict:
+    """The environment `lake` needs on this host, built in ONE place.
+
+    `lake env lean` alone does NOT put the project's own build output on the search path, so
+    `import NHB.PhaseI.Core` fails with "unknown module prefix" and the query returns NOTHING. Absent
+    output reads exactly like "axiom-free" - a false green, which is the one failure mode this check
+    exists to prevent. LEAN_PATH is therefore set explicitly to the build output, and an empty result
+    raises rather than passing silently.
+    """
+    env = dict(os.environ)
+    env["PATH"] = str(pathlib.Path.home() / ".elan" / "bin") + os.pathsep + env.get("PATH", "")
+    env["LEAN_PATH"] = str(lean_root / ".lake" / "build" / "lib" / "lean")
+    return env
+
+
+def lake_bin() -> pathlib.Path:
+    """`lake`, resolved by absolute path - never by PATH lookup, and never silently defaulted.
+
+    On Windows the executable is `lake.exe`; asking for `lake` makes subprocess raise WinError 2,
+    because PATH lookup there does not append PATHEXT. A first version of this check silently found NO
+    axioms for every theorem, which reads exactly like "the proofs are axiom-free".
+
+    THIS FUNCTION EXISTS BECAUSE THE SAME BUG SURVIVED IN A SECOND PLACE. `check` resolved the toolchain
+    correctly, but the negative control called `subprocess.run(["lake", ...])` by bare name. That works
+    only when the caller's PATH happens to contain elan - which is true in an interactive shell that
+    exported it, and false in a fresh runner. The control therefore passed for a reason unrelated to what
+    it was testing, and went red the moment the environment changed. A guard whose NEGATIVE CONTROL
+    depends on the caller's environment stops validating without anyone noticing, which is worse than a
+    guard that fails. Resolution now lives here and both callers use it.
+
+    It raises rather than falling back to a bare name: if the toolchain is not where it is expected, the
+    guard cannot validate anything, and it must say so instead of invoking whatever `lake` PATH offers.
+    """
+    candidates = (pathlib.Path.home() / ".elan" / "bin" / "lake.exe",
+                  pathlib.Path.home() / ".elan" / "bin" / "lake")
+    found = next((p for p in candidates if p.exists()), None)
+    if found is None:
+        raise RuntimeError(
+            "no `lake` under ~/.elan/bin. The Lean toolchain is not where this host keeps it, so this "
+            "check cannot run at all - and a check that cannot run must not report a green.")
+    return found
+
+
+def check(lean_root: pathlib.Path, lean_file: pathlib.Path, prefix: str = "NHB.PhaseI") -> list[str]:
     deps = print_axioms(lean_file, lean_root)
     names = theorem_names(lean_file)
     findings = []
@@ -155,9 +184,16 @@ def negative_test(lean_root: pathlib.Path) -> int:
         #    need its own module wiring and could fail for the wrong reason.
         (lean_root / "NHB" / "PhaseI" / "Core.lean").write_text(
             orig + "\ntheorem __neg_control__ : True := by sorry\n", encoding="utf-8")
-        # Must rebuild so the olean reflects the sorry theorem
-        import subprocess
-        subprocess.run(["lake", "build"], cwd=lean_root, capture_output=True, timeout=300)
+        # Must rebuild so the olean reflects the sorry theorem, through the SAME resolved toolchain and
+        # environment the check itself uses. Calling `lake` by bare name here is what made this control
+        # depend on the caller's PATH.
+        build = subprocess.run([str(lake_bin()), "build"], cwd=lean_root, env=lean_env(lean_root),
+                               capture_output=True, text=True, timeout=600)
+        if build.returncode != 0:
+            tail = (build.stdout + build.stderr).strip()
+            print("  [note] the injected sorry did not build, so the check below runs against a STALE "
+                  "olean and its MISS is not evidence about the catch:")
+            print("      " + (tail.splitlines()[-1][:150] if tail else "(no output)"))
         f2 = check(lean_root, lean_root / "NHB" / "PhaseI" / "Core.lean")
         r2 = ("a sorry-proved theorem is caught", any("__neg_control__" in x for x in f2))
         print(f"  [{'OK' if r2 else 'MISS'}] {r2}")

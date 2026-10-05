@@ -17,6 +17,16 @@ measurement/out/
 # paper2agent conversion scratch (working dirs, not deliverables)
 .p2a-work/
 
+# Source papers. They are INPUTS that live outside this repository's scope and are 1-10 MB each; a
+# clone should not carry them. Nothing in the pipeline reads them from here - the reference library
+# keeps its own extracted text under the skill directories.
+*.pdf
+
+# A re-downloadable raw corpus. The DERIVED labels beside it are committed because they are not
+# reproducible without GPU time (modeA_items.jsonl holds the rater's per-item answers); the raw jfleg
+# dump is one `load_dataset` call away and is excluded on that basis alone.
+measurement/o1_validation/jfleg_raw.jsonl
+
 # Generated manuscript output. The HTML is derived from the anchor and stamped with its
 # sha256; the KaTeX distribution is third-party and copied in by the build.
 viz/katex/

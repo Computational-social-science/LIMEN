@@ -1,0 +1,32 @@
+{
+  "instrument": {
+    "model": "Qwen3.8-27B-UD-Q4_K_M",
+    "enable_thinking": false,
+    "temperature": 0,
+    "blind": true,
+    "workers": 6,
+    "max_tokens": 64,
+    "is_frozen_default": false
+  },
+  "n": 120,
+  "unparseable": 0,
+  "weighted_kappa": 0.13725490196078427,
+  "unweighted_kappa": 0.07500000000000005,
+  "spearman_spread_vs_order": -0.35160364494532254,
+  "mean_latency_s": 26.09287609583342,
+  "confusion": {
+    "X->W": 26,
+    "X->R": 14,
+    "R->R": 29,
+    "W->R": 23,
+    "R->W": 11,
+    "W->W": 17
+  },
+  "ordinal": {
+    "spearman": -0.35160364494532254,
+    "concordance": 0.6326510333863276,
+    "pairs": 5032,
+    "null_concordance_mean": 0.4992699224960254,
+    "null_spearman": -0.014583000662191363
+  }
+}

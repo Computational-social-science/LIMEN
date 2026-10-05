@@ -54,6 +54,8 @@ GUARDS: list[tuple[str, tuple[str, ...], str]] = [
      "every PROVED claim in the provenance table names a kernel-verified theorem"),
     ("build_provenance_table.py", ("--negative-test",),
      "the provenance generator refuses a claim whose proof was never done"),
+    ("o1_agent_rater.py", ("--selftest",),
+     "the kappa and Spearman implementations answer known-answer cases correctly"),
 ]
 
 # Guards that need something outside this repository. They are reported separately rather than mixed
