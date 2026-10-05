@@ -267,29 +267,51 @@ scan order is fixed in advance precisely so that the choice cannot be made after
 3. **Accept that `mid` failing to reach the band is a finding about the edit classes**, not a licence to
    raise λ past 0.18. **ACCEPTED.** The ladder is not extended beyond 0.18 without an amendment.
 
-## 8. O1 is now CLOSED as a decision; only the run remains
+## 8. The run was made, and it refuted this section's own criterion
 
-The criterion is frozen: **median `s = 1` and an ordinal two-sided tail**, on a pairwise blind rater whose
-within-item ordering was validated at 0.967 with no position bias.
+> **CORRECTION, recorded rather than quietly reverted.** The immediately preceding revision of this section
+> was titled "O1 is now CLOSED as a decision; only the run remains". **That was an over-claim made before
+> the run.** The run has now been made and it does not support it. The version below replaces it.
 
-**Nothing further has to be decided.** What remains is to *walk the ladder* — rate the 60 dev items at each
-grid point and take the first point satisfying the rule — which is a run, not a judgement call. Two
-outcomes are both informative and neither is a licence to extend the ladder past 0.18:
+`--calibrate` scored 60 dev items at all eight grid points against each item's own clean version:
 
-- **a grid point satisfies both** ⇒ λ_lo and λ_mid are frozen and §12 item 2 can move to `FIXED`;
-- **no `mid` point reaches median 1 with the tail inside [0.15, 0.60]** ⇒ **the edit classes are too
-  gentle**, which is evidence about §4.2's class list rather than about λ (§4 above already anticipated
-  this, and the decision recorded against it stands: the response is to say so, not to raise λ).
+| λ | 0.05 | 0.06 | 0.07 | 0.08 | 0.12 | 0.14 | 0.16 | 0.18 |
+|---|---|---|---|---|---|---|---|---|
+| `P(s = 1)` | **0.983** | 0.900 | 0.967 | 0.950 | 1.000 | 0.983 | 1.000 | 0.983 |
 
-**Carried limitations, stated rather than buried:**
+**At the mildest rate tried, the rater still calls the perturbed text harder on 98 % of items.** The
+question "which of these two is harder to recover" is answered by noticing that one of them contains typos,
+at any rate. The instrument detects *that* corruption is present, not *how much* — which is exactly what a
+comparison against a clean text can ever establish.
 
-1. **Transfer to a human annotation is moderate (0.714, floor 0.80).** The instrument is validated on its
-   own manipulation and only partly on foreign human judgements.
-2. **Temperature 0 is not determinism on this server** — 24 repeated items agreed 22/24, because continuous
-   batching changes the numerics.
-3. **The configuration is part of the instrument.** Reasoning on and reasoning off answer differently on the
-   same sentence (`R` versus `W`), so the frozen configuration travels with the labels.
-4. **The automatically computed indices remain recorded and non-deciding** (WER saturates above λ = 0.12, so
-   it could not have separated the `mid` grid in any case).
+**Therefore the `lo` rule `P(s = 1) ≤ 0.10` is unsatisfiable by construction**, and the λ_lo half of this
+criterion is not measurable with the instrument that was validated. The script's own diagnostic
+("the edit classes are too harsh at the lowest rate tried") is **wrong and is recorded as wrong**: the rate
+barely moves across a 3.6× range of λ, which is the signature of a saturated question, not of a harsh one.
+It would read the same at λ = 0.005.
 
-**Authority:** `measurement/o1_validation/RESULTS.md` · `scripts/o1_agent_rater.py` (`--calibrate`).
+**What survives, and what does not.**
+
+- **Survives — the comparative core.** 0.967 was measured at λ 0.05 **versus** λ 0.18, ordering *across*
+  noise levels. That question is well posed and the rater answers it reliably, so `mid` being harder than
+  `lo` remains measurable.
+- **Does not survive — `lo`'s absolute readability.** "Items remain human-readable at `lo`" is anchored to
+  the clean text, and the only comparison that reaches clean is the saturated one. The 0.714 transfer
+  against human judgement (floor 0.80) says the same from the other direction.
+
+**So the substitution this document records — an autonomous rater in place of the panel — holds for half
+the criterion and fails for the other half.** Three restatements have now chased the instrument: absolute
+`P(X)`, then the ordinal tail, then this. Each moved the goal to what the instrument could reach, and that
+is the failure mode this project exists to guard against. **A fourth is not written.**
+
+**`lo` needs one of two things, and neither is a restatement:**
+
+1. **human raters**, as originally proposed — the instrument the autonomous rater was meant to replace; or
+2. **an externally anchored threshold**: a λ whose readability is fixed by published human data rather than
+   by this rater, with the transfer limitation stated as a limitation.
+
+`P(s = 1) ≈ 0.95` at every λ is reported either way, because it is the measurement that forces the choice
+rather than a preference between two designs.
+
+**§12 item 2 stays `λ PENDING`.** The classes are fixed; the rates are not, and the instrument that was to
+fix them does not reach the quantity `lo` names.

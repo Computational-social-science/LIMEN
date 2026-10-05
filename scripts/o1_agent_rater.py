@@ -689,8 +689,19 @@ def mode_calibrate(model: str | None, thinking: bool | None) -> int:
 
     lam_lo = first(LO_GRID, lambda r: r["p_harder"] <= 0.10)
     if lam_lo is None:
-        print("\n  [RESULT] no lo grid point reaches P(s=1) <= 0.10. The edit classes are too harsh at the")
-        print("           lowest rate tried; the honest response is to report that, not to lower lambda.")
+        rates = [pts[l]["p_harder"] for l in LO_GRID]
+        spread = max(rates) - min(rates)
+        print("\n  [RESULT] no lo grid point reaches P(s=1) <= 0.10.")
+        if spread < 0.15:
+            print(f"           P(s=1) varies by only {spread:.3f} across a "
+                  f"{max(LO_GRID)/min(LO_GRID):.1f}x range of lambda, so the question is SATURATED, not the")
+            print("           rates harsh: the rater detects THAT corruption is present, at any rate, and a")
+            print("           comparison against a clean text cannot measure HOW MUCH. Lowering lambda would")
+            print("           not help - the rate would read the same at a tenth of the dose.")
+            print("           >> This instrument does not reach the quantity the `lo` rule names. Report it.")
+        else:
+            print("           P(s=1) does move with lambda, so this is a rate problem: report it, and do not")
+            print("           lower lambda without an amendment.")
         out = {"lo": None, "mid": None, "points": {str(k): v for k, v in pts.items()}}
     else:
         p90_lo = sorted(pts[lam_lo]["scores"])[int(0.9 * (len(pts[lam_lo]["scores"]) - 1))]

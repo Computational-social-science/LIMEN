@@ -162,3 +162,52 @@ protocol's median criterion survives unchanged; its `P(X)` clause is the part th
 **Until that anchoring is written down and accepted, §12 item 2 stays `λ PENDING`.** This document does not
 close O1; it replaces "who reads" with a measured instrument and states exactly which part of the criterion
 that instrument can and cannot support.
+
+
+---
+
+## 9. The calibration run, and why it refutes the criterion it was written to satisfy
+
+`--calibrate` scored all 60 dev items at all eight grid points against each item's **own clean version**,
+both sides presented, so `s = (times the perturbed text is called harder) / 2`.
+
+| λ | 0.05 | 0.06 | 0.07 | 0.08 | 0.12 | 0.14 | 0.16 | 0.18 |
+|---|---|---|---|---|---|---|---|---|
+| `P(s = 1)` | 0.983 | 0.900 | 0.967 | 0.950 | 1.000 | 0.983 | 1.000 | 0.983 |
+| position-A rate | .517 | .533 | .483 | .517 | .500 | .517 | .500 | .517 |
+
+**The rater calls the perturbed text harder than the clean text on 90–100 % of items at EVERY grid point,
+including the mildest.** Position bias is flat at ~0.5 throughout, so this is not a side artefact.
+
+**The question is trivial.** One of the two texts contains typos; asking which is harder to recover is
+answered by noticing the typos, at any rate. The instrument detects *that* corruption is present, not *how
+much*.
+
+**So the `lo` rule `P(s = 1) ≤ 0.10` is unsatisfiable by construction with this instrument.** It does not
+fail because the edit classes are too harsh at λ = 0.05 — that was the message the script printed, and it is
+wrong: the run's own numbers show the rate barely varies across a 3.6× range of λ, which is the signature of
+a saturated question, not of a harsh one. **The rate would read the same at λ = 0.005.**
+
+**What this does and does not disturb.**
+
+- **Unaffected: the comparative core.** The 0.967 concordance was measured at λ 0.05 **versus** λ 0.18 — an
+  ordering *across* noise levels — and that is a different, well-posed question the rater answers reliably.
+- **Refuted: `lo`'s absolute readability.** "Items remain human-readable at `lo`" is anchored to the clean
+  text, and the only comparison that reaches clean is the saturated one. The 0.714 transfer against human
+  judgement (floor 0.80) says the same thing from the other direction.
+
+## 10. Consequence: the autonomous-rater substitution does not cover O1's `lo` criterion
+
+The decision taken was to replace the three-reader panel with an autonomous rater validated against human
+data. **Measured, that substitution holds for the comparative half and fails for the absolute half.**
+No third restatement of the criterion changes this: each restatement so far has moved the goal to whatever
+the instrument could reach, which is the failure mode the project guards against.
+
+**What O1's `lo` needs is one of:**
+
+1. **human raters**, as Amendment 3 originally proposed — the instrument this was meant to replace; or
+2. **an externally anchored threshold**: a λ whose readability is fixed by published human data rather than
+   by this rater, with the transfer limitation stated as a limitation.
+
+`P(s=1) ≈ 0.95` at every λ is reported either way, because it is the measurement that makes the choice
+necessary rather than a preference.
