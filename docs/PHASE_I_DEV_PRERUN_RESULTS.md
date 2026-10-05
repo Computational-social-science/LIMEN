@@ -217,3 +217,67 @@ same form as H1.2**, so it cannot simply be substituted in:
 **Option (a) is withdrawn. It is recorded here rather than deleted because the argument for it was plausible,
 it was acted on, and the measurement is what settled it — which is the sequence this whole document exists to
 demonstrate.**
+
+
+---
+
+## 8. Options (c) and (d) probed on existing dev trials — one is testable, one is refuted
+
+`scripts/probe_h12_options.py` runs nothing on the model. It reads the 2,520 dev trials already on disk
+(280 items × λ ∈ {0, 0.05, 0.18} × 3 seeds) and computes what each option would actually assert. Option (a)
+was recommended on argument and withdrawn on measurement; the point of probing (c) and (d) before adopting
+either is not to repeat that.
+
+### (c) Equivalence on `CondErr@τ` — TESTABLE, and the margin is not vacuous
+
+| τ | clean `CondErr` | λ = 0.18 | difference | 90 % CI | margin on dev | **projected to the confirmatory window** |
+|---|---|---|---|---|---|---|
+| 0.80 | 0.0854 | 0.0886 | +0.0031 | [−0.0281, +0.0344] | 3.44 pts | **2.05 pts** |
+| 0.90 | 0.0826 | 0.0718 | −0.0108 | [−0.0503, +0.0287] | 5.03 pts | **2.59 pts** |
+
+**At the confirmatory sample size the design could declare an equivalence margin of ±2.6 points on
+`CondErr@0.9`, against a clean value of 8.3 points.** A margin that is a quarter to a third of the baseline
+is a substantive claim rather than a vacuous one — it would say the conditional error rate moves by less than
+2.6 points, which is falsifiable and informative. **The observed difference (−1.08 points) sits inside it.**
+
+**Cost, and it is real:** `CondErr@τ` is not a paired quantity (§7), so (c) needs its own estimator —
+a two-proportion contrast or an unpaired permutation — alongside §4.5's paired permutation. The protocol
+would then name two estimators rather than one.
+
+### (d) Coverage-matched contrast — REFUTED as a directional hypothesis
+
+Per-arm τ set to the (1−q) quantile of `c` so both arms admit the same share, then `CondErr` compared:
+
+| q | τ clean | τ noisy | clean `CondErr` | noisy `CondErr` | difference | p |
+|---|---|---|---|---|---|---|
+| 0.15 | 0.9723 | 0.9339 | 0.0909 | 0.0630 | −0.0279 | 0.49 |
+| 0.20 | 0.9598 | 0.9078 | 0.0877 | 0.0710 | −0.0167 | 0.69 |
+| 0.25 | 0.9483 | 0.8837 | 0.0845 | 0.0664 | −0.0182 | 0.59 |
+| 0.30 | 0.9377 | 0.8634 | 0.0824 | 0.0791 | −0.0033 | 1.00 |
+| 0.35 | 0.9236 | 0.8453 | 0.0909 | 0.0814 | −0.0096 | 0.77 |
+| 0.40 | 0.9066 | 0.8088 | 0.0796 | 0.0861 | +0.0064 | 0.78 |
+| 0.45 | 0.8992 | 0.7829 | 0.0787 | 0.0976 | +0.0189 | 0.37 |
+| 0.50 | 0.8853 | 0.7499 | 0.0780 | 0.0974 | +0.0194 | 0.33 |
+
+**Noise is above clean at only 3 of 8 matched levels and nowhere significantly; below it at the other 5.**
+Matching coverage does not make the conditional error rise. **(d) cannot carry a directional hypothesis.**
+
+**And it costs more than it returns:** matching coverage requires per-arm thresholds that differ by 13.5
+points of confidence at q = 0.50 (0.8853 versus 0.7499), which replaces the protocol's fixed τ ∈ {0.80, 0.90}
+with a coverage target. That is a large design change for a contrast the data does not support.
+
+### What the three probes now say together
+
+| option | what it asserts | verdict on dev |
+|---|---|---|
+| (a) `CondErr` differs directionally | noise raises conditional error | **refuted** (§7, z = −0.45) |
+| (d) coverage-matched, noise raises it | same claim, gate held equally selective | **refuted** (no level significant) |
+| (c) `CondErr` is invariant within a margin | noise does not raise conditional error | **supported**, margin 2.59 pts at τ = 0.9 |
+| (b) drop H1.2, keep H1.1 + H1.3 | — | **no claim staked on the contrast** |
+
+**Three independent probes of the same question agree: under typo noise the model's committed answers do not
+become more often wrong.** Accuracy and coverage fall; the quality of what is still committed does not. That
+is a coherent, falsifiable, and reportable position — and **(c) is the only one of the three that turns it
+into a pre-registered claim**, at the cost of a second estimator.
+
+**All of this is dev, non-confirmatory, and computed without running the model. The decision is the user's.**
