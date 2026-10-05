@@ -294,3 +294,36 @@ need operations with a larger recoverability cost per edit for `mid` to be genui
 change to the generator and therefore an amendment.
 
 `§12 item 2` stays `λ PENDING`, now blocked on **stimulus strength**, not on an instrument.
+
+
+---
+
+## 13. Is the narrow range real? Seed variance says yes
+
+The ladder's recoverability range is small (~5 % relative), so the obvious worry is that it is generator
+noise. The generator's frozen seeds are `{0, 1, 2}`; regenerating from the clean text at each
+`(lambda, seed)` answers it directly.
+
+| λ | seed 0 | seed 1 | seed 2 | mean | SD |
+|---|---|---|---|---|---|
+| 0.05 | 0.5216 | 0.5234 | 0.5254 | 0.5235 | **0.0019** |
+| 0.12 | 0.5059 | 0.5139 | 0.4995 | 0.5064 | 0.0072 |
+| 0.18 | 0.4847 | 0.4917 | 0.5012 | 0.4925 | 0.0083 |
+
+**`lo − mid` gap = 0.0309, pooled seed SD = 0.0051, ratio = 6.07.** And `seed = 0` reproduces the frozen
+pack value exactly (0.5216 vs the pack's 0.521), which independently confirms that regenerating from the
+clean text is equivalent to the packs while the generator is frozen.
+
+**The hypothesis that the narrow range might be noise is refuted by this measurement.** The separation is
+six seed standard deviations — small in magnitude, clean in signal. Written down because a plausible worry
+that turns out to be false is worth recording as such: it stops the next reader raising it again.
+
+**And both ends clear the published anchor comfortably:** `lo` by **+0.0755**, `mid` by **+0.0445**.
+
+### 13.1 What that leaves as the finding
+
+Not "the ladder may be noise". Rather: **the ladder is real, anchored on a published human result, and its
+`mid` band sits well inside human tolerance — so `mid` is stressed only modestly.** The action item is
+still the edit classes, but for a sharper reason than before: not that the range might be unresolvable, but
+that a genuinely stressed `mid` needs a larger recoverability cost per edit than the current class list
+provides. The 6.07 ratio is the acceptance margin a stronger class list has to keep or beat.

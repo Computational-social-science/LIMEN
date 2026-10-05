@@ -1,0 +1,21 @@
+{
+  "anchor_mean_r": 0.448,
+  "anchor_citation": "Rayner, White, Johnson & Liversedge (2006), Psychological Science 17(3), interior-scrambled variant",
+  "rayne_conditions_measured": {
+    "scrambled": 0.4498951093669324,
+    "transposed": 0.47508783020779854
+  },
+  "grid_mean_r": {
+    "0.05": 0.5207551951855425,
+    "0.06": 0.5229009433784116,
+    "0.07": 0.5169964089687272,
+    "0.08": 0.516785104063565,
+    "0.12": 0.5092093816217187,
+    "0.14": 0.5083165399029426,
+    "0.16": 0.4935349864395974,
+    "0.18": 0.49299074885973615
+  },
+  "lambda_lo_by_anchor": 0.05,
+  "lo_clears_anchor": true,
+  "margin_at_lo": 0.07275519518554247
+}

@@ -334,5 +334,26 @@ so rather than to extend the ladder.*
 and more specific blocker than the one this document opened with. The instrument question is closed; the
 stimulus-strength question is open.
 
-**Authority:** `scripts/o1_recoverability.py` (`--build-channel`, `--demo`, `--anchor`) ·
+### 8.3 Is the narrow range an artefact of generator noise? No — measured
+
+The generator's frozen seeds are `{0, 1, 2}`. Regenerating from the clean text at each `(λ, seed)`:
+
+| λ | seed 0 | seed 1 | seed 2 | mean | SD |
+|---|---|---|---|---|---|
+| 0.05 | 0.5216 | 0.5234 | 0.5254 | 0.5235 | 0.0019 |
+| 0.12 | 0.5059 | 0.5139 | 0.4995 | 0.5064 | 0.0072 |
+| 0.18 | 0.4847 | 0.4917 | 0.5012 | 0.4925 | 0.0083 |
+
+**`lo − mid` gap 0.0309 against a pooled seed SD of 0.0051 — a ratio of 6.07.** The range is small in
+magnitude and clean in signal, so the worry that it might be noise is **refuted by measurement rather than
+left standing**. `seed = 0` also reproduces the frozen pack value exactly, which confirms independently
+that regeneration equals the packs while the generator is frozen.
+
+Both ends clear the published anchor: `lo` by **+0.0755**, `mid` by **+0.0445**. So the action item below
+is not "the range may be unresolvable" but "a genuinely stressed `mid` needs a larger recoverability cost
+per edit than the current class list provides" — and **6.07 is the acceptance margin a stronger class list
+must keep or beat.**
+
+**Authority:** `scripts/o1_recoverability.py` (`--build-channel`, `--demo`, `--anchor`, `--seed-variance`) ·
+`measurement/o1_validation/anchor.json` · `measurement/o1_validation/seed_variance.json` ·
 `measurement/o1_validation/channel.json` · `measurement/o1_validation/RESULTS.md` §9–11.

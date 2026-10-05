@@ -73,6 +73,16 @@ UNSEEN_LOG = -12.0           # log-probability floor for a character operation t
 ZIPF_FLOOR = 1.0             # words rarer than this Zipf band are outside the candidate vocabulary
 GRID = (0.05, 0.06, 0.07, 0.08, 0.12, 0.14, 0.16, 0.18)
 
+# THE PUBLISHED ANCHOR, as a named constant so it can be guarded rather than retyped in prose.
+# Rayner, White, Johnson & Liversedge (2006), "Raeding wrods with jubmled lettres: There is a cost",
+# Psychological Science 17(3): first and last letter of each word fixed, the interior rearranged; readers
+# answered comprehension questions with high accuracy and read ~11% slower. This is the MEASURED value of
+# that condition under this index (interior-scrambled variant, the harsher of the two), and it is what
+# `lo` has to clear. A published number that only ever appears in a document is a number that drifts.
+RAYNER_ANCHOR_MEAN_R = 0.4480
+RAYNER_ANCHOR_CITATION = ("Rayner, White, Johnson & Liversedge (2006), Psychological Science 17(3), "
+                          "interior-scrambled variant")
+
 
 def zipf(word: str) -> float:
     """Published lexical frequency, via the `wordfreq` aggregation of SUBTLEX/Leeds and others."""
@@ -322,6 +332,8 @@ def main() -> int:
     ap = argparse.ArgumentParser(description=(__doc__ or "").split("\n")[0])
     ap.add_argument("--build-channel", action="store_true")
     ap.add_argument("--demo", type=int, metavar="N", help="show per-item indices on N grid points")
+    ap.add_argument("--seed-variance", action="store_true",
+                    help="recoverability across the generator's frozen seeds {0,1,2}, and the gap/SD ratio")
     ap.add_argument("--anchor", action="store_true",
                     help="measure the published human condition (Rayner 2006) with the same index")
     ap.add_argument("--self-test", action="store_true",
@@ -356,6 +368,52 @@ def main() -> int:
               f"{ch['counts']} distinct character operations -> {CHANNEL_FILE}")
         return 0
 
+    if args.seed_variance:
+        import csv
+        from typo_noise import typo_noise
+        ch = load_channel()
+        vocab = load_vocabulary(20000)
+        pack = sorted((REPO_ROOT / "measurement" / "o1_packs").glob("o1_*_lam005_raterA.csv"))
+        rows = list(csv.DictReader([l for l in pack[0].read_text(encoding="utf-8").splitlines()
+                                    if not l.startswith("#")]))[:60]
+        print("  SEED VARIANCE: the generator's own frozen seeds are {0,1,2}. The recoverability range")
+        print("  across the ladder is ~5% relative, so the seed spread decides whether that range is")
+        print("  signal or noise. Regenerated from the clean text at each (lambda, seed).")
+        print()
+        print("  lambda   seed=0   seed=1   seed=2     mean      SD")
+        out = {}
+        for lam in (0.05, 0.12, 0.18):
+            vals = []
+            for seed in (0, 1, 2):
+                ix = []
+                for k, r in enumerate(rows):
+                    pert, _ = typo_noise(r["clean"], f"sv-{k}", lam, seed)
+                    ix.append(item_index(r["clean"], pert, ch, vocab))
+                vals.append(statistics.mean(x["mean_r"] for x in ix if x["n"]))
+            mu = statistics.mean(vals)
+            sd = statistics.stdev(vals) if len(vals) > 1 else 0.0
+            out[str(lam)] = {"per_seed": vals, "mean": mu, "sd": sd}
+            print(f"  {lam:<7} {vals[0]:8.4f} {vals[1]:8.4f} {vals[2]:8.4f}  {mu:7.4f}  {sd:.4f}")
+            # seed 0 must reproduce the pack the index was first computed on
+        lo_mu, mid_mu = out["0.05"]["mean"], out["0.18"]["mean"]
+        pooled = statistics.mean([out["0.05"]["sd"], out["0.18"]["sd"]])
+        gap = lo_mu - mid_mu
+        print()
+        print(f"  lo(0.05) - mid(0.18) gap = {gap:.4f}   pooled seed SD = {pooled:.4f}"
+              f"   gap / SD = {gap / pooled:.2f}")
+        print(f"  anchor floor (Rayner 2006, scrambled) = 0.4480")
+        print(f"  lo clears the anchor by {lo_mu - 0.4480:+.4f}; mid clears it by {mid_mu - 0.4480:+.4f}")
+        if gap / pooled < 2.0:
+            print("\n  [FINDING] the ladder's range is within about two seed standard deviations, so the")
+            print("            lo-to-mid separation is NOT resolved against generator noise. Widening the")
+            print("            edit classes is therefore required before the ladder can be calibrated, and")
+            print("            this measurement is the acceptance margin that change has to beat.")
+        else:
+            print("\n  [OK] the separation exceeds twice the seed SD, so it is resolved against generator")
+            print("       noise; the ladder's range is small but real.")
+        (VALIDATION / "seed_variance.json").write_text(json.dumps(out, indent=2), encoding="utf-8")
+        return 0
+
     if args.anchor:
         import csv
         import random
@@ -384,6 +442,19 @@ def main() -> int:
             mr = statistics.mean(x["mean_r"] for x in idx if x["n"])
             rec = statistics.mean(x["recovered"] for x in idx if x["n"])
             print(f"    {label:30s} mean_r = {mr:.3f}   recovered = {rec:.3f}")
+        measured = {}
+        for label, fn in (("scrambled", rayner_scramble), ("transposed", rayner_transpose)):
+            idx = []
+            for r in rows:
+                if fn is rayner_scramble:
+                    pert = " ".join(rayner_scramble(w, rng) if len(w) > 3 else w
+                                    for w in re.findall(r"\S+", r["clean"]))
+                else:
+                    pert = " ".join(rayner_transpose(w) if len(w) > 3 else w
+                                    for w in re.findall(r"\S+", r["clean"]))
+                idx.append(item_index(r["clean"], pert, ch, vocab))
+            measured[label] = statistics.mean(x["mean_r"] for x in idx if x["n"])
+        grid_mr = {}
         print()
         print("    grid for comparison (frozen generator):")
         for lam in GRID:
@@ -394,9 +465,22 @@ def main() -> int:
             rr = list(csv.DictReader([l for l in pk[0].read_text(encoding="utf-8").splitlines()
                                       if not l.startswith("#")]))[:60]
             ix = [item_index(x["clean"], x["perturbed"], ch, vocab) for x in rr]
-            print(f"      lambda={lam:<5} mean_r = "
-                  f"{statistics.mean(x['mean_r'] for x in ix if x['n']):.3f}")
-        return 0
+            grid_mr[lam] = statistics.mean(x["mean_r"] for x in ix if x["n"])
+            print(f"      lambda={lam:<5} mean_r = {grid_mr[lam]:.3f}")
+        lo = min(GRID)
+        clears = [l for l in sorted(GRID) if grid_mr.get(l, 0.0) >= RAYNER_ANCHOR_MEAN_R]
+        payload = {"anchor_mean_r": RAYNER_ANCHOR_MEAN_R, "anchor_citation": RAYNER_ANCHOR_CITATION,
+                   "rayne_conditions_measured": measured, "grid_mean_r": {str(k): v for k, v in grid_mr.items()},
+                   "lambda_lo_by_anchor": clears[0] if clears else None,
+                   "lo_clears_anchor": bool(clears and clears[0] == lo),
+                   "margin_at_lo": (grid_mr.get(lo, 0.0) - RAYNER_ANCHOR_MEAN_R)}
+        (VALIDATION / "anchor.json").write_text(json.dumps(payload, indent=2), encoding="utf-8")
+        print()
+        print(f"    anchor floor = {RAYNER_ANCHOR_MEAN_R:.4f} ({RAYNER_ANCHOR_CITATION})")
+        print(f"    smallest grid point clearing it = lambda {clears[0] if clears else None}"
+              f"   margin at lo = {payload['margin_at_lo']:+.4f}")
+        print(f"    written to {VALIDATION / 'anchor.json'}")
+        return 0 if payload["lo_clears_anchor"] else 1
 
     if args.demo:
         import csv

@@ -62,6 +62,10 @@ GUARDS: list[tuple[str, tuple[str, ...], str]] = [
      "the appendix generator refuses a theorem with no declared bearing"),
     ("o1_recoverability.py", ("--self-test",),
      "the channel's distance and alignment primitives answer known cases correctly"),
+    ("check_o1_anchor.py", (),
+     "the O1 readability floor is the published anchor, and the ladder clears it"),
+    ("check_o1_anchor.py", ("--negative-test",),
+     "the anchor guard refuses a floor above every ladder point"),
 ]
 
 # Guards that need something outside this repository. They are reported separately rather than mixed
