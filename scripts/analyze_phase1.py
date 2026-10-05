@@ -2,7 +2,8 @@
 """analyze_phase1.py -- the confirmatory analysis for Phase I, with synthetic positive/negative controls.
 
 WHY THIS EXISTS BEFORE ANY REAL DATA
-    The pre-registration is frozen but NO code implemented the confirmatory tests. `run_phase1.py` produces
+    The pre-registration is frozen but NO code implemented the confirmatory tests.
+    `measurement/run_phase1.py` produces
     trial records and nothing consumed them. That is the one gap a dry run is for: an analysis that has
     never been shown to detect an effect that is present, and to stay quiet when none is, is not evidence
     about anything - it is a program that prints numbers.
