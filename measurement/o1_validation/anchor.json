@@ -16,6 +16,7 @@
     "0.18": 0.49299074885973615
   },
   "lambda_lo_by_anchor": 0.05,
+  "lambda_mid_by_anchor": 0.18,
   "lo_clears_anchor": true,
   "margin_at_lo": 0.07275519518554247
 }

@@ -472,6 +472,7 @@ def main() -> int:
         payload = {"anchor_mean_r": RAYNER_ANCHOR_MEAN_R, "anchor_citation": RAYNER_ANCHOR_CITATION,
                    "rayne_conditions_measured": measured, "grid_mean_r": {str(k): v for k, v in grid_mr.items()},
                    "lambda_lo_by_anchor": clears[0] if clears else None,
+                   "lambda_mid_by_anchor": clears[-1] if clears else None,
                    "lo_clears_anchor": bool(clears and clears[0] == lo),
                    "margin_at_lo": (grid_mr.get(lo, 0.0) - RAYNER_ANCHOR_MEAN_R)}
         (VALIDATION / "anchor.json").write_text(json.dumps(payload, indent=2), encoding="utf-8")
@@ -479,6 +480,8 @@ def main() -> int:
         print(f"    anchor floor = {RAYNER_ANCHOR_MEAN_R:.4f} ({RAYNER_ANCHOR_CITATION})")
         print(f"    smallest grid point clearing it = lambda {clears[0] if clears else None}"
               f"   margin at lo = {payload['margin_at_lo']:+.4f}")
+        print(f"    largest  grid point clearing it = lambda {clears[-1] if clears else None}"
+              f"   (the most stressed point still inside human tolerance)")
         print(f"    written to {VALIDATION / 'anchor.json'}")
         return 0 if payload["lo_clears_anchor"] else 1
 

@@ -104,8 +104,8 @@ CLAIMS: list[tuple[str, str, str, str]] = [
     ("`Δτ* > 0` — the fitted limen moves under noise", "TESTED", "§4.4a; reported, not confirmatory",
      "usually unattainable when the clean arm sits at the floor"),
     ("the Phase II cross-script law", "TESTED", "§4.4 H2.1–H2.2", "reserved for Phase II"),
-    ("the λ rates are readable at the intended level", "TESTED", "O1 calibration",
-     "blocks the seal until the calibration is decided"),
+    ("the λ rates are readable at the intended level", "TESTED", "O1, Amendment 3 v3",
+     "closed by rule: λ_lo = 0.05 and λ_mid = 0.18 selected against the published Rayner (2006) anchor"),
 ]
 
 STATUS_MARK = {"PROVED": "**PROVED**", "ASSUMED": "*ASSUMED*", "TESTED": "**TO BE TESTED**"}

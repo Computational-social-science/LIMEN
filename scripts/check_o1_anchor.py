@@ -91,6 +91,14 @@ def run(anchor_override: float | None = None) -> list[str]:
         findings.append(f"C: the artefact selects lambda_lo={recorded_lo} but the smallest grid point "
                         f"clearing {floor:.4f} is {expected}")
 
+    # C2 - lambda_mid by the anchor must be the LARGEST clearing point: the band is calibrated as
+    # "readable at the mild end, maximally stressed at the harsh end, both inside human tolerance".
+    expected_mid = clearing[-1] if clearing else None
+    recorded_mid = data.get("lambda_mid_by_anchor")
+    if recorded_mid is None or abs(float(recorded_mid) - (expected_mid or -1)) > 1e-9:
+        findings.append(f"C2: the artefact selects lambda_mid={recorded_mid} but the largest grid point "
+                        f"clearing {floor:.4f} is {expected_mid}")
+
     # D - the margin at lo must be positive
     margin = grid[lo] - floor
     if margin <= 0:

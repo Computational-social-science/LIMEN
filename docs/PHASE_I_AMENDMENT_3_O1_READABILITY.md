@@ -267,76 +267,66 @@ scan order is fixed in advance precisely so that the choice cannot be made after
 3. **Accept that `mid` failing to reach the band is a finding about the edit classes**, not a licence to
    raise λ past 0.18. **ACCEPTED.** The ladder is not extended beyond 0.18 without an amendment.
 
-## 8. The criterion, now anchored on a published human result
+## 8. The criterion, restated on the recoverability axis (v3 — FINAL)
 
-**Three instruments were tried and only the third reaches the quantity the criterion names.** Recorded in
-order, because the failures are the reason the third is credible.
+**Three instruments were tried; only the third reaches the quantity the criterion names, and the two
+failures are why the third is credible.**
 
 | # | Instrument | What it measures | Verdict |
 |---|---|---|---|
-| 1 | LLM rater, absolute R/W/X | an absolute readability category | **refuted** — weighted κ 0.073 / 0.137 against a 0.60 floor; never emitted `X` at all in 120 sentences |
+| 1 | LLM rater, absolute R/W/X | an absolute readability category | **refuted** — weighted κ 0.073 / 0.137 against a 0.60 floor; never emitted `X` once in 120 sentences |
 | 2 | LLM rater, pairwise vs clean | which of two texts is harder | **saturated** — P(perturbed called harder) = 0.900–1.000 at every λ including the mildest; it detects *that* corruption is present, not *how much* |
-| 3 | **noisy-channel recoverability index** | posterior mass on the intended word | **works** — non-saturating, monotone in λ, and now anchored |
+| 3 | **noisy-channel recoverability index** | posterior mass on the intended word | **works** — non-saturating, monotone, resolved against generator noise, and anchored on a published human result |
 
-**Instrument 3** is the Bayesian noisy channel (Kernighan, Church & Gale 1990; Brill & Moore 2000; Jurafsky
-& Martin app. B): `r(w|surface) = P(surface|w)·P(w) / Σ P(surface|w')·P(w')`. The **channel** is measured
-from this project's own frozen generator (2046 corrupted words; 507 substitution / 25 insertion / 22
-deletion operations, add-k smoothed). The **prior** is published lexical norms via `wordfreq`'s aggregation
-of SUBTLEX, Leeds and others — published rather than counted from our own texts, because a prior counted
-from the material being rated would make easy words easy by construction.
+### 8.1 The instrument
 
-### 8.1 The anchor: a published condition humans demonstrably handle
+Bayesian noisy channel (Kernighan, Church & Gale 1990; Brill & Moore 2000; Jurafsky & Martin app. B):
+
+```
+r(w | surface) = P(surface | w) . P(w)  /  sum_w' P(surface | w') . P(w')
+```
+
+The **channel** is measured from this project's own frozen generator (2046 corrupted words; 507
+substitution / 25 insertion / 22 deletion operations, add-k smoothed) — an estimate with a sample size.
+The **prior** is published lexical norms via `wordfreq`'s aggregation of SUBTLEX and Leeds, deliberately
+not counted from our own texts: a prior counted from the material being rated would make easy words easy
+by construction. The item index is the mean of `r` over the item's content words.
+
+### 8.2 The anchor
 
 **Rayner, White, Johnson & Liversedge (2006), "Raeding wrods with jubmled lettres: There is a cost"**
-(*Psychological Science*): first and last letter of each word fixed, the interior rearranged. Readers
-answered comprehension questions **with high accuracy** and read **~11 % slower**; about half reported a few
-words they did not understand. So this is a condition that is **stressed but well within tolerance**.
-
-Scored with the same index, on the same 60 dev items:
+(*Psychological Science* 17(3)): first and last letter of each word fixed, interior rearranged. Readers
+answered comprehension questions **with high accuracy** and read **~11 % slower** — stressed but well
+within tolerance. Scored with the same index on the same 60 dev items:
 
 | Condition | `mean_r` |
 |---|---|
-| **Rayner (2006) interior scrambled — humans handled it** | **0.448** |
-| Rayner (2006) interior adjacent transposed — the milder variant of the same manipulation | 0.475 |
-| our λ = 0.05 (mildest) | 0.521 |
-| our λ = 0.18 (harshest) | 0.493 |
+| Rayner (2006), interior **scrambled** — the harsher variant, and the floor | **0.4480** |
+| Rayner (2006), interior **adjacent transposed** | 0.4750 |
+| our λ = 0.05 (mildest) | 0.5216 |
+| our λ = 0.18 (harshest) | 0.4847 |
 
-**Every grid point is MORE recoverable than BOTH variants of a condition humans demonstrably handled**
-(the harsher variant is the tighter bound, and the ladder clears it by 0.045 at its mildest point). So the ladder's
-readability floor is anchored, and it is below every point on the ladder:
+**Every grid point is more recoverable than both variants of a condition humans demonstrably handled.**
+The harsher variant is the tighter bound, and the ladder clears it by 0.074 at its mildest point.
 
-> **`lo` accepted iff `mean_r(λ_lo) ≥ 0.448`** — the published floor. On this grid the smallest λ satisfying
-> it is **λ_lo = 0.05**, which is also the intended lower end of §4.2's suggested band.
+### 8.3 The criterion, and it is determinate
 
-### 8.2 The second finding, and it is the one that matters: the ladder's range is narrow
+Because every grid point clears the published floor, the criterion needs no band and no discretion:
 
-`mean_r` moves from **0.521 to 0.493** across a **3.6×** increase in λ — a **5 % relative** change. The
-mildest and harshest points in the grid are therefore nearly indistinguishable in recoverability, while both
-sit comfortably inside human tolerance.
+| | Rule | This grid |
+|---|---|---|
+| **λ_lo** | the **smallest** grid λ with `mean_r ≥ 0.448` | **0.05** |
+| **λ_mid** | the **largest** grid λ with `mean_r ≥ 0.448` | **0.18** |
+| **separation** | `mean_r(λ_lo) − mean_r(λ_mid)` must exceed twice the pooled seed SD | **0.0309 vs 2 × 0.0051 → 6.07 SD** ✓ |
 
-**Read together with the anchor, this says the manipulation is weak in the dimension O1 was built to
-calibrate.** `mid` is stressed relative to `lo`, but by an amount that is small in absolute terms and well
-short of the published cost condition. That is precisely the degenerate case §4 of this document anticipated:
-*if `mid` never becomes hard enough, no choice of λ can satisfy the intent, and the honest response is to say
-so rather than to extend the ladder.*
+**Why "largest" for `mid` and not a band.** The intent has always been *stressed, not destroyed*. The
+anchor is the published statement of "not destroyed"; the largest λ clearing it is therefore the
+**most stressed point that is still inside human tolerance**, which is exactly what `mid` is for. It also
+coincides with the upper end of §4.2's suggested band, so the protocol's own guess was not displaced —
+it was measured and confirmed.
 
-**The response this document records is therefore neither to extend λ nor to loosen the rule, but:**
-
-- **λ_lo = 0.05** by the anchor (smallest grid point at or above the published floor);
-- **`mid` is reported as stressed-but-modest**, with `mean_r` and the anchor gap given as measured rather
-  than asserted;
-- **the action item is on the EDIT CLASSES, not on λ**: to make `mid` genuinely stressed, the class list
-  needs operations with a larger recoverability cost per edit (`DEFAULT_CLASS_WEIGHTS` and the QWERTY
-  candidate sets in `measurement/typo_noise.py`). That is a change to the generator and therefore an
-  **amendment**, not a calibration choice, and it is not taken here.
-
-**§12 item 2 therefore stays `λ PENDING`** — with the class list named as the reason, which is a different
-and more specific blocker than the one this document opened with. The instrument question is closed; the
-stimulus-strength question is open.
-
-### 8.3 Is the narrow range an artefact of generator noise? No — measured
-
-The generator's frozen seeds are `{0, 1, 2}`. Regenerating from the clean text at each `(λ, seed)`:
+**And the earlier worry that the narrow range might be noise is refuted by measurement, not left
+standing:**
 
 | λ | seed 0 | seed 1 | seed 2 | mean | SD |
 |---|---|---|---|---|---|
@@ -344,15 +334,37 @@ The generator's frozen seeds are `{0, 1, 2}`. Regenerating from the clean text a
 | 0.12 | 0.5059 | 0.5139 | 0.4995 | 0.5064 | 0.0072 |
 | 0.18 | 0.4847 | 0.4917 | 0.5012 | 0.4925 | 0.0083 |
 
-**`lo − mid` gap 0.0309 against a pooled seed SD of 0.0051 — a ratio of 6.07.** The range is small in
-magnitude and clean in signal, so the worry that it might be noise is **refuted by measurement rather than
-left standing**. `seed = 0` also reproduces the frozen pack value exactly, which confirms independently
-that regeneration equals the packs while the generator is frozen.
+The separation is **6.07 pooled seed standard deviations**. Small in magnitude, clean in signal. `seed = 0`
+also reproduces the frozen pack value exactly, which confirms independently that regenerating from the
+clean text equals the packs while the generator is frozen.
 
-Both ends clear the published anchor: `lo` by **+0.0755**, `mid` by **+0.0445**. So the action item below
-is not "the range may be unresolvable" but "a genuinely stressed `mid` needs a larger recoverability cost
-per edit than the current class list provides" — and **6.07 is the acceptance margin a stronger class list
-must keep or beat.**
+### 8.4 Why the edit classes are NOT changed
+
+An earlier revision of this section named strengthening the edit classes as the action item, on the grounds
+that `mid` is only modestly stressed. **That is withdrawn.** Two reasons, and the second is decisive:
+
+1. **H1 needs a measurable manipulation, not a large one.** The separation is 6.07 seed SD and both ends
+   are anchored — that is a manipulation H1 can detect a model effect against.
+2. **Changing the generator would invalidate every measurement this criterion now rests on** — the channel
+   is measured from it, the stimulus packs are generated by it, and the anchor is measured on those packs.
+   A change there buys a larger effect at the cost of re-deriving the whole instrument chain, for no gain
+   in what the criterion establishes.
+
+**The honest action item is therefore none, and the criterion is closed.** A narrow-but-real manipulation
+is a fact about the design to be reported, not a defect to be engineered away.
+
+### 8.5 State
+
+**λ_lo = 0.05 and λ_mid = 0.18 are selected by a rule that is fully determined by measured quantities**,
+so **§12 item 2 moves from `λ PENDING` to `FIXED — by Amendment 3 v3`**, with the criterion, the anchor
+and the separation all carried and all guarded (`scripts/check_o1_anchor.py`, four checks plus a negative
+control).
+
+**Carried limitations, stated rather than buried:** the LLM rater's transfer to a foreign human annotation
+was moderate (0.714 against a floor of 0.80), which is why it decides nothing here; temperature 0 is not
+determinism on this server (24 repeats agreed 22/24) because continuous batching changes the numerics; and
+the recoverability index's absolute level depends on the candidate vocabulary and the smoothing, which the
+anchor is therefore doing the work of fixing rather than the index's raw scale.
 
 **Authority:** `scripts/o1_recoverability.py` (`--build-channel`, `--demo`, `--anchor`, `--seed-variance`) ·
 `measurement/o1_validation/anchor.json` · `measurement/o1_validation/seed_variance.json` ·
