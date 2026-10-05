@@ -77,7 +77,10 @@ def build(pack_dir=OUT, seed=0):
     for role, grid in (("lo", o1.LO_GRID), ("mid", o1.MID_GRID)):
         for lam in grid:
             items = o1.build_sheet(lam, seed)
-            stem = "o1_%s_lam%03d" % (role, round(lam * 100))
+            # THE SEED IS IN THE FILENAME. Without it, generating the second frozen seed overwrites the
+            # first, which is how "stimuli frozen before measurement" silently becomes "stimuli frozen
+            # for one seed". The stem is the identity of the stimulus file.
+            stem = "o1_%s_lam%03d_seed%d" % (role, round(lam * 100), seed)
             for r in RATERS:
                 path = pack_dir / ("%s_rater%s.csv" % (stem, r))
                 with path.open("w", encoding="utf-8", newline="") as fh:

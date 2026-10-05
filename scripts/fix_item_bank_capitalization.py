@@ -51,7 +51,7 @@ def main() -> int:
 
     rows = [json.loads(l) for l in BANK.read_text(encoding="utf-8").splitlines()]
     packed: dict[str, str] = {}
-    for pk in sorted(PACKS.glob("o1_*_lam*_raterA.csv")):
+    for pk in sorted(PACKS.glob("o1_*_lam*_seed*_raterA.csv")):
         for r in csv.DictReader([l for l in pk.read_text(encoding="utf-8").splitlines()
                                  if not l.startswith("#")]):
             packed[r["item_id"]] = r["clean"]

@@ -598,7 +598,7 @@ LO_GRID = (0.05, 0.06, 0.07, 0.08)
 MID_GRID = (0.12, 0.14, 0.16, 0.18)
 
 
-def _read_pack(lam: float) -> list[dict]:
+def _read_pack(lam: float, seed: int = 0) -> list[dict]:
     """The frozen stimulus pack for one grid point: item_id, clean, perturbed.
 
     The packs are read rather than regenerated so that the automated calibration and any human spot-check
@@ -606,10 +606,10 @@ def _read_pack(lam: float) -> list[dict]:
     true today, and exactly the kind of assumption that stops being true without anyone noticing.
     """
     import csv
-    cands = sorted(PACKS.glob(f"o1_*_lam{int(round(lam * 100)):03d}_raterA.csv"))
+    cands = sorted(PACKS.glob(f"o1_*_lam{int(round(lam * 100)):03d}_seed{seed}_raterA.csv"))
     if not cands:
-        raise SystemExit(f"no pack for lambda={lam}; expected "
-                         f"{PACKS}/o1_*_lam{int(round(lam * 100)):03d}_raterA.csv")
+        raise SystemExit(f"no pack for lambda={lam} seed={seed}; expected "
+                         f"{PACKS}/o1_*_lam{int(round(lam * 100)):03d}_seed{seed}_raterA.csv")
     lines = [l for l in cands[0].read_text(encoding="utf-8").splitlines() if not l.startswith("#")]
     rows = list(csv.DictReader(lines))
     return [{"item_id": r["item_id"], "clean": r["clean"], "perturbed": r["perturbed"]} for r in rows]

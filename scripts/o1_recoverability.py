@@ -73,6 +73,11 @@ UNSEEN_LOG = -12.0           # log-probability floor for a character operation t
 ZIPF_FLOOR = 1.0             # words rarer than this Zipf band are outside the candidate vocabulary
 GRID = (0.05, 0.06, 0.07, 0.08, 0.12, 0.14, 0.16, 0.18)
 
+# WHICH FROZEN SEED'S STIMULI THE INDEX READS. The packs carry the seed in their filename because without
+# it the second seed overwrites the first; the anchor was measured on seed 0 and keeps reading seed 0.
+# A different seed is a different instrument run, and must be reported as such rather than averaged in.
+PACK_SEED = 0
+
 # THE PUBLISHED ANCHOR, as a named constant so it can be guarded rather than retyped in prose.
 # Rayner, White, Johnson & Liversedge (2006), "Raeding wrods with jubmled lettres: There is a cost",
 # Psychological Science 17(3): first and last letter of each word fixed, the interior rearranged; readers
@@ -373,7 +378,7 @@ def main() -> int:
         from typo_noise import typo_noise
         ch = load_channel()
         vocab = load_vocabulary(20000)
-        pack = sorted((REPO_ROOT / "measurement" / "o1_packs").glob("o1_*_lam005_raterA.csv"))
+        pack = sorted((REPO_ROOT / "measurement" / "o1_packs").glob("o1_*_lam005_seed0_raterA.csv"))
         rows = list(csv.DictReader([l for l in pack[0].read_text(encoding="utf-8").splitlines()
                                     if not l.startswith("#")]))[:60]
         print("  SEED VARIANCE: the generator's own frozen seeds are {0,1,2}. The recoverability range")
@@ -420,7 +425,7 @@ def main() -> int:
         rng = random.Random(0)
         ch = load_channel()
         vocab = load_vocabulary(20000)
-        pack = sorted((REPO_ROOT / "measurement" / "o1_packs").glob("o1_*_lam005_raterA.csv"))
+        pack = sorted((REPO_ROOT / "measurement" / "o1_packs").glob("o1_*_lam005_seed0_raterA.csv"))
         rows = list(csv.DictReader([l for l in pack[0].read_text(encoding="utf-8").splitlines()
                                     if not l.startswith("#")]))[:60]
         print("  ANCHOR: the published human condition, measured with the same index")
@@ -459,7 +464,7 @@ def main() -> int:
         print("    grid for comparison (frozen generator):")
         for lam in GRID:
             pk = sorted((REPO_ROOT / "measurement" / "o1_packs")
-                        .glob(f"o1_*_lam{int(round(lam * 100)):03d}_raterA.csv"))
+                        .glob(f"o1_*_lam{int(round(lam * 100)):03d}_seed{PACK_SEED}_raterA.csv"))
             if not pk:
                 continue
             rr = list(csv.DictReader([l for l in pk[0].read_text(encoding="utf-8").splitlines()
@@ -495,7 +500,7 @@ def main() -> int:
         print("  lambda   recovered   mean_r   n_items")
         for lam in sorted(GRID)[: args.demo]:
             pack = sorted((REPO_ROOT / "measurement" / "o1_packs")
-                          .glob(f"o1_*_lam{int(round(lam * 100)):03d}_raterA.csv"))
+                          .glob(f"o1_*_lam{int(round(lam * 100)):03d}_seed{PACK_SEED}_raterA.csv"))
             if not pack:
                 continue
             rows = list(csv.DictReader([l for l in pack[0].read_text(encoding="utf-8").splitlines()
