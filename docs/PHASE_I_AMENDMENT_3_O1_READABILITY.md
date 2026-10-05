@@ -267,51 +267,72 @@ scan order is fixed in advance precisely so that the choice cannot be made after
 3. **Accept that `mid` failing to reach the band is a finding about the edit classes**, not a licence to
    raise λ past 0.18. **ACCEPTED.** The ladder is not extended beyond 0.18 without an amendment.
 
-## 8. The run was made, and it refuted this section's own criterion
+## 8. The criterion, now anchored on a published human result
 
-> **CORRECTION, recorded rather than quietly reverted.** The immediately preceding revision of this section
-> was titled "O1 is now CLOSED as a decision; only the run remains". **That was an over-claim made before
-> the run.** The run has now been made and it does not support it. The version below replaces it.
+**Three instruments were tried and only the third reaches the quantity the criterion names.** Recorded in
+order, because the failures are the reason the third is credible.
 
-`--calibrate` scored 60 dev items at all eight grid points against each item's own clean version:
+| # | Instrument | What it measures | Verdict |
+|---|---|---|---|
+| 1 | LLM rater, absolute R/W/X | an absolute readability category | **refuted** — weighted κ 0.073 / 0.137 against a 0.60 floor; never emitted `X` at all in 120 sentences |
+| 2 | LLM rater, pairwise vs clean | which of two texts is harder | **saturated** — P(perturbed called harder) = 0.900–1.000 at every λ including the mildest; it detects *that* corruption is present, not *how much* |
+| 3 | **noisy-channel recoverability index** | posterior mass on the intended word | **works** — non-saturating, monotone in λ, and now anchored |
 
-| λ | 0.05 | 0.06 | 0.07 | 0.08 | 0.12 | 0.14 | 0.16 | 0.18 |
-|---|---|---|---|---|---|---|---|---|
-| `P(s = 1)` | **0.983** | 0.900 | 0.967 | 0.950 | 1.000 | 0.983 | 1.000 | 0.983 |
+**Instrument 3** is the Bayesian noisy channel (Kernighan, Church & Gale 1990; Brill & Moore 2000; Jurafsky
+& Martin app. B): `r(w|surface) = P(surface|w)·P(w) / Σ P(surface|w')·P(w')`. The **channel** is measured
+from this project's own frozen generator (2046 corrupted words; 507 substitution / 25 insertion / 22
+deletion operations, add-k smoothed). The **prior** is published lexical norms via `wordfreq`'s aggregation
+of SUBTLEX, Leeds and others — published rather than counted from our own texts, because a prior counted
+from the material being rated would make easy words easy by construction.
 
-**At the mildest rate tried, the rater still calls the perturbed text harder on 98 % of items.** The
-question "which of these two is harder to recover" is answered by noticing that one of them contains typos,
-at any rate. The instrument detects *that* corruption is present, not *how much* — which is exactly what a
-comparison against a clean text can ever establish.
+### 8.1 The anchor: a published condition humans demonstrably handle
 
-**Therefore the `lo` rule `P(s = 1) ≤ 0.10` is unsatisfiable by construction**, and the λ_lo half of this
-criterion is not measurable with the instrument that was validated. The script's own diagnostic
-("the edit classes are too harsh at the lowest rate tried") is **wrong and is recorded as wrong**: the rate
-barely moves across a 3.6× range of λ, which is the signature of a saturated question, not of a harsh one.
-It would read the same at λ = 0.005.
+**Rayner, White, Johnson & Liversedge (2006), "Raeding wrods with jubmled lettres: There is a cost"**
+(*Psychological Science*): first and last letter of each word fixed, the interior rearranged. Readers
+answered comprehension questions **with high accuracy** and read **~11 % slower**; about half reported a few
+words they did not understand. So this is a condition that is **stressed but well within tolerance**.
 
-**What survives, and what does not.**
+Scored with the same index, on the same 60 dev items:
 
-- **Survives — the comparative core.** 0.967 was measured at λ 0.05 **versus** λ 0.18, ordering *across*
-  noise levels. That question is well posed and the rater answers it reliably, so `mid` being harder than
-  `lo` remains measurable.
-- **Does not survive — `lo`'s absolute readability.** "Items remain human-readable at `lo`" is anchored to
-  the clean text, and the only comparison that reaches clean is the saturated one. The 0.714 transfer
-  against human judgement (floor 0.80) says the same from the other direction.
+| Condition | `mean_r` |
+|---|---|
+| **Rayner (2006) interior scrambled — humans handled it** | **0.448** |
+| Rayner (2006) interior adjacent transposed — the milder variant of the same manipulation | 0.475 |
+| our λ = 0.05 (mildest) | 0.521 |
+| our λ = 0.18 (harshest) | 0.493 |
 
-**So the substitution this document records — an autonomous rater in place of the panel — holds for half
-the criterion and fails for the other half.** Three restatements have now chased the instrument: absolute
-`P(X)`, then the ordinal tail, then this. Each moved the goal to what the instrument could reach, and that
-is the failure mode this project exists to guard against. **A fourth is not written.**
+**Every grid point is MORE recoverable than BOTH variants of a condition humans demonstrably handled**
+(the harsher variant is the tighter bound, and the ladder clears it by 0.045 at its mildest point). So the ladder's
+readability floor is anchored, and it is below every point on the ladder:
 
-**`lo` needs one of two things, and neither is a restatement:**
+> **`lo` accepted iff `mean_r(λ_lo) ≥ 0.448`** — the published floor. On this grid the smallest λ satisfying
+> it is **λ_lo = 0.05**, which is also the intended lower end of §4.2's suggested band.
 
-1. **human raters**, as originally proposed — the instrument the autonomous rater was meant to replace; or
-2. **an externally anchored threshold**: a λ whose readability is fixed by published human data rather than
-   by this rater, with the transfer limitation stated as a limitation.
+### 8.2 The second finding, and it is the one that matters: the ladder's range is narrow
 
-`P(s = 1) ≈ 0.95` at every λ is reported either way, because it is the measurement that forces the choice
-rather than a preference between two designs.
+`mean_r` moves from **0.521 to 0.493** across a **3.6×** increase in λ — a **5 % relative** change. The
+mildest and harshest points in the grid are therefore nearly indistinguishable in recoverability, while both
+sit comfortably inside human tolerance.
 
-**§12 item 2 stays `λ PENDING`.** The classes are fixed; the rates are not, and the instrument that was to
-fix them does not reach the quantity `lo` names.
+**Read together with the anchor, this says the manipulation is weak in the dimension O1 was built to
+calibrate.** `mid` is stressed relative to `lo`, but by an amount that is small in absolute terms and well
+short of the published cost condition. That is precisely the degenerate case §4 of this document anticipated:
+*if `mid` never becomes hard enough, no choice of λ can satisfy the intent, and the honest response is to say
+so rather than to extend the ladder.*
+
+**The response this document records is therefore neither to extend λ nor to loosen the rule, but:**
+
+- **λ_lo = 0.05** by the anchor (smallest grid point at or above the published floor);
+- **`mid` is reported as stressed-but-modest**, with `mean_r` and the anchor gap given as measured rather
+  than asserted;
+- **the action item is on the EDIT CLASSES, not on λ**: to make `mid` genuinely stressed, the class list
+  needs operations with a larger recoverability cost per edit (`DEFAULT_CLASS_WEIGHTS` and the QWERTY
+  candidate sets in `measurement/typo_noise.py`). That is a change to the generator and therefore an
+  **amendment**, not a calibration choice, and it is not taken here.
+
+**§12 item 2 therefore stays `λ PENDING`** — with the class list named as the reason, which is a different
+and more specific blocker than the one this document opened with. The instrument question is closed; the
+stimulus-strength question is open.
+
+**Authority:** `scripts/o1_recoverability.py` (`--build-channel`, `--demo`, `--anchor`) ·
+`measurement/o1_validation/channel.json` · `measurement/o1_validation/RESULTS.md` §9–11.

@@ -262,6 +262,27 @@ def recoverability(surface: str, intended: str, ch: dict, vocab: list[str]) -> d
     return {"r": by_word.get(intended, 0.0), "map": order[0][1], "n_cand": len(cands), "rank": rank}
 
 
+def rayner_scramble(word: str, rng) -> str:
+    """Rayner et al. (2006) 'Raeding wrods with jubmled lettres': first and last letter fixed, the
+    interior rearranged. The paper's own example is `characters -> chatrecras`, `sentence -> sencetne`,
+    `have -> hvae`. For len <= 3 the word is unchanged, which is what the constraint implies."""
+    if len(word) <= 3:
+        return word
+    mid = list(word[1:-1])
+    rng.shuffle(mid)
+    return word[0] + "".join(mid) + word[-1]
+
+
+def rayner_transpose(word: str) -> str:
+    """The adjacent-pair variant of the same manipulation: swap interior letter pairs, first/last fixed."""
+    if len(word) <= 3:
+        return word
+    m = list(word[1:-1])
+    for i in range(0, len(m) - 1, 2):
+        m[i], m[i + 1] = m[i + 1], m[i]
+    return word[0] + "".join(m) + word[-1]
+
+
 def content_words(s: str) -> list[str]:
     return [w for w in re.findall(r"[A-Za-z][A-Za-z'-]*", s) if len(w) >= 3]
 
@@ -301,6 +322,8 @@ def main() -> int:
     ap = argparse.ArgumentParser(description=(__doc__ or "").split("\n")[0])
     ap.add_argument("--build-channel", action="store_true")
     ap.add_argument("--demo", type=int, metavar="N", help="show per-item indices on N grid points")
+    ap.add_argument("--anchor", action="store_true",
+                    help="measure the published human condition (Rayner 2006) with the same index")
     ap.add_argument("--self-test", action="store_true",
                     help="known-answer controls: channel and distance primitives")
     args = ap.parse_args()
@@ -331,6 +354,48 @@ def main() -> int:
         save_channel(ch)
         print(f"  channel estimated from the frozen generator: {ch['n_pairs']} corrupted words, "
               f"{ch['counts']} distinct character operations -> {CHANNEL_FILE}")
+        return 0
+
+    if args.anchor:
+        import csv
+        import random
+        rng = random.Random(0)
+        ch = load_channel()
+        vocab = load_vocabulary(20000)
+        pack = sorted((REPO_ROOT / "measurement" / "o1_packs").glob("o1_*_lam005_raterA.csv"))
+        rows = list(csv.DictReader([l for l in pack[0].read_text(encoding="utf-8").splitlines()
+                                    if not l.startswith("#")]))[:60]
+        print("  ANCHOR: the published human condition, measured with the same index")
+        print("  Rayner et al. (2006) - first and last letter fixed, interior rearranged - readers")
+        print("  answered comprehension questions with high accuracy and read ~11% slower. So a")
+        print("  condition at THAT level of disruption is one humans demonstrably handle.")
+        print()
+        for label, fn in (("interior scrambled", rayner_scramble),
+                          ("interior adjacent transposed", rayner_transpose)):
+            idx = []
+            for r in rows:
+                if fn is rayner_scramble:
+                    pert = " ".join(rayner_scramble(w, rng) if len(w) > 3 else w
+                                    for w in re.findall(r"\S+", r["clean"]))
+                else:
+                    pert = " ".join(rayner_transpose(w) if len(w) > 3 else w
+                                    for w in re.findall(r"\S+", r["clean"]))
+                idx.append(item_index(r["clean"], pert, ch, vocab))
+            mr = statistics.mean(x["mean_r"] for x in idx if x["n"])
+            rec = statistics.mean(x["recovered"] for x in idx if x["n"])
+            print(f"    {label:30s} mean_r = {mr:.3f}   recovered = {rec:.3f}")
+        print()
+        print("    grid for comparison (frozen generator):")
+        for lam in GRID:
+            pk = sorted((REPO_ROOT / "measurement" / "o1_packs")
+                        .glob(f"o1_*_lam{int(round(lam * 100)):03d}_raterA.csv"))
+            if not pk:
+                continue
+            rr = list(csv.DictReader([l for l in pk[0].read_text(encoding="utf-8").splitlines()
+                                      if not l.startswith("#")]))[:60]
+            ix = [item_index(x["clean"], x["perturbed"], ch, vocab) for x in rr]
+            print(f"      lambda={lam:<5} mean_r = "
+                  f"{statistics.mean(x['mean_r'] for x in ix if x['n']):.3f}")
         return 0
 
     if args.demo:

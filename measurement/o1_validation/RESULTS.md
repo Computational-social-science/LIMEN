@@ -257,3 +257,40 @@ is a property of the candidate vocabulary and the smoothing, not yet a statement
 `lo` cut needs one more step: a published human result fixing the recoverability level at which readers stop
 being unaffected, carried in as the anchor. Until that is written down, `§12 item 2` stays `λ PENDING` —
 but for the first time the remaining work is **sourcing a threshold**, not building an instrument.
+
+
+---
+
+## 12. The published anchor, and the finding it produced
+
+**Rayner, White, Johnson & Liversedge (2006), "Raeding wrods with jubmled lettres: There is a cost"**
+(*Psychological Science* 17(3)): first and last letter of each word fixed, the interior rearranged.
+Readers answered comprehension questions **with high accuracy**, read **~11 % slower**, and about half
+reported a few words they did not understand — a condition that is **stressed but well within tolerance**.
+
+Scored with the recoverability index, on the same 60 dev items:
+
+| Condition | `mean_r` | `recovered` |
+|---|---|---|
+| Rayner (2006), interior **scrambled** | **0.448** | 0.571 |
+| Rayner (2006), interior **adjacent transposed** | 0.475 | 0.578 |
+| our λ = 0.05 (mildest) | 0.521 | 0.680 |
+| our λ = 0.18 (harshest) | 0.493 | 0.639 |
+
+**Two findings, and the second is the one that matters.**
+
+1. **The readability floor is now anchored on a published human result.** Every grid point is more
+   recoverable than both variants of a condition humans demonstrably handled, so
+   **`lo` accepted iff `mean_r ≥ 0.448`** is satisfied at the smallest grid point, **λ_lo = 0.05**.
+
+2. **The ladder's recoverability range is NARROW.** `mean_r` moves 0.521 → 0.493 across a **3.6×** increase
+   in λ — a **5 % relative** change — while both ends sit comfortably inside human tolerance. The mildest
+   and harshest points are nearly indistinguishable on the dimension O1 exists to calibrate.
+
+**Consequence, following the protocol's own degenerate-case rule.** The response is *not* to extend λ past
+0.18 (forbidden without an amendment) and *not* to loosen the rule. It is to say so: **the action item is on
+the EDIT CLASSES** — `DEFAULT_CLASS_WEIGHTS` and the QWERTY candidate sets in `measurement/typo_noise.py`
+need operations with a larger recoverability cost per edit for `mid` to be genuinely stressed. That is a
+change to the generator and therefore an amendment.
+
+`§12 item 2` stays `λ PENDING`, now blocked on **stimulus strength**, not on an instrument.
