@@ -6,12 +6,12 @@ artifact rebuilds offline in seconds with zero dependency resolution.
 ## STATUS: COMPLETE AND MACHINE-VERIFIED
 
 ```
-source files          : 1  (lean-nhb: NHB/PhaseI/Core.lean, 315 lines)
+source files          : 1  (lean-nhb: NHB/PhaseI/Core.lean, 383 lines)
 lake build            : Build completed successfully (4 jobs)
 errors remaining      : 0      <- MEASURED, not estimated
 sorry / admit / axiom : 0      <- grep AND Lean's own #print axioms, see below
-theorem count         : 15
-theorems machine-checked: 15   <- every one, verified by Lean's kernel
+theorem count         : 17
+theorems machine-checked: 17   <- every one, verified by Lean's kernel
 ```
 
 **These numbers are generated, not typed.** `scripts/check_lean_status_freshness.py` re-derives every
@@ -30,7 +30,7 @@ So the guard asks **Lean's kernel** instead, via `#print axioms`:
 
 ```
 $ python scripts/check_lean_axioms.py
-OK: 15 theorem(s), none depends on sorryAx; allowed axioms only
+OK: 17 theorem(s), none depends on sorryAx; allowed axioms only
     ['Classical.choice', 'Quot.sound', 'propext']
 ```
 
@@ -96,6 +96,8 @@ several meet the budget. The mathematics needed to close that is small and entir
 | `least_admissible_is_at_least_as_good` | the guarantee is a maximum, **not** a strict one |
 | `protocol_said_nondecreasing_is_FALSE` | the §6 wording "non-decreasing in τ" is **refuted by `decide`** |
 | `budget_collapses_to_zero_on_small_dev` | protocol's ε=0.05 gives floor(0.05·N)=0 for N<20; least admissible is a shut gate (Coverage=0); not covered by degeneracy clause |
+| `acc_is_not_diagnostic_of_understanding` | Acc falls while conditional accuracy rises on IDENTICAL answer-correctness: §6 eq (7) does not isolate understanding, and H1.1 alone is not diagnostic |
+| `acc_defers_wrong_mono` | under defers-as-errors, Acc is non-increasing in τ for a fixed sample |
 | `the_threshold_below_the_limen_keeps_only_the_error` | τ one step below the fitted limen keeps ONLY the error and nothing else — maximally anti-selective pocket just below the limen |
 
 That last row matters for the paper: it makes explicit that the noisy-channel framing's `P_e` and the

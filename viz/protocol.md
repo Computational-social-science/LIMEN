@@ -3,7 +3,7 @@
 ## A Pre-Registered, Phased Protocol Integrating System One / JEV-Ecosystem Tooling
 
 **Document type:** Detailed research protocol (*Nature Human Behaviour*–oriented framing)  
-**Version:** 1.3 (English typo first, then cross-script / multilingual expansion)  
+**Version:** 1.4 (English typo first, then cross-script / multilingual expansion)  
 **Status:** Draft for staged pre-registration  
 **Compute envelope:** Single consumer GPU admissible; zero paid API on confirmatory path  
 **Primary interface class:** Typed decision models (System One):  
@@ -18,6 +18,7 @@ $\texttt{state} \times \texttt{questions} \mapsto$ distributions over caller-def
 >
 > | Version | Changes | Status |
 > |---|---|---|
+> | **1.4** | (1) equation (7) is stated as **underspecified on deferred trials**, with both readings (defers-as-errors / defers-dropped) named and shown to disagree — machine-checked by `acc_is_not_diagnostic_of_understanding`; (2) **H1.1 paired with the conditional accuracy** in reporting, because the bare inequality is satisfied by confidence deflation alone; (3) §4.4b records what machine-checking changed | **additive; no frozen value moved, no endpoint added** |
 > | **1.3** | (1) LIMEN named as the gate's threshold (§0.3), with what the name does and does not carry; (2) the **claim** stated directly (§0.4); (3) the **limen-shift diagnostic** $\Delta\tau^\star$ added as a *reported, non-confirmatory* quantity (§4.4a) | additive; **no frozen value moved** |
 > | 1.2 | (1) `Q0` is `intent` alone; (2) the pin is decided — Laya English root at `55cf4c4e…`; (3) the `τ*` fitting rule is stated, including when it yields nothing | — |  
 
@@ -48,7 +49,7 @@ $\texttt{state} \times \texttt{questions} \mapsto$ distributions over caller-def
 >    anchor states what is being asked; it does not state how the asking is instrumented.**
 >
 > **Current anchor identity:** `protocol/NHB_Orthographic_Channels_JEV_Research_Protocol.md`,
-> version **1.3**. Its sha256 is recorded in `config/anchor.json` and verified by the drift guard.
+> version **1.4**. Its sha256 is recorded in `config/anchor.json` and verified by the drift guard.
 
 ### 0.1 Thesis
 
@@ -379,7 +380,12 @@ Exact rates fixed in pre-registration after a short calibration so that items re
 
 ### 4.4 Phase I hypotheses
 
-- **H1.1:** $\mathrm{Acc}(\lambda_{\mathrm{mid}}) < \mathrm{Acc}(0)$ on test.  
+- **H1.1:** $\mathrm{Acc}(\lambda_{\mathrm{mid}}) < \mathrm{Acc}(0)$ on test, **co-reported with the
+  conditional accuracy** (§6/v1.4 CHANGE 1). H1.1 as a bare inequality is not diagnostic: by the
+  `lean-nhb` theorem `acc_is_not_diagnostic_of_understanding` it can hold while the accuracy *among
+  committed answers* rises, on two samples with identical answer-correctness. It is retained as a
+  primary endpoint because it is the endpoint a reader expects, and **paired in reporting** with the
+  conditional figure that decides which reading is at work.  
 - **H1.2:** $\mathrm{SilentError@}0.9(\lambda_{\mathrm{mid}}) > \mathrm{SilentError@}0.9(0)$.  
 - **H1.3:** Under dev-fit $\tau^\star$ at $\varepsilon=0.05$, $\mathrm{Coverage}(\lambda_{\mathrm{mid}}) < \mathrm{Coverage}(0)$ on test **or** error among accepted rises (pre-register which is co-primary).
 
@@ -446,12 +452,12 @@ against the control-law claim on its own.** Its only job is to make the gate's o
 
 ### 4.4b What machine-checking changed in this protocol
 
-The mathematics of §3.4, §4.4a and §6 is formalised in `lean-nhb` (`NHB/PhaseI/Core.lean`): **15
+The mathematics of §3.4, §4.4a and §6 is formalised in `lean-nhb` (`NHB/PhaseI/Core.lean`): **17
 theorems, zero errors, zero `sorry`**, each verified by Lean's own kernel through `#print axioms`,
 which fails on `sorryAx` — the axiom Lean substitutes for a proof it could not find. A grep for the
 literal word would not do: it proves a string is absent, not that a theorem is proved.
 
-**The formalisation is not an appendix. It is a feedback loop, and it changed the protocol.** Three
+**The formalisation is not an appendix. It is a feedback loop, and it changed the protocol.** Four
 substantive corrections came out of it, and each is recorded at the point it applies rather than only
 here.
 
@@ -459,7 +465,8 @@ here.
 |---|---|---|
 | §6: `SilentError@τ` is "non-decreasing in τ" | `risk_mono` proves it **falls**: `Risk b ≤ Risk a` when `a ≤ b`. On `{c=3, wrong}, {c=9, wrong}` the count runs `2, 1, 1, 0` at τ = 2, 5, 9, 10 | §6 corrected to **non-increasing**. The wrong direction was load-bearing for the §3.4 argument that τ is pre-registered rather than chosen after seeing the curve, so a reader trusting the old wording reasoned about the gate backwards |
 | §6/v1.2 CHANGE 3: the least admissible threshold maximises coverage | `least_admissible_maximises_coverage` proves it — but only when the ordering is **derived from** least-admissibility. A first version assumed `a ≤ b` and left both `Admissible` hypotheses unused; Lean's linter reported them, which is how the gap surfaced | The rule stands, and its justification is now machine-checked. `least_admissible_is_at_least_as_good` adds the limit the protocol must respect: the guarantee is a **maximum, not a strict maximum** |
-| §6 degeneracy: covered the case where *every* threshold is admissible | `budget_collapses_to_zero_on_small_dev` exhibits the **opposite** degeneracy. With ε = 0.05 and a dev set below twenty trials, `floor(0.05·N) = 0` and the only admissible thresholds are those that admit nothing: `admissibleIn 0 0 12 dev = [10, 11, 12]`, so τ\* = 10 and `Coverage@ε = 0` | §6's degeneracy clause extended to name both ends. See below |
+| §6 degeneracy: covered the case where *every* threshold is admissible | `budget_collapses_to_zero_on_small_dev` exhibits the **opposite** degeneracy. With ε = 0.05 and a dev set below twenty trials, `floor(0.05·N) = 0` and the only admissible thresholds are those that admit nothing: `admissibleIn 0 0 12 dev = [10, 11, 12]`, so τ\* = 10 and `Coverage@ε = 0` | §6's degeneracy clause extended to name both ends. See below | | §6's degeneracy clause extended to name both ends. See below |
+| §6 eq (7): `Acc` is defined by a sum over every trial | `acc_is_not_diagnostic_of_understanding` shows the sum is **underspecified on deferred trials** — and that the two readings move **oppositely** on samples with identical answer-correctness (Acc falls 2/3→1/3 while conditional accuracy rises 2/3→1/1) | §6/v1.4 CHANGE 1 names both readings; **H1.1 is co-reported with the conditional accuracy**, because the bare inequality is satisfied by confidence deflation alone |
 
 **Why the third one matters for §4.4a specifically.** The budget can collapse to zero for two opposite
 reasons — the gate is *too lenient to ever err* (the clean zero floor already measured on this
@@ -542,6 +549,34 @@ $$
 
 where $\mathcal{T}$ is the set of trials at that condition and $y^\star$ is the gold label fixed before the run. **Accuracy is necessary and not sufficient**: a model that answers every item with high confidence and is wrong on a quarter of them scores well here and fails the next metric — the failure this programme exists to separate.
 
+> **v1.4 CHANGE 1 — equation (7) is UNDERSPECIFIED on deferred trials, and the two readings disagree.**
+>
+> The gate of §3.4 produces `defer` as well as `answer`, so on a deferred trial there is **no $\hat y$** and
+> the indicator $\mathbb{1}\{\hat y \neq y^\star\}$ has no value. Equation (7) sums over **every** trial in
+> $\mathcal{T}$ while the gate is free to produce no answer at all, so the estimating equation does not
+> close as written. There are two readings and the protocol never chose:
+>
+> **(a) defers counted as errors** — $\mathrm{Acc}$ becomes the count answered-and-correct over $|\mathcal{T}|$;
+> **(b) defers dropped** — $\mathrm{Acc}$ becomes accuracy **conditional on committing**, a different
+> estimand with a different denominator.
+>
+> **They can move in opposite directions on the same data.** The `lean-nhb` theorem
+> `acc_is_not_diagnostic_of_understanding` exhibits it: two samples carrying the **same correctness
+> profile** — `[true, true, false]` in both, so nothing about any answer changed — and different
+> confidences. Under (a) the score falls from $2/3$ to $1/3$; under (b) it rises from $2/3$ to $1/1$.
+> `acc_defers_wrong_mono` adds that under (a) the score is **non-increasing in $\tau$** for a fixed
+> sample, and §3.4 fixes $\tau$ at 0.80/0.90 across conditions, so this is not a free parameter the
+> analysis can absorb.
+>
+> **What follows, and it is a correction to H1.1 rather than a footnote.** $\mathrm{Acc}(\lambda_{\mathrm{mid}})
+> < \mathrm{Acc}(0)$ is therefore **not diagnostic of understanding on its own**: it is satisfied by an
+> instrument that merely becomes less willing to commit, with nothing wrong with any answer it does
+> commit to. Under reading (a) a pure confidence deflation reproduces the predicted result with the
+> understanding untouched. **Both readings must be reported**, and the run must name which one
+> equation (7) was evaluated under. H1.1 alone cannot separate "the model understood less" from "the
+> model committed less", which is why the gate's own metrics — and not accuracy — carry the thesis
+> (§0.4).
+
 
 $$
 \mathrm{SilentError@}\tau(s,\lambda) = \frac{1}{|\mathcal{T}|}\sum \mathbb{1}\{\hat y \neq y^\star \wedge c \ge \tau\}
@@ -599,7 +634,7 @@ Phase I omits $s$ (always $s_{\mathrm{en}}$).
 > Authority: `docs/PHASE_I_AMENDMENT_2.md` §B1 · `docs/LEAN_FORMALIZATION_STATUS.md` §4.4b.
 >
 > **v1.3 ADDENDUM — the rule's optimality is now machine-checked, and one limit is named.** The
-> `lean-nhb` formalisation builds clean (**15 theorems, zero errors, zero `sorry`**, each verified by
+> `lean-nhb` formalisation builds clean (**17 theorems, zero errors, zero `sorry`**, each verified by
 > Lean's kernel via `#print axioms`, which fails on `sorryAx`). Two of its results bear directly on this
 > rule. `admissible_mono` proves the admissible set is **upward closed**, so an admissible threshold is
 > never unique — the premise of the problem this rule solves. `least_admissible_maximises_coverage`
@@ -738,7 +773,8 @@ amendments.** A protocol item may not be marked satisfied by a downstream docume
 | Field | Value |
 |-------|--------|
 | **Role** | **THE PROGRAMME'S GLOBAL ANCHOR.** All other documents are subordinate; see the note at the head of §0 |
-| Version | **1.3** |
+| Version | **1.4** |
+| v1.4 changes | (1) **eq (7) underspecified on deferred trials** — both readings named and shown to move oppositely on identical correctness (`lean-nhb`: `acc_is_not_diagnostic_of_understanding`); (2) **H1.1 co-reported with conditional accuracy**; (3) §4.4b: what machine-checking changed. **Additive — no frozen value moved and no confirmatory endpoint was added.** |
 | v1.3 changes | (1) **LIMEN** named as the gate's threshold (§0.3), with four things the name explicitly does not assert; (2) the **thesis, mechanism, objective and non-claim** stated directly (§0.4), with a constraint on how the objective may be worded per phase; (3) the **limen-shift diagnostic** $\Delta\tau^\star$ added as a **reported, non-confirmatory** quantity (§4.4a); (4) §3.4 states exactly what the gate reads. **Additive only — no frozen value moved and no confirmatory endpoint was added.** |
 | v1.2 changes | (1) `Q0` is `intent` alone; (2) the pin is decided — Laya English root at `55cf4c4e…`; (3) the `τ*` fitting rule is stated, including when it yields nothing |
 | Staging | **Phase I English typo → Phase II cross-script** |
@@ -751,4 +787,4 @@ amendments.** A protocol item may not be marked satisfied by a downstream docume
 
 ---
 
-*End of protocol v1.3*
+*End of protocol v1.4*
