@@ -56,6 +56,10 @@ GUARDS: list[tuple[str, tuple[str, ...], str]] = [
      "the provenance generator refuses a claim whose proof was never done"),
     ("o1_agent_rater.py", ("--selftest",),
      "the kappa and Spearman implementations answer known-answer cases correctly"),
+    ("build_proof_appendix.py", ("--check",),
+     "the proof appendix matches the Lean source and every theorem has a declared bearing"),
+    ("build_proof_appendix.py", ("--negative-test",),
+     "the appendix generator refuses a theorem with no declared bearing"),
 ]
 
 # Guards that need something outside this repository. They are reported separately rather than mixed
