@@ -211,3 +211,49 @@ the instrument could reach, which is the failure mode the project guards against
 
 `P(s=1) ≈ 0.95` at every λ is reported either way, because it is the measurement that makes the choice
 necessary rather than a preference.
+
+
+---
+
+## 11. The automated mechanism: a noisy-channel recoverability index (no judge, no rater)
+
+The `lo` criterion needs *recovery*, and the LLM rater measures *detection* — which is why it saturated at
+0.900–1.000 on every grid point (§9). The replacement is a mature formula, computable with no model and no
+human labelling.
+
+**The formulation** (Kernighan, Church & Gale 1990; Brill & Moore 2000; standard statement in Jurafsky &
+Martin, *Speech and Language Processing*, app. B):
+
+```
+w_hat = argmax_w  P(surface | w) . P(w)          and the quantity the protocol names is the
+r(w | surface) = P(surface | w) . P(w) / sum_w' P(surface | w') . P(w')      posterior MASS ON THE TRUTH
+```
+
+**Both factors have published or measured sources, and neither is invented here:**
+
+| Factor | Source |
+|---|---|
+| `P(surface \| w)` — the channel | **measured** from this project's own frozen generator: 4000 vocabulary words sampled, aligned by DP, tallied into 507 substitution / 25 insertion / 22 deletion operations, add-k smoothed |
+| `P(w)` — the prior | **published lexical norms**, via the `wordfreq` aggregation of SUBTLEX, Leeds and others (Zipf frequency) |
+
+Using published norms rather than counting our own corpus matters: a prior counted from the same texts being
+rated would make easy words easy by construction.
+
+**The index, on the same 60 dev items and the same eight grid points:**
+
+| λ | 0.05 | 0.06 | 0.07 | 0.08 | 0.12 | 0.14 | 0.16 | 0.18 |
+|---|---|---|---|---|---|---|---|---|
+| `mean_r` | 0.521 | 0.523 | 0.517 | 0.517 | 0.509 | 0.508 | 0.494 | 0.493 |
+| `recovered` | 0.680 | 0.680 | 0.669 | 0.676 | 0.657 | 0.661 | 0.635 | 0.639 |
+
+**It does not saturate, which is the whole point.** `mean_r` declines monotonically across a 3.6× range of λ,
+and the two bands separate: `lo` clusters at 0.517–0.523, `mid` at 0.493–0.509. Compare the rater's
+0.900–1.000, flat at every dose. The formula sees *how much* the corruption costs recovery, not merely *that*
+it is there.
+
+**What is NOT yet done, stated plainly.** The index is **not yet anchored to a published human threshold**,
+so it currently names the *ordering* and not the *cut*. Its absolute level (~0.52 even at the mildest rate)
+is a property of the candidate vocabulary and the smoothing, not yet a statement about a reader. Setting the
+`lo` cut needs one more step: a published human result fixing the recoverability level at which readers stop
+being unaffected, carried in as the anchor. Until that is written down, `§12 item 2` stays `λ PENDING` —
+but for the first time the remaining work is **sourcing a threshold**, not building an instrument.

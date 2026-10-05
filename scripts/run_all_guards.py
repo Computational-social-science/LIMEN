@@ -60,6 +60,8 @@ GUARDS: list[tuple[str, tuple[str, ...], str]] = [
      "the proof appendix matches the Lean source and every theorem has a declared bearing"),
     ("build_proof_appendix.py", ("--negative-test",),
      "the appendix generator refuses a theorem with no declared bearing"),
+    ("o1_recoverability.py", ("--self-test",),
+     "the channel's distance and alignment primitives answer known cases correctly"),
 ]
 
 # Guards that need something outside this repository. They are reported separately rather than mixed
