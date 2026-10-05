@@ -125,3 +125,39 @@ The script now translates `π` into accuracy points, and the conclusion reverses
 
 **`N = 652` needs no erratum**, and the honest description of what it buys is: 80 % power at a 5.4-point
 effect, with the observed effect roughly twice that.
+
+
+---
+
+## 6. All three frozen seeds, and both grid endpoints — the directions are seed-robust
+
+2,520 records (280 dev items × λ ∈ {0, 0.05, 0.18} × seeds {0,1,2}) in **69.9 s, 0 failures**.
+
+| λ | seed | accuracy | SilentError@0.9 | Coverage@0.9 | median `c` |
+|---|---|---|---|---|---|
+| 0.00 | 0/1/2 | **0.8750** | 0.0357 | 0.4321 | 0.8859 |
+| 0.05 | 0 | 0.9071 | 0.0321 | 0.3929 | 0.8573 |
+| 0.05 | 1 | 0.8643 | 0.0179 | 0.3821 | 0.8583 |
+| 0.05 | 2 | 0.8714 | 0.0357 | 0.4107 | 0.8704 |
+| 0.18 | 0 | 0.7571 | 0.0107 | 0.2179 | 0.7650 |
+| 0.18 | 1 | 0.7464 | 0.0214 | 0.2107 | 0.7386 |
+| 0.18 | 2 | 0.7679 | 0.0143 | 0.2179 | 0.7499 |
+
+**Three things this adds, and one of them is a self-check that passes.**
+
+1. **The clean condition is byte-identical across seeds** — 0.8750 / 0.0357 / 0.4321 three times. That is
+   correct (`λ = 0` introduces no noise, so the seed cannot matter) and it is an internal consistency check
+   on the generator and the pipeline: had the clean cell moved with the seed, the noise generator would have
+   been perturbing something at λ = 0.
+
+2. **`λ_lo = 0.05` does not degrade performance at all.** Its accuracy (0.8643–0.9071, mean 0.881) is
+   statistically indistinguishable from clean (0.8750), and its seed spread is 4.3 points wide. **So `lo` is
+   a genuinely unperturbed condition**, which is exactly what the calibration selected it for — the anchor
+   said "readable", and the model agrees.
+
+3. **Every direction is consistent across all three seeds.** H1.1's direction holds (λ_mid 0.746–0.768
+   against clean 0.875); **H1.2's is contradicted at both noisy levels and in every seed** (0.0357 → 0.029 →
+   0.015); H1.3's holds (0.432 → 0.395 → 0.215). **The H1.2 contradiction is therefore not a seed artefact**,
+   which is the strongest form the finding could take before the confirmatory run.
+
+**Confidence contamination re-checked over the full sample: 0 of 2,520 rows carry the substituted constant.**
