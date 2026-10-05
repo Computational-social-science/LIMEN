@@ -728,7 +728,13 @@ def mode_calibrate(model: str | None, thinking: bool | None) -> int:
             print("           to FIXED by an amendment recording these two values.")
     (VALIDATION / "calibration.json").write_text(json.dumps(out, indent=2), encoding="utf-8")
     print(f"\n  written to {VALIDATION / 'calibration.json'}")
-    return 0 if out.get("mid") else 1
+    # EXIT CODES ARE DELIBERATELY DIFFERENT. 0 = a grid point satisfied the rule. 4 = the run completed and
+    # NO grid point did, which is a RESULT, not a failure - and a caller that reads 4 as a crash would
+    # retry it, or suppress it, instead of reading the finding. 1 is reserved for an actual error.
+    if out.get("mid"):
+        return 0
+    print("\n  exit 4: the run completed; no grid point satisfies the rule. This is a finding, not a crash.")
+    return 4
 
 
 def main() -> int:
@@ -777,7 +783,9 @@ def _run_modes(args, rc: int) -> int:
     if args.pairwise_lambda:
         rc |= mode_pairwise_lambda(args.pairwise_lambda, args.model, th)
     if args.calibrate:
-        rc |= mode_calibrate(args.model, th)
+        # `--calibrate` owns its exit code: 4 means "ran to completion, no grid point satisfies the rule".
+        # OR-ing it into the generic code would fold a finding into a failure mask.
+        return mode_calibrate(args.model, th)
     if args.determinism:
         rows = [json.loads(l) for l in (VALIDATION / "jfleg_human_labels.jsonl")
                 .read_text(encoding="utf-8").splitlines()][::max(1, 1501 // args.determinism)][:args.determinism]
