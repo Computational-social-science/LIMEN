@@ -3,7 +3,7 @@
 ## A Pre-Registered, Phased Protocol Integrating System One / JEV-Ecosystem Tooling
 
 **Document type:** Detailed research protocol (*Nature Human Behaviour*–oriented framing)  
-**Version:** 1.5 (English typo first, then cross-script / multilingual expansion)  
+**Version:** 1.6 (English typo first, then cross-script / multilingual expansion)  
 **Status:** Draft for staged pre-registration  
 **Compute envelope:** Single consumer GPU admissible; zero paid API on confirmatory path  
 **Primary interface class:** Typed decision models (System One):  
@@ -18,6 +18,7 @@ $\texttt{state} \times \texttt{questions} \mapsto$ distributions over caller-def
 >
 > | Version | Changes | Status |
 > |---|---|---|
+> | **1.6** | (1) **§4.4a corrected**: at the clean end the least-admissible rule returns a **design constant**, not an estimate — `Δτ*` is one estimate minus a constant and its clean endpoint carries no sampling variability; (2) the `Δτ* < 0` branch is **normally unattainable** and must be checked, not assumed; (3) `Δτ* = 0` **does not identify "no disturbance"** — a tolerance-absorbed disturbance reports identically | **additive; §4.4a stays reported and non-confirmatory** |
 > | **1.5** | (1) **§6.1 defines the conditional quantities** — `CondErr`/`CondAcc`, the two things the hypotheses name and eqs (7)–(9) never defined; (2) **§4.5 states the confirmatory family in the protocol** instead of by reference to the OSF entry; (3) **a declared dependency**: H1.3 disjunct 2 is the complement of the H1.1 co-report, so they are not independent evidence; (4) the H1.1 co-report is fixed as **descriptive, not a fourth test** | **additive; family unchanged at three tests, no frozen value moved** |
 > | **1.4** | (1) equation (7) is stated as **underspecified on deferred trials**, with both readings (defers-as-errors / defers-dropped) named and shown to disagree — machine-checked by `acc_is_not_diagnostic_of_understanding`; (2) **H1.1 paired with the conditional accuracy** in reporting, because the bare inequality is satisfied by confidence deflation alone; (3) §4.4b records what machine-checking changed | **additive; no frozen value moved, no endpoint added** |
 > | **1.3** | (1) LIMEN named as the gate's threshold (§0.3), with what the name does and does not carry; (2) the **claim** stated directly (§0.4); (3) the **limen-shift diagnostic** $\Delta\tau^\star$ added as a *reported, non-confirmatory* quantity (§4.4a) | additive; **no frozen value moved** |
@@ -440,8 +441,42 @@ $$
 
 where $\Delta\tau^\star(\lambda)$ is the movement of the **fitted gate threshold** between clean and
 noisy input, and $\Delta\tau^\star(s_1)$ the same quantity across channels at matched noise. Note what
-is differenced: **two estimated thresholds, not two measurements of one thing**, which is why the
-status note below makes this diagnostic rather than a test. The second form is **Phase II only**;
+is differenced. The protocol previously said "**two estimated thresholds, not two measurements of one
+thing**". That is only sometimes true, and the case where it is false is the case this study is in.
+
+> **v1.6 CHANGE 1 — at the clean end the selector returns a DESIGN CONSTANT, not an estimate.**
+>
+> §6/v1.2 CHANGE 3 takes the **least** admissible threshold, because the tie-break maximises coverage. So
+> whenever the clean arm's dev silent-error at the floor already satisfies $\varepsilon$, the clean
+> selector returns the floor — for every $\varepsilon$ and every grid, by construction. The pilot measured
+> the clean arm's silent-error at **0.0000**, so this is the regime the study is actually in.
+>
+> `lean-nhb` proves it (`clean_pins_at_floor`) and proves the consequence
+> (`delta_tau_reduces_to_the_noisy_selector`): with the clean arm at the floor, $\Delta\tau^\star$ is the
+> **noisy selector minus the constant 0** — one estimate minus a design constant. There is no sampling
+> variability at the clean end to average over, and no bootstrap at the clean end to run.
+>
+> **Two further consequences, both of which change how a number is read.**
+>
+> **(a) The "tightens" branch is normally unattainable.** The floor is the *least* admissible threshold,
+> so the noisy selector can only sit at or above it: $\Delta\tau^\star \ge 0$. A negative value requires
+> the **clean** arm to be itself above the floor. Whether it is must therefore be **checked and reported**
+> — otherwise a $\Delta\tau^\star$ that had no room to go negative is read as an instrument that did not
+> tighten, when it never had the room to.
+>
+> **(b) A zero is not a measurement of the instrument.** `same_diagnostic_from_different_arms` exhibits
+> two noisy arms with **different** dev silent-error curves returning the **same** $\Delta\tau^\star = 0$:
+> one where nothing happens at all, and one where a real disturbance sits inside the tolerance band
+> $\varepsilon$. So $\Delta\tau^\star = 0$ means "noise did not move the fitted limen **out of the tolerance
+> band**", not "noise left the gate alone". §4.4a already applies exactly this discipline at the ends —
+> *a limen that cannot be located is not a limen at zero, it is an unidentifiable limen*. The same
+> discipline is needed in the middle, and the middle is where a null result will land.
+>
+> **What is required, and it is a reporting requirement rather than a change of quantity.** Alongside
+> $\Delta\tau^\star$, report the **dev silent-error curve itself** across the grid at both ends, so that a
+> zero can be read against what was excluded rather than taken as an absence. This costs nothing — the
+> curve is already computed to fit the threshold — and it is the only thing that makes the diagnostic's
+> central value interpretable. The second form is **Phase II only**;
 Phase I reports the first, at $s = s_{\mathrm{en}}$ alone.
 
 **Status: a diagnostic, NOT a confirmatory endpoint.** This is stated in the protocol because the
@@ -463,7 +498,9 @@ at both ends are reported in its place. **A limen that cannot be located is not 
 an unidentifiable limen**, and the two must never be reported the same way.
 
 **Interpretation boundaries.** A $\Delta\tau^\star < 0$ (the fitted limen tightens under noise) and a
-$\Delta\tau^\star > 0$ (it loosens) are **both compatible with the confirmatory hypotheses**, because
+$\Delta\tau^\star > 0$ (it loosens) are **both compatible with the confirmatory hypotheses** — *where the
+negative branch is attainable at all; when the clean arm sits at the floor it is not, and that must be
+reported rather than inferred from the sign (v1.6 CHANGE 1a)* —, because
 H1.2 and H1.3 are stated on `SilentError@τ` and `Coverage@ε` at **fixed** probes, not on the fitted
 limen. **This diagnostic therefore cannot rescue or sink H1.1–H1.3, and it is not evidence for or
 against the control-law claim on its own.** Its only job is to make the gate's own movement visible.
@@ -472,12 +509,12 @@ against the control-law claim on its own.** Its only job is to make the gate's o
 
 ### 4.4b What machine-checking changed in this protocol
 
-The mathematics of §3.4, §4.4a and §6 is formalised in `lean-nhb` (`NHB/PhaseI/Core.lean`): **19
+The mathematics of §3.4, §4.4a and §6 is formalised in `lean-nhb` (`NHB/PhaseI/Core.lean`): **22
 theorems, zero errors, zero `sorry`**, each verified by Lean's own kernel through `#print axioms`,
 which fails on `sorryAx` — the axiom Lean substitutes for a proof it could not find. A grep for the
 literal word would not do: it proves a string is absent, not that a theorem is proved.
 
-**The formalisation is not an appendix. It is a feedback loop, and it changed the protocol.** Five
+**The formalisation is not an appendix. It is a feedback loop, and it changed the protocol.** Six
 substantive corrections came out of it, and each is recorded at the point it applies rather than only
 here.
 
@@ -488,6 +525,7 @@ here.
 | §6 degeneracy: covered the case where *every* threshold is admissible | `budget_collapses_to_zero_on_small_dev` exhibits the **opposite** degeneracy. With ε = 0.05 and a dev set below twenty trials, `floor(0.05·N) = 0` and the only admissible thresholds are those that admit nothing: `admissibleIn 0 0 12 dev = [10, 11, 12]`, so τ\* = 10 and `Coverage@ε = 0` | §6's degeneracy clause extended to name both ends. See below | | §6's degeneracy clause extended to name both ends. See below |
 | §6 eq (7): `Acc` is defined by a sum over every trial | `acc_is_not_diagnostic_of_understanding` shows the sum is **underspecified on deferred trials** — and that the two readings move **oppositely** on samples with identical answer-correctness (Acc falls 2/3→1/3 while conditional accuracy rises 2/3→1/1) | §6/v1.4 CHANGE 1 names both readings; **H1.1 is co-reported with the conditional accuracy**, because the bare inequality is satisfied by confidence deflation alone |
 | §4.4 H1.3 names "error among accepted" and §4.5 defines the family "as defined in the OSF entry" | `cond_error_complements_cond_accuracy` shows H1.3's second disjunct is the **complement of the H1.1 co-report** — one quantity, so not independent evidence; and a family defined outside the protocol cannot be checked against the family tested | §6.1 defines both quantities; §4.5 states the family in the protocol and declares the dependency; §12 item 9 fixes the co-report as descriptive rather than a fourth test |
+| §4.4a: "two estimated thresholds, not two measurements of one thing" | `clean_pins_at_floor` + `delta_tau_reduces_to_the_noisy_selector` show that with the clean arm at the floor — the measured regime, silent-error 0.0000 — the clean selector returns a **design constant**, so `Δτ*` is one estimate minus a constant; `same_diagnostic_from_different_arms` shows `Δτ*=0` cannot distinguish no disturbance from a tolerance-absorbed one | v1.6 CHANGE 1 corrects the sentence and adds a reporting requirement: the dev silent-error curve is reported alongside, so a zero is read against what was excluded |
 
 **Why the third one matters for §4.4a specifically.** The budget can collapse to zero for two opposite
 reasons — the gate is *too lenient to ever err* (the clean zero floor already measured on this
@@ -679,7 +717,7 @@ Phase I omits $s$ (always $s_{\mathrm{en}}$).
 > Authority: `docs/PHASE_I_AMENDMENT_2.md` §B1 · `docs/LEAN_FORMALIZATION_STATUS.md` §4.4b.
 >
 > **v1.3 ADDENDUM — the rule's optimality is now machine-checked, and one limit is named.** The
-> `lean-nhb` formalisation builds clean (**19 theorems, zero errors, zero `sorry`**, each verified by
+> `lean-nhb` formalisation builds clean (**22 theorems, zero errors, zero `sorry`**, each verified by
 > Lean's kernel via `#print axioms`, which fails on `sorryAx`). Two of its results bear directly on this
 > rule. `admissible_mono` proves the admissible set is **upward closed**, so an admissible threshold is
 > never unique — the premise of the problem this rule solves. `least_admissible_maximises_coverage`
@@ -818,7 +856,8 @@ amendments.** A protocol item may not be marked satisfied by a downstream docume
 | Field | Value |
 |-------|--------|
 | **Role** | **THE PROGRAMME'S GLOBAL ANCHOR.** All other documents are subordinate; see the note at the head of §0 |
-| Version | **1.5** |
+| Version | **1.6** |
+| v1.6 changes | (1) §4.4a's "two estimated thresholds" corrected — the clean endpoint is a design constant; (2) the tightening branch is normally unattainable; (3) `Δτ*=0` is an identification failure, not an absence — report the dev silent-error curve alongside. **Additive.** |
 | v1.5 changes | (1) §6.1 conditional quantities defined, eq (10); (2) §4.5 Holm family stated in the protocol; (3) H1.3/H1.1 declared dependency; (4) H1.1 co-report fixed as descriptive. **Additive — the family stays at three tests.** |
 | v1.4 changes | (1) **eq (7) underspecified on deferred trials** — both readings named and shown to move oppositely on identical correctness (`lean-nhb`: `acc_is_not_diagnostic_of_understanding`); (2) **H1.1 co-reported with conditional accuracy**; (3) §4.4b: what machine-checking changed. **Additive — no frozen value moved and no confirmatory endpoint was added.** |
 | v1.3 changes | (1) **LIMEN** named as the gate's threshold (§0.3), with four things the name explicitly does not assert; (2) the **thesis, mechanism, objective and non-claim** stated directly (§0.4), with a constraint on how the objective may be worded per phase; (3) the **limen-shift diagnostic** $\Delta\tau^\star$ added as a **reported, non-confirmatory** quantity (§4.4a); (4) §3.4 states exactly what the gate reads. **Additive only — no frozen value moved and no confirmatory endpoint was added.** |
@@ -833,4 +872,4 @@ amendments.** A protocol item may not be marked satisfied by a downstream docume
 
 ---
 
-*End of protocol v1.5*
+*End of protocol v1.6*

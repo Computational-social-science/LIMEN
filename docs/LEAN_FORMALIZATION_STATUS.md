@@ -6,12 +6,12 @@ artifact rebuilds offline in seconds with zero dependency resolution.
 ## STATUS: COMPLETE AND MACHINE-VERIFIED
 
 ```
-source files          : 1  (lean-nhb: NHB/PhaseI/Core.lean, 417 lines)
+source files          : 1  (lean-nhb: NHB/PhaseI/Core.lean, 482 lines)
 lake build            : Build completed successfully (4 jobs)
 errors remaining      : 0      <- MEASURED, not estimated
 sorry / admit / axiom : 0      <- grep AND Lean's own #print axioms, see below
-theorem count         : 19
-theorems machine-checked: 19   <- every one, verified by Lean's kernel
+theorem count         : 22
+theorems machine-checked: 22   <- every one, verified by Lean's kernel
 ```
 
 **These numbers are generated, not typed.** `scripts/check_lean_status_freshness.py` re-derives every
@@ -30,7 +30,7 @@ So the guard asks **Lean's kernel** instead, via `#print axioms`:
 
 ```
 $ python scripts/check_lean_axioms.py
-OK: 19 theorem(s), none depends on sorryAx; allowed axioms only
+OK: 22 theorem(s), none depends on sorryAx; allowed axioms only
     ['Classical.choice', 'Quot.sound', 'propext']
 ```
 
@@ -100,6 +100,9 @@ several meet the budget. The mathematics needed to close that is small and entir
 | `acc_defers_wrong_mono` | under defers-as-errors, Acc is non-increasing in τ for a fixed sample |
 | `cond_error_complements_cond_accuracy` | H1.3's "error among accepted" and the H1.1 co-report are ONE quantity — the confirmatory family has a declared dependency, not two independent chances |
 | `one_movement_three_readings` | one confidence movement drives Acc **down**, CondErr **down**, CondAcc **up**, on identical answer-correctness |
+| `clean_pins_at_floor` | with a clean arm at the floor the selector returns a **design constant** for every ε — the clean endpoint of Δτ* is not an estimate |
+| `delta_tau_reduces_to_the_noisy_selector` | so Δτ* is one estimate minus a constant, not two estimates |
+| `same_diagnostic_from_different_arms` | Δτ*=0 cannot distinguish no disturbance from a tolerance-absorbed one |
 | `the_threshold_below_the_limen_keeps_only_the_error` | τ one step below the fitted limen keeps ONLY the error and nothing else — maximally anti-selective pocket just below the limen |
 
 That last row matters for the paper: it makes explicit that the noisy-channel framing's `P_e` and the
