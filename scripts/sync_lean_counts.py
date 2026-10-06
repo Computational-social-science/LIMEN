@@ -32,7 +32,11 @@ import sys
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parent.parent
 LEAN_ROOT = REPO_ROOT.parent / "lean-nhb"
-CORE = LEAN_ROOT / "NHB" / "PhaseI" / "Core.lean"
+# EVERY KERNEL SOURCE. Counting only Core.lean reported 23 theorems while the kernel holds 27, and reported
+# the source-file count as 1 - a number the reader has no way to falsify from the document. The count is now
+# derived from the same glob the kernel checker uses, so the two cannot disagree about what the kernel is.
+PHASE = LEAN_ROOT / "NHB" / "PhaseI"
+SOURCES = sorted(p for p in PHASE.glob("*.lean") if not p.name.startswith("__"))
 
 STATUS = REPO_ROOT / "docs" / "LEAN_FORMALIZATION_STATUS.md"
 ALSO = [
@@ -46,10 +50,12 @@ HISTORY_MARKERS = ("> | **1.", "> |--", "| v1.", "| v 1.")
 
 
 def derive() -> dict:
-    text = CORE.read_text(encoding="utf-8")
+    texts = {p.name: p.read_text(encoding="utf-8") for p in SOURCES}
     out = {
-        "theorems": len(re.findall(r"^theorem\s", text, re.M)),
-        "lines": len(text.splitlines()),
+        "theorems": sum(len(re.findall(r"^theorem\s", t, re.M)) for t in texts.values()),
+        "lines": sum(len(t.splitlines()) for t in texts.values()),
+        "files": len(texts),
+        "per_file": {k: len(re.findall(r"^theorem\s", v, re.M)) for k, v in texts.items()},
     }
     try:
         proc = subprocess.run(
@@ -63,7 +69,8 @@ def derive() -> dict:
     return out
 
 
-def rewrite(path: pathlib.Path, n: int, nl: int, checked: int | None, apply: bool) -> list[str]:
+def rewrite(path: pathlib.Path, n: int, nl: int, checked: int | None, apply: bool,
+            nf: int = 1) -> list[str]:
     before = path.read_text(encoding="utf-8")
     after = before
     skipped: list[str] = []
@@ -78,7 +85,12 @@ def rewrite(path: pathlib.Path, n: int, nl: int, checked: int | None, apply: boo
         return f"{n}{m.group(1)}"
 
     after = re.sub(r"\d+(\s*\ntheorems|\s+theorems)", sub_theorems, after)
-    after = re.sub(r"Core\.lean, \d+ lines", f"Core.lean, {nl} lines", after)
+    # THE SOURCE-FILE COUNT AND THE PATH FORM ARE DERIVED TOO, not typed: "1 file, Core.lean, 507 lines"
+    # was true of the file the script happened to read and false about the kernel, and a reader had no way
+    # to tell which of the two it meant.
+    after = re.sub(r"source files\s*: \d+", f"source files          : {nf}", after)
+    after = re.sub(r"NHB/PhaseI/[A-Za-z0-9_]+\.lean, \d+ lines",
+                   f"NHB/PhaseI/*.lean, {nl} lines", after)
     after = re.sub(r"theorem count\s*: \d+", f"theorem count         : {n}", after)
     if checked is not None:
         after = re.sub(r"theorems machine-checked: \d+", f"theorems machine-checked: {checked}", after)
@@ -100,8 +112,12 @@ def main() -> int:
     args = ap.parse_args()
 
     d = derive()
-    print(f"  derived from {CORE.relative_to(LEAN_ROOT)} + the kernel checker:")
-    print(f"    theorems={d['theorems']}  lines={d['lines']}  kernel_checked={d['kernel_checked']}")
+    print(f"  derived from {len(SOURCES)} source file(s) under {PHASE.relative_to(LEAN_ROOT)} "
+          f"+ the kernel checker:")
+    print(f"    theorems={d['theorems']}  lines={d['lines']}  files={d['files']}  "
+          f"kernel_checked={d['kernel_checked']}")
+    for k, v in d["per_file"].items():
+        print(f"      {k}: {v} theorem(s)")
     if d["kernel_checked"] is not None and d["kernel_checked"] != d["theorems"]:
         print("    [WARN] the kernel checked a different number of theorems than the source declares.")
         print("           converging on the SOURCE count would hide a genuinely uncheckable theorem.")
@@ -112,7 +128,8 @@ def main() -> int:
     skipped: list[str] = []
     for path in [STATUS, *ALSO]:
         if path.exists():
-            skipped += rewrite(path, d["theorems"], d["lines"], d["kernel_checked"], not args.dry_run)
+            skipped += rewrite(path, d["theorems"], d["lines"], d["kernel_checked"],
+                               not args.dry_run, d["files"])
 
     if skipped:
         print("\n  skipped, and reported rather than silently left:")

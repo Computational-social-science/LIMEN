@@ -50,8 +50,24 @@ def theorem_names(lean_file: pathlib.Path) -> list[str]:
     return names
 
 
+def module_and_prefix(lean_file: pathlib.Path) -> tuple[str, str]:
+    """The module to import and the namespace its theorems live in - BOTH READ FROM THE FILE.
+
+    These were hardcoded to Core.lean's values (`import NHB.PhaseI.Core`, prefix `PhaseI.Selective`), which was
+    correct for exactly one file. The moment the checker covered a second one, the query was built correctly
+    and asked for theorems under the WRONG namespace, so Lean reported every one of them as an unknown
+    constant - and the checker refused to interpret empty output as "axiom-free", which is why this was
+    visible instead of silently passing.
+    """
+    stem = lean_file.stem
+    module = f"NHB.PhaseI.{stem}"
+    text = lean_file.read_text(encoding="utf-8")
+    namespaces = re.findall(r"^namespace\s+(\S+)", text, re.M)
+    return module, ".".join(namespaces)
+
+
 def print_axioms(lean_file: pathlib.Path, lean_root: pathlib.Path,
-                 prefix: str = "PhaseI.Selective") -> dict[str, list[str]]:
+                 prefix: str | None = None) -> dict[str, list[str]]:
     """Ask Lean itself which axioms each theorem depends on.
 
     `lean_root` is the project root (the directory holding lakefile.lean) and is passed in rather
@@ -61,9 +77,12 @@ def print_axioms(lean_file: pathlib.Path, lean_root: pathlib.Path,
     and the import failed. Deriving a path from a file's location is only correct when you know how
     deep the file sits; here that is a property of the caller, not of the file.
     """
-    query = ["import NHB.PhaseI.Core"]  # the lean-nhb module
+    module, found_prefix = module_and_prefix(lean_file)
+    if prefix is None:
+        prefix = found_prefix
+    query = [f"import {module}"]
     for n in theorem_names(lean_file):
-        query.append(f"#print axioms {prefix}.{n}")
+        query.append(f"#print axioms {prefix}.{n}" if prefix else f"#print axioms {n}")
     script = "\n".join(query) + "\n"
 
     scratch = lean_file.parent / "__axiom_query__.lean"
@@ -242,25 +261,47 @@ def main() -> int:
     args = ap.parse_args()
 
     root = pathlib.Path(resolve_lean_root(args.lean_root)).resolve()
-    core = root / "NHB" / "PhaseI" / "Core.lean"
+    phase = root / "NHB" / "PhaseI"
+    # EVERY KERNEL SOURCE, NOT ONE FILE. This checker read only Core.lean, so ScaleFree.lean - whose theorem
+    # is the design justification for a pre-registered hypothesis, and whose zero-axiom status is the strongest
+    # claim in the formalisation - was outside every guard. A claim that no check enforces is the defect class
+    # this repository exists to prevent, and it had been sitting inside the repository's own verification path.
+    sources = sorted(p for p in phase.glob("*.lean") if not p.name.startswith("__"))
+    core = phase / "Core.lean"
 
     if not core.exists():
         print(f"[FAIL] {core} not found")
+        return 1
+    if not sources:
+        print(f"[FAIL] no .lean source found under {phase}")
         return 1
 
     if args.negative_test:
         return negative_test(root)
 
-    n = theorem_names(core)
-    findings = check(root, core)
+    total = 0
+    findings: list[str] = []
+    per_file: list[tuple[pathlib.Path, int]] = []
+    for f in sources:
+        names = theorem_names(f)
+        fs = check(root, f)
+        per_file.append((f, len(names)))
+        total += len(names)
+        findings += [f"{f.name}: {x}" for x in fs]
+
     if findings:
-        print(f"AXIOM FAIL: {len(findings)} finding(s) over {len(n)} theorem(s)")
+        print(f"AXIOM FAIL: {len(findings)} finding(s) over {total} theorem(s) in {len(sources)} file(s)")
         for f in findings:
             print("  " + f)
         return 1
 
-    print(f"OK: {len(n)} theorem(s), none depends on {FORBIDDEN}; "
+    # THE FIRST LINE IS A PARSE CONTRACT: three other scripts read `OK: N theorem(s), none depends on`.
+    # Adding ` in 2 file(s)` in the middle of it broke all three at once - a checker whose output shape is
+    # consumed elsewhere has an interface, and changing the interface is a change to every consumer.
+    print(f"OK: {total} theorem(s), none depends on {FORBIDDEN}; "
           f"allowed axioms only {sorted(ALLOWED)}")
+    for f, k in per_file:
+        print(f"    {f.name}: {k} theorem(s), kernel-checked")
     return 0
 
 

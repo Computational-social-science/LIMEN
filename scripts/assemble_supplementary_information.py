@@ -44,6 +44,11 @@ FIGURES = [
     ("fig1_stage2_hypotheses", "The three pre-registered hypotheses across the noise grid"),
     ("fig2_stage2_error_destination", "Where the errors go: the gate rejects most of what noise breaks"),
     ("fig3_stage2_gate_separation", "Why the gate separates better under noise"),
+    ("fig4_stage2_scale_free", "The scale-free property, measured on the confirmatory record"),
+    ("fig5_stage2_proof_graph", "The proof dependency graph, parsed from the kernel source"),
+    ("fig6_stage2_corrections",
+     "The formalisation corrected the protocol, and the corrections were kept"),
+    ("fig7_stage2_evidence_chain", "What the manuscript's claims rest on"),
 ]
 
 

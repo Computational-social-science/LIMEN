@@ -121,8 +121,13 @@ STATUS_MARK = {"PROVED": "**PROVED**", "MEASURED": "**MEASURED**",
 
 def verified_theorems() -> set[str]:
     """Names the kernel actually checked. Source of truth is the Lean file plus a clean axiom run."""
-    src = (LEAN_ROOT / "NHB" / "PhaseI" / "Core.lean").read_text(encoding="utf-8")
-    names = set(re.findall(r"^theorem\s+(\w+)", src, re.M))
+    # EVERY SOURCE, from the same glob the axiom checker uses. Reading only Core.lean made this generator
+    # disagree with the checker it calls - it counted 23 and the checker reported 27 - and its own guard then
+    # refused to publish. The refusal was right; the second source of truth was the defect.
+    sources = sorted(q for q in (LEAN_ROOT / "NHB" / "PhaseI").glob("*.lean")
+                     if not q.name.startswith("__"))
+    names = {n for q in sources
+             for n in re.findall(r"^theorem\s+(\w+)", q.read_text(encoding="utf-8"), re.M)}
     proc = subprocess.run([sys.executable, "-B", str(REPO_ROOT / "scripts" / "check_lean_axioms.py")],
                           capture_output=True, text=True, cwd=REPO_ROOT, timeout=600)
     m = re.search(r"OK: (\d+) theorem\(s\)", proc.stdout)

@@ -28,6 +28,7 @@ import math
 import pathlib
 import statistics
 import sys
+import re  # used by the caption merge; its absence was a NameError that a syntax check cannot see
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parent.parent
 TRIALS = REPO_ROOT / "measurement" / "out" / "confirm_trials.jsonl"
@@ -219,8 +220,19 @@ def main() -> int:
                     ""]
         for stem, text in caps.items():
             combined += [f"## {stem}", "", text, ""]
-        (FIG_DIR / "FIGURE_CAPTIONS.md").write_text("\n".join(combined), encoding="utf-8", newline="\n")
-        print(f"    wrote viz/figures/FIGURE_CAPTIONS.md and 3 per-figure caption files")
+        # MERGE, DO NOT REPLACE. This file is shared: the formalisation figures live in it too, and writing
+        # the whole file from this script's three figures deleted four captions belonging to another builder
+        # the moment it ran. One owner per SECTION, and this script owns only its own.
+        path = FIG_DIR / "FIGURE_CAPTIONS.md"
+        mine = {m.group(1) for m in re.finditer(r"^## (\S+)", "\n".join(combined), re.M)}
+        foreign: list[str] = []
+        if path.exists():
+            blocks = re.split(r"(?=^## )", path.read_text(encoding="utf-8"), flags=re.M)
+            foreign = [b.rstrip() + "\n" for b in blocks
+                       if b.startswith("## ") and b[3:].split("\n", 1)[0].strip() not in mine]
+        path.write_text("\n".join(combined).rstrip() + "\n\n" + "\n".join(foreign),
+                        encoding="utf-8", newline="\n")
+        print(f"    wrote viz/figures/FIGURE_CAPTIONS.md (3 own + {len(foreign)} preserved) and 3 per-figure caption files")
 
     def finish(fig, stem: str):
         """Write all four formats the journal submission needs, at 600 dpi.

@@ -35,7 +35,7 @@ also the least committal: it is the threshold closest to answering, so it report
 
 ### The mathematical content is now machine-checked
 
-The `lean-nhb` project builds clean: **23 theorems, zero errors, zero `sorry`**, and every one of the
+The `lean-nhb` project builds clean: **27 theorems, zero errors, zero `sorry`**, and every one of the
 twelve is verified by Lean's own kernel via `#print axioms` (`scripts/check_lean_axioms.py`), which
 fails on `sorryAx` — the axiom Lean substitutes for a proof it could not find. A grep for the literal
 word would not do: it proves a string is absent, not that a theorem is proved.

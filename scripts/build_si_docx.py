@@ -98,6 +98,23 @@ def harvest() -> int:
     return 0
 
 
+def add_figure(doc, ref: str, stats: dict) -> None:
+    """Embed a figure, resolving the reference the way the HTML build does.
+
+    The reference is written relative to the HTML output (`figures/x.png` beside the .html), so the DOCX - which
+    lives in the same directory - resolves it identically. Both roots are tried and a miss is COUNTED rather
+    than passed over: a figure that quietly fails to appear is the defect this function exists to end.
+    """
+    from docx.shared import Inches
+    root = pathlib.Path(__file__).resolve().parent.parent
+    for cand in (root / "viz" / ref, root / ref):
+        if cand.exists():
+            doc.add_picture(str(cand), width=Inches(6.3))
+            stats["figures"] = stats.get("figures", 0) + 1
+            return
+    stats["missing_figures"] = stats.get("missing_figures", 0) + 1
+
+
 def add_math_paragraph(doc, text: str, mml: dict, stats: dict, style: str | None = None) -> None:
     """One paragraph, with every `$...$` / `$$...$$` span replaced by an OMML equation object."""
     from docx.oxml import parse_xml
@@ -162,6 +179,15 @@ def build() -> int:
     doc.styles["Normal"].font.size = Pt(10.5)
     stats = {"omml": 0, "fallback": 0}
     for kind, payload in blocks(md):
+        # A FIGURE IS A BLOCK TOO. The markdown carries `![Figure N](figures/x.png)`, the HTML resolves it, and
+        # this builder skipped it silently - so the format a reader downloads as a document carried every
+        # equation and NOT ONE FIGURE, while the format they read in a browser carried both. Nothing failed;
+        # the images were simply absent.
+        if kind == "p" and isinstance(payload, str):
+            im = re.fullmatch(r"!\[([^\]]*)\]\(([^)]+)\)", payload.strip())
+            if im:
+                add_figure(doc, im.group(2), stats)
+                continue
         if kind == "h1":
             doc.add_heading(payload, level=1)
         elif kind == "h2":
@@ -196,6 +222,7 @@ def build() -> int:
     doc.save(str(OUT_DOCX))
     print(f"  wrote {OUT_DOCX.relative_to(ROOT)}  ({OUT_DOCX.stat().st_size // 1024} KB)")
     print(f"  equations as OMML: {stats['omml']}   fell back to TeX: {stats['fallback']}")
+    print(f"  figures embedded: {stats.get('figures', 0)}   missing: {stats.get('missing_figures', 0)}")
     if stats["fallback"] and not stats["omml"]:
         print("  [WARN] this DOCX carries NO native equations; the HTML and PDF do.")
     return 0

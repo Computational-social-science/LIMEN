@@ -683,6 +683,16 @@ FIGURE_ORDER = [
     ("fig2_stage2_error_destination",
      "Figure 2. Where the errors go: the gate rejects most of what noise breaks"),
     ("fig3_stage2_gate_separation", "Figure 3. Why the gate separates better under noise"),
+    # The formalisation gets figures of its own: nothing in the manuscript showed what the 27 theorems say or
+    # how they depend on one another, so the kernel was cited in prose and invisible in the plate.
+    ("fig4_stage2_scale_free",
+     "Figure 4. The scale-free property, measured on the confirmatory record"),
+    ("fig5_stage2_proof_graph",
+     "Figure 5. The proof dependency graph, parsed from the kernel source"),
+    ("fig6_stage2_corrections",
+     "Figure 6. The formalisation corrected the protocol, and the corrections were kept"),
+    ("fig7_stage2_evidence_chain",
+     "Figure 7. What the manuscript's claims rest on"),
 ]
 FIGURE_STYLE = (
     "<style>.figures-plate figure{margin:0 0 22px 0} .figures-plate img{width:100%;height:auto;display:block}"

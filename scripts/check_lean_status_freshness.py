@@ -37,6 +37,11 @@ REPO_ROOT = pathlib.Path(__file__).resolve().parent.parent
 STATUS_DOC = REPO_ROOT / "docs" / "LEAN_FORMALIZATION_STATUS.md"
 
 
+def _sources(root: pathlib.Path) -> list[pathlib.Path]:
+    """EVERY kernel source - the same glob the axiom checker uses, so the two cannot disagree about the kernel."""
+    return sorted(p for p in (root / "NHB" / "PhaseI").glob("*.lean") if not p.name.startswith("__"))
+
+
 def lean_root() -> pathlib.Path:
     import os
     if os.environ.get("NHB_LEAN_ROOT"):
@@ -52,8 +57,9 @@ def measure(root: pathlib.Path) -> dict:
 
     text = core.read_text(encoding="utf-8")
     out: dict = {
-        "lines": len(text.splitlines()),
-        "theorems": len(re.findall(r"^theorem\s", text, re.M)),
+        "lines": sum(len(p.read_text(encoding="utf-8").splitlines()) for p in _sources(root)),
+        "theorems": sum(len(re.findall(r"^theorem\s", p.read_text(encoding="utf-8"), re.M))
+                    for p in _sources(root)),
         "sorry": len(re.findall(r"^\s*(?:sorry|admit)\s*$|^\s*axiom\b", text, re.M)),
     }
 
@@ -78,32 +84,29 @@ def measure(root: pathlib.Path) -> dict:
     # hypothesis - which is exactly the defect that produced the weak tie-break statement earlier. So
     # the figure is the number of theorems Lean itself reports axioms for, which is the only count that
     # means "verified".
-    build_lib = root / ".lake" / "build" / "lib" / "lean"   # NOT `lib`: lake nests a `lean` dir
-    query = core.parent / "__freshness_query__.lean"
-    names = re.findall(r"^theorem\s+([A-Za-z_][A-Za-z0-9_']*)", text, re.M)
-    query.write_text("import NHB.PhaseI.Core\n"
-                     + "".join(f"#print axioms PhaseI.Selective.{n}\n" for n in names),
-                     encoding="utf-8")
-    import os
-    env = dict(os.environ)
-    env["LEAN_PATH"] = str(build_lib)
-    try:
-        q = subprocess.run([str(lake), "env", "lean", str(query)], cwd=root, capture_output=True,
-                           text=True, env=env, timeout=600)
-        qout = q.stdout + q.stderr
+    # DELEGATED, NOT RE-IMPLEMENTED. This block used to build its own axiom query with Core's module and
+    # namespace hardcoded - a SECOND implementation of what check_lean_axioms.py already does. Two
+    # implementations of one measurement is the "two writers, one output" defect, and they diverged the
+    # moment a second source file appeared. One implementation, one answer.
+    proc = subprocess.run([sys.executable, "-B", str(REPO_ROOT / "scripts" / "check_lean_axioms.py"),
+                           "--lean-root", str(root)],
+                          capture_output=True, text=True, cwd=REPO_ROOT, timeout=1200)
+    qout = (proc.stdout or "") + (proc.stderr or "")
+    if proc.returncode != 0:
+        out["checked"] = None
+        return out
         # `decide`-proved theorems print "does not depend on any axioms" instead of a bracketed list,
         # so counting only the bracketed form under-reports by exactly the theorems with the strongest
         # proofs. Both wordings are counted; see check_lean_axioms.py for the same fix and reason.
-        got = re.findall(r"'[\w.]+' depends on axioms: \[([^\]]*)\]", qout) \
-            + re.findall(r"'[\w.]+' does not depend on any axioms", qout)
-        out["checked"] = len(got)
-        out["sorryAx"] = sum(1 for d in got if "sorryAx" in d)
-        # The number the LIVE kernel would print for the transcript quoted in the document.
-        out["axioms_reported"] = len(got)
-    except subprocess.TimeoutExpired:
+    m = re.search(r"OK:\s*(\d+)\s*theorem\(s\), none depends on", qout)
+    if not m:
         out["checked"] = None
-    finally:
-        query.unlink(missing_ok=True)
+        return out
+    out["checked"] = int(m.group(1))
+    # The check fails outright if any theorem depends on the forbidden axiom, so a successful run IS the
+    # statement that this count is zero - measured by the kernel, not assumed here.
+    out["sorryAx"] = 0
+    out["axioms_reported"] = int(m.group(1))
 
     return out
 
@@ -124,7 +127,10 @@ def claimed(doc: pathlib.Path) -> dict:
     m = re.search(r"^\s*sorry\s*/\s*admit\s*/\s*axiom\s*:\s*(\d+)", text, re.M)
     sorry = int(m.group(1)) if m else None
 
-    m = re.search(r"Core\.lean,\s*(\d+)\s*lines", text)
+    # BOTH FORMS: the record said "Core.lean, N lines" while the kernel had one source, and says
+    # "NHB/PhaseI/*.lean, N lines" now that it has two. A parse tied to the old wording would report a
+    # missing figure - the drift it exists to catch, produced by the fix for a different drift.
+    m = re.search(r"(?:Core\.lean|NHB/PhaseI/\*\.lean),\s*(\d+)\s*lines", text)
     lines = int(m.group(1)) if m else None
 
     m = re.search(r"OK:\s*(\d+)\s*theorem\(s\), none depends on", text)
@@ -174,7 +180,7 @@ def compare(measured: dict, said: dict) -> list[str]:
         ("checked", "theorems machine-checked"),
         ("errors", "errors remaining"),
         ("sorry", "sorry / admit / axiom"),
-        ("lines", "Core.lean line count"),
+        ("lines", "kernel line count"),
     ]
     # The quoted `#print axioms` transcript must agree with the kernel-derived count above. It is
     # compared rather than measured separately because it IS a quotation of that measurement: if the
