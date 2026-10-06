@@ -49,7 +49,14 @@ TRANSIENT = (
     re.compile(r"^\.DS_Store$"),
     re.compile(r"^Thumbs\.db$", re.I),
 )
-TRANSIENT_DIRS = (".pyc", "__pycache__", ".pytest_cache", ".mypy_cache")
+TRANSIENT_DIRS = (".pyc", "__pycache__", ".pytest_cache", ".mypy_cache",
+                  # SCRATCH DIRECTORIES. This list originally held only toolchain caches, and a QC run's
+                  # `viz/figures/_qc_tmp/` - twelve generated files including duplicate 600-dpi renders -
+                  # was committed while this guard passed. A guard is only as good as its pattern list, and a
+                  # scratch directory named by its author is exactly the artefact a wrong step order leaves
+                  # behind. Anything underscore-prefixed or explicitly temporary now counts.
+                  "_tmp", "_scratch", "_qc", "_build", "tmp", "scratch")
+TRANSIENT_RE = (re.compile(r"^_.*$"), re.compile(r"^.*(tmp|scratch|bak|old)\..*$", re.I))
 
 
 def tracked_files() -> list[str]:
@@ -65,7 +72,16 @@ def transient_hits() -> list[str]:
         base = pathlib.PurePosixPath(f).name
         if any(p.match(base) for p in TRANSIENT):
             hits.append(f)
-        elif any(part in TRANSIENT_DIRS for part in pathlib.PurePosixPath(f).parts):
+        # ANY PATH COMPONENT THAT BEGINS WITH AN UNDERSCORE, and any component that IS a known cache name.
+        # The first version of this check only tested components for EXACT membership in a tuple, which the
+        # generated `_qc_tmp` did not match, and applied the underscore rule to the BASENAME only - so a
+        # scratch directory holding twelve generated files, including duplicate 600-dpi renders, sat in the
+        # repository while this guard reported a pass. The rule is now structural, not a name list.
+        parts = pathlib.PurePosixPath(f).parts
+        if any(part.startswith("_") or part in TRANSIENT_DIRS for part in parts[:-1]) \
+                or any(part in TRANSIENT_DIRS for part in parts):
+            hits.append(f)
+        elif any(r.match(base) for r in TRANSIENT_RE):
             hits.append(f)
     return hits
 

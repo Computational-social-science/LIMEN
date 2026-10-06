@@ -40,3 +40,6 @@ viz/manuscript.html
 # NOTE: viz/protocol.md is deliberately NOT ignored. It is the byte-for-byte copy the build
 # read, and it is the recovery source - an entire section was once deleted by a bad edit and
 # restored from it. A backup excluded from version control is not a backup.
+
+# Scratch output from the figure QC run. It is generated, not authored.
+viz/figures/_qc_tmp/
