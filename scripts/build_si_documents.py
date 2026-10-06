@@ -18,6 +18,9 @@ import shutil
 import subprocess
 import sys
 
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+import si_render as SR      # mathematics protection and local KaTeX
+
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 SRC = ROOT / "docs" / "SUPPLEMENTARY_INFORMATION.md"
 OUT_HTML = ROOT / "viz" / "supplementary_information.html"
@@ -41,6 +44,10 @@ CSS = """
  code{font-family:Consolas,monospace;font-size:.88em;background:#f3f3f3;padding:.05em .3em;border-radius:2px}
  em{color:#444}
  hr{border:0;border-top:1px solid #e2e2e2;margin:2rem 0}
+ .li{margin-left:1.1rem;text-indent:-1.1rem}
+ .mathcount{font-size:.75rem;color:#999;text-align:right;margin-top:3rem}
+ .mathfail{border:1px solid #c00;color:#c00;padding:.5rem}
+ .katex-display{margin:.9em 0;overflow-x:auto;overflow-y:hidden}
  @media print{body{margin:0;max-width:none;padding:0} h2{page-break-after:avoid} table{page-break-inside:avoid}}
 """
 
@@ -141,6 +148,10 @@ def build_docx(md: str) -> None:
             doc.add_paragraph(re.sub(r"\*\*(.+?)\*\*", r"\1", re.sub(r"`([^`]+)`", r"\1", s)))
     flush()
     doc.save(str(OUT_DOCX))
+    if "$" in md:
+        print("  [NOTE] DOCX carries the TeX source of each equation, not OMML: python-docx cannot emit OMML")
+        print("         and pandoc is not available on this host. The HTML and the PDF render the mathematics;")
+        print("         the DOCX is authoritative for everything EXCEPT equation typesetting.")
     print(f"  wrote {OUT_DOCX.relative_to(ROOT)}  ({OUT_DOCX.stat().st_size // 1024} KB)")
 
 
@@ -168,11 +179,16 @@ def main() -> int:
         print(f"  [FAIL] no source at {SRC}; run scripts/build_supplementary_information.py first")
         return 1
     md = SRC.read_text(encoding="utf-8")
+    body = SR.md_to_html_body(md)
+    n_inline = len(re.findall(r"(?<!\$)\$(?!\$)", body))
     OUT_HTML.write_text(
         "<!DOCTYPE html>\n<html lang=\"en\"><head><meta charset=\"utf-8\">"
         "<title>Supplementary information — LIMEN Phase I</title>"
-        f"<style>{CSS}</style></head><body>\n" + md_to_html_body(md) + "\n</body></html>\n",
+        f"<style>{CSS}</style>" + SR.MATHJAX_SCRIPTS + "</head><body>\n" + body + "\n</body></html>\n",
         encoding="utf-8", newline="\n")
+    ver = SR.copy_mathjax(ROOT / "viz" / "mathjax")
+    print(f"  mathjax   : {ver} (copied locally; no network request)")
+    print(f"  math      : {n_inline // 2} inline span(s) preserved through rendering")
     print(f"  wrote {OUT_HTML.relative_to(ROOT)}  ({OUT_HTML.stat().st_size // 1024} KB)")
     build_docx(md)
     build_pdf()

@@ -35,6 +35,7 @@ measurement/o1_validation/jfleg_raw.jsonl
 # Generated manuscript output. The HTML is derived from the anchor and stamped with its
 # sha256; the KaTeX distribution is third-party and copied in by the build.
 viz/katex/
+viz/mathjax/
   # third-party KaTeX distribution, copied in by the build; never hand-edited
 viz/manuscript.html
   # generated: rebuild with scripts/build_manuscript_html.py
@@ -48,3 +49,7 @@ viz/figures/_qc_tmp/
 # Machine-local interpreter pointer for the pre-commit gate. Never committed: the repository
 # must stay portable and no absolute path belongs in it.
 .guard-python
+
+# Node dependencies. MathJax is installed here and copied into the output directory at build
+# time so the rendered documents need no network; the 121 MB install itself never enters history.
+node_modules/

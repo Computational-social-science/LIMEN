@@ -13,8 +13,47 @@
  code{font-family:Consolas,monospace;font-size:.88em;background:#f3f3f3;padding:.05em .3em;border-radius:2px}
  em{color:#444}
  hr{border:0;border-top:1px solid #e2e2e2;margin:2rem 0}
+ .li{margin-left:1.1rem;text-indent:-1.1rem}
+ .mathcount{font-size:.75rem;color:#999;text-align:right;margin-top:3rem}
+ .mathfail{border:1px solid #c00;color:#c00;padding:.5rem}
+ .katex-display{margin:.9em 0;overflow-x:auto;overflow-y:hidden}
  @media print{body{margin:0;max-width:none;padding:0} h2{page-break-after:avoid} table{page-break-inside:avoid}}
-</style></head><body>
+</style><script>
+window.MathJax = {
+  tex: {
+    inlineMath: [['$', '$']],
+    displayMath: [['$$', '$$']],
+    processEscapes: true,
+    processEnvironments: true,
+    packages: {'[+]': ['ams', 'boldsymbol', 'textmacros', 'noerrors', 'noundefined']}
+  },
+  options: {
+    skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+    renderActions: {addMenu: []}
+  },
+  chtml: {scale: 1.0, displayAlign: 'center'},
+  startup: {
+    pageReady: function () {
+      return MathJax.startup.defaultPageReady().then(function () {
+        var n = document.querySelectorAll('mjx-container').length;
+        var d = document.querySelectorAll('mjx-container[display="true"]').length;
+        var badge = document.createElement('p');
+        badge.className = 'mathcount';
+        badge.textContent = 'math rendered: ' + n + ' expression(s), ' + d + ' display';
+        document.body.appendChild(badge);
+        if (n === 0) {
+          var warn = document.createElement('p');
+          warn.className = 'mathfail';
+          warn.textContent = 'No mathematics was rendered. The TeX source below is still readable.';
+          document.body.insertBefore(warn, document.body.firstChild);
+        }
+      });
+    }
+  }
+};
+</script>
+<script src="mathjax/tex-mml-chtml.js" id="MathJax-script"></script>
+</head><body>
 <h1>Supplementary information</h1>
 <p><strong>The LIMEN Phase I report — Orthographic channels and input noise as structural disturbances in human–model interaction</strong></p>
 <p><em>Supplementary information is provided by the authors and is not edited.</em></p>
