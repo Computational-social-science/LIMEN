@@ -21,6 +21,9 @@ measurement/out/
 # clone should not carry them. Nothing in the pipeline reads them from here - the reference library
 # keeps its own extracted text under the skill directories.
 *.pdf
+# The Stage 2 figure PDF is a DELIVERABLE, not a build by-product: it carries the captions and is one of
+# the four formats the manuscript needs, so it is tracked even though PDFs generally are not.
+!viz/figures_stage2.pdf
 
 # A re-downloadable raw corpus. The DERIVED labels beside it are committed because they are not
 # reproducible without GPU time (modeA_items.jsonl holds the rater's per-item answers); the raw jfleg

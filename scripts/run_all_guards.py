@@ -76,6 +76,8 @@ GUARDS: list[tuple[str, tuple[str, ...], str]] = [
      "item consistency: structure, ambiguity, routability with a shuffled control, split-half stability"),
     ("check_window_marginals.py", (),
      "the confirmatory window is comparable to dev on domain and template structure, on bank alone"),
+    ("qc_stage2_figures.py", (),
+     "no text overlap, nothing outside the canvas, no font size outside the journal band"),
     ("check_step_order.py", (),
      "no transient artefact is tracked and the protocol's content, digest and version all agree"),
     ("check_step_order.py", ("--negative-test",),

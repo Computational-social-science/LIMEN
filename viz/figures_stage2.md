@@ -1,0 +1,21 @@
+# LIMEN Phase I — Stage 2 figures
+
+Each figure is followed by its caption, as it would appear in the manuscript.
+
+## Figure 1. The three pre-registered hypotheses across the noise grid
+
+![Figure 1. The three pre-registered hypotheses across the noise grid](figures/fig1_stage2_hypotheses.png)
+
+**Typo noise costs accuracy and coverage while making the confidence gate MORE discriminative, not less.** Each panel is one pre-registered hypothesis, tested with the exact paired permutation of the protocol and Holm-corrected across the three-hypothesis family; all three were confirmed with no direction violations. (a) Accuracy falls by 12.1 percentage points from lambda = 0 to lambda_mid (H1.1, p = 4.4e-36). (b) The within-arm AUC between correct and incorrect trials RISES from 0.601 to 0.760 (H1.2', p = 2.0e-04) -- the gate separates right from wrong more sharply under noise. (c) Coverage at tau = 0.9 falls by 23.7 points (H1.3, p = 5.0e-05), so far fewer trials are answered at all. All panels use the **test split** of the pre-registered window: 652 items x 3 frozen noise seeds = 13,692 trial records from the pinned instrument, 0 failures. The confidence rule is `answer if c >= tau else defer`. Dashed vertical lines mark the two calibrated noise levels, lambda_lo = 0.05 and lambda_mid = 0.18. Every plotted value is read from `data/processed/stage2_lambda_summary.csv`, which `scripts/build_stage2_figures.py` derives from `measurement/out/confirm_trials.jsonl`. No point is interpolated or modelled.
+
+## Figure 2. Where the errors go: the gate rejects most of what noise breaks
+
+![Figure 2. Where the errors go: the gate rejects most of what noise breaks](figures/fig2_stage2_error_destination.png)
+
+**The errors noise creates arrive below the gate: they are loud, not silent.** Panel (a) decomposes every error at each noise level into the share the gate rejects and the share it admits. Under noise the rejected share rises from 61.4% to 93.5%, so the gate catches most of what noise breaks. Panel (b) shows the two error measures diverging: the conditional error among admitted trials is flat (0.092 to 0.070), while the all-trial silent error FALLS (0.041 to 0.015). A fixed-threshold silent-error rate cannot rise under a manipulation that deflates confidence, which is why the original H1.2 was refuted and replaced by H1.2'. All panels use the **test split** of the pre-registered window: 652 items x 3 frozen noise seeds = 13,692 trial records from the pinned instrument, 0 failures. The confidence rule is `answer if c >= tau else defer`. Dashed vertical lines mark the two calibrated noise levels, lambda_lo = 0.05 and lambda_mid = 0.18. Every plotted value is read from `data/processed/stage2_lambda_summary.csv`, which `scripts/build_stage2_figures.py` derives from `measurement/out/confirm_trials.jsonl`. No point is interpolated or modelled.
+
+## Figure 3. Why the gate separates better under noise
+
+![Figure 3. Why the gate separates better under noise](figures/fig3_stage2_gate_separation.png)
+
+**The gate does not merely shift down with noise -- it separates correct from incorrect trials more sharply.** Median confidence for correct and for incorrect trials, at the clean level (left) and at lambda_mid (right); the double arrow is the separation between them. Correct-trial confidence falls from 0.888 to 0.783, but incorrect-trial confidence falls more than twice as far, from 0.784 to 0.549. The separation therefore widens from +0.103 to +0.234, and the corresponding within-arm AUC rises from 0.601 to 0.760. The estimand reads only the ORDER of confidences, so it is invariant to any monotone rescaling of the instrument's confidence scale -- machine-checked in the formalization repository. All panels use the **test split** of the pre-registered window: 652 items x 3 frozen noise seeds = 13,692 trial records from the pinned instrument, 0 failures. The confidence rule is `answer if c >= tau else defer`. Dashed vertical lines mark the two calibrated noise levels, lambda_lo = 0.05 and lambda_mid = 0.18. Every plotted value is read from `data/processed/stage2_lambda_summary.csv`, which `scripts/build_stage2_figures.py` derives from `measurement/out/confirm_trials.jsonl`. No point is interpolated or modelled.
