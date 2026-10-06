@@ -4,7 +4,7 @@
 Two stages, because one needs a browser and one needs Python:
 
     stage 1   `--harvest` writes viz/_mml_harvest.html, the page MathJax must typeset. The Agent renders it
-              in the browser and writes the returned JSON to viz/_mml_map.json.
+              in the browser and writes the returned JSON to viz/mml_map.json.
     stage 2   `--build` consumes that map and writes the DOCX, converting each expression through Office's
               own MML2OMML.XSL.
 
@@ -31,12 +31,13 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 SRC = ROOT / "docs" / "SUPPLEMENTARY_INFORMATION.md"
 OUT_DOCX = ROOT / "viz" / "supplementary_information.docx"
 HARVEST_HTML = ROOT / "viz" / "_mml_harvest.html"
-MML_MAP = ROOT / "viz" / "_mml_map.json"
+MML_MAP = ROOT / "viz" / "mml_map.json"
 
 
 def blocks(md: str):
     """Yield ('h1'|'h2'|'h3'|'p'|'li'|'table'|'rule', payload)."""
     tbl: list[str] = []
+    pending: list[str] = []
 
     def flush():
         if tbl:
@@ -49,6 +50,19 @@ def blocks(md: str):
 
     for raw in md.splitlines():
         s = raw.rstrip()
+        # A DISPLAY EQUATION WHOSE DELIMITERS SIT ON THEIR OWN LINES IS ONE BLOCK. A line-by-line parser splits
+        # `$$` / the equation / `$$` into three paragraphs, the dollar signs within each cannot pair, and the
+        # equation ships as TeX source surrounded by prose that renders - a defect that leaves most of the
+        # document looking correct. Accumulate until the delimiters balance.
+        if pending:
+            pending.append(s)
+            if s.count("$$") % 2 == 1:
+                yield ("p", "\n".join(pending))
+                pending.clear()
+            continue
+        if s.count("$$") % 2 == 1:
+            pending = [s]
+            continue
         if s.startswith("|"):
             tbl.append(s)
             continue
@@ -84,11 +98,19 @@ def harvest() -> int:
     return 0
 
 
-def add_math_paragraph(doc, text: str, mml: dict[str, str], stats: dict) -> None:
+def add_math_paragraph(doc, text: str, mml: dict, stats: dict, style: str | None = None) -> None:
     """One paragraph, with every `$...$` / `$$...$$` span replaced by an OMML equation object."""
     from docx.oxml import parse_xml
     from docx.oxml.ns import qn
-    p = doc.add_paragraph()
+    # REUSE AN EMPTY FIRST PARAGRAPH WHEN THE CONTAINER HAS ONE. A table cell ships with an empty paragraph,
+    # so adding another leaves a blank line above every converted equation; a paragraph container has none to
+    # reuse, so the two cases are told apart rather than assumed. An empty document also opens with an empty
+    # paragraph, which must NOT be reused by a styled block or the styling would be lost.
+    if (style is None and getattr(doc, "paragraphs", None)
+            and not doc.paragraphs[0].text and not doc.paragraphs[0].runs):
+        p = doc.paragraphs[0]
+    else:
+        p = doc.add_paragraph(style=style) if style else doc.add_paragraph()
     pos = 0
     pattern = re.compile(r"(\$\$.+?\$\$|(?<!\$)\$(?!\$)(?!\s)[^\n$]*?(?<!\s)\$(?!\$))", re.S)
     for m in pattern.finditer(text):
@@ -96,12 +118,10 @@ def add_math_paragraph(doc, text: str, mml: dict[str, str], stats: dict) -> None
         if before:
             p.add_run(re.sub(r"\*\*(.+?)\*\*", r"\1", before))
         tex = m.group(0)
-        key = None
-        for i, s in enumerate(mml["order"]):
-            if s == tex:
-                key = str(i)
-                break
-        mml_str = mml["map"].get(key) if key is not None else None
+        # LOOK THE EXPRESSION UP BY ITS OWN TEXT. Searching for the span's position and using that as a key
+        # reintroduces the defect the text key exists to prevent: the position is the CURRENT one, the map's
+        # entries are from the HARVEST, and the two agree only while nothing has moved.
+        mml_str = mml["map"].get(tex)
         omml_xml = O.mml_to_omml(mml_str) if mml_str else None
         if omml_xml:
             run = p.add_run()
@@ -151,7 +171,10 @@ def build() -> int:
         elif kind == "rule":
             doc.add_paragraph("")
         elif kind == "li":
-            doc.add_paragraph(payload.lstrip("- "), style="List Bullet")
+            # LISTS GO THROUGH THE SAME CONVERSION. A list item is a paragraph like any other, and routing it around
+            # the converter shipped every equation inside a bullet as TeX source while the prose rendered - the
+            # same defect class as the table cells, in the one other place text was assigned rather than built.
+            add_math_paragraph(doc, payload.lstrip("- "), mml, stats, style="List Bullet")
         elif kind == "table":
             cells = payload
             if cells:
@@ -163,7 +186,11 @@ def build() -> int:
                 for row in cells:
                     rc = t.add_row().cells
                     for j, c in enumerate(row[:len(cells[0])]):
-                        rc[j].text = re.sub(r"\*\*(.+?)\*\*", r"\1", c)
+                        # MATH IN A TABLE CELL MUST GO THROUGH THE SAME CONVERSION AS MATH IN A PARAGRAPH.
+                        # Assigning cell text directly wrote `$\pi_d$` into the document verbatim, so every
+                        # equation inside a table shipped as TeX source while the surrounding prose did not -
+                        # a defect invisible until the residual-delimiter count was checked.
+                        add_math_paragraph(rc[j], re.sub(r"\*\*(.+?)\*\*", r"\1", c), mml, stats)
         else:
             add_math_paragraph(doc, payload, mml, stats)
     doc.save(str(OUT_DOCX))
@@ -186,7 +213,11 @@ def main() -> int:
     args = ap.parse_args()
     # resolve(): a relative --src would leave HARVEST_HTML outside ROOT and break relative_to()
     SRC = pathlib.Path(args.src).resolve(); OUT_DOCX = pathlib.Path(args.out).resolve()
-    HARVEST_HTML = SRC.parent / "_mml_harvest.html"; MML_MAP = SRC.parent / "_mml_map.json"
+    # THE HARVEST PAGE MUST SIT BESIDE THE MATHJAX ASSETS. `KATEX_SCRIPTS`-equivalent blocks reference
+    # `mathjax/tex-mml-chtml.js` RELATIVELY, so a page written next to the SOURCE resolves that to a
+    # directory that does not exist, the script never loads, and every expression silently harvests as
+    # missing. Anchoring the page to the asset directory is what makes the relative reference correct.
+    HARVEST_HTML = ROOT / "viz" / "_mml_harvest.html"; MML_MAP = ROOT / "viz" / "mml_map.json"
     if args.harvest:
         return harvest()
     if args.build:

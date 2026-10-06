@@ -92,7 +92,8 @@ def harvest_page(spans: list[str], scripts_block: str) -> str:
     """
     import html as _html
     body = "\n".join(
-        f'<div class="mm" data-i="{i}">{_html.escape(s)}</div>' for i, s in enumerate(spans)
+        f'<div class="mm" data-tex="{_html.escape(s, quote=True)}">{_html.escape(s)}</div>'
+                     for i, s in enumerate(spans)
     )
     return (
         "<!DOCTYPE html><html><head><meta charset='utf-8'><title>mml harvest</title>"
@@ -107,7 +108,14 @@ def harvest_js() -> str:
   document.querySelectorAll('.mm').forEach(d => {
     const c = d.querySelector('mjx-container');
     const m = c ? c.querySelector('mjx-assistive-mml math') : null;
-    out[d.getAttribute('data-i')] = m ? m.outerHTML : null;
+    // KEYED BY THE EXPRESSION TEXT, NOT BY ITS POSITION. An index-keyed map is only valid while the document's
+    // spans keep the exact order they had at harvest time; edit a section and the lookup for span i returns the
+    // math of whatever USED to sit at i, and the build reports success because the entry exists. Text keys make
+    // that impossible: a changed expression is simply absent, falls back to TeX, and is reported.
+    // READ THE TEX FROM THE ATTRIBUTE, NOT FROM textContent: by harvest time MathJax has REPLACED the div's
+    // content with the rendered mathematics, so textContent yields the TYPESET text - lambda_mid as a literal
+    // character - rather than the source, and no lookup by source could ever match it.
+    out[d.getAttribute('data-tex')] = m ? m.outerHTML : null;
   });
   return JSON.stringify({count: Object.keys(out).length,
                          missing: Object.values(out).filter(v => !v).length, map: out});

@@ -78,6 +78,8 @@ GUARDS: list[tuple[str, tuple[str, ...], str]] = [
      "the confirmatory window is comparable to dev on domain and template structure, on bank alone"),
     ("qc_stage2_figures.py", (),
      "no text overlap, nothing outside the canvas, no font size outside the journal band"),
+    ("check_si_numbers.py", (),
+     "every numeric cell of the SI's results tables equals its source, and quoted family figures match"),
     ("check_step_order.py", (),
      "no transient artefact is tracked and the protocol's content, digest and version all agree"),
     ("check_step_order.py", ("--negative-test",),

@@ -147,12 +147,18 @@ def build_docx(md: str) -> None:
         else:
             doc.add_paragraph(re.sub(r"\*\*(.+?)\*\*", r"\1", re.sub(r"`([^`]+)`", r"\1", s)))
     flush()
-    doc.save(str(OUT_DOCX))
-    if "$" in md:
-        print("  [NOTE] DOCX carries the TeX source of each equation, not OMML: python-docx cannot emit OMML")
-        print("         and pandoc is not available on this host. The HTML and the PDF render the mathematics;")
-        print("         the DOCX is authoritative for everything EXCEPT equation typesetting.")
-    print(f"  wrote {OUT_DOCX.relative_to(ROOT)}  ({OUT_DOCX.stat().st_size // 1024} KB)")
+    # THE DOCX HAS ONE OWNER: THE OMML BUILDER. Two builders wrote the same path and the one that ran last
+    # silently won, so the equation-native DOCX could be replaced by a TeX-source one without any error
+    # appearing - the document still opened, only its mathematics regressed. This delegates instead.
+    r = subprocess.run([str(sys.executable), str(ROOT / "scripts" / "build_si_docx.py"), "--build",
+                        "--src", str(ROOT / "docs" / "SUPPLEMENTARY_INFORMATION.md"),
+                        "--out", str(OUT_DOCX)], capture_output=True, text=True, encoding="utf-8")
+    for line in (r.stdout or "").strip().splitlines()[-2:]:
+        print("  " + line)
+    if r.returncode != 0:
+        print("  [FAIL] the OMML builder failed; the DOCX was NOT regenerated")
+        print((r.stderr or "").strip()[-300:])
+        raise SystemExit(1)
 
 
 def build_pdf() -> None:
