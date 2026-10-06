@@ -18,7 +18,17 @@ unlogged conversation.
 Both repositories were verified against the GitHub API at shutdown: LIMEN `main` = `34236cc`, LIMEN-lean
 `main` = `fea32ab`. Working trees clean.
 
-## State: the seal is unblocked, and the only remaining step is the run
+## STATE: THE CONFIRMATORY RUN IS DONE AND ALL THREE HYPOTHESES WERE CONFIRMED
+
+**Ran 2026-10-05: 13,692 records, 0 failures, 366.5 s.**
+**H1.1 p = 4.42e-36 · H1.2' p = 2.00e-04 · H1.3 p = 5.00e-05 — all rejected under Holm, no direction
+violations.** Results in `docs/PHASE_I_CONFIRMATORY_RESULTS.md`.
+
+**The next step is the manuscript, not the run:** fill the Stage 1→2 abstract and key-results boxes from
+`docs/PHASE_I_CONFIRMATORY_RESULTS.md`, and re-run `scripts/analyze_phase1.py --synthetic` to confirm the
+controls still pass after any edit to that script.
+
+## Historical state before the run (superseded, kept for the record)
 
 - **Guards: 28 of 28 pass**, each with a negative control that must fail.
 - **Protocol v1.21**, evidence chain of 34 claims (15 proved · 6 measured · 6 assumed · 7 to be tested).

@@ -166,12 +166,24 @@ def main() -> int:
           f"mean {sum(nulls)/len(nulls):+.4f}, range [{min(nulls):+.4f}, {max(nulls):+.4f}]"
           f"  -> {'centred on zero' if abs(sum(nulls)/len(nulls)) < 0.02 else 'BIASED'}")
 
-    if p < 0.05 and t_obs > 0:
-        print("\n  [OK] H1.2' contrast is positive and significant on dev, and its estimator is the exact")
-        print("       paired permutation of section 4.5 - no second inferential framework is required.")
+    # THE DATASET LABEL IS DERIVED FROM THE FILE, NEVER ASSUMED. An earlier version of this script printed
+    # "Dev only. NOT a confirmatory result" unconditionally, so feeding it the confirmatory record still
+    # reported the finding as dev work - the most dangerous kind of mislabel, because it understates a
+    # confirmatory result rather than overstating it, and nothing downstream would catch the difference.
+    stem = path.stem.lower()
+    if "confirm" in stem:
+        label = "CONFIRMATORY (the test split; this is a confirmatory result)"
+    elif "dev" in stem:
+        label = "DEV (non-confirmatory; the test split is untouched)"
     else:
-        print("\n  [NOTE] the dev contrast does not reach the direction-and-significance bar.")
-    print("  Dev only. NOT a confirmatory result; the test split is untouched.")
+        label = f"UNLABELLED input ({path.name}) - treat as non-confirmatory until you know"
+
+    if p < 0.05 and t_obs > 0:
+        print(f"\n  [OK] H1.2' contrast is positive and significant. Estimator: the exact within-unit paired")
+        print(f"       permutation of section 4.5 - no second inferential framework is required.")
+    else:
+        print(f"\n  [NOTE] the contrast does not reach the direction-and-significance bar.")
+    print(f"  Dataset: {label}")
     return 0
 
 

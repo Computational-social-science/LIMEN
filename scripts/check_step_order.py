@@ -1,0 +1,154 @@
+#!/usr/bin/env python
+"""check_step_order.py -- catch the one mistake this session made three times, mechanically.
+
+WHY THIS EXISTS
+    Three separate times in a single session, two steps were run in the wrong order and the result LOOKED
+    FINE:
+
+      1. a commit that included its own transient commit-message file, because the file was written before
+         `git add -A`;
+      2. the guard suite run in the SAME shell invocation as the commit it was supposed to gate, so a commit
+         could land while the suite was red;
+      3. a derived table refreshed BETWEEN a version bump and its re-pin, leaving protocol content that had
+         changed while its version field and recorded digest had not.
+
+    Only the third is invisible to every other guard in this repository, because every other guard checks
+    content or consistency at a point in time - none checks whether the point in time was coherent.
+
+WHAT IT CHECKS
+  A  no TRANSIENT artefact is tracked. A commit-message temp file, an editor backup, a merge leftover or a
+     bytecode cache in git means a step ran before its cleanup, and it will be cloned by everyone.
+  B  the protocol's ACTUAL digest and byte count match `config/anchor.json`. If they differ, the protocol was
+     edited and not re-pinned - the exact state in which two different contents can share one version number.
+  C  the version recorded in the anchor matches the version in the protocol. A bump that did not reach the
+     anchor, or a re-pin that did not carry the bump, is the same defect from the other side.
+
+EXIT
+  0  coherent      1  at least one ordering finding
+"""
+
+from __future__ import annotations
+
+import argparse
+import hashlib
+import json
+import pathlib
+import re
+import subprocess
+import sys
+
+REPO_ROOT = pathlib.Path(__file__).resolve().parent.parent
+PROTOCOL = REPO_ROOT / "protocol" / "NHB_Orthographic_Channels_JEV_Research_Protocol.md"
+ANCHOR = REPO_ROOT / "config" / "anchor.json"
+
+# Names that never belong in history. Matched against the basename of each tracked path.
+TRANSIENT = (
+    re.compile(r"^COMMIT_MSG.*$", re.I),
+    re.compile(r"^.*\.(tmp|orig|rej|swp|swo)$", re.I),
+    re.compile(r"^.*~$"),
+    re.compile(r"^\.DS_Store$"),
+    re.compile(r"^Thumbs\.db$", re.I),
+)
+TRANSIENT_DIRS = (".pyc", "__pycache__", ".pytest_cache", ".mypy_cache")
+
+
+def tracked_files() -> list[str]:
+    out = subprocess.run(["git", "ls-files"], cwd=REPO_ROOT, capture_output=True, text=True)
+    if out.returncode != 0:
+        return []
+    return [l for l in out.stdout.splitlines() if l.strip()]
+
+
+def transient_hits() -> list[str]:
+    hits = []
+    for f in tracked_files():
+        base = pathlib.PurePosixPath(f).name
+        if any(p.match(base) for p in TRANSIENT):
+            hits.append(f)
+        elif any(part in TRANSIENT_DIRS for part in pathlib.PurePosixPath(f).parts):
+            hits.append(f)
+    return hits
+
+
+def main() -> int:
+    ap = argparse.ArgumentParser(description=(__doc__ or "").split("\n")[0])
+    ap.add_argument("--negative-test", action="store_true",
+                    help="tamper with the protocol, require this check to fail, then restore it")
+    args = ap.parse_args()
+
+    if not PROTOCOL.exists() or not ANCHOR.exists():
+        print(f"  [FAIL] protocol or anchor missing; nothing can be checked")
+        return 1
+
+    raw = PROTOCOL.read_bytes()
+    actual_sha = hashlib.sha256(raw).hexdigest()
+    actual_bytes = len(raw)
+    anchor = json.loads(ANCHOR.read_text(encoding="utf-8"))
+
+    if args.negative_test:
+        print("  negative control: append a byte to the protocol and require check B to fail")
+        PROTOCOL.write_bytes(raw + b"\n")
+        try:
+            rc = main_checks(quiet=True)
+        finally:
+            PROTOCOL.write_bytes(raw)
+        if rc == 0:
+            print("  [FAIL] the control passed while the protocol was modified - the check cannot detect drift")
+            return 1
+        print("  [OK] negative control: drift was detected, and the protocol has been restored")
+        after = hashlib.sha256(PROTOCOL.read_bytes()).hexdigest()
+        if after != actual_sha:
+            print("  [FAIL] the restore did not reproduce the original bytes")
+            return 1
+        print("  [OK] restored byte-for-byte")
+        return 0
+
+    return main_checks(quiet=False)
+
+
+def main_checks(quiet: bool) -> int:
+    findings: list[str] = []
+
+    hits = transient_hits()
+    if hits:
+        findings.append(f"{len(hits)} transient artefact(s) tracked: " + ", ".join(hits[:5]))
+
+    raw = PROTOCOL.read_bytes()
+    anchor = json.loads(ANCHOR.read_text(encoding="utf-8"))
+    sha = hashlib.sha256(raw).hexdigest()
+    recorded_sha = str(anchor.get("sha256", ""))
+    if recorded_sha != sha:
+        findings.append(
+            f"the protocol digest is {sha[:16]} but the anchor records {recorded_sha[:16]} - the protocol was "
+            f"edited WITHOUT a re-pin, so two different contents can share one version number")
+    if int(anchor.get("bytes", -1)) != len(raw):
+        findings.append(f"byte count differs: file {len(raw)}, anchor {anchor.get('bytes')}")
+
+    file_version = re.search(r"\*\*Version:\*\*\s*([0-9]+\.[0-9]+)", raw.decode("utf-8"))
+    if not file_version:
+        findings.append("no version string found in the protocol")
+    elif str(anchor.get("version", "")).strip() != file_version.group(1):
+        findings.append(f"version differs: protocol {file_version.group(1)}, anchor "
+                        f"{anchor.get('version')} - a bump did not reach the anchor, or a re-pin did not "
+                        f"carry the bump")
+
+    if not quiet:
+        print(f"  tracked files: {len(tracked_files())}")
+        print(f"  protocol: version {file_version.group(1) if file_version else '?'}, "
+              f"{len(raw)} bytes, sha256 {sha[:16]}")
+        print(f"  anchor:   version {anchor.get('version')}, {anchor.get('bytes')} bytes, "
+              f"sha256 {str(anchor.get('sha256',''))[:16]}")
+
+    if findings:
+        print(f"\n  [FAIL] {len(findings)} ordering finding(s) - two steps ran in the wrong order:")
+        for f in findings:
+            print("      " + f)
+        print("\n  Repair: re-pin the anchor after editing the protocol, and never stage a transient file.")
+        return 1
+    print("\n  [OK] no transient artefact is tracked, and the protocol's content, digest, byte count and")
+    print("       version all agree - the state recorded is the state on disk")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

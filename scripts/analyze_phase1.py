@@ -47,6 +47,42 @@ N_PERM = 20000
 # ---------------------------------------------------------------------------------------------
 # The estimands, from the trial records run_phase1.py writes.
 # ---------------------------------------------------------------------------------------------
+def _auc(correct: list[float], incorrect: list[float]) -> float:
+    """P(a correct trial outranks an incorrect one). A rank statistic, so invariant to monotone rescaling."""
+    if not correct or not incorrect:
+        return float("nan")
+    wins = sum(1 for a in correct for b in incorrect if a > b)
+    ties = sum(1 for a in correct for b in incorrect if a == b)
+    return (wins + 0.5 * ties) / (len(correct) * len(incorrect))
+
+
+def auc_contrast(units: list[tuple], n_perm: int = 5000, seed: int = 20261005) -> dict:
+    """H1.2'. AUC(lambda_mid) - AUC(0) over paired units, with the exact within-unit paired permutation.
+
+    `units` are (c_clean, err_clean, c_mid, err_mid). Under the null that noise does not change the joint
+    distribution of (confidence, correctness), the two arm labels within a unit are exchangeable, so
+    independently swapping each unit's two observations generates the exact permutation distribution - the
+    same within-unit exchangeability section 4.5's estimator rests on. No second framework is introduced.
+    """
+    def stat(u: list[tuple]) -> float:
+        c0 = [x[0] for x in u if x[1] == 0]
+        e0 = [x[0] for x in u if x[1] == 1]
+        c1 = [x[2] for x in u if x[3] == 0]
+        e1 = [x[2] for x in u if x[3] == 1]
+        return _auc(c1, e1) - _auc(c0, e0)
+
+    if not units:
+        return {"contrast": float("nan"), "p_one_sided": 1.0, "n_units": 0}
+    obs = stat(units)
+    rnd = random.Random(seed)
+    hits = 0
+    for _ in range(n_perm):
+        perm = [(x[2], x[3], x[0], x[1]) if rnd.random() < 0.5 else x for x in units]
+        if stat(perm) >= obs:
+            hits += 1
+    return {"contrast": obs, "p_one_sided": (hits + 1) / (n_perm + 1), "n_units": len(units)}
+
+
 def load_trials(path: pathlib.Path) -> list[dict]:
     rows = []
     for line in path.read_text(encoding="utf-8").splitlines():
@@ -149,7 +185,7 @@ def contrasts(rows: list[dict], lam_lo: float, lam_mid: float) -> dict:
     seeds = sorted({k[1] for k in cells})
     res: dict = {"seeds": seeds, "cells": {}}
 
-    acc_pairs, se_pairs, cov_pairs = [], [], []
+    acc_pairs, se_pairs, cov_pairs, auc_units = [], [], [], []
     for seed in seeds:
         c0 = cells.get((0.0, seed), {})
         cm = cells.get((lam_mid, seed), {})
@@ -171,12 +207,22 @@ def contrasts(rows: list[dict], lam_lo: float, lam_mid: float) -> dict:
         v0 = [1 if c0[i]["c"] >= ts else 0 for i in shared]
         v1 = [1 if cm[i]["c"] >= ts else 0 for i in shared]
         cov_pairs += list(zip(v0, v1))
+        # H1.2' - one entry per paired unit, holding both arms' (confidence, correctness). The loop is
+        # explicit because `i` is not in scope: the lines above use comprehensions, and a comprehension's
+        # variable does not leak into the enclosing block.
+        for i in shared:
+            if c0[i].get("c") is not None and cm[i].get("c") is not None:
+                auc_units.append((float(c0[i]["c"]), 1 if c0[i]["error"] == 1 else 0,
+                                  float(cm[i]["c"]), 1 if cm[i]["error"] == 1 else 0))
 
     # H1.1: accuracy falls -> the discordant pair of interest is (right at 0, wrong at mid) = b
     h11 = mcnemar_exact([(1 - a, 1 - b) for a, b in acc_pairs]) if acc_pairs else {"p_two_sided": 1.0}
-    # H1.2: silent error RISES -> one-sided, direction fixed by the hypotheses
+    # H1.2': the gate's discriminability RISES -> one-sided AUC contrast, exact within-unit permutation.
+    # The original fixed-tau SilentError direction was refuted on dev by four independent probes and is
+    # retained below as a co-reported descriptive quantity, NOT as a family member (protocol v1.19).
+    h12p = auc_contrast(auc_units)
     d_se = [b - a for a, b in se_pairs]
-    h12 = paired_contrast([b for _, b in se_pairs], [a for a, _ in se_pairs]) if se_pairs else {"p_two_sided": 1.0}
+    h12_old = paired_contrast([b for _, b in se_pairs], [a for a, _ in se_pairs]) if se_pairs else {"p_two_sided": 1.0}
     # H1.3: coverage falls OR conditional error rises. Implemented as the coverage contrast (disjunct 1),
     # with the conditional-error disjunct reported beside it and NOT entering the family - the two disjuncts
     # are one quantity's two signs and counting both would double-count a single movement.
@@ -195,21 +241,30 @@ def contrasts(rows: list[dict], lam_lo: float, lam_mid: float) -> dict:
     # the guard is for: a two-sided p cannot tell you that a significant movement went the wrong way.
     acc_falls = (h11.get("c", 0) > h11.get("b", 0))
     se_rises = bool(se_pairs) and statistics.mean([b - a for a, b in se_pairs]) > 0
+    auc_rises = bool(auc_units) and (h12p["contrast"] > 0)
     cov_falls = bool(cov_pairs) and statistics.mean([a - b for a, b in cov_pairs]) > 0
     res["H1.1"] = {"test": "exact McNemar on accuracy, defers counted as errors",
                    "sign_ok": acc_falls, "predicted": "accuracy falls at lambda_mid", **h11}
-    res["H1.2"] = {"test": "paired permutation on SilentError@0.90", "sign_ok": se_rises,
-                   "predicted": "SilentError rises at lambda_mid",
-                   "mean_rise": statistics.mean(d_se) if d_se else float("nan"), **h12}
+    res["H1.2'"] = {"test": "exact within-unit paired permutation on the AUC contrast (gate discriminability)",
+                    "sign_ok": auc_rises,
+                    "predicted": "discriminability rises at lambda_mid", **h12p}
+    res["SilentError@0.90 (co-reported, not a family member)"] = {
+        "test": "paired permutation on SilentError@0.90", "sign_ok": se_rises,
+        "predicted": "the refuted H1.2 direction - reported for the record only",
+        "mean_rise": statistics.mean(d_se) if d_se else float("nan"), **h12_old}
     res["H1.3"] = {"test": "paired permutation on Coverage@epsilon", "sign_ok": cov_falls,
                    "predicted": "Coverage falls at lambda_mid",
                    "mean_fall": statistics.mean(d_cov) if d_cov else float("nan"), **h13}
     fam = {}
-    for k, ok in (("H1.1", acc_falls), ("H1.2", se_rises), ("H1.3", cov_falls)):
-        raw = {"H1.1": h11, "H1.2": h12, "H1.3": h13}[k]["p_two_sided"]
-        fam[k] = raw if ok else 1.0          # a wrong-direction result cannot enter the family as support
+    # H1.2' is a ONE-SIDED exact permutation on the AUC contrast, so its p is `p_one_sided` while the other
+    # two are two-sided McNemar/permutation p-values. Each hypothesis contributes its own p and its own sign
+    # check; the direction words differ ("falls" for H1.1 and H1.3, "rises" for H1.2'), and the family is
+    # keyed by the hypothesis label so the three are compared on their own terms.
+    ps = {"H1.1": h11["p_two_sided"], "H1.2'": h12p["p_one_sided"], "H1.3": h13["p_two_sided"]}
+    for k, ok in (("H1.1", acc_falls), ("H1.2'", auc_rises), ("H1.3", cov_falls)):
+        fam[k] = ps[k] if ok else 1.0        # a wrong-direction result cannot enter the family as support
     res["holm"] = holm(fam)
-    res["direction_violations"] = [k for k, ok in (("H1.1", acc_falls), ("H1.2", se_rises),
+    res["direction_violations"] = [k for k, ok in (("H1.1", acc_falls), ("H1.2'", auc_rises),
                                                    ("H1.3", cov_falls)) if not ok]
     return res
 
@@ -218,11 +273,13 @@ def contrasts(rows: list[dict], lam_lo: float, lam_mid: float) -> dict:
 # Synthetic controls.
 # ---------------------------------------------------------------------------------------------
 def synth(n_items: int, lam_mid: float, delta: float, rng: random.Random,
-          coverage_drop: float = 0.0) -> list[dict]:
+          coverage_drop: float = 0.0, disc_gain: float = 0.0) -> list[dict]:
     """Trial records with a KNOWN effect size.
 
-    delta           = drop in the probability of being correct at lam_mid (drives H1.1 and H1.2)
+    delta           = drop in the probability of being correct at lam_mid (drives H1.1)
     coverage_drop   = drop in the probability that confidence clears tau* at lam_mid (drives H1.3)
+    disc_gain       = sharpening of the gate at lam_mid: incorrect trials lose confidence relative to correct
+                      ones, so the within-arm AUC rises (drives H1.2')
 
     BOTH knobs exist because the first version had only `delta`, and the dry run showed H1.3 returned the
     SAME p-value in the positive and the negative control - the coverage contrast was never exercised, so
@@ -243,6 +300,12 @@ def synth(n_items: int, lam_mid: float, delta: float, rng: random.Random,
                 # makes Coverage@epsilon move. Without it the coverage contrast is constant by construction.
                 high = rng.random() >= (coverage_drop if lam != 0.0 else 0.0)
                 c = rng.choice([0.95, 0.92, 0.88]) if high else 0.60
+                # `disc_gain` is what makes H1.2' capable of firing. Without it confidence does not depend on
+                # correctness, so the AUC sits at chance in BOTH arms and the contrast is constant - which is
+                # exactly what the control suite reported when H1.2' was first wired in: the hypothesis was
+                # not rejected in any positive control, i.e. its code path had never been shown to work.
+                if lam != 0.0 and disc_gain:
+                    c = (min(0.99, c + disc_gain) if correct == 1 else max(0.0, c - disc_gain))
                 se = {str(t): (1 if (correct == 0 and c >= t) else 0) for t in (0.8, 0.9)}
                 rows.append({"phase": "I", "item_id": iid, "lambda": lam, "noise_seed": seed,
                              "realised_edit_rate": 0.0 if lam == 0 else 0.12,
@@ -264,17 +327,21 @@ def main() -> int:
     if args.synthetic:
         print("  SYNTHETIC CONTROLS - same code path, same pairing, same alpha")
         failures = []
-        for label, delta, cov, want, expect in (
-                ("POSITIVE (noise hurts accuracy)", 0.20, 0.0, True, ("H1.1", "H1.2")),
-                ("POSITIVE (noise lowers coverage)", 0.0, 0.50, True, ("H1.3",)),
-                ("NEGATIVE (no effect)", 0.00, 0.0, False, ())):
+        # EACH HYPOTHESIS NEEDS ITS OWN POSITIVE CONTROL, and H1.2' needs its own knob. `delta` moves accuracy
+        # without changing how confidence relates to correctness, so it cannot fire the AUC contrast; the
+        # control suite caught exactly that when H1.2' was first wired in.
+        for label, delta, cov, disc, want, expect in (
+                ("POSITIVE (noise hurts accuracy)", 0.20, 0.0, 0.0, True, ("H1.1",)),
+                ("POSITIVE (noise lowers coverage)", 0.0, 0.50, 0.0, True, ("H1.3",)),
+                ("POSITIVE (noise sharpens the gate)", 0.0, 0.30, 0.25, True, ("H1.2'",)),
+                ("NEGATIVE (no effect)", 0.00, 0.0, 0.0, False, ())):
             rng = random.Random(20261005)
-            rows = synth(300, args.lam_mid, delta, rng, coverage_drop=cov)
+            rows = synth(300, args.lam_mid, delta, rng, coverage_drop=cov, disc_gain=disc)
             res = contrasts(rows, args.lam_lo, args.lam_mid)
             h = res["holm"]
             rejected = [k for k, v in h.items() if v["reject"]]
-            print(f"\n    {label}: accuracy delta={delta}  coverage drop={cov}")
-            for k in ("H1.1", "H1.2", "H1.3"):
+            print(f"\n    {label}: accuracy delta={delta}  coverage drop={cov}  disc gain={disc}")
+            for k in ("H1.1", "H1.2'", "H1.3"):
                 dv = res[k].get("sign_ok")
                 print(f"      {k}: raw p={h[k]['raw_p']:.5f}  holm p={h[k]['holm_p']:.5f}"
                       f"  sign_ok={dv}  {'REJECT' if h[k]['reject'] else 'not rejected'}")
