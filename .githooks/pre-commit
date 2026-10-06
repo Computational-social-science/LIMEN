@@ -1,0 +1,50 @@
+#!/bin/sh
+# pre-commit -- make "the guards were red and I committed anyway" IMPOSSIBLE.
+#
+# WHY THIS EXISTS
+#     A rule about ordering is worthless unless something enforces the order. In one session the guard suite
+#     reported a blocking finding and the commit landed anyway, because the two ran in separate steps and the
+#     failure was read after the commit instead of before it. The lesson was already written down; what was
+#     missing was a mechanism. This is the mechanism.
+#
+# WHAT IT DOES
+#     Runs the whole guard suite. If any check fails the commit is refused. There is no silent bypass:
+#     explicitly setting GUARDS_SKIP=1 skips it, and that string is deliberately awkward to type, because
+#     every use should be a decision rather than an accident.
+#
+# WHICH INTERPRETER
+#     `.guard-python` in the repository root, if present, holds the machine-local interpreter path. It is
+#     gitignored, so the repository stays portable and no absolute path is ever committed. Without it, the
+#     hook uses python3 then python from PATH.
+
+set -e
+root=$(git rev-parse --show-toplevel)
+cd "$root"
+
+if [ "${GUARDS_SKIP:-0}" = "1" ]; then
+  echo "guards: SKIPPED on request (GUARDS_SKIP=1) - the commit is not verified"
+  exit 0
+fi
+
+if [ -f .guard-python ]; then
+  py=$(cat .guard-python)
+elif command -v python3 >/dev/null 2>&1; then
+  py=python3
+elif command -v python >/dev/null 2>&1; then
+  py=python
+else
+  echo "guards: NO INTERPRETER FOUND. Write one into .guard-python, or put python3 on PATH." >&2
+  exit 1
+fi
+
+echo "guards: running the suite with $py ..."
+if ! "$py" -B scripts/run_all_guards.py; then
+  cat >&2 <<'EOF'
+
+COMMIT REFUSED: the guard suite is red.
+
+Fix the finding, or state explicitly why it must not block. Do not commit on a red suite - a guard that
+reports a false pass is worse than no guard, and a rule about ordering that nothing enforces is not a rule.
+EOF
+  exit 1
+fi

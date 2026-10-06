@@ -44,3 +44,7 @@ viz/manuscript.html
 
 # Scratch output from the figure QC run. It is generated, not authored.
 viz/figures/_qc_tmp/
+
+# Machine-local interpreter pointer for the pre-commit gate. Never committed: the repository
+# must stay portable and no absolute path belongs in it.
+.guard-python
