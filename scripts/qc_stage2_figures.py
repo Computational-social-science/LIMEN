@@ -22,15 +22,24 @@ import pathlib
 import sys
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parent.parent
-SCRIPT = REPO_ROOT / "scripts" / "build_stage2_figures.py"
+# EVERY FIGURE GENERATOR, not one. This audited the Stage 2 script alone, so the four formalisation figures -
+# added later - were never layout-checked: a figure could overlap its own labels and nothing would say so. A
+# generator is named with the module attribute holding its output directory, so a new script joins the audit by
+# being listed here rather than by someone remembering to extend the check.
+TARGETS = [
+    ("build_stage2_figures.py", "FIG_DIR"),
+    ("build_lean_figures.py", "OUT"),
+    ("build_lean_figures2.py", "OUT"),
+]
 MIN_PT, MAX_PT = 4.5, 9.0
 
 
-def load_module():
-    spec = importlib.util.spec_from_file_location("bsf", SCRIPT)
+def load_module(name: str):
+    spec = importlib.util.spec_from_file_location("bsf_" + name.replace(".py", ""),
+                                                  REPO_ROOT / "scripts" / name)
     assert spec and spec.loader
     mod = importlib.util.module_from_spec(spec)
-    sys.modules["bsf"] = mod
+    sys.modules[spec.name] = mod
     spec.loader.exec_module(mod)
     return mod
 
@@ -49,7 +58,6 @@ def main() -> int:
     from matplotlib.text import Text
     from matplotlib.transforms import Bbox
 
-    mod = load_module()
     captured: list = []
     real_subplots = plt.subplots
 
@@ -66,15 +74,24 @@ def main() -> int:
     real_close = plt.close
     plt.close = lambda *a, **k: None
     tmp = REPO_ROOT / "viz" / "figures" / "_qc_tmp"
-    mod.FIG_DIR = tmp
     tmp.mkdir(parents=True, exist_ok=True)
+    rc_total = 0
     try:
-        rc = mod.main()
+        for name, out_attr in TARGETS:
+            mod = load_module(name)
+            if not hasattr(mod, out_attr):
+                print(f"  [FAIL] {name} has no {out_attr} - the audit cannot redirect its output, so it "
+                      f"would write over the deliverable it is supposed to check")
+                rc_total = 1
+                continue
+            setattr(mod, out_attr, tmp)
+            r = mod.main()
+            rc_total = rc_total or r
     finally:
         plt.subplots = real_subplots
         plt.close = real_close
-    if rc != 0:
-        print(f"  [FAIL] figure generation returned {rc}")
+    if rc_total != 0:
+        print(f"  [FAIL] figure generation returned {rc_total}")
         return 1
 
     findings: list[str] = []

@@ -125,8 +125,8 @@ def figure6() -> pathlib.Path:
     ax.text(5.25, -0.55, "what was measured, or proved", fontsize=7.4, color="#1d5c3a", fontweight="bold")
 
     fig.suptitle("The formalisation corrected the protocol, and the corrections were kept",
-                 fontsize=8.6, y=1.0)
-    fig.text(0.5, -0.015,
+                 fontsize=8.6, y=0.985)
+    fig.text(0.5, 0.012,
              f"{len(corr)} claims from the record's own corrections table and {len(rows) - len(corr)} "
              f"protocol statements refuted or qualified by a named theorem; the italic names are the "
              f"kernel results that settled them.",
@@ -202,7 +202,7 @@ def figure7() -> pathlib.Path:
         ax.text(0.24, yy, desc, fontsize=6.6, va="center", color=MUTED)
 
     ax.set_title("What the manuscript's claims rest on", loc="left", fontsize=8.4, fontweight="bold")
-    fig.text(0.5, -0.02,
+    fig.text(0.5, 0.012,
              f"{total} claims in the protocol's provenance table, counted from the table itself. "
              f"A claim whose status cannot be read from the table is not counted here, so the bar is a "
              f"lower bound rather than a summary.",
@@ -222,7 +222,11 @@ def write_formats(fig, stem: str) -> pathlib.Path:
             dpi = 300
         if tag == "tiff":
             kw["pil_kwargs"] = {"compression": "tiff_lzw"}
-        fig.savefig(OUT / f"{stem}.{tag}", dpi=dpi, bbox_inches="tight", **kw)
+        # bbox_inches=None WITH EXPLICIT MARGINS: the layout audit measures text against the SAVED
+        # canvas, and a tight bounding box silently re-crops that canvas, so every text artist
+        # measured against it appears to have escaped. The Stage 2 script has always used this
+        # convention; the newer scripts did not, and the audit said so.
+        fig.savefig(OUT / f"{stem}.{tag}", dpi=dpi, bbox_inches=None, **kw)
     return OUT / f"{stem}.png"
 
 

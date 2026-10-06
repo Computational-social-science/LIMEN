@@ -137,8 +137,11 @@ def figure4(lam: float = 0.18) -> pathlib.Path:
 
     fig.suptitle(
         "The scale-free property, measured on the confirmatory record "
-        f"($\\lambda$ = {lam}, n = {len(conf):,} trials)", fontsize=8.5, y=1.04)
+        f"($\\lambda$ = {lam}, n = {len(conf):,} trials)", fontsize=8.5, y=0.985)
     fig.tight_layout()
+    # room for the last x-tick label: without it the final tick is clipped at the canvas edge and
+    # the audit reports the text as having escaped, which is what a reader would see - a cut label.
+    fig.subplots_adjust(right=0.92)
     p = write_formats(fig, "fig4_stage2_scale_free")
     plt.close(fig)
 
@@ -200,31 +203,39 @@ def figure5() -> pathlib.Path:
 
     n_tot = len(edges)
     n_edges = sum(len(v) for v in edges.values())
-    fig, ax = plt.subplots(figsize=(7.16, 4.5))
+    # LAYERS AS COLUMNS, NODES STACKED VERTICALLY WITHIN A LAYER. The first layout put each layer on one
+    # horizontal band, which cannot hold fourteen long theorem names: the audit reported collisions no matter
+    # how the spacing was tuned, because the band is simply not wide enough for its content. Rotating the
+    # layout gives every layer its own column, where a long name costs nothing.
+    fig, ax = plt.subplots(figsize=(9.6, 7.4))
+    fig.canvas.draw()
+
+    names = sorted(edges)
+    probe = {n: ax.text(0, 0, n, fontsize=5.6) for n in names}
+    fig.canvas.draw()
+    rend = fig.canvas.get_renderer()
+    size = {n: (q.get_window_extent(renderer=rend).transformed(ax.transData.inverted()).width,
+                q.get_window_extent(renderer=rend).transformed(ax.transData.inverted()).height)
+            for n, q in probe.items()}
+    for q in probe.values():
+        q.remove()
+
+    row_h = max(h for _, h in size.values()) * 1.9
+    col_w = max(w for w, _ in size.values()) * 1.12
     pos: dict[str, tuple[float, float]] = {}
     for k in sorted(layers):
-        for j, n in enumerate(sorted(layers[k])):
-            pos[n] = (j - (len(layers[k]) - 1) / 2, -k)
+        members = sorted(layers[k])
+        span = (len(members) - 1) * row_h
+        for j, n in enumerate(members):
+            pos[n] = (k * col_w, span / 2 - j * row_h)
 
-    for n, deps in edges.items():
-        for x in deps:
-            if x in pos:
-                ax.annotate("", xy=pos[x], xytext=pos[n],
-                            arrowprops=dict(arrowstyle="-|>", color=MUTED, lw=0.5,
-                                            shrinkA=2, shrinkB=2, alpha=0.55))
+    # the vertical extent is needed by the footer text as well as the limits, so it is computed once here
+    ys = [q[1] for q in pos.values()]
 
-    for n, (x, y) in pos.items():
-        colour = ACCENT if origin[n] == "ScaleFree" else (ACCENT2 if depth[n] <= 1 else INK)
-        ax.text(x, y, n, ha="center", va="center", fontsize=5.6, color=colour,
-                bbox=dict(boxstyle="round,pad=0.22",
-                          fc="#eef4fb" if origin[n] == "ScaleFree" else "white",
-                          ec=colour, lw=0.6))
-    ax.set_xlim(-max(len(v) for v in layers.values()) / 2 - 1, max(len(v) for v in layers.values()) / 2 + 1)
-    ax.set_ylim(-max(layers) - 0.8, 0.8)
     ax.axis("off")
     ax.set_title("The proof dependency graph, parsed from the kernel source", loc="left",
                  fontsize=8.5, fontweight="bold")
-    ax.text(0.0, -max(layers) - 1.6,
+    ax.text((max(layers) * col_w) / 2, min(ys) - row_h * 2.1,
             f"{n_tot} theorems, {n_edges} invocations among them · arrows point from a proof to the "
             f"results it uses · blue = the scale-free module (no axioms at all)",
             fontsize=6.2, color=MUTED, ha="center")
