@@ -25,6 +25,7 @@ measurement/out/
 # the four formats the manuscript needs, so it is tracked even though PDFs generally are not.
 !viz/figures_stage2.pdf
 !viz/manuscript.pdf
+!viz/supplementary_information.pdf
 
 # A re-downloadable raw corpus. The DERIVED labels beside it are committed because they are not
 # reproducible without GPU time (modeA_items.jsonl holds the rater's per-item answers); the raw jfleg
