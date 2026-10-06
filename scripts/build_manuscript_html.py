@@ -673,6 +673,60 @@ def copy_katex(src, dest):
     return ver
 
 
+# ---------------------------------------------------------------------------------------------
+# Stage 2 figures.
+# ---------------------------------------------------------------------------------------------
+FIG_DIR = ROOT / "viz" / "figures"
+FIGURE_CAPTIONS = FIG_DIR / "FIGURE_CAPTIONS.md"
+FIGURE_ORDER = [
+    ("fig1_stage2_hypotheses", "Figure 1. The three pre-registered hypotheses across the noise grid"),
+    ("fig2_stage2_error_destination",
+     "Figure 2. Where the errors go: the gate rejects most of what noise breaks"),
+    ("fig3_stage2_gate_separation", "Figure 3. Why the gate separates better under noise"),
+]
+FIGURE_STYLE = (
+    "<style>.figures-plate figure{margin:0 0 22px 0} .figures-plate img{width:100%;height:auto;display:block}"
+    " .figures-plate figcaption{font-size:.83em;line-height:1.45;color:var(--fg-soft,#444);margin-top:7px}"
+    " @media print{.figures-plate figure{page-break-inside:avoid}}</style>"
+)
+
+
+def figures_section() -> str:
+    """The figure plate: the Stage 2 figures with their long captions, in the manuscript itself.
+
+    THE CAPTIONS ARE READ, NEVER RETYPED. They come from `viz/figures/FIGURE_CAPTIONS.md`, which the figure
+    builder generates with every number derived from the data CSV. Retyping them here would create a second
+    copy that could silently disagree with the plots - and a caption is the part of a figure a reader quotes.
+
+    THE IMAGES ARE REFERENCED RELATIVELY, matching how KaTeX is copied into the output directory rather than
+    fetched: the manuscript stays a small file and the repository carries the 600-dpi assets. Embedding them
+    would add about half a megabyte of base64 to every rebuild.
+
+    THE HEADING IS UNNUMBERED on purpose. It is a figure plate, not a section of the protocol, and giving it a
+    number here would desynchronise the HTML's numbering from the Markdown authority's.
+    """
+    if not FIGURE_CAPTIONS.exists():
+        return ""
+    caps = {m.group(1): m.group(2).strip()
+            for m in re.finditer(r"^## (\S+)\n\n(.*?)(?=\n## |\Z)",
+                                 FIGURE_CAPTIONS.read_text(encoding="utf-8"), re.S | re.M)}
+    parts = [FIGURE_STYLE, '<div class="figures-plate">', "<h2>Stage 2 figures</h2>",
+             "<p>Each figure is followed by its long caption, and the captions are generated from the same "
+             "data as the plots. The images are not captioned internally: a caption belongs to the document, "
+             "where it can be typeset, translated and restyled.</p>"]
+    for stem, title in FIGURE_ORDER:
+        if stem not in caps:
+            continue
+        png = FIG_DIR / f"{stem}.png"
+        if not png.exists():
+            continue
+        cap = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", caps[stem])
+        parts.append(f'<figure><img src="figures/{stem}.png" alt="{title}">'
+                     f"<figcaption><strong>{title.split('. ', 1)[1]}.</strong> {cap}</figcaption></figure>")
+    parts += ["</div>"]
+    return NL.join(parts) + NL
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description="Render the anchor to an offline NHB-style manuscript.")
     ap.add_argument("--out", default="viz/manuscript.html")
@@ -702,6 +756,8 @@ def main() -> int:
     html = it.render(md)
     html = r.emit(html, it.renderInline)
     html, made = callouts(html)
+    # BEFORE ids_and_toc, so the plate's heading receives an id and a contents entry like any other
+    html = html + figures_section()
     html, toc_links, toc = ids_and_toc(html)
 
     # ---- derived panels ------------------------------------------------------
