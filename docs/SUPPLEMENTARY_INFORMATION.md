@@ -24,7 +24,7 @@ I&nbsp;&nbsp;Guards, Negative Controls and Reproduction &nbsp;·&nbsp; 21
 
 The main text reports a pre-registered phased study. This appendix records what was fixed before the confirmatory run, what changed, and what the changes cost.
 
-The protocol is the authority and lives in `protocol/`; its current version is **1.23**, pinned by digest in `config/anchor.json` (sha256 `aff24898df9a4e8b…`, 101,011 bytes). Every amendment below is recorded **at the point in the protocol it applies to**, with the document that motivated it, so the protocol's own history remains legible.
+The protocol holds the programme's commitments, and the **anchor governs** which content is current: version **1.23**, pinned by digest in `config/anchor.json` (sha256 `aff24898df9a4e8b…`, 101,011 bytes). Every amendment below is recorded **at the point in the protocol it applies to**, with the document that motivated it, so the protocol's own history remains legible.
 
 ### A.1 The frozen design
 

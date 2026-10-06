@@ -96,8 +96,9 @@ def main() -> int:
     A("The main text reports a pre-registered phased study. This appendix records what was fixed before the "
       "confirmatory run, what changed, and what the changes cost.")
     A("")
-    A(f"The protocol is the authority and lives in `protocol/`; its current version is **{ver}**, pinned by "
-      f"digest in `config/anchor.json` (sha256 `{anchor['sha256'][:16]}…`, {anchor['bytes']:,} bytes). Every "
+    A(f"The protocol holds the programme's commitments, and the **anchor governs** which content is current: "
+      f"version **{ver}**, pinned by digest in `config/anchor.json` (sha256 `{anchor['sha256'][:16]}…`, "
+      f"{anchor['bytes']:,} bytes). Every "
       "amendment below is recorded **at the point in the protocol it applies to**, with the document that "
       "motivated it, so the protocol's own history remains legible.")
     A("")
