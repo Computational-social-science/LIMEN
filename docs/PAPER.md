@@ -130,6 +130,8 @@ Accuracy falls from 0.8926 to 0.7720 at $\lambda_{\mathrm{mid}}$, a loss of **12
 
 At the highest level examined, $\lambda = 0.25$, coverage is 0.1585 against 0.4479 clean. **The system declines roughly two-thirds of the trials it would otherwise have answered.**
 
+**In the frame's terms this is a criterion shift, and saying so is what keeps the two results from colliding.** The operating point moves down the confidence axis, so the system occupies a **different point** on the coverage–error curve: fewer decisions at a broadly similar conditional error is a movement *along* the curve, not a degradation *of* it. Coverage is the rate; the conditional error among committed decisions is the distortion; the threshold is what selects between them, and the threshold did not change. What this section does **not** establish is whether the curve itself moved — whether the same threshold now sits at a different height on a curve of a different shape. That is a question about **sensitivity** rather than about the criterion, and it is the subject of the next section.
+
 ![Figure 2](figures/fig2_stage2_error_destination.png)
 
 **Figure 2 | Where the errors go.** **(a)** Every error at each noise level, decomposed into the share the gate rejects and the share it admits. The rejected share rises from 61.4 % to 93.5 % — the gate catches most of what noise breaks. **(b)** The two error measures diverge: the conditional error among admitted trials is flat (0.092 to 0.070), while the all-trial silent error *falls* (0.041 to 0.015). A fixed-threshold silent-error rate cannot rise under a manipulation that deflates confidence, which is why the original hypothesis was refuted and replaced.
@@ -156,7 +158,7 @@ The original H1.2 asserted that the fixed-threshold silent error *rises* with no
 
 ### The non-monotonicity is reported rather than smoothed
 
-The within-arm AUC is not monotone in noise: it rises to 0.7601 at $\lambda_{\mathrm{mid}}$ and then **falls** to 0.7483 at $\lambda = 0.25$. Discrimination improves with corruption up to a point and then begins to degrade. The pre-registered contrast is unaffected, since it compares $\lambda_{\mathrm{mid}}$ against zero as fixed in advance, but the impression of a monotone trend would be wrong. **This is also a prediction, not an anomaly** — at high enough corruption the surface form stops carrying the information that lets confidence track it, and the mechanism proposed below says so.
+The within-arm AUC is not monotone in noise: it rises to 0.7601 at $\lambda_{\mathrm{mid}}$ and then **falls** to 0.7483 at $\lambda = 0.25$. Discrimination improves with corruption up to a point and then begins to degrade. The pre-registered contrast is unaffected, since it compares $\lambda_{\mathrm{mid}}$ against zero as fixed in advance, but the impression of a monotone trend would be wrong. **This is also a prediction, not an anomaly** — at high enough corruption the surface form stops carrying the information that lets confidence track it, and the mechanism proposed below says so. **Stated in the frame's terms: what rises and then falls is the *curve* — sensitivity — while the movement of the criterion is monotone in the disturbance. A study reporting only its endpoint at $\lambda_{\mathrm{mid}}$ would have described this curve with one measurement and could not have seen it at all.**
 
 ---
 
