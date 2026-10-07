@@ -42,7 +42,29 @@ $$
 | $(\mathbf{p}, c)$ | option probabilities and the model's own confidence |
 | $g_\tau$ | the **gate**: the map from evidence to action, at threshold $\tau$ |
 
-The model is stated in full, with the definitions, assumptions and machine-checked propositions that follow from it, in the pre-registered protocol that this paper reports (Supplementary information, §T and §B; the protocol is pinned by content digest in §I).
+These three maps are one chain, and **every quantity in this paper is defined on it**. The **channel** is the encoder
+
+$$x = E(i,\, s,\, n), \qquad n \sim \mathcal{N}_s(\lambda),$$
+
+which carries an intention to observed text under channel $s$ and a noise draw of intensity $\lambda$. The **instrument** is
+
+$$(\mathbf{p},\, c) = f_\theta(x,\, q),$$
+
+with $q$ the typed question, $\mathbf{p}$ the option probabilities and $c$ a **fixed functional of $\mathbf{p}$**. The **gate** is
+
+$$a = g_\tau(\mathbf{p},\, c),$$
+
+the pre-registered map from evidence to action. **Only the gate has a form the programme manipulates or fits**: $\tau$ is a stimulus parameter in this paper and a fitted quantity in the cross-channel phase.
+
+**Three assumptions carry the design, and they are stated rather than implied.**
+
+1. **Noise enters at one place.** $E$ is the only map that takes the noise draw; neither $f_\theta$ nor $g_\tau$ sees $\lambda$ or $s$. A difference between two conditions is therefore a difference in $x$ propagating through *both* downstream stages — the formal reason the design is within-item.
+2. **The instrument is frozen.** $\theta$ is neither trained nor tuned, so the only thing that varies inside $f_\theta$ is its input.
+3. **Confidence cannot move without evidence.** $c$ is a fixed functional of $\mathbf{p}$, so the instrument cannot raise its confidence independently of what it knows — a constraint the discrimination hypothesis *tests* rather than assumes.
+
+The ecologically relevant regime has $\lambda > 0$; $\lambda = 0$ is a boundary probe, not a baseline in the everyday sense.
+
+The propositions that follow from these definitions are machine-checked. The **proofs**, the kernel names and the formal machinery are in the Supplementary information, §B, and the protocol is pinned by content digest in §I — what lives there is the proof of the argument, not the argument.
 
 **The chain is the object of study, not three separate facts.** Reading it left to right, **noise and channel enter only at $E$**, so any difference between two conditions is a difference in $x$ propagating through both downstream stages. That is the formal reason the design below is **within-item**: the disturbance is injected at one point in the chain, and everything after it is a deterministic function of the text and the frozen parameters. It is also why a single manipulation moves all three dependent variables together rather than independently — $\lambda$ cannot move accuracy without also moving the silent-error count and coverage, because all three read the same propagated $x$.
 

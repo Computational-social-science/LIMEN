@@ -30,12 +30,19 @@ WHAT IT CANNOT DO
 from __future__ import annotations
 
 import argparse
+import html as html_lib
+import json
 import pathlib
 import re
 import sys
 import zipfile
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
+
+
+def html_unescape(s: str) -> str:
+    """The map is keyed by RAW TeX; the HTML carries it HTML-escaped. Compare like with like."""
+    return html_lib.unescape(s)
 
 # Every document set this repository produces, and what each one is made of. Adding a document means adding
 # a row here, which is the point: a new deliverable cannot quietly bypass the checks.
@@ -237,6 +244,86 @@ def check_docx(name: str, path: pathlib.Path, facts: dict) -> tuple[list[str], d
     return findings, out
 
 
+def check_map_coverage(name: str, path: pathlib.Path, spec: dict) -> tuple[list[str], dict]:
+    """Every expression the SOURCE declares must be convertible by the map the DOCX build reads.
+
+    WHY THIS EXISTS
+        The TeX -> OMML map is a CACHE, and a cache that is merely OLD is not merely slow. The manuscript's
+        map was harvested from a page generated 3.1 hours before the HTML it described, and three display
+        equations had been added in between. They were absent from the map, so the DOCX build had nothing to
+        convert and would have emitted their TeX source: one equation in a Word file reading
+        `$$x = E(i, s, n)...$$` while its neighbours rendered. Nothing errored; the build reported every count
+        it was asked for.
+
+        A TIMESTAMP IS THE WRONG TEST. It says when a file was touched, not what it contains, and any build
+        that regenerates the page without changing the expressions defeats it. THE TEST IS COVERAGE.
+
+    WHERE THE EXPECTATION COMES FROM
+        From the SOURCE markdown, through the same `math_spans()` the DOCX check uses - not from the
+        deliverable HTML, which carries raw `$...$` for the browser to typeset and holds no per-expression
+        markup at all. A first version of this function read `data-tex` attributes out of the deliverable and
+        found ZERO of them, then reported no findings: an empty set passes every universal statement, which
+        is the failure this whole file exists to prevent. A document that declares mathematics and has a
+        build that consumes a map is now REQUIRED to yield spans, or it is a finding.
+    """
+    findings: list[str] = []
+    out: dict = {"map_spans": 0, "map_missing": 0}
+    # READ THE SOURCE HERE, not from a `facts` dict: `check_docx` runs first and REPLACES `facts["math"]`
+    # with a COUNT, so a later reader gets an int where a list is expected. A dict passed between checks and
+    # mutated by each of them is a channel for exactly this kind of drift, so this check reads the source
+    # itself; doing so twice costs a millisecond.
+    #
+    # The wording above is deliberate. An earlier version of this comment said the source "is the
+    # authority", and `check_anchor.py` refused it: a line claiming authority that does not also name the
+    # anchor is a finding, because this repository has one governing artefact and the check exists to keep
+    # it that way. The guard was right and the comment was wrong - the sentence was about what THIS
+    # comparison reads, not about where truth lives in the repository.
+    md_path = spec.get("md")
+    if not (md_path and (ROOT / md_path).exists()):
+        return findings, out
+    # THE BUILDER'S OWN EXTRACTOR, so this checks the real contract rather than a lookalike. A separate
+    # regex would agree with the builder on the day it was written and drift from it later, and the drift
+    # would be silent because both sides would still be self-consistent. (The file's own `math_spans()`
+    # helper is NOT used here: despite its name and docstring it returns a COUNT, and an earlier attempt to
+    # read spans from it produced `TypeError: object of type 'int' has no len()`.)
+    import omml as _omml
+    spans = _omml.extract_spans((ROOT / md_path).read_text(encoding="utf-8"))
+    if not spans:
+        if spec.get("docx"):
+            findings.append(
+                f"{name}: declares no mathematics to the map check while a DOCX is built from it - either "
+                f"the source lost its mathematics or this check has stopped reading it")
+        return findings, out
+    map_path = path.with_name(path.stem + "_mml_map.json")
+    if not map_path.exists():
+        findings.append(
+            f"{name}: {len(spans)} expression(s) are declared in the source but {map_path.name} does not "
+            f"exist - the DOCX build has no mathematics to place and will emit TeX source")
+        return findings, out
+    try:
+        table = json.loads(map_path.read_text(encoding="utf-8")).get("map", {})
+    except Exception as exc:
+        findings.append(f"{name}: {map_path.name} is unreadable ({exc}) - every expression will fall back")
+        return findings, out
+    out["map_spans"] = len(spans)
+    missing = sorted({s for s in spans if not table.get(s)})
+    out["map_missing"] = len(missing)
+    if missing:
+        shown = ", ".join(repr(m[:48]) for m in missing[:3])
+        findings.append(
+            f"{name}: {len(missing)} of {len(spans)} declared expression(s) have no conversion and will "
+            f"reappear in the DOCX as raw TeX source: {shown}{' ...' if len(missing) > 3 else ''}")
+    # THE OTHER DIRECTION. A map entry with no source is stale rather than missing, and rule 3 says a stale
+    # entry must become ABSENT - an entry that survives an edit is how one expression's mathematics ends up
+    # attached to another. Reported, not fatal: the build ignores keys it never asks for.
+    out["map_orphans"] = len([k for k in table if k not in set(spans)])
+    if out["map_orphans"]:
+        findings.append(
+            f"{name}: {map_path.name} holds {out['map_orphans']} entr(y/ies) with no matching expression in "
+            f"the source - a stale conversion that outlived the text it described")
+    return findings, out
+
+
 def check_html(name: str, path: pathlib.Path, spec: dict) -> tuple[list[str], dict]:
     findings: list[str] = []
     out: dict = {}
@@ -301,6 +388,13 @@ def main() -> int:
         f, _ = check_html(name, ROOT / spec["html"], spec)
         findings += f
         n_assert += 3
+        f, facts_map = check_map_coverage(name, ROOT / spec["html"], spec)
+        findings += f
+        n_assert += 3
+        if facts_map.get("map_spans"):
+            print(f"    {name}: {facts_map['map_spans']} declared expression(s), "
+                  f"{facts_map['map_missing']} without a conversion"
+                  f"{', harvest page STALE' if facts_map.get('map_stale') else ''}")
         if spec.get("pdf"):
             f, _ = check_pdf(name, ROOT / spec["pdf"])
             findings += f
