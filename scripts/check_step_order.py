@@ -56,7 +56,12 @@ TRANSIENT_DIRS = (".pyc", "__pycache__", ".pytest_cache", ".mypy_cache",
                   # scratch directory named by its author is exactly the artefact a wrong step order leaves
                   # behind. Anything underscore-prefixed or explicitly temporary now counts.
                   "_tmp", "_scratch", "_qc", "_build", "tmp", "scratch")
-TRANSIENT_RE = (re.compile(r"^_.*$"), re.compile(r"^.*(tmp|scratch|bak|old)\..*$", re.I))
+# `^_` is this repository's scratch convention. TWO NAMES ARE NOT SCRATCH: a Python package's
+# `__init__.py` and `__main__.py` begin with underscores because the LANGUAGE requires it. A rule that
+# cannot tell a naming convention from a language keyword will forbid a package - which is what it did to
+# docpipe. Named explicitly rather than by weakening the rule: every other leading underscore is refused.
+TRANSIENT_RE = (re.compile(r"^_(?!_init__\.py$|_main__\.py$).*$"),
+                re.compile(r"^.*(tmp|scratch|bak|old)\..*$", re.I))
 
 
 def tracked_files() -> list[str]:

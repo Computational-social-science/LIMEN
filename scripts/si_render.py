@@ -80,6 +80,19 @@ def copy_mathjax(dest: pathlib.Path) -> str:
                 raise
 
     place(src / MATHJAX_FILE, MATHJAX_FILE)
+
+    # THE FONTS ARE PART OF THE RENDERER, NOT AN OPTIONAL EXTRA. `place` above copied one JavaScript file, and
+    # a document built from a destination without the font directory loads perfectly while every symbol
+    # substitutes and the variables lose their italic - the defect took a reader to notice and no build to
+    # report. Copying them here is what makes a fresh destination behave like a populated one.
+    fonts_src = src / "output" / "chtml" / "fonts" / "woff-v2"
+    if fonts_src.is_dir():
+        fonts_dst = dest / "output" / "chtml" / "fonts" / "woff-v2"
+        fonts_dst.mkdir(parents=True, exist_ok=True)
+        for f in sorted(fonts_src.glob("*")):
+            if f.suffix in (".woff", ".woff2"):
+                place(f, "output/chtml/fonts/woff-v2/" + f.name)
+
     ver = "local"
     m = re.search(r"MathJax(?:-v)?[ _]?(?:version[^0-9]{0,4})?([0-9]+\.[0-9]+\.[0-9]+)",
                   (dest / MATHJAX_FILE).read_text(encoding="utf-8", errors="ignore")[:200000])
