@@ -76,7 +76,13 @@ viz/_mml_harvest.html
 viz/_mml_map.json
 # harvest page and MathML map are per-document now, derived from the output name
 viz/*_mml_harvest.html
-viz/*_mml_map.json
+# TRACKED, though it looks like a build intermediate: it is the PROVENANCE of a tracked DOCX. The map
+# records which MathML each source expression became, and the DOCX carries those equations as native OMML.
+# Excluded, a clone holds a document whose equations cannot be traced to a source expression, cannot be
+# rebuilt, and - since the coverage check reads this file - would report that the build has no mathematics to
+# place. That is the same defect as `viz/manuscript.html` and `viz/mathjax/` above: a rule that outlived its
+# subject, and the subject is now "an artefact a tracked deliverable depends on". The harvest PAGE stays
+# ignored: it is regenerable in seconds and carries nothing the map does not.
 
 # a downloaded installer that landed in the working tree; not project content, and an
 # untracked binary swept in by `git add -A` is exactly how a repository grows 100 MB of accident
