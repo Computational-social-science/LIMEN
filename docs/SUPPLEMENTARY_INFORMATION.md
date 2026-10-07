@@ -581,7 +581,7 @@ Jurafsky, D., & Martin, J. H. *Speech and Language Processing* (3rd ed. draft), 
 
 Kernighan, M. D., Church, K. W., & Gale, W. A. (1990). A spelling correction program based on a noisy channel model. *Proceedings of the 13th International Conference on Computational Linguistics (COLING)*, 205–210. *(the channel model used by the recoverability index)*
 
-Rayner, K., White, S. J., Johnson, R. L., & Liversedge, S. P. (2006). Raeding wrods with jubmled lettres: There is a cost. *Psychological Science*, 17(3), 192–193. *(the human readability anchor; the interior-scrambled variant at 0.4480 is the floor against which `λ_lo` and `λ_mid` are selected)*
+Rayner, K., White, S. J., Johnson, R. L., & Liversedge, S. P. (2006). Raeding wrods with jubmled lettres: There is a cost. *Psychological Science*, 17(3), 192–193. *(the human readability anchor; the interior-scrambled variant at 0.4480 is the floor against which `λ_lo` and `λ_mid` are selected. **0.4480 is this project's recoverability index applied to that condition — measured under this index, not a number quoted from the paper**)*
 
 **Works cited for the LLM-era section.** Retrieved from their published records; authors, year and identifier are given so a reader can retrieve exactly what is cited.
 

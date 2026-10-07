@@ -301,7 +301,7 @@ within tolerance. Scored with the same index on the same 60 dev items:
 
 | Condition | `mean_r` |
 |---|---|
-| Rayner (2006), interior **scrambled** — the harsher variant, and the floor | **0.4480** |
+| Rayner (2006), interior **scrambled** — the harsher variant, and the floor | **0.4480** *(measured under this index, not quoted from the paper)* |
 | Rayner (2006), interior **adjacent transposed** | 0.4750 |
 | our λ = 0.05 (mildest) | 0.5216 |
 | our λ = 0.18 (harshest) | 0.4847 |

@@ -125,7 +125,8 @@ of two admissible routes, **stated here before any calibration runs**:
 **Phase I's route was a published human anchor, and the same index applies.** Phase I fixed its levels with a
 non-saturating recoverability index — the noisy-channel posterior mass on the intended word, with the channel
 being the generator's own model — anchored on the interior-scrambled condition of Rayner et al. (2006),
-recovered 0.4480 of the time. Phase II uses the same index per channel, and reports the anchor it used.
+**measured under this index rather than quoted from the paper**: applying the index to that condition
+returns 0.4480. Phase II uses the same index per channel, and reports the anchor it used.
 
 **Two earlier instruments were measured and rejected in Phase I and are not revisited**: an absolute
 three-level rating that never emitted its lowest category (weighted $\kappa$ 0.073), and pairwise comparison
