@@ -10,7 +10,7 @@ The distinction matters because the two failures call for opposite remedies. Sil
 
 ### A.2 The question, stated so that it can fail
 
-> Does keystroke-faithful typographic noise, applied to a typed-decision task, change **the error rate among the trials a confidence gate admits**?
+*‹Does keystroke-faithful typographic noise, applied to a typed-decision task, change **the error rate among the trials a confidence gate admits**?›*
 
 The question is deliberately about a conditional quantity rather than an overall one. An overall error rate must rise when noise is applied, because some correct answers become wrong; that is arithmetic, not a finding. Whether the *admitted* error rate rises is an empirical question about the joint behaviour of confidence and correctness, and it can go either way. It is falsifiable, it is measurable on a frozen instrument, and its answer decides which remedy applies.
 

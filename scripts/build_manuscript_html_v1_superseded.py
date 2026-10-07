@@ -307,7 +307,10 @@ def md_to_html(md: str) -> str:
 
 def main() -> int:
     ap = argparse.ArgumentParser(description="Render the anchor to an offline HTML manuscript.")
-    ap.add_argument("--out", default="viz/manuscript.html")
+    # THIS IS A SUPERSEDED PROTOCOL RENDERER AND NO LONGER OWNS THE MANUSCRIPT PATH. Its default used to
+    # be `viz/manuscript.html`, where the PAPER lives; running it replaced the paper with a protocol
+    # rendering and nothing noticed, because both files were called "the manuscript".
+    ap.add_argument("--out", default="viz/protocol_v1.html")
     args = ap.parse_args()
 
     if not ANCHOR.is_file():
@@ -341,6 +344,12 @@ def main() -> int:
     html = HTML.format(title=title, subtitle=subtitle, stamp=stamp, body=body, css=CSS,
                        katex_version=katex_ver)
     out = ROOT / args.out
+    # A hard refusal, because a changed default only protects the people who do not pass --out.
+    if out.resolve() in {(ROOT / "viz" / "manuscript.html").resolve(),
+                         (ROOT / "viz" / "manuscript.pdf").resolve()}:
+        print("REFUSING: viz/manuscript.html is produced by build_paper_html.py from docs/PAPER.md.")
+        print("This script renders the protocol; write it to a protocol path.")
+        return 2
     out.write_text(html, encoding="utf-8", newline="\n")
 
     n_display = raw.count("$$") // 2

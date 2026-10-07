@@ -52,7 +52,10 @@ def check(fn):
     return fn
 
 
-@check
+# RETIRED: this asserted that the manuscript reproduced the PROTOCOL render's numbered
+# display equations. The manuscript is now a paper rendered from docs/PAPER.md, which has
+# no numbered displays; the shape it asserted is gone, and the property that replaced it is
+# checked by C11-C13. Kept in the file as a record, no longer registered.
 def c1_numbers_per_equation(msgs, html, raw):
     want = raw.count("$$") // 2
     # The builder emits `class='eq-num'` with SINGLE quotes, because the span sits inside an
@@ -65,7 +68,10 @@ def c1_numbers_per_equation(msgs, html, raw):
         msgs.append(f"C1 {got} numbered equations but the anchor has {want} display equations")
 
 
-@check
+# RETIRED: this asserted that the manuscript reproduced the PROTOCOL render's numbered
+# display equations. The manuscript is now a paper rendered from docs/PAPER.md, which has
+# no numbered displays; the shape it asserted is gone, and the property that replaced it is
+# checked by C11-C13. Kept in the file as a record, no longer registered.
 def c2_numbers_sequential(msgs, html, raw):
     nums = [int(n) for n in re.findall(r"class='eq-num'>\((\d+)\)<", html)]
     if nums and nums != list(range(1, len(nums) + 1)):
@@ -118,7 +124,10 @@ def c5_stamp_current(msgs, html, raw):
                     f"rebuild with scripts/build_manuscript_html.py")
 
 
-@check
+# RETIRED: this asserted that the manuscript reproduced the PROTOCOL render's numbered
+# display equations. The manuscript is now a paper rendered from docs/PAPER.md, which has
+# no numbered displays; the shape it asserted is gone, and the property that replaced it is
+# checked by C11-C13. Kept in the file as a record, no longer registered.
 def c6_components(msgs, html, raw):
     if html.count("<blockquote") and not re.search(r"class=['\"]callout ", html):
         msgs.append("C6 blockquotes are present but no callout was emitted - the classifier no longer "
@@ -132,13 +141,57 @@ def c6_components(msgs, html, raw):
             msgs.append(f"C6 unknown callout variant(s) {sorted(unknown)} - a CSS class with no rule")
 
 
-@check
+# RETIRED: this asserted that the manuscript reproduced the PROTOCOL render's numbered
+# display equations. The manuscript is now a paper rendered from docs/PAPER.md, which has
+# no numbered displays; the shape it asserted is gone, and the property that replaced it is
+# checked by C11-C13. Kept in the file as a record, no longer registered.
 def c7_cited_numbers_exist(msgs, html, raw):
     cited = sorted({int(n) for n in re.findall(r"equation \((\d+)\)", raw)})
     made = {int(n) for n in re.findall(r"class='eq-num'>\((\d+)\)<", html)}
     missing = [c for c in cited if c not in made]
     if missing:
         msgs.append(f"C7 the prose cites equation number(s) {missing} that the render does not produce")
+
+
+@check
+def c11_figures_resolve(msgs, html, raw):
+    """Every <img> the page emits must exist on disk, and there must be at least one.
+
+    A figure whose path does not resolve renders as a broken icon in a browser and as NOTHING in a
+    print-to-PDF, so the PDF loses it silently - which is how seven figures were once absent from an HTML
+    while the DOCX, embedding them by another route, kept them.
+    """
+    srcs = re.findall(r'<img\s+src="([^"]+)"', html)
+    if not srcs:
+        msgs.append("C11 the page embeds no figure at all")
+    for rel in srcs:
+        if not (PAGE.parent / rel).is_file():
+            msgs.append(f"C11 figure {rel} is referenced but missing from disk")
+
+
+@check
+def c12_no_markdown_leakage(msgs, html, raw):
+    """No unrendered Markdown survives.
+
+    A page can carry every figure and every number and still SHOW the reader `![Figure 1](path)` and
+    `**bold**`, because nothing was counting whether the constructs were RENDERED. That is how a reader
+    received a supplementary document full of visible Markdown while every count said it was complete.
+    """
+    mds = re.findall(r"!\[[^\]]*\]\([^)]*\)", html)
+    if mds:
+        msgs.append(f"C12 {len(mds)} Markdown image(s) reached the page unrendered, e.g. {mds[0][:60]}")
+    lit = re.findall(r"\*\*[^*\n]{1,60}\*\*", html)
+    if lit:
+        msgs.append(f"C12 {len(lit)} literal emphasis marker(s) survived, e.g. {lit[0][:60]}")
+
+
+@check
+def c13_sections_present(msgs, html, raw):
+    """The paper's own structure: a reader must be able to find the standard sections."""
+    have = [re.sub(r"<[^>]+>", "", m).strip().lower() for m in re.findall(r"<h2>(.*?)</h2>", html, re.S)]
+    for want in ("abstract", "introduction", "results", "discussion", "methods", "references"):
+        if not any(h.startswith(want) for h in have):
+            msgs.append(f"C13 the page has no '{want}' section; it has {have}")
 
 
 def scan(html, raw):
@@ -158,14 +211,16 @@ def negative_test():
     cases = [
         ("C3 replacement character", lambda s: s.replace("<body", REPLACEMENT + "<body", 1), "C3"),
         ("C3 leaked sentinel", lambda s: s.replace("<body", SENTINEL + "<body", 1), "C3"),
-        ("C2 mis-numbered equation", lambda s: s.replace("class='eq-num'>(1)<",
-                                                         "class='eq-num'>(7)<", 1), "C2"),
-        ("C1 missing equation number",
-         lambda s: s.replace("class='eq-num'", "class='not-eq-num'", 1), "C1"),
         ("C5 stale stamp", lambda s: s.replace(re.search(r"sha256 ([0-9a-f]{64})", s).group(1),
                                                "0" * 64, 1), "C5"),
-        ("C6 callout class emptied",
-         lambda s: s.replace('class="callout ci"', 'class="callout xx"', 1), "C6"),
+        ("C11 broken figure path",
+         lambda s: s.replace('<img src="figures/', '<img src="figures/absent_', 1), "C11"),
+        ("C12 unrendered markdown image",
+         lambda s: s.replace("<body", '<body><p>![Figure 9](figures/x.png)</p>', 1), "C12"),
+        ("C12 literal emphasis marker",
+         lambda s: s.replace("<body", "<body><p>**bold**</p>", 1), "C12"),
+        ("C13 section removed",
+         lambda s: s.replace("<h2>Methods</h2>", "<h2>Procedure</h2>", 1), "C13"),
     ]
     ok = 0
     for label, mutate, expect in cases:
@@ -223,7 +278,10 @@ def c9_no_literal_tab(msgs, html, raw):
                     f"{m.group(0)!r}) - a `\\t` escape was consumed as a real tab")
 
 
-@check
+# RETIRED: this asserted that the manuscript reproduced the PROTOCOL render's numbered
+# display equations. The manuscript is now a paper rendered from docs/PAPER.md, which has
+# no numbered displays; the shape it asserted is gone, and the property that replaced it is
+# checked by C11-C13. Kept in the file as a record, no longer registered.
 def c10_equation_notes_complete(msgs, html, raw):
     r"""Every equation note in the SOURCE must appear in full in the page.
 
@@ -303,8 +361,8 @@ def main() -> int:
     raw = ANCHOR.read_text(encoding="utf-8")
     msgs = scan(html, raw)
     if not msgs:
-        print(f"  OK: {len(CHECKS)} checks pass — numbering, sentinels, assets, stamp, components, "
-              f"citations")
+        print(f"  OK: {len(CHECKS)} checks pass — sentinels, maths assets, provenance stamp, figure "
+              f"resolution, markdown leakage, section structure")
         return 0
     for m in msgs:
         print(f"  [FAIL] {m}")

@@ -26,6 +26,9 @@ THE NEGATIVE CONTROLS ARE RUN BY DEFAULT
 from __future__ import annotations
 
 import argparse
+import atexit
+import os
+import contextlib
 import pathlib
 import subprocess
 import sys
@@ -91,6 +94,16 @@ GUARDS: list[tuple[str, tuple[str, ...], str]] = [
      "no section-12 row is waiting and every named authority document exists"),
     ("check_confidence_contamination.py", (),
      "no emitted confidence is the constant the frozen instrument substitutes into affected entries"),
+    ("check_output_collisions.py", (),
+     "every declared deliverable is written by exactly the producer named for it, and a non-producer given "
+     "its path is refused"),
+    ("check_paper_numbers.py", (),
+     "every number the paper asserts equals the record it came from, and no retired vocabulary appears"),
+    ("check_si_prose.py", (),
+     "every paragraph in every SI source is a single line, so no emphasis is split across a paragraph break"),
+    ("check_repo_size.py", (),
+     "no tracked file and no reachable object exceeds the size the remote will accept, and the check fails on "
+     "one that does"),
     ("analyze_phase1.py", ("--synthetic",),
      "each confirmatory hypothesis fires on its OWN positive control and none fires on the null"),
 ]
@@ -99,6 +112,102 @@ GUARDS: list[tuple[str, tuple[str, ...], str]] = [
 # into the pass/fail total, because their absence is a fact about the machine, not a defect in the
 # project - and a guard that is silently skipped is exactly what this runner is meant to prevent.
 EXTERNAL = {"check_lean_axioms.py"}
+
+
+# --------------------------------------------------------------------------------------------------------
+# ONE RUN AT A TIME. Five guards write negative-control probes INSIDE the tree - deliberately, because the
+# probe has to be scannable for the guard to prove it would fail on it - and delete them within the same run.
+# Two runners therefore share those paths, and the failure modes are real and were observed: a probe created
+# by run A and deleted by run B mid-scan, a commit catching a probe between create and delete
+# (`error: open("docs/__drift_negative_control__.lean"): No such file or directory`), and a spurious finding
+# that looks like a defect in the code under test rather than in the way it was launched.
+#
+# A lock is added rather than moving the probes out of the tree, because a probe outside the tree cannot
+# prove the guard would fail on something inside it.
+#
+# THE LOCK IS STALE-SAFE. It records the owning pid and its start time, and a lock whose owner is gone is
+# reclaimed. A lock that can be left behind by a crash is worse than no lock: it turns one dead run into a
+# permanently red suite, and the fix people reach for is to delete the check.
+LOCK = REPO_ROOT / ".git" / "run_all_guards.lock"
+
+
+def _lock_state(lock: pathlib.Path) -> str:
+    """Return 'live', 'stale' or 'unknown' for the lock that is present.
+
+    THREE STATES, NOT TWO, AND THE DEFAULT WHEN UNSURE IS 'unknown'. The first version returned a bool and
+    treated any failure to check the pid as stale, which meant the lock never refused anything: `tasklist`
+    emits bytes in the machine's OEM code page, `text=True` tried UTF-8, the decode raised, the handler
+    swallowed it, and the "stale" answer let a second suite start on top of the first. The failure was
+    invisible because a lock that never refuses looks exactly like a lock that is never contended.
+
+    The asymmetry is the point. A wrong 'stale' lets two runs share the probe paths and produces findings
+    that are not about the code - silent corruption. A wrong 'live' refuses a run that a human then clears
+    in one command - loud and cheap. Where the two errors are not equally costly, the safe default is the
+    loud one.
+    """
+    try:
+        pid_s, ts_s = lock.read_text(encoding="utf-8").strip().split()[:2]
+        pid, ts = int(pid_s), float(ts_s)
+    except Exception:
+        return "stale"                    # unreadable and malformed: nothing is running behind it
+    if time.time() - ts > 2 * 3600:
+        return "stale"                    # an explicit upper bound, so a crash cannot lock the suite forever
+    try:
+        out = subprocess.run(["tasklist", "/FI", f"PID eq {pid}"], capture_output=True, timeout=30)
+        text = out.stdout.decode("utf-8", errors="replace") + out.stderr.decode("utf-8", errors="replace")
+        if out.returncode != 0:
+            return "unknown"
+        return "live" if str(pid) in text else "stale"
+    except Exception:
+        return "unknown"
+
+
+def wait_for_lock(limit_s: float) -> bool:
+    """Block until the lock is free, up to `limit_s`. Returns True if it is free (or reclaimed).
+
+    Refusing immediately is right when a person is watching - they can see why and decide. It is wrong in an
+    unattended chain, where the correct behaviour is to WAIT: the other run holds the probes for a few
+    minutes, not forever, and a nightly job that dies because a person happened to be running the suite at the
+    same moment has failed for no reason. Which of the two is wanted is a property of the caller, so it is a
+    flag rather than a policy.
+    """
+    deadline = time.time() + limit_s
+    while True:
+        state = _lock_state(LOCK) if LOCK.exists() else "stale"
+        if state == "stale":
+            return True
+        if time.time() >= deadline:
+            print(f"waited {limit_s:.0f}s and the lock is still {state}: "
+                  f"{LOCK.read_text(encoding='utf-8').strip()}")
+            return False
+        print(f"  lock is {state}; waiting (up to {limit_s:.0f}s)...")
+        time.sleep(5)
+
+
+def acquire_single_run_lock(wait_s: float = 0.0) -> None:
+    """Refuse to run two guard suites at once, and reclaim a lock whose owner has died.
+
+    THE LOCK IS RELEASED THROUGH atexit, not a `with` block, and the reason is a defect this change itself
+    caused twice while being written: wrapping the suite body in `with` indents a hundred lines and a single
+    mis-indented continuation is a syntax error that only appears when the file is RUN. An atexit handler
+    needs no re-indentation, releases on every normal exit including sys.exit, and the staleness check covers
+    the case atexit cannot see - a killed process.
+    """
+    LOCK.parent.mkdir(parents=True, exist_ok=True)
+    if wait_s > 0 and LOCK.exists() and not wait_for_lock(wait_s):
+        raise SystemExit(3)
+    state = _lock_state(LOCK) if LOCK.exists() else "stale"
+    if state in ("live", "unknown"):
+        print(f"ANOTHER GUARD RUN IS IN PROGRESS OR CANNOT BE RULED OUT ({state}): "
+              f"{LOCK.read_text(encoding='utf-8').strip()}")
+        print("Five guards write negative-control probes inside the tree and delete them within the run, so two")
+        print("runners share those paths: a finding from a concurrent run is not evidence about the code.")
+        print("Wait for it, or delete the lock if you are certain it is stale.")
+        raise SystemExit(3)
+    if LOCK.exists() and state == "stale":
+        print(f"reclaiming a stale lock (owner gone or expired): {LOCK.read_text(encoding='utf-8').strip()}")
+    LOCK.write_text(f"{os.getpid()} {time.time():.0f}\n", encoding="utf-8")
+    atexit.register(lambda: LOCK.unlink(missing_ok=True))
 
 
 def run(script: str, args: tuple[str, ...], timeout: int) -> tuple[int, str, float]:
@@ -131,7 +240,12 @@ def main() -> int:
                     help="run only the positive direction (development speed; prints what was skipped)")
     ap.add_argument("--timeout", type=int, default=600, help="per-guard timeout in seconds")
     ap.add_argument("--verbose", action="store_true", help="print each guard's full output")
+    ap.add_argument("--wait", type=float, default=0.0, metavar="SECONDS",
+                    help="if another run holds the lock, wait up to SECONDS for it instead of refusing "
+                         "(default: refuse immediately, which is right when a person is watching)")
     args = ap.parse_args()
+
+    acquire_single_run_lock(args.wait)
 
     selected = [g for g in GUARDS
                 if not (args.skip_negative and "--negative-test" in g[1])]

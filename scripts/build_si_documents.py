@@ -47,6 +47,8 @@ CSS = """
  .li{margin-left:1.1rem;text-indent:-1.1rem}
  .mathcount{font-size:.75rem;color:#999;text-align:right;margin-top:3rem}
  .mathfail{border:1px solid #c00;color:#c00;padding:.5rem}
+ .nfig{margin:1.2rem 0;text-align:center}
+ .nfig img{max-width:100%;height:auto}
  .katex-display{margin:.9em 0;overflow-x:auto;overflow-y:hidden}
  @media print{body{margin:0;max-width:none;padding:0} h2{page-break-after:avoid} table{page-break-inside:avoid}}
 """
@@ -150,7 +152,7 @@ def build_docx(md: str) -> None:
     # THE DOCX HAS ONE OWNER: THE OMML BUILDER. Two builders wrote the same path and the one that ran last
     # silently won, so the equation-native DOCX could be replaced by a TeX-source one without any error
     # appearing - the document still opened, only its mathematics regressed. This delegates instead.
-    r = subprocess.run([str(sys.executable), str(ROOT / "scripts" / "build_si_docx.py"), "--build",
+    r = subprocess.run([str(sys.executable), str(ROOT / "scripts" / "build_docx.py"), "--build",
                         "--src", str(ROOT / "docs" / "SUPPLEMENTARY_INFORMATION.md"),
                         "--out", str(OUT_DOCX)], capture_output=True, text=True, encoding="utf-8")
     for line in (r.stdout or "").strip().splitlines()[-2:]:

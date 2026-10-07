@@ -1,5 +1,11 @@
 #!/usr/bin/env python
-"""build_manuscript_html.py -- render the anchor to an offline HTML manuscript in the measured
+"""build_manuscript_html.py -- render the ANCHOR PROTOCOL to an offline HTML document.
+
+THIS IS NOT THE PAPER. It renders the protocol, which is the programme's pinned authority; the manuscript
+(`viz/manuscript.html`) is built by `build_paper_html.py` from `docs/PAPER.md`. The two were once the same
+file, and the name confusion is what let a protocol render sit in the manuscript's place.
+
+Originally: render the anchor to an offline HTML manuscript in the measured
 NHB house style.
 
 WHY A GENERATOR, NOT A HAND-WRITTEN PAGE
@@ -718,7 +724,10 @@ def figures_section() -> str:
 
 def main() -> int:
     ap = argparse.ArgumentParser(description="Render the anchor to an offline NHB-style manuscript.")
-    ap.add_argument("--out", default="viz/manuscript.html")
+    # THIS RENDERS THE PROTOCOL, SO IT WRITES A PROTOCOL PATH. Its default used to be
+    # `viz/manuscript.html`, which is where the PAPER lives: running it replaced the paper with a
+    # protocol rendering and nothing could detect it, because both files were called "the manuscript".
+    ap.add_argument("--out", default="viz/protocol.html")
     args = ap.parse_args()
 
     if not ANCHOR.is_file():

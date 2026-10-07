@@ -51,12 +51,50 @@ def find_xslt() -> pathlib.Path:
 _engine = None
 
 
+# HTML ENTITIES ARE NOT XML ENTITIES, AND THE XSLT IS AN XML PARSER. MathJax emits `&nbsp;` for a trailing
+# space inside `\text{}` (and `&InvisibleTimes;`, `&ApplyFunction;` and others for its own operators), none of
+# which are declared in MathML. lxml refuses to parse an undeclared entity and the caller falls back to TeX
+# SOURCE TEXT, which is how one equation in a manuscript reached Word as `$$\\text{H1.1:}...$$` while the
+# other six converted - the document check reported it as "an artefact that does not contain what its source
+# promises", which is exactly what it was.
+#
+# Fixed at the pipeline, not at the sentence: the same defect would return with the next expression whose
+# `\text{}` ends in a space, and rewriting the prose to avoid one entity is how the class survives. Every
+# standard HTML entity is rewritten as its numeric character reference, which is valid XML and carries the
+# identical character.
+_ENTITY_RE = re.compile(r"&[A-Za-z][A-Za-z0-9]{1,31};")
+
+
+def normalise_entities(mml: str) -> str:
+    """Rewrite HTML entities as numeric character references so an XML parser can read them."""
+    from html.entities import html5
+
+    # MATHJAX'S OWN ENTITIES ARE NOT IN ANY HTML TABLE. It writes `&InvisibleTimes;`, `&ApplyFunction;` and
+    # their short forms for operators that have no visible glyph, and each one that reaches the XSLT
+    # undeclared is a silent fallback to TeX source in a Word file. They are Unicode characters, so the same
+    # numeric-reference treatment applies; the table is explicit because the standard one does not have them.
+    mjx = {
+        "InvisibleTimes": 0x2062, "InvisibleComma": 0x2063, "ApplyFunction": 0x2061, "InvisiblePlus": 0x2064,
+        "it": 0x2062, "ic": 0x2063, "af": 0x2061,
+    }
+
+    def sub(m):
+        name = m.group(0)[1:-1]
+        if name in mjx:
+            return f"&#{mjx[name]};"
+        ch = html5.get(name)
+        return f"&#{ord(ch)};" if ch and len(ch) == 1 else m.group(0)
+
+    return _ENTITY_RE.sub(sub, mml)
+
+
 def mml_to_omml(mml: str) -> str | None:
     """MathML -> OMML. Returns None (never raises) so a caller can fall back and report."""
     global _engine
     from lxml import etree
     if _engine is None:
         _engine = etree.XSLT(etree.parse(str(find_xslt())))
+    mml = normalise_entities(mml)
     try:
         src = etree.fromstring(mml.encode("utf-8"))
         out = str(_engine(src))

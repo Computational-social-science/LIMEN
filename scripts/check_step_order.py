@@ -61,7 +61,18 @@ TRANSIENT_DIRS = (".pyc", "__pycache__", ".pytest_cache", ".mypy_cache",
 # cannot tell a naming convention from a language keyword will forbid a package - which is what it did to
 # docpipe. Named explicitly rather than by weakening the rule: every other leading underscore is refused.
 TRANSIENT_RE = (re.compile(r"^_(?!_init__\.py$|_main__\.py$).*$"),
-                re.compile(r"^.*(tmp|scratch|bak|old)\..*$", re.I))
+                # THE TOKEN MUST FOLLOW A SEPARATOR, AND NOT MERELY APPEAR. The second pattern was
+                # `^.*(tmp|scratch|bak|old)\..*$`, unanchored and case-insensitive, and it reported
+                # `MathJax_Main-Bold.woff` as a stale backup: "B-old-." contains `old.`. Five CHTML bold
+                # fonts - the glyphs browsers load for `\mathbf` - were refused at commit time as transient
+                # artefacts. The intent is a BACKUP SUFFIX, so the token now has to be introduced by `.`,
+                # `_` or `-` (`report.md.old`, `main.py.bak`, `notes_old.txt`) rather than found anywhere
+                # inside a word. `-Bold` no longer matches because nothing separates the `B` from the `old`.
+                #
+                # This is what a pattern list is worth: `_qc_tmp` once slipped past because the rule tested
+                # EXACT membership, and now a font is caught because the rule tests SUBSTRING membership.
+                # A negative control in this check's own test must still require a real `*.old` to fail.
+                re.compile(r"^.*[._-](tmp|scratch|bak|old)(\.[^.]+)?$", re.I))
 
 
 def tracked_files() -> list[str]:

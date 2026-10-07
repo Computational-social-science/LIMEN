@@ -129,6 +129,9 @@ def protect_math(md: str) -> tuple[str, list[str]]:
 
 
 def restore_math(html: str, store: list[str]) -> str:
+    """Restore the stashed fragments. Image placeholders are tagged IMG so that a digit in the text cannot be
+    mistaken for a placeholder index."""
+    html = re.sub(SENT_D + r"IMG(\d+)" + SENT_D, lambda m: store[int(m.group(1))], html)
     def put_d(m):
         return store[int(m.group(1))]
     def put_i(m):
@@ -181,10 +184,25 @@ def md_to_html_body(md: str) -> str:
     flush_table()
     html = "\n".join(out)
     # Inline transforms, applied only to non-math text because the math is sentinelled.
+    # IMAGES. `![alt](path)` was passing straight through as literal Markdown, so the HTML carried the
+    # FIGURE TEXT and no figure - and because the PDF is a print of this HTML, both editions lost all seven
+    # images while the DOCX, which embeds them by a different route, kept them. A reader sent the HTML back
+    # with the Markdown visible, which is how it was found: the document asserted a figure it did not show.
+    #
+    # The source puts the figure's title in the line above and its caption in the line below, so the image is
+    # wrapped in a <figure> and the surrounding paragraphs supply the captions. The placeholder is emitted
+    # here and substituted after the emphasis passes, so an underscore or an asterisk inside a filename or an
+    # alt text cannot be re-read as formatting.
+    def stash_img(m):
+        store.append(f'<figure class="nfig"><img src="{m.group(2)}" alt="{m.group(1)}"></figure>')
+        return f"{SENT_D}IMG{len(store) - 1}{SENT_D}"
+    html = re.sub(r"!\[([^\]]*)\]\(([^)\s]+)\)", stash_img, html)
+
     html = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", html)
     html = re.sub(r"(?<![\w*])\*(?!\s)([^*\n]+?)(?<!\s)\*(?![\w*])", r"<em>\1</em>", html)
     html = re.sub(r"`([^`\n]+)`", r"<code>\1</code>", html)
-    return restore_math(html, store)
+    html = restore_math(html, store)
+    return html
 
 
 MATHJAX_SCRIPTS = """<script>

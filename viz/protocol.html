@@ -1,0 +1,2187 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Orthographic Channels and Input Noise as Structural Disturbances in Human–Model Interaction</title>
+<style>
+:root{   --accent: #1B6CA8;
+  --accent-dk: #134e7e;
+  --accent2: #C45E11;
+  --accent3: #2E8B57;
+  --bg: #ffffff;
+  --bg2: #f7f9fc;
+  --bg3: #edf1f7;
+  --text: #1a1a1a;
+  --text2: #3d4551;
+  --text3: #6b7a8d;
+  --border: #cdd5e0;
+  --border2: #b8c5d3;
+  --green: #2E8B57;
+  --amber: #b87800;
+  --red: #b93030;
+  --serif: 'Georgia','Times New Roman',serif;
+  --sans: 'Helvetica Neue','Arial','Liberation Sans',sans-serif;
+  --mono: 'Courier New',monospace;
+  --shadow: 0 2px 10px rgba(0,0,0,.09); }
+@media (prefers-color-scheme: dark){ :root{   --bg: #12151a;
+  --bg2: #1a1e25;
+  --bg3: #222833;
+  --text: #e9ecf1;
+  --text2: #c2c9d4;
+  --text3: #93a0b0;
+  --border: #2e3644;
+  --border2: #3d4757;
+  --accent: #6fb3dd;
+  --accent-dk: #4f97c4;
+  --accent2: #e0913f;
+  --accent3: #5cb37e;
+  --green: #5cb37e;
+  --amber: #d9a53a;
+  --red: #e0685f; } }
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{ margin:0; background:var(--bg); color:var(--text); font:10.2pt/1.62 var(--sans); }
+a{color:var(--accent); text-decoration:none;}
+a:hover{text-decoration:underline;}
+
+/* BANNER - the journal strip */
+.banner{ background:var(--accent); color:#fff; padding:9px 22px; display:flex;
+         justify-content:space-between; align-items:center; gap:16px; font-size:7.8pt; }
+.banner-name{ font-size:11pt; font-weight:700; letter-spacing:.07em; text-transform:uppercase; }
+.banner-sub{ font-size:7.4pt; opacity:.85; margin-top:2px; }
+.banner-meta{ text-align:right; line-height:1.5; opacity:.9; font-size:7.4pt; }
+
+/* LAYOUT */
+.two-col{ display:grid; grid-template-columns:210px 1fr; gap:34px; max-width:1180px;
+          margin:0 auto; padding:22px 26px 70px; align-items:start; }
+.toc{ position:sticky; top:16px; font-size:8.2pt; max-height:calc(100vh - 40px); overflow-y:auto; }
+.toc h4{ font-size:7.6pt; font-weight:700; color:var(--accent); text-transform:uppercase;
+         letter-spacing:.09em; margin:0 0 8px; border-bottom:1px solid var(--border);
+         padding-bottom:5px; }
+.toc a{ color:var(--text2); display:block; padding:1.5px 4px; border-radius:2px; }
+.toc a:hover, .toc a.active{ color:var(--accent); background:rgba(27,108,168,.09); }
+.toc a.lvl3{ padding-left:16px; color:var(--text3); font-size:7.8pt; }
+
+/* ARTICLE HEAD */
+.art-title{ font-family:var(--serif); font-size:18.5pt; font-weight:700; line-height:1.26;
+            color:var(--text); margin:6px 0 12px; }
+.art-type{ font-size:8pt; color:var(--accent); text-transform:uppercase; letter-spacing:.11em;
+           font-weight:700; margin-bottom:7px; }
+.authors{ font-size:9.4pt; color:var(--text2); margin:0 0 4px; }
+.affiliations{ font-size:7.8pt; color:var(--text3); margin:0; line-height:1.6; }
+.art-meta{ display:flex; flex-wrap:wrap; gap:14px; font-size:7.8pt; color:var(--text3);
+           border-top:1px solid var(--border); border-bottom:1px solid var(--border);
+           padding:7px 0; margin:14px 0 20px; }
+.art-meta b{ color:var(--text2); }
+.stamp{ font:7.6pt/1.55 var(--mono); color:var(--text3); background:var(--bg2);
+        border:1px solid var(--border); border-radius:5px; padding:8px 11px; margin:0 0 18px;
+        overflow-wrap:anywhere; }
+
+/* HEADINGS + BODY */
+h2{ font-family:var(--serif); font-size:13pt; font-weight:700; line-height:1.3;
+    color:var(--text); margin:30px 0 9px; padding-bottom:5px; border-bottom:1px solid var(--border); }
+h3{ font-size:10.6pt; font-weight:700; margin:20px 0 7px; }
+h4{ font-size:9.4pt; font-weight:700; margin:15px 0 5px; color:var(--accent); }
+p{ margin:9px 0; }
+ul,ol{ padding-left:1.45em; margin:9px 0; }
+li{ margin:3px 0; }
+hr{ border:0; border-top:1px solid var(--border); margin:24px 0; }
+strong{ font-weight:700; }
+code{ background:var(--bg2); padding:.1em .34em; border-radius:3px; font:.88em/1.45 var(--mono); }
+pre{ background:var(--bg2); border:1px solid var(--border); border-radius:5px; padding:12px 14px;
+     overflow-x:auto; }
+pre code{ background:none; padding:0; font-size:8.4pt; }
+
+/* CALLOUT - four variants */
+.callout{ border-radius:5px; padding:10px 14px; margin:13px 0; font-size:9.4pt;
+          border-left:4px solid var(--accent); background:rgba(27,108,168,.07); }
+.ct-label{ display:block; font-size:7.6pt; font-weight:700; text-transform:uppercase;
+           letter-spacing:.09em; margin-bottom:4px; color:var(--accent); }
+.ci{ background:rgba(27,108,168,.07); border-color:var(--accent); }
+.cn{ background:rgba(196,94,17,.07); border-color:var(--accent2); }
+.cn .ct-label{ color:var(--accent2); }
+.cg{ background:rgba(46,139,87,.07); border-color:var(--accent3); }
+.cg .ct-label{ color:var(--accent3); }
+.cw{ background:rgba(184,120,0,.07); border-color:var(--amber); }
+.cw .ct-label{ color:var(--amber); }
+.callout p{ margin:5px 0; }
+
+/* EQUATIONS */
+.eq-block{ display:flex; align-items:center; justify-content:space-between;
+           background:var(--bg2); border:1px solid var(--border); border-radius:5px;
+           padding:10px 16px; margin:12px 0 6px; overflow-x:auto; gap:10px; }
+.eq-body{ flex:1; text-align:center; overflow-x:auto; }
+.eq-num{ font-size:8.4pt; color:var(--text3); white-space:nowrap; flex-shrink:0; }
+.eq-note{ font-size:8.5pt; color:var(--text2); margin:4px 0 14px; line-height:1.56;
+          padding-left:11px; border-left:2px solid var(--border2); }
+.eq-purpose{ font-size:9.4pt; color:var(--text); margin:11px 0 0; }
+
+/* DATA */
+.stat-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(122px,1fr)); gap:9px;
+            margin:14px 0; }
+.stat-card{ background:var(--bg2); border:1px solid var(--border); border-radius:6px;
+            padding:11px 13px; text-align:center; }
+.stat-val{ font-family:var(--serif); font-size:15pt; font-weight:700; color:var(--accent);
+           line-height:1.15; }
+.stat-val.pos{ color:var(--green); } .stat-val.neg{ color:var(--red); }
+.stat-lbl{ font-size:7.4pt; color:var(--text3); margin-top:4px; line-height:1.42; }
+.badge{ display:inline-block; padding:2px 9px; border-radius:10px; font-size:7.4pt;
+        font-weight:600; white-space:nowrap; }
+.b-yes{ background:rgba(46,139,87,.15); color:var(--green); }
+.b-part{ background:rgba(184,120,0,.15); color:var(--amber); }
+.b-no{ background:rgba(185,48,48,.13); color:var(--red); }
+.fig-wrap, .tbl-wrap{ margin:16px 0; }
+.fig-wrap img{ width:100%; height:auto; display:block; border-radius:4px; }
+.fig-caption{ font-size:8.5pt; color:var(--text2); margin-top:9px; line-height:1.56; }
+table{ border-collapse:collapse; width:100%; font-size:8.6pt; margin:12px 0; }
+th,td{ border:1px solid var(--border); padding:5px 8px; text-align:left; vertical-align:top;
+       line-height:1.5; }
+th{ background:var(--bg2); font-weight:700; }
+thead th{ border-bottom:1.5px solid var(--border2); }
+tbody tr:nth-child(even){ background:var(--bg2); }
+.supp-box{ background:var(--bg3); border:1px solid var(--border); border-radius:6px;
+           padding:12px 15px; margin:14px 0; font-size:9pt; }
+.supp-box h4{ margin-top:0; }
+ul.ck{ list-style:none; padding-left:0; margin:12px 0; }
+ul.ck li{ display:flex; gap:9px; align-items:flex-start; padding:4px 0; font-size:8.6pt;
+          border-bottom:1px solid var(--border); }
+.ic-ok{ color:var(--green); font-weight:700; flex-shrink:0; }
+.ic-warn{ color:var(--amber); font-weight:700; flex-shrink:0; }
+.timeline{ border-left:2px solid var(--accent); padding-left:16px; margin:14px 0; }
+.tl-item{ position:relative; margin-bottom:13px; }
+.tl-item::before{ content:''; position:absolute; left:-21px; top:5px; width:10px; height:10px;
+                  border-radius:50%; background:var(--accent); border:2px solid var(--bg); }
+.tl-year{ font-size:8.4pt; font-weight:700; color:var(--accent); }
+.tl-text{ font-size:8.8pt; color:var(--text2); }
+.ref-list{ list-style:none; padding-left:0; counter-reset:refs; margin:12px 0; }
+.ref-list li{ counter-increment:refs; padding-left:30px; position:relative; margin:5px 0;
+              font-size:8.5pt; line-height:1.5; }
+.ref-list li::before{ content:counter(refs); position:absolute; left:0; top:0; width:20px;
+                      text-align:right; color:var(--text3); font-size:7.8pt; }
+.pbar-row{ margin:7px 0; }
+.pbar-lbl{ font-size:7.8pt; color:var(--text2); display:flex; justify-content:space-between;
+           margin-bottom:2px; }
+.pbar-bg{ background:var(--bg3); border-radius:3px; height:7px; overflow:hidden; }
+.pbar-fill{ height:100%; border-radius:3px; }
+.fill-green{ background:var(--green); } .fill-amber{ background:var(--amber); }
+.fill-red{ background:var(--red); }
+
+/* MATH */
+.katex-display{ margin:.4em 0; }
+.katex{ font-size:1.03em; }
+.no-js .math-fallback{ display:block; color:var(--text3); font:.9em/1.5 var(--mono); }
+
+/* RESPONSIVE + PRINT */
+@media (max-width:900px){
+  .two-col{ grid-template-columns:1fr; }
+  .toc{ position:static; max-height:none; border-bottom:1px solid var(--border);
+        padding-bottom:12px; margin-bottom:12px; }
+}
+@media print{
+  @page{ margin:16mm 14mm; }
+  body{ background:#fff; color:#000; font-size:9.4pt; }
+  .toolbar, .toc, .banner{ display:none; }
+  .two-col{ display:block; max-width:none; padding:0; }
+  h2, h3{ break-after:avoid; }
+  .eq-block, .fig-wrap, .tbl-wrap, table, .callout, .stat-card, .tl-item, .eq-note{
+    break-inside:avoid; }
+  a{ color:#000; text-decoration:underline; }
+  .art-title{ font-size:16pt; }
+}
+</style>
+</head>
+<body class="no-js">
+<div class="banner">
+  <div>
+    <div class="banner-name">Nature Human Behaviour</div>
+    <div class="banner-sub">A Pre-Registered, Phased Protocol Integrating System One / JEV-Ecosystem Tooling</div>
+  </div>
+  <div class="banner-meta">v1.23 · 10 equations · 51 sections · 2026-10-07</div>
+</div>
+<div class="two-col">
+  <nav class="toc"><h4>Contents</h4><a class="lvl2" href="#a-pre-registered-phased-protocol-integrating-system-">A Pre-Registered, Phased Protocol Integrating System One / JEV-Ecosystem Tooling</a><a class="lvl2" href="#abstract">Abstract</a><a class="lvl2" href="#0-thesis-and-staging-principle">0. Thesis and staging principle</a><a class="lvl2" href="#the-global-anchor">THE GLOBAL ANCHOR</a><a class="lvl3" href="#0-1-thesis">0.1 Thesis</a><a class="lvl3" href="#0-2-staging-principle-methodological">0.2 Staging principle (methodological)</a><a class="lvl3" href="#0-3-limen-the-gate-s-threshold-named">0.3 LIMEN — the gate's threshold, named</a><a class="lvl3" href="#0-4-the-claim-stated-directly">0.4 The claim, stated directly</a><a class="lvl2" href="#1-formal-system-model">1. Formal system model</a><a class="lvl3" href="#1-1-interaction-cycle">1.1 Interaction cycle</a><a class="lvl3" href="#1-2-the-coupling-as-one-chain">1.2 The coupling, as one chain</a><a class="lvl2" href="#2-why-phase-i-anchors-on-english-typos">2. Why Phase I anchors on English typos</a><a class="lvl2" href="#3-jev-ecosystem-integration-technical-both-phases">3. JEV-ecosystem integration (technical, both phases)</a><a class="lvl3" href="#3-1-wire-format">3.1 Wire format</a><a class="lvl3" href="#3-2-pinned-stack-confirmatory">3.2 Pinned stack (confirmatory)</a><a class="lvl3" href="#3-3-confidence-rule-frozen">3.3 Confidence rule (frozen)</a><a class="lvl3" href="#3-4-primary-gate">3.4 Primary gate</a><a class="lvl3" href="#3-5-jsonl-trial-record">3.5 JSONL trial record</a><a class="lvl2" href="#4-phase-i-english-typo-protocol-confirmatory">4. Phase I — English typo protocol (confirmatory)</a><a class="lvl3" href="#4-1-design">4.1 Design</a><a class="lvl3" href="#4-2-english-typo-process-mathcal-n-mathrm-en">4.2 English typo process \mathcal{N}_{\mathrm{en}}</a><a class="lvl3" href="#4-3-stimuli">4.3 Stimuli</a><a class="lvl3" href="#4-4-phase-i-hypotheses">4.4 Phase I hypotheses</a><a class="lvl3" href="#4-5-phase-i-analysis">4.5 Phase I analysis</a><a class="lvl3" href="#4-6-phase-i-deliverables">4.6 Phase I deliverables</a><a class="lvl3" href="#4-4a-the-limen-shift-diagnostic-delta-tau-star-repor">4.4a The limen-shift diagnostic \Delta\tau^\star — REPORTED, not confirmatory</a><a class="lvl3" href="#4-4b-what-machine-checking-changed-in-this-protocol">4.4b What machine-checking changed in this protocol</a><a class="lvl2" href="#5-phase-ii-cross-script-multilingual-extension">5. Phase II — Cross-script / multilingual extension</a><a class="lvl3" href="#5-1-entry-criteria-gates-from-phase-i">5.1 Entry criteria (gates from Phase I)</a><a class="lvl3" href="#5-2-design">5.2 Design</a><a class="lvl3" href="#5-3-channel-s-1-selection-criteria">5.3 Channel s_1 selection criteria</a><a class="lvl3" href="#5-4-phase-ii-hypotheses-full-structural-thesis">5.4 Phase II hypotheses (full structural thesis)</a><a class="lvl3" href="#5-5-models-in-phase-ii">5.5 Models in Phase II</a><a class="lvl2" href="#6-metrics-both-phases">6. Metrics (both phases)</a><a class="lvl3" href="#6-1-the-conditional-quantities-v1-5">6.1 The conditional quantities (v1.5)</a><a class="lvl2" href="#7-what-phase-i-contributes-to-the-global-thesis">7. What Phase I contributes to the global thesis</a><a class="lvl2" href="#8-explicit-non-goals">8. Explicit non-goals</a><a class="lvl2" href="#9-open-science">9. Open science</a><a class="lvl2" href="#10-limitations">10. Limitations</a><a class="lvl2" href="#11-timeline-indicative">11. Timeline (indicative)</a><a class="lvl2" href="#12-phase-i-pre-registration-checklist">12. Phase I pre-registration checklist</a><a class="lvl3" href="#12-1-claim-provenance-what-is-proved-what-is-assumed">12.1 Claim provenance — what is proved, what is assumed, what is tested</a><a class="lvl2" href="#13-minimal-phase-i-runbook">13. Minimal Phase I runbook</a><a class="lvl2" href="#14-document-control">14. Document control</a><a class="lvl2" href="#16-dev-pre-run-on-the-pinned-instrument-non-confirma">16. Dev pre-run on the pinned instrument (NON-CONFIRMATORY)</a><a class="lvl2" href="#17-confirmatory-results-stage-2">17. Confirmatory results (Stage 2)</a><a class="lvl3" href="#predictions-made-before-the-run-and-whether-they-hel">Predictions made before the run, and whether they held</a><a class="lvl3" href="#what-this-establishes-in-one-sentence">What this establishes, in one sentence</a><a class="lvl3" href="#provenance">Provenance</a><a class="lvl2" href="#15-machine-checked-core">15. Machine-checked core</a><a class="lvl2" href="#stage-2-figures">Stage 2 figures</a></nav>
+  <article>
+<h1 class="art-title">Orthographic Channels and Input Noise as Structural Disturbances in Human–Model Interaction</h1><p class="art-type">Detailed research protocol</p><p class="authors">Pre-registered protocol · Stage 1 of a Registered Report</p><p class="affiliations">Instrument: the pinned JEV encoder · Licence: see docs/PHASE_I_PIN.md · Phase I: English, keyboard-faithful typos, frozen parameters</p><div class="art-meta"><span><b>Version</b> 1.23</span><span><b>Equations</b> 10 numbered</span><span><b>Notes</b> 7</span><span><b>Callouts</b> 13</span><span><b>Sections</b> 51</span></div><p class="stamp">GENERATED FILE — DO NOT EDIT.  Source of truth: protocol/NHB_Orthographic_Channels_JEV_Research_Protocol.md  v1.23  sha256 81dcbad6f097584d831c32c12120ae800f2400cb507dc96ccb87adde40a3b014  (1250 lines).  Built 2026-10-07 16:38.  Rebuild: python scripts/build_manuscript_html.py</p>
+<div class="stat-grid"><div class="stat-card"><div class="stat-val">1.23</div><div class="stat-lbl">protocol version<br><span style="opacity:.7">§14</span></div></div><div class="stat-card"><div class="stat-val">652</div><div class="stat-lbl">test items N (frozen)<br><span style="opacity:.7">§12 · O2 + Erratum 1</span></div></div><div class="stat-card"><div class="stat-val">932</div><div class="stat-lbl">item bank<br><span style="opacity:.7">§12 · O3</span></div></div><div class="stat-card"><div class="stat-val">0,1,2</div><div class="stat-lbl">noise seeds<br><span style="opacity:.7">§12 item 3</span></div></div><div class="stat-card"><div class="stat-val">0.05</div><div class="stat-lbl">coverage budget ε<br><span style="opacity:.7">§12 item 7</span></div></div><div class="stat-card"><div class="stat-val">0.1833</div><div class="stat-lbl">corrected discordance π<sub>d</sub><br><span style="opacity:.7">Erratum 1</span></div></div></div><h1>Orthographic Channels and Input Noise as Structural Disturbances in Human–Model Interaction</h1>
+<h2 id="a-pre-registered-phased-protocol-integrating-system-">A Pre-Registered, Phased Protocol Integrating System One / JEV-Ecosystem Tooling</h2>
+<p><strong>Document type:</strong> Detailed research protocol (<em>Nature Human Behaviour</em>–oriented framing)<br />
+<strong>Version:</strong> 1.23 (English typo first, then cross-script / multilingual expansion)<br />
+<strong>Status:</strong> Stage 1 pre-registration complete; Stage 2 confirmatory run complete<br />
+<strong>Compute envelope:</strong> Single consumer GPU admissible; zero paid API on confirmatory path<br />
+<strong>Primary interface class:</strong> Typed decision models (System One):<br />
+$\texttt{state} \times \texttt{questions} \mapsto$ distributions over caller-defined options</p>
+<h2 id="abstract">Abstract</h2>
+<p>Typed-decision systems backed by language models are increasingly asked to answer under the small
+orthographic errors that real keyboards produce. A widely repeated premise holds that such noise is
+especially dangerous because it drives errors <em>past</em> confidence gates: wrong answers that arrive with high
+confidence, and are therefore never seen. We pre-registered a test of that premise, and it fails.</p>
+<p>The protocol was frozen before any confirmatory data existed, and the instrument — an open,
+non-autoregressive encoder under a permissively licensed revision — was pinned by digest and never trained.
+A dev pre-run of 2,520 trials measured feasibility, the paired discordance rate, and the power of the design
+before the seal; the confirmatory run then used the untouched test split: <strong>652 items × 7 noise levels × 3
+frozen seeds = 13,692 trials, zero failures</strong>. The analysis was fixed in advance: exact paired permutation
+tests, Holm correction across a three-hypothesis family, and the <em>direction</em> of every hypothesis enforced, so
+that a significant movement the wrong way counts as a violation rather than as support.</p>
+<p><strong>All three hypotheses were confirmed, with no direction violations.</strong> Typo noise cost <strong>≈12 accuracy
+points</strong> (p = 4.4 × 10⁻³⁶) and <strong>≈29 coverage points</strong> (p = 5.0 × 10⁻⁵) — far fewer trials were answered at
+all. But the gate's discriminability did not degrade: the within-arm AUC between correct and incorrect trials
+<strong>rose from 0.601 to 0.760</strong> (p = 2.0 × 10⁻⁴). <strong>93.6 % of the errors the noise caused arrived below the
+gate</strong>, against 61.4 % clean. The original fixed-threshold silent-error hypothesis was refuted on dev by four
+independent probes before the confirmatory run and replaced, in the pre-registration record, by the
+discriminability hypothesis that then replicated.</p>
+<p><strong>For typographic noise the &quot;silent error&quot; premise does not hold: the errors are loud, and the gate can hear
+them.</strong> Damage concentrates in what the model declines to answer, not in what it confidently gets wrong —
+which makes confidence a usable control signal under orthographic noise, and relocates the risk from
+undetected wrong answers to silent <em>refusal</em>. The pre-registration record, the machine-checked core of the
+protocol (27 theorems, zero axioms), and the whole pipeline are released.</p>
+<p><em>Authorities: <code>docs/PHASE_I_CONFIRMATORY_RESULTS.md</code>, protocol §17, <code>docs/PHASE_I_DEV_PRERUN_RESULTS.md</code>, and
+the formalization repository.</em></p>
+<div class="callout cw"><span class="ct-label">Status limit</span><p><strong>v1.3 names the gate's threshold LIMEN and adds the one estimand that naming makes legible.</strong>
+v1.2 recorded three decisions that earlier work had already made. The protocol is the research
+objective, so a change to it may not be made only in a downstream document — if an amendment
+contradicts the protocol, the protocol is what must move. <strong>Every such change is marked <code>vN CHANGE</code>
+at the point it applies</strong>, and each names the document that motivated it, so the protocol's own
+history stays legible.</p>
+<table>
+<thead>
+<tr>
+<th>Version</th>
+<th>Changes</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>1.16</strong></td>
+<td>§12.1 became an <strong>evidence chain</strong>: a fourth status, <strong>MEASURED</strong>, for claims the dev pre-run settled on the pinned instrument. The generator now fails if a MEASURED row quotes a value that does not appear in <code>docs/PHASE_I_DEV_PRERUN_RESULTS.md</code> — <strong>a measurement quoted from nowhere is the same defect as a proof that was never done.</strong> It fired on first run and caught two tokens, which is the check working</td>
+<td><strong>a claim's status now distinguishes proof from measurement</strong></td>
+</tr>
+<tr>
+<td><strong>1.15</strong></td>
+<td><strong>§16 Dev pre-run</strong> added: feasibility, π_d, power re-derived, and the H1.2 direction contradiction, now confirmed across <strong>all three frozen seeds</strong> and both grid endpoints in 2,520 records. The clean condition is identical across seeds, which is a self-check on the generator; <code>λ_lo = 0.05</code> does not degrade performance, so <code>lo</code> is genuinely unperturbed</td>
+<td><strong>adds pre-run evidence to the deliverable; no confirmatory claim</strong></td>
+</tr>
+<tr>
+<td><strong>1.14</strong></td>
+<td><strong>H1.2's direction is contradicted by the pinned instrument on dev</strong> — <code>SilentError@0.9</code> FALLS (0.0357 → 0.0107) under noise, because <code>risk_mono</code> plus confidence deflation means fewer trials clear the gate at all. An amendment to restate H1.2 on the conditional quantity <code>CondErr@0.9</code> is TABLED, not accepted; the test split is untouched. Also records the dev pre-run: 560 records in 28.8 s, 0 failures, π_d measured <strong>0.2036</strong> against the frozen 0.1833 — higher, and favourable, so <code>N = 652</code> stands</td>
+<td><strong>flags a hypothesis as un-runnable as written</strong></td>
+</tr>
+<tr>
+<td><strong>1.13</strong></td>
+<td><strong>Estimator named</strong>: §4.5 now specifies <strong>exact paired permutation tests</strong> instead of &quot;paired / mixed models with item random intercepts&quot;, and enforces the DIRECTION of each hypothesis (a significant movement in the opposite direction is barred from the family rather than counted as support). <strong>O3 closed without a human pass</strong>: six automatic consistency checks with a shuffled-label control, reliability carried by <strong>split-half stability</strong>; <strong>inter-rater kappa is rejected</strong> as the reliability instrument. The seal is no longer blocked by O3</td>
+<td><strong>names the estimator that runs; removes the last human dependency</strong></td>
+</tr>
+<tr>
+<td><strong>1.12</strong></td>
+<td>§4.5 gains <strong>two pre-registered covariates</strong> (<code>realised_edit_rate</code>, <strong>lexical routability margin</strong>) and registers the routability × noise <strong>interaction as EXPLORATORY</strong>, so the confirmatory family stays at three tests. The item bank is also corrected: 69 states opened with a lowercase letter, <strong>all of them in three urgency templates</strong>, which would have made a domain-by-formatting confound — found by the new mechanical template audit and fixed semantics-preservingly, with <strong>0 packed stimuli affected</strong></td>
+<td><strong>adds covariates; adds NO confirmatory hypothesis</strong></td>
+</tr>
+<tr>
+<td><strong>1.11</strong></td>
+<td><strong>O3 scoped by measurement</strong>: the plausibility pass shrinks from 932 items to <strong>47</strong>, one per template, justified by <code>η²(margin | template) = 0.9142</code>; lexical routability is measured (median +0.111, 8.5 % above 0.30) and pre-registered as a <strong>covariate</strong>, with the routability × noise interaction registered as <strong>exploratory</strong> so the confirmatory family stays at three tests</td>
+<td><strong>scopes a pre-registration item; adds no confirmatory hypothesis</strong></td>
+</tr>
+<tr>
+<td><strong>1.10</strong></td>
+<td><strong>O1 CLOSED</strong>: §12 item 2 moves to <code>FIXED</code> — λ_lo = 0.05, λ_mid = 0.18 selected by the noisy-channel recoverability index against the published Rayner (2006) anchor (0.4480), separation 6.07 pooled seed SD. The seal is now blocked by O3 alone</td>
+<td><strong>closes a pre-registration item; the criterion is stated on a measured axis and is fully determined by it</strong></td>
+</tr>
+<tr>
+<td><strong>1.9</strong></td>
+<td><strong>§15 Machine-checked core</strong> added — every theorem with its statement and the claim it bears on, generated from the Lean source. The theorem-to-claim map must be a <strong>bijection</strong> or the generator fails, so no proof can be undeclared and none can be cited that does not exist; the section also states HOW the check is trusted (kernel query, negative control, freshness guard)</td>
+<td><strong>additive; presentation of proofs already relied on</strong></td>
+</tr>
+<tr>
+<td><strong>1.8</strong></td>
+<td>§4.4a's bootstrap CI on <code>Δτ*</code> <strong>withdrawn</strong> — the estimator is a least-crossing</td>
+<td></td>
+</tr>
+</tbody>
+</table></div>
+<p>functional and the bootstrap has no general coverage for it, and at the boundary the clean arm
+occupies it is degenerate. Replaced by the <strong>exact admissible-set interval</strong> <code>[τ*, τ_max]</code>,
+machine-checked by <code>admissible_iff_limen_le</code> | <strong>withdraws a planned procedure; no frozen value
+moved, §4.4a stays reported and non-confirmatory</strong> |</p>
+<div class="callout ci"><span class="ct-label">Note</span><p>| <strong>1.7</strong> | <strong>§12.1 claim provenance</strong> added — a derived table mapping every substantive claim to <strong>PROVED</strong> (naming a kernel-verified theorem), <em>ASSUMED</em> (a premise the design chose) or <strong>TO BE TESTED</strong> (the run decides). The generator fails if a PROVED row names a theorem that does not exist, so the table cannot claim a proof that was never done | <strong>additive; presentation only, no frozen value moved</strong> |
+| <strong>1.6</strong> | (1) <strong>§4.4a corrected</strong>: at the clean end the least-admissible rule returns a <strong>design constant</strong>, not an estimate — <code>Δτ*</code> is one estimate minus a constant and its clean endpoint carries no sampling variability; (2) the <code>Δτ* &lt; 0</code> branch is <strong>normally unattainable</strong> and must be checked, not assumed; (3) <code>Δτ* = 0</code> <strong>does not identify &quot;no disturbance&quot;</strong> — a tolerance-absorbed disturbance reports identically | <strong>additive; §4.4a stays reported and non-confirmatory</strong> |
+| <strong>1.5</strong> | (1) <strong>§6.1 defines the conditional quantities</strong> — <code>CondErr</code>/<code>CondAcc</code>, the two things the hypotheses name and eqs (7)–(9) never defined; (2) <strong>§4.5 states the confirmatory family in the protocol</strong> instead of by reference to the OSF entry; (3) <strong>a declared dependency</strong>: H1.3 disjunct 2 is the complement of the H1.1 co-report, so they are not independent evidence; (4) the H1.1 co-report is fixed as <strong>descriptive, not a fourth test</strong> | <strong>additive; family unchanged at three tests, no frozen value moved</strong> |
+| <strong>1.4</strong> | (1) equation (7) is stated as <strong>underspecified on deferred trials</strong>, with both readings (defers-as-errors / defers-dropped) named and shown to disagree — machine-checked by <code>acc_is_not_diagnostic_of_understanding</code>; (2) <strong>H1.1 paired with the conditional accuracy</strong> in reporting, because the bare inequality is satisfied by confidence deflation alone; (3) §4.4b records what machine-checking changed | <strong>additive; no frozen value moved, no endpoint added</strong> |
+| <strong>1.3</strong> | (1) LIMEN named as the gate's threshold (§0.3), with what the name does and does not carry; (2) the <strong>claim</strong> stated directly (§0.4); (3) the <strong>limen-shift diagnostic</strong> $\Delta\tau^\star$ added as a <em>reported, non-confirmatory</em> quantity (§4.4a) | additive; <strong>no frozen value moved</strong> |
+| 1.2 | (1) <code>Q0</code> is <code>intent</code> alone; (2) the pin is decided — Laya English root at <code>55cf4c4e…</code>; (3) the <code>τ*</code> fitting rule is stated, including when it yields nothing | — |</p></div>
+<hr />
+<h2 id="0-thesis-and-staging-principle">0. Thesis and staging principle</h2>
+<div class="callout ci"><span class="ct-label">Note</span><h2 id="the-global-anchor">THE GLOBAL ANCHOR</h2>
+<p><strong>This protocol is the programme's global anchor.</strong> Every other document in this repository —
+pre-registration, amendments, the item-bank spec, the manuscript, the review records, the dashboards —
+is <strong>subordinate to it</strong> and derives from it.</p>
+<p><strong>What that means mechanically, and how it is enforced:</strong></p>
+<ol>
+<li><strong>A change to the research objective is a change to THIS file.</strong> If work elsewhere reaches a
+conclusion that contradicts this protocol, the protocol is what moves — a downstream amendment
+cannot silently redefine the objective. Every such change is marked <code>vN CHANGE</code> at the point it
+applies and names the document that motivated it, so the protocol's own history stays legible.</li>
+<li><strong>The objective's identity is checked mechanically.</strong> A guard verifies that this file is present,
+that its recorded sha256 matches, and that the version in §14 agrees with the version in the
+header. A file that drifts from the anchor is drift by definition.</li>
+<li><strong>&quot;What are we working on?&quot; has exactly one answer, and it is §0–§1 of this file.</strong> If any other
+document's summary of the objective disagrees with §0–§1, this file wins without discussion.</li>
+<li><strong>What does NOT anchor here, deliberately.</strong> Instruments, toolboxes, run logs and review records are
+<em>inputs and outputs</em> of the programme, not the programme. They are admitted on the three criteria in
+<code>docs/INSTRUMENT_POSTURE.md</code> (usable, scientific, reproducible) and then used as shipped. <strong>The
+anchor states what is being asked; it does not state how the asking is instrumented.</strong></li>
+</ol>
+<p><strong>Current anchor identity:</strong> <code>protocol/NHB_Orthographic_Channels_JEV_Research_Protocol.md</code>,
+version <strong>1.5</strong>. Its sha256 is recorded in <code>config/anchor.json</code> and verified by the drift guard.</p></div>
+<h3 id="0-1-thesis">0.1 Thesis</h3>
+<p>Human–model language interaction is a <strong>structurally biased coupled control system</strong>; writing systems and input noise are <strong>normal disturbances</strong>, not exceptions. System One (JEV-ecosystem) tooling makes the <strong>control law</strong>—confidence-gated action—directly observable and programmable.</p>
+<h3 id="0-2-staging-principle-methodological">0.2 Staging principle (methodological)</h3>
+<p>Cross-script structural bias is the <strong>long-run</strong> scientific target. However, noise processes, gold labels, and power calculations are <strong>channel-specific</strong>. Therefore the programme is deliberately <strong>phased</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Phase</th>
+<th>Channel scope</th>
+<th>Noise scope</th>
+<th>Confirmatory claim</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>I (anchor)</strong></td>
+<td>English, standard Latin orthography only</td>
+<td>English <strong>typos</strong> (keyboard-faithful)</td>
+<td>Noise is a normal operating disturbance for System One control metrics (error, SilentError, coverage)</td>
+</tr>
+<tr>
+<td><strong>II (extension)</strong></td>
+<td>+ ≥1 non-English / non-Latin (or distinct input ecology)</td>
+<td><strong>Script-faithful</strong> noise (not Latin rules copied)</td>
+<td>Script × noise <strong>interaction</strong> and cross-channel allocational disparity</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Rule:</strong> Phase II pre-registration is filed <strong>only after</strong> Phase I instruments (items, $\mathcal{N}_{\mathrm{en}}$, logging, gates) are frozen and pilot-stable. Phase I must not be re-opened to “hunt” interactions after seeing Phase II.</p>
+<hr />
+<h3 id="0-3-limen-the-gate-s-threshold-named">0.3 LIMEN — the gate's threshold, named</h3>
+<p><strong>LIMEN</strong> (Latin <em>limen</em>, <em>threshold</em>) names the threshold inside the confidence gate: the value at which
+graded evidence becomes committed action. In this protocol <strong>LIMEN is $\tau$</strong> — the argument of
+$g_\tau$ in §3.4.</p>
+<p><strong>The name is mechanical, not metaphorical.</strong> It fixes what the object is: a <em>decision boundary
+instantiated by $g_\tau$</em>, at which the system stops accumulating evidence and commits. It does not
+carry any extra theoretical commitment, and adopting it changes nothing about the mathematics: every
+$\tau$ in this protocol was already a number on a scale, and still is.</p>
+<p><strong>Four things the name explicitly does NOT assert</strong>, each of which the measurements could contradict:</p>
+<ol>
+<li><strong>That the limen exists at every condition.</strong> The pilot's clean <code>SilentError@0.9</code> was <strong>0/120</strong>,
+which makes <code>Risk(τ) = 0</code> across the whole grid and <em>every</em> threshold admissible — the budget then
+selects nothing, and §6/v1.2 CHANGE 3 already requires <code>Coverage@ε</code> to be reported as <strong>undefined with
+a reason</strong> in that case. <strong>A limen that the data cannot identify is a result, not a failure</strong>, and it
+must be reported as such.</li>
+<li><strong>That the limen is unique.</strong> Risk is monotone non-increasing in $\tau$, so the admissible set is
+<strong>upward closed</strong> and an admissible threshold is never unique. The tie-break is <strong>declared</strong>
+(least admissible threshold, §6/v1.2 CHANGE 3), not discovered.</li>
+<li><strong>That the limen is well calibrated.</strong> It is a threshold on the model's <strong>own</strong> confidence
+$c = \max_j p_j$, which the pinned instrument is documented to ship <strong>over-confident</strong> (card: mean
+ECE 0.466). The limen's <em>location</em> is a property of the instrument as shipped; whether that location
+is <em>epistemically right</em> is a separate question this protocol does not answer and does not need to.</li>
+<li><strong>That the limen is the same for every channel.</strong> §5.2 forbids equating noise across scripts by rate
+alone for the same reason: a limen estimated under one channel's noise process says nothing about
+another's, because both the evidence $c$ and the budget's referent are channel-specific.</li>
+</ol>
+<p><strong>What the name buys.</strong> It makes one thing legible that the earlier notation hid: <strong>the limen is an
+estimand, not a setting.</strong> $\tau \in \{0.80, 0.90\}$ are <em>fixed probes</em> placed at pre-registered
+positions; $\tau^\star_\varepsilon$ is <em>fitted per condition on dev</em>. Those are three different
+quantities, and prose that says &quot;the threshold&quot; conflates them. Naming the limen forces the question
+<strong>&quot;did the limen move?&quot;</strong> — which is answerable (§4.4a), rather than the unanswerable &quot;what is the
+threshold?&quot;</p>
+<h3 id="0-4-the-claim-stated-directly">0.4 The claim, stated directly</h3>
+<p><strong>Thesis.</strong> Human–model language interaction is a <strong>structurally biased coupled control system</strong> in which
+orthographic channels and input noise are <strong>normal disturbances, not exceptions</strong>.</p>
+<p><strong>Mechanism, in one line.</strong> An intention is not transmitted through a neutral channel. It is encoded
+through an orthographic channel $s$ under channel-specific noise $n \sim \mathcal{N}_s(\lambda)$ as
+$x = E(i, s, n)$; a <strong>frozen</strong> decision model converts it to graded evidence
+$(\mathbf{p}, c) = f_\theta(x, q)$; and a confidence gate $a = g_\tau(\mathbf{p}, c)$ converts
+evidence into action. <strong>LIMEN (§0.3) is the limen in $g_\tau$.</strong></p>
+<p><strong>The research objective.</strong> To test <strong>how $\lambda$ and $s$ shift that gate and the resulting
+control metrics</strong> — <code>Acc</code>, <code>SilentError@τ</code>, <code>Coverage@ε</code>.</p>
+<p><strong>Staged test.</strong> <strong>Phase I</strong> fixes $s = s_{\mathrm{en}}$ and treats English keyboard-faithful typo noise
+as a normal disturbance. <strong>Phase II</strong> introduces $s_1$ — a non-Latin or otherwise distinct input
+ecology — with <strong>script-faithful</strong> noise, and tests script × noise interaction and cross-channel
+allocational disparity.</p>
+<div class="callout ci"><span class="ct-label">Note</span><p><strong>A constraint on how this objective may be worded, and why it is stated here.</strong> The objective names
+<strong>both</strong> $\lambda$ and $s$, because the <em>programme</em> spans both phases. <strong>No single phase may test
+both.</strong> Phase I estimates functions of $\lambda$ at one channel and may say nothing about $s$
+(§0.2, §5.2, §8); Phase II is the only phase in which $s$ varies. Any sentence of the form &quot;we test
+how $\lambda$ and $s$ shift the limen&quot; is a statement about the programme, <strong>not</strong> a description of
+what Phase I does — and the pre-registration is the place where that distinction is enforced.</p></div>
+<p><strong>What the programme does not claim.</strong> It does not claim that noise is exceptional, nor that English
+typo results establish cross-script fairness. <strong>It claims that orthographic channels and input noise
+are structural disturbances of the control loop itself</strong> — of understanding and of the gate, not merely
+of text generation.</p>
+<hr />
+<h2 id="1-formal-system-model">1. Formal system model</h2>
+<h3 id="1-1-interaction-cycle">1.1 Interaction cycle</h3>
+<table>
+<thead>
+<tr>
+<th>Symbol</th>
+<th>Domain</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>$i$</td>
+<td>intention space</td>
+<td>User communicative / task intention</td>
+</tr>
+<tr>
+<td>$s \in \mathcal{S}$</td>
+<td>orthographic channels</td>
+<td>Phase I: $s = s_{\mathrm{en}}$ only; Phase II: $s \in \{s_{\mathrm{en}}, s_{1}, \ldots\}$</td>
+</tr>
+<tr>
+<td>$n \sim \mathcal{N}_s(\lambda)$</td>
+<td>noise process</td>
+<td>Channel-specific; Phase I uses $\mathcal{N}_{\mathrm{en}}$ only</td>
+</tr>
+<tr>
+<td>$\lambda \in \{0, \lambda_{\mathrm{lo}}, \lambda_{\mathrm{mid}}\}$</td>
+<td>intensity</td>
+<td>Pre-registered rates</td>
+</tr>
+<tr>
+<td>$x \in \Sigma^*$</td>
+<td>symbol string</td>
+<td>Observed state text</td>
+</tr>
+<tr>
+<td>$q \in \mathcal{Q}$</td>
+<td>typed questions</td>
+<td>System One choice / noul / (optional) score</td>
+</tr>
+<tr>
+<td>$f_\theta$</td>
+<td>decision model</td>
+<td>Frozen System One parameters in confirmatory tests</td>
+</tr>
+<tr>
+<td>$\mathbf{p}$</td>
+<td>simplex</td>
+<td>Option probabilities</td>
+</tr>
+<tr>
+<td>$c \in [0,1]$</td>
+<td>confidence</td>
+<td>Fixed functional of $\mathbf{p}$</td>
+</tr>
+<tr>
+<td>$a \in \mathcal{A}$</td>
+<td>action</td>
+<td>$\{\mathrm{answer}, \mathrm{defer}, \mathrm{escalate}, \mathrm{refuse}\}$</td>
+</tr>
+<tr>
+<td>$g_\tau$</td>
+<td>gate</td>
+<td>Pre-registered map $(\mathbf{p},c)\mapsto a$</td>
+</tr>
+</tbody>
+</table>
+<h3 id="1-2-the-coupling-as-one-chain">1.2 The coupling, as one chain</h3>
+<p>The three maps above are not three separate facts. <strong>They are one chain, and the chain is the object of
+study</strong> — an intention becomes action only by passing all three in order, and a disturbance anywhere
+along it changes the action without the user's intervention.</p>
+<div class="eq-block"><div class="eq-body">$$\underbrace{i}_{\text{intention}}
+\;\xrightarrow{\;E(\cdot,\,s,\,n \sim \mathcal{N}_s(\lambda))\;}\;
+\underbrace{x}_{\text{channel output}}
+\;\xrightarrow{\;f_\theta(\cdot,\,q)\;}\;
+\underbrace{(\mathbf{p},\,c)}_{\text{graded evidence}}
+\;\xrightarrow{\;g_\tau\;}\;
+\underbrace{a}_{\text{action}}$$</div><span class='eq-num'>(1)</span></div>
+<p>The whole programme is this one line. Each of the three maps that follow is a component of it, given its own equation for readability: equation (2) is the first arrow, equation (3) the second, equation (4) the third, and equation (5) expands the last. Reading it left to right, <strong>noise and channel enter only at $E$</strong>, so any difference between two conditions is a difference in $x$ propagating through both downstream stages — which is the formal reason the Phase I design is <strong>within-item</strong> (§4.1).</p>
+<p><strong>Reading the chain, left to right:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Stage</th>
+<th>What it fixes</th>
+<th>What a disturbance does here</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>$E(\cdot, s, n)$</td>
+<td>the <strong>channel</strong>: which orthography the intention is encoded through, and at what noise</td>
+<td><strong>This is where input noise acts.</strong> $\lambda$ and $s$ enter here and nowhere else.</td>
+</tr>
+<tr>
+<td>$f_\theta(\cdot, q)$</td>
+<td>the <strong>instrument</strong>: a frozen decision model turning text into a distribution</td>
+<td>Its output $c$ is the model's own confidence, over-confident as shipped (<code>docs/PHASE_I_PIN.md</code>)</td>
+</tr>
+<tr>
+<td>$g_\tau$</td>
+<td>the <strong>gate</strong>: whether evidence becomes action, and which option</td>
+<td><strong>LIMEN is the threshold inside this arrow</strong> (§0.3). It is the only stage this programme manipulates or fits.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Why the chain is written as one line rather than three.</strong> Three separate equations invite the reading
+that the stages are independently variable. They are not: <strong>a change in $x$ propagates through both
+downstream stages</strong>, so $\lambda$ cannot move $\mathrm{Acc}$ without also moving <code>SilentError@τ</code> and
+<code>Coverage@ε</code>. That dependence is the reason the design is <strong>within-item</strong> (§4.1) — every item is its own
+control across $\lambda$, precisely because the chain carries the disturbance from end to end.</p>
+<p><strong>The coupling, stated as the hypothesis.</strong> Phase I does not ask &quot;does noise hurt accuracy&quot;. It asks
+whether a disturbance entering at $E$ <strong>propagates through $f_\theta$ into the gate $g_\tau$</strong> in a way
+that changes not only <em>what</em> is answered but <em>whether</em> the model commits — which is precisely the
+separation between H1.1 (accuracy falls) and H1.2 (confidence does not track it).</p>
+<p><strong>Encoding:</strong></p>
+<div class="eq-block"><div class="eq-body">$$x = E(i, s, n), \qquad n \sim \mathcal{N}_s(\lambda).$$</div><span class='eq-num'>(2)</span></div>
+<p class="eq-note">where $E(\cdot, s, \cdot)$ is the <strong>channel encoder</strong>: it maps an intention $i$ to an observed symbol string $x$ under orthographic channel $s$ and noise draw $n$, and $\mathcal{N}_s$ is the channel-specific noise process whose intensity is $\lambda$. Phase I admits $s = s_{\mathrm{en}}$ only and uses $\mathcal{N}_{\mathrm{en}}$ (§4.2), so $s$ is a constant here and $\lambda$ is the only free argument. <strong>No other map in this protocol takes $\lambda$ as an argument</strong>, which is what makes the programme's central claim checkable rather than rhetorical.</p>
+<p><strong>System One map (JEV-compatible):</strong></p>
+<div class="eq-block"><div class="eq-body">$$(\mathbf{p}, c) = f_\theta(x, q).$$</div><span class='eq-num'>(3)</span></div>
+<p class="eq-note">where $f_\theta$ is the frozen decision model, $q$ the typed question, $\mathbf{p}$ the option probability vector and $c \in [0,1]$ the confidence. In Phase I $\theta$ is <strong>not trained and not tuned</strong>: $f_\theta$ is the pinned instrument (§3.2), so the only thing that varies across conditions in this map is its input $x$. Because $c$ is a <strong>fixed functional of $\mathbf{p}$</strong> (§3.3), the model cannot raise its confidence independently of its evidence — a constraint that H1.2 tests rather than assumes (§4.4).</p>
+<p><strong>Control:</strong></p>
+<div class="eq-block"><div class="eq-body">$$a = g_\tau(\mathbf{p}, c).$$</div><span class='eq-num'>(4)</span></div>
+<p class="eq-note">where $g_\tau$ is the pre-registered gate and $a$ the action. Equation (5) expands $g_\tau$ into the rule this line names. This is the only map in the chain whose form the programme manipulates or fits: $\tau$ is a <strong>stimulus parameter</strong> in Phase I (pre-registered at two levels, §3.4) and a <strong>fitted quantity</strong> $\tau^\star_\varepsilon$ in the Phase II analysis (§4.4a).</p>
+<p><strong>Normal disturbance:</strong> ecologically relevant regime has $\lambda > 0$; $\lambda = 0$ is a boundary probe.</p>
+<p><strong>Structural bias (full thesis, Phase II):</strong> for matched $i$ and comparable $\lambda$, laws of $(\mathbf{p},c,a)$ differ across $s$ beyond sampling error.</p>
+<p><strong>Phase I restriction:</strong> $s$ fixed to English; estimands are functions of $\lambda$ only (and optional model/router contrasts within English).</p>
+<h2 id="2-why-phase-i-anchors-on-english-typos">2. Why Phase I anchors on English typos</h2>
+<table>
+<thead>
+<tr>
+<th>Reason</th>
+<th>Implication</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Process validity</strong></td>
+<td>English keyboard typo models (adjacency, transposition, deletion, insertion) are well-specified and reusable (e.g., MulTypo-style Latin layouts)</td>
+</tr>
+<tr>
+<td><strong>Label quality</strong></td>
+<td>Intent gold and inter-annotator agreement are cheapest and most stable in English first</td>
+</tr>
+<tr>
+<td><strong>Instrument debug</strong></td>
+<td>JSONL schema, confidence rule, gates $g_\tau$, and System One wiring are validated before multilingual complexity</td>
+</tr>
+<tr>
+<td><strong>Literature bridge</strong></td>
+<td>Connects to existing LLM typo-robustness results while shifting DVs to <strong>SilentError</strong> and <strong>coverage</strong> under System One</td>
+</tr>
+<tr>
+<td><strong>Avoid false cross-script claims</strong></td>
+<td>Forbids treating “English typo intensity” as universal $\lambda$ across scripts</td>
+</tr>
+</tbody>
+</table>
+<p>Phase I <strong>does not</strong> claim to test writing-system bias. It claims: under English orthography, typo noise is a <strong>first-class disturbance of the control loop</strong>.</p>
+<hr />
+<h2 id="3-jev-ecosystem-integration-technical-both-phases">3. JEV-ecosystem integration (technical, both phases)</h2>
+<h3 id="3-1-wire-format">3.1 Wire format</h3>
+<pre><code class="language-text">state:     &lt;English text, clean or typo-perturbed in Phase I&gt;
+questions: {
+  intent:   { type: &quot;choice&quot;, instructions: &quot;...&quot;, criteria: { ... } }
+}
+→ probs, conf per question id
+</code></pre>
+<div class="callout cn"><span class="ct-label">Recorded decision</span><p><strong>v1.2 CHANGE 1 — Q0 is <code>intent</code> alone; <code>ok</code> and <code>escalate</code> are DROPPED from Phase I.</strong></p>
+<p>The v1.1 wire format specified three questions. Measurement at the pinned revision
+(<code>docs/C2_NOUL_VALIDITY.md</code>) found the <code>noul</code> primitive <strong>scores exactly chance</strong> — 6/12 correct,
+separation +0.077 — and that its documented two-option workaround is <strong>worse than chance and inverted</strong>
+(−0.137 separation, 0.333 accuracy), with the two methods disagreeing by up to <strong>0.60</strong> on identical
+input. A procedure that disagrees with its own documented alternative is not measurement-stable.</p>
+<p><strong>What this changes and what it does not.</strong> <code>Acc</code>, <code>SilentError@τ</code> and <code>Coverage@ε</code> all require gold,
+and gold exists only for <code>intent</code>; the gate <code>g_τ</code> acts on <code>intent</code>'s confidence. <strong>H1.1–H1.3 are
+unaffected.</strong> The cost is that this protocol no longer measures a deferral or escalation judgement.
+<strong>This is a real reduction in scope and is stated as one</strong>, not absorbed silently.</p>
+<p><strong>If a deferral question is wanted later it must be a <code>choice</code></strong> with checkable options
+(<code>answer</code> / <code>ask for more information</code>), added by a later amendment — never substituted after seeing
+results. Authority: <code>docs/PHASE_I_AMENDMENT_2.md</code> §B4.</p></div>
+<h3 id="3-2-pinned-stack-confirmatory">3.2 Pinned stack (confirmatory)</h3>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Specification</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Primary model</td>
+<td><strong>PINNED: the English root of <code>convaiinnovations/laya</code></strong> (Apache-2.0, 421 M, ModernBERT-large, non-autoregressive)</td>
+</tr>
+<tr>
+<td>Revision</td>
+<td><strong>DECIDED: <code>55cf4c4ebb4ebe31b2550e8bdf3bd21b99753851</code></strong> — the revision the <code>laya</code> package pins. <strong>The Hub's <code>main</code> had drifted to <code>7b928d82…</code> and is NOT the pin.</strong></td>
+</tr>
+<tr>
+<td>Weights</td>
+<td>Commit hash + per-file SHA256, recorded in <code>config/pin_laya.json</code> (5 files, 846.20 MB)</td>
+</tr>
+<tr>
+<td>Variant</td>
+<td>The <strong>root</strong>, named explicitly: that revision also ships <code>multilingual/</code> and <code>typed-decisions/</code> subtrees, so &quot;Laya&quot; alone is ambiguous</td>
+</tr>
+<tr>
+<td>Training</td>
+<td><strong>Frozen</strong> $\theta$ in Phase I–II confirmatory arms</td>
+</tr>
+<tr>
+<td>API</td>
+<td>Local only for confirmatory path</td>
+</tr>
+<tr>
+<td>Verification</td>
+<td><strong>Executed</strong>, not merely hashed: <code>measurement/smoke_predict.py</code> ran on CUDA at that revision and returned per-option probabilities, <code>truncated: false</code></td>
+</tr>
+<tr>
+<td>Optional contrast</td>
+<td>Second checkpoint or one generative forced-choice baseline (secondary)</td>
+</tr>
+</tbody>
+</table>
+<div class="callout cn"><span class="ct-label">Recorded decision</span><p><strong>v1.2 CHANGE 2 — the pin is decided, where v1.1 left it as &quot;pick one and pin&quot;.</strong>
+The v1.1 text offered &quot;English Laya root <strong>or</strong> multilingual checkpoint forced on English — pick
+one&quot;. The root was pinned, verified by execution, and the multilingual variant was <strong>not</strong> chosen.
+<strong>The instrument is used exactly as shipped</strong> (<code>docs/INSTRUMENT_POSTURE.md</code>): a temperature refit was
+considered and <strong>rejected</strong>, because refitting the confidence <code>c</code> that enters <code>g_τ</code> would substitute a
+different instrument and measure that instead. Authority: <code>docs/PHASE_I_PIN.md</code>,
+<code>docs/PHASE_I_AMENDMENT_1.md</code> §A1.</p></div>
+<p><strong>Phase I recommendation:</strong> pin <strong>one</strong> English-capable System One artifact; do not vary router language logic until Phase II.</p>
+<h3 id="3-3-confidence-rule-frozen">3.3 Confidence rule (frozen)</h3>
+<ul>
+<li>Choice: $c = \max_j p_j$</li>
+<li>Noul: $c = \max(p,\,1-p)$</li>
+</ul>
+<h3 id="3-4-primary-gate">3.4 Primary gate</h3>
+<p><strong>The primary gate, stated as the decision rule it is.</strong> Confidence is a fixed functional of $\mathbf{p}$, so this rule reads one distribution and makes two decisions from it.</p>
+<div class="eq-block"><div class="eq-body">$$g_\tau:\quad
+a = \begin{cases}
+\mathrm{answer}(\arg\max \mathbf{p}) & c \ge \tau \\
+\mathrm{defer} & c < \tau
+\end{cases}$$</div><span class='eq-num'>(5)</span></div>
+<p class="eq-note">where $\mathrm{answer}(\arg\max\mathbf{p})$ commits to the most probable option, $\mathrm{defer}$ abstains, and the single scalar $\tau$ is the threshold applied to $c$. $\tau \in \{0.80, 0.90\}$ is pre-registered; Coverage@$\varepsilon = 0.05$ uses $\tau^\star$ fit on <strong>dev only</strong> (§3.4, §6). Note what this rule does <strong>not</strong> do: it compares no distance from $c$ to $\tau$, so nothing here supports reading the gap as an amount of evidence (§0.3).
+with $\tau \in \{0.80,\,0.90\}$ pre-registered; Coverage@$\varepsilon=0.05$ uses $\tau^\star$ fit on <strong>dev only</strong>.</p>
+<div class="callout cg"><span class="ct-label">Recommendation</span><p><strong>What the gate reads, stated exactly, because the LIMEN framing invites a misreading.</strong> The gate makes
+<strong>two separate decisions from one distribution</strong>. It reads <strong>$c$</strong> to decide <em>whether to commit</em>, and
+reads <strong>$\arg\max \mathbf{p}$</strong> to decide <em>which option to commit to</em>. Because $c = \max_j p_j$ is a
+<strong>fixed function of $\mathbf{p}$</strong> (§3.3), the gate is <strong>not</strong> reading graded evidence as a
+magnitude and comparing it to a boundary — it is applying a <strong>threshold on the top probability</strong>. The
+LIMEN is therefore the boundary of a <strong>decision rule</strong>, not a measurement scale, and nothing in this
+protocol licenses reading a distance from $c$ to $\tau$ as an amount of evidence.</p>
+<p>This is why §0.3 says the name is mechanical: it names the boundary that already existed, and
+imports no assumption that the quantity crossing it is commensurate with anything.</p></div>
+<h3 id="3-5-jsonl-trial-record">3.5 JSONL trial record</h3>
+<pre><code class="language-json">{
+  &quot;phase&quot;: &quot;I&quot;,
+  &quot;item_id&quot;: &quot;...&quot;,
+  &quot;script&quot;: &quot;en_latin&quot;,
+  &quot;lambda&quot;: 0,
+  &quot;typo_ops&quot;: [&quot;adj:recieve→receive&quot;, &quot;...&quot;],
+  &quot;noise_seed&quot;: 0,
+  &quot;state_hash&quot;: &quot;sha256&quot;,
+  &quot;model_id&quot;: &quot;&lt;pinned&gt;&quot;,
+  &quot;question_id&quot;: &quot;intent&quot;,
+  &quot;p&quot;: {},
+  &quot;c&quot;: 0.0,
+  &quot;argmax&quot;: &quot;&quot;,
+  &quot;gold&quot;: &quot;&quot;,
+  &quot;error&quot;: 0,
+  &quot;silent_error&quot;: {&quot;0.8&quot;: 0, &quot;0.9&quot;: 0},
+  &quot;action&quot;: {&quot;0.8&quot;: &quot;answer&quot;, &quot;0.9&quot;: &quot;defer&quot;}
+}
+</code></pre>
+<hr />
+<h2 id="4-phase-i-english-typo-protocol-confirmatory">4. Phase I — English typo protocol (confirmatory)</h2>
+<h3 id="4-1-design">4.1 Design</h3>
+<p><strong>Factors</strong></p>
+<table>
+<thead>
+<tr>
+<th>Factor</th>
+<th>Levels</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Noise $\lambda$</td>
+<td>$0$, lo, mid</td>
+</tr>
+<tr>
+<td>Item</td>
+<td>$N$ English intent scenarios (within-item across $\lambda$)</td>
+</tr>
+</tbody>
+</table>
+<p>No script factor in confirmatory Phase I.</p>
+<h3 id="4-2-english-typo-process-mathcal-n-mathrm-en">4.2 English typo process $\mathcal{N}_{\mathrm{en}}$</h3>
+<p>Allowed edit classes (pre-register subset):</p>
+<ol>
+<li>Adjacent-key substitution (QWERTY)</li>
+<li>Character transposition</li>
+<li>Deletion</li>
+<li>Insertion (adjacent or random from alphabet)</li>
+</ol>
+<p><strong>Intensity:</strong> target mean edits per token or per character</p>
+<ul>
+<li>$\lambda_{\mathrm{lo}}$: e.g. ~5–8% character corruption</li>
+<li>$\lambda_{\mathrm{mid}}$: e.g. ~12–18%</li>
+</ul>
+<p>Exact rates fixed in pre-registration after a short calibration so that items remain human-readable at lo and stressed at mid. Generator: deterministic in <code>(item_id, λ, seed)</code>.</p>
+<p><strong>Out of scope for Phase I:</strong> OCR noise, ASR noise, full-word substitution, adversarial misspellings aimed at jailbreaks, non-English code-switching.</p>
+<h3 id="4-3-stimuli">4.3 Stimuli</h3>
+<ul>
+<li>Domain: short service / routing intents (billing, access, urgency, info).</li>
+<li>$N_{\mathrm{item}}$: set by power for detecting mid vs clean error increase (and SilentError@0.9 increase) of ≥5 absolute points at 80% power.</li>
+<li>Gold: locked English labels for <code>intent</code> (and noul keys if used as primary).</li>
+<li>Split: ~30% dev / ~70% test by item_id.</li>
+</ul>
+<h3 id="4-4-phase-i-hypotheses">4.4 Phase I hypotheses</h3>
+<ul>
+<li><strong>H1.1:</strong> $\mathrm{Acc}(\lambda_{\mathrm{mid}}) < \mathrm{Acc}(0)$ on test, <strong>co-reported with the
+conditional accuracy</strong> (§6/v1.4 CHANGE 1). H1.1 as a bare inequality is not diagnostic: by the
+<code>lean-nhb</code> theorem <code>acc_is_not_diagnostic_of_understanding</code> it can hold while the accuracy <em>among
+committed answers</em> rises, on two samples with identical answer-correctness. It is retained as a
+primary endpoint because it is the endpoint a reader expects, and <strong>paired in reporting</strong> with the
+conditional figure that decides which reading is at work.</li>
+<li><strong>H1.2':</strong> the confidence gate's discriminability <strong>increases</strong> with typo noise. The estimand is the
+within-arm AUC between correct and incorrect trials, <code>AUC(λ) = P(c_correct &gt; c_error | λ)</code>, and the
+hypothesis is <code>AUC(λ_mid) &gt; AUC(0)</code> — the gate separates right from wrong <strong>more</strong> sharply under noise.
+<strong>Estimator: the exact within-unit paired permutation of §4.5</strong>, by the same exchangeability argument, so
+no second estimator is introduced. <strong>Family membership unchanged:</strong> H1.2' replaces H1.2 inside the frozen
+three-test Holm family at FWER α = 0.05, so the thresholds H1.1 and H1.3 are judged against are the ones
+already pre-registered.
+<div class="callout cw"><span class="ct-label">Status limit</span><p>**v1.19 — H1.2 REPLACED. The original fixed-τ direction was contradicted by the pinned instrument on dev
+(<code>SilentError@0.9</code> FALLS, 0.0357 → 0.0107), the conditional restatement was proposed, measured and
+WITHDRAWN (<code>CondErr@0.9</code> is flat, z = −0.45), and the coverage-matched form was REFUTED (no level
+significant). What survives — across four independent probes — is that <strong>noise destroys accuracy and
+coverage while the errors it causes arrive below the gate</strong>: the share of errors the gate rejects rises
+0.714 → 0.936 and the within-arm AUC rises 0.6533 → 0.7734. H1.2' states that as a directional claim.
+It is <strong>scale-free</strong>, so it does not rest on the absolute calibration that <code>laya</code>'s invalid-temperature
+warning puts in question — unlike the withdrawn conditional form, which bounded a rate at an absolute τ.
+<strong>Scale-free, and machine-checked:</strong> <code>NHB/PhaseI/ScaleFree.lean</code> proves
+<code>winsAux_map_of_strictMono</code> — the ordered-pair count, hence the AUC, is invariant under any strictly
+increasing rescaling of the confidence scale — and <code>#print axioms</code> reports it depends on <strong>no axioms at
+all</strong>. That is the formal discharge of the claim that H1.2' is unaffected by the instrument's
+uncalibrated confidence.
+Estimator verified on dev with positive and negative controls (<code>scripts/analyze_h12_auc.py</code>). Authority:
+<code>docs/PHASE_I_DEV_PRERUN_RESULTS.md</code> §7–§10. <strong>The test split is untouched.</strong></p></div>
+</li>
+<li><strong>H1.3:</strong> Under dev-fit $\tau^\star$ at $\varepsilon=0.05$, $\mathrm{Coverage}(\lambda_{\mathrm{mid}}) < \mathrm{Coverage}(0)$ on test <strong>or</strong> <code>CondErr@τ</code> rises — the quantity now defined in §6.1 as &quot;error among accepted&quot; (pre-register which is co-primary).</li>
+</ul>
+<p><strong>Interpretation if supported:</strong> typo noise is a material disturbance of System One <strong>understanding and control</strong>, not merely a generation nuisance.<br />
+<strong>Interpretation if H1.1 holds but H1.2 fails:</strong> errors rise but confidence tracks—control law partially healthy.<br />
+<strong>Phase I does not</strong> establish structural bias across writing systems.</p>
+<h3 id="4-5-phase-i-analysis">4.5 Phase I analysis</h3>
+<ul>
+<li>
+<p><strong>Estimator: EXACT PAIRED PERMUTATION TESTS, named here rather than left to the analysis code.</strong> The
+design is within-item, so every contrast pairs on <code>(item_id, noise_seed)</code> and the permutation
+distribution is over within-pair sign flips — exact under exchangeability, no distributional assumption,
+no asymptotic approximation. <strong>This replaces the earlier &quot;paired / mixed models with item random
+intercepts&quot;.</strong> A paired test is the limiting case of a random-intercept model whose only random effect is
+the item, and it is the form that actually runs: <code>scripts/analyze_phase1.py</code> implements it and
+<code>--synthetic</code> shows each of H1.1, H1.2 and H1.3 firing on its own positive control and none firing on the
+null. <strong>A pre-registration must name the estimator that runs</strong>; naming a model no code implements is how a
+plan and its analysis drift apart without anyone noticing.</p>
+</li>
+<li>
+<p><strong>Direction is part of each hypothesis and is enforced.</strong> H1.1 predicts accuracy FALLS, H1.2 that
+<code>SilentError@0.9</code> RISES, H1.3 that <code>Coverage@ε</code> FALLS. A contrast significant in the OPPOSITE direction is
+recorded as such and is barred from the Holm family rather than counted as support — a two-sided p cannot
+tell you which way a significant movement went, and the first implementation of H1.1 had that sign
+inverted until its own positive control failed.</p>
+</li>
+<li>
+<p>Bootstrap CIs on SilentError and Coverage contrasts.</p>
+</li>
+<li>
+<p><strong>Holm across the confirmatory family, stated here rather than by reference (v1.5).</strong> The family is
+exactly these three tests, tested at the family-wise level $\alpha = 0.05$ after Holm: H1.1,
+$\mathrm{Acc}(\lambda_{\mathrm{mid}}) < \mathrm{Acc}(0)$; H1.2,
+$\mathrm{SilentError@}0.9(\lambda_{\mathrm{mid}}) > \mathrm{SilentError@}0.9(0)$; H1.3, the disjunction
+of §4.4. <strong>The H1.1 co-report is descriptive and is NOT a fourth test</strong>: it is reported with its
+interval and is never used as the basis of a significance claim. It is what a reader consults to see
+<em>which</em> reading of §6 eq (7) is at work, and that question is answered by the interval, not by a
+p-value.</p>
+</li>
+<li>
+<p><strong>Two pre-registered COVARIATES enter the confirmatory models.</strong> <code>realised_edit_rate</code> (Amendment 2, B2)
+and the <strong>lexical routability margin</strong> (v1.11) — the gap between how much of the gold domain's criteria
+text an item's state covers and how much of the strongest rival's it covers
+(<code>scripts/o3_leakage_probe.py</code>). Both are properties of the item, both are measured before any model
+runs, and both are reported with their per-level distributions. <strong>Why the margin is a covariate and not
+a filter:</strong> 54.4 % of items have a state that lexically favours its gold domain, 8.5 % strongly, and an
+item routable by word matching is exactly an item the noise can break through a different route than a
+semantic one — so it must be held fixed in the contrast rather than dropped, and dropping it would also
+remove the items where the disturbance effect may be largest.</p>
+</li>
+<li>
+<p><strong>The routability × noise interaction is EXPLORATORY, NOT confirmatory.</strong> Registered here so that the
+distinction is explicit rather than left to the analysis stage. It carries no α and cannot enter the Holm
+family; adding it as a fourth confirmatory test would change the correction fixed in §4.5 above. A
+significant interaction would be reported as an exploratory finding requiring replication, not as a
+confirmed moderator.</p>
+</li>
+<li>
+<p><strong>A declared dependency, and why Holm survives it.</strong> H1.3's second disjunct is <code>CondErr@τ</code> and the
+H1.1 co-report is <code>CondAcc@τ = 1 − CondErr@τ</code> (§6.1, equation (10)). They are therefore <strong>one
+quantity</strong>, and the family is not three independent tests. Holm requires no independence assumption —
+it controls the family-wise error rate under arbitrary dependence — so the procedure is unchanged.
+What changes is the reading: H1.1 and the second disjunct of H1.3 <strong>cannot provide independent
+evidence</strong>, and §5's discussion must not treat them as though they did. If the confirmatory family were
+ever revised to add <code>CondAcc</code> as a test, the two would have to be merged into one test, not carried
+alongside each other.</p>
+</li>
+<li>
+<p><strong>Why the family is stated in the protocol.</strong> A pre-registration whose family is defined by reference to
+another document cannot be checked against the family actually tested, and the anchor rule this
+protocol applies elsewhere — that the authoritative statement lives in the artefact, not downstream of
+it — applies to its own analysis plan first. v1.4 delegated this line to the OSF entry; v1.5 fixes it.</p>
+</li>
+</ul>
+<h3 id="4-6-phase-i-deliverables">4.6 Phase I deliverables</h3>
+<p>Frozen: item bank, $\mathcal{N}_{\mathrm{en}}$, model pin, JSONL, analysis notebook, FAILURES log, short report.</p>
+<h3 id="4-4a-the-limen-shift-diagnostic-delta-tau-star-repor">4.4a The limen-shift diagnostic $\Delta\tau^\star$ — REPORTED, not confirmatory</h3>
+<p><strong>Why this exists.</strong> §0.3 argues that naming the threshold makes one question answerable that the earlier
+notation could not state cleanly. This is that question.</p>
+<p><strong>The quantity.</strong> For each condition $(\lambda, s)$, fit $\tau^\star_\varepsilon$ on <strong>dev</strong> by the rule
+in §6/v1.2 CHANGE 3, then report the shift in that fitted threshold. A single accuracy number cannot
+distinguish a threshold that moved from a threshold that never mattered; this does.</p>
+<div class="eq-block"><div class="eq-body">$$\Delta\tau^\star(\lambda) \;=\; \tau^\star_{\varepsilon}\big|_{\lambda_{\mathrm{mid}}} \;-\; \tau^\star_{\varepsilon}\big|_{\lambda=0},
+\qquad
+\Delta\tau^\star(s_1) \;=\; \tau^\star_{\varepsilon}(s_1) \;-\; \tau^\star_{\varepsilon}(s_{\mathrm{en}}).$$</div><span class='eq-num'>(6)</span></div>
+<p class="eq-note">where $\Delta\tau^\star(\lambda)$ is the movement of the <strong>fitted gate threshold</strong> between clean and
+noisy input, and $\Delta\tau^\star(s_1)$ the same quantity across channels at matched noise. Note what
+is differenced. The protocol previously said &quot;<strong>two estimated thresholds, not two measurements of one
+thing</strong>&quot;. That is only sometimes true, and the case where it is false is the case this study is in.</p>
+<div class="callout cn"><span class="ct-label">Recorded decision</span><p><strong>v1.6 CHANGE 1 — at the clean end the selector returns a DESIGN CONSTANT, not an estimate.</strong></p>
+<p>§6/v1.2 CHANGE 3 takes the <strong>least</strong> admissible threshold, because the tie-break maximises coverage. So
+whenever the clean arm's dev silent-error at the floor already satisfies $\varepsilon$, the clean
+selector returns the floor — for every $\varepsilon$ and every grid, by construction. The pilot measured
+the clean arm's silent-error at <strong>0.0000</strong>, so this is the regime the study is actually in.</p>
+<p><code>lean-nhb</code> proves it (<code>clean_pins_at_floor</code>) and proves the consequence
+(<code>delta_tau_reduces_to_the_noisy_selector</code>): with the clean arm at the floor, $\Delta\tau^\star$ is the
+<strong>noisy selector minus the constant 0</strong> — one estimate minus a design constant. There is no sampling
+variability at the clean end to average over, and no bootstrap at the clean end to run.</p>
+<p><strong>Two further consequences, both of which change how a number is read.</strong></p>
+<p><strong>(a) The &quot;tightens&quot; branch is normally unattainable.</strong> The floor is the <em>least</em> admissible threshold,
+so the noisy selector can only sit at or above it: $\Delta\tau^\star \ge 0$. A negative value requires
+the <strong>clean</strong> arm to be itself above the floor. Whether it is must therefore be <strong>checked and reported</strong>
+— otherwise a $\Delta\tau^\star$ that had no room to go negative is read as an instrument that did not
+tighten, when it never had the room to.</p>
+<p><strong>(b) A zero is not a measurement of the instrument.</strong> <code>same_diagnostic_from_different_arms</code> exhibits
+two noisy arms with <strong>different</strong> dev silent-error curves returning the <strong>same</strong> $\Delta\tau^\star = 0$:
+one where nothing happens at all, and one where a real disturbance sits inside the tolerance band
+$\varepsilon$. So $\Delta\tau^\star = 0$ means &quot;noise did not move the fitted limen <strong>out of the tolerance
+band</strong>&quot;, not &quot;noise left the gate alone&quot;. §4.4a already applies exactly this discipline at the ends —
+<em>a limen that cannot be located is not a limen at zero, it is an unidentifiable limen</em>. The same
+discipline is needed in the middle, and the middle is where a null result will land.</p>
+<p><strong>What is required, and it is a reporting requirement rather than a change of quantity.</strong> Alongside
+$\Delta\tau^\star$, report the <strong>dev silent-error curve itself</strong> across the grid at both ends, so that a
+zero can be read against what was excluded rather than taken as an absence. This costs nothing — the
+curve is already computed to fit the threshold — and it is the only thing that makes the diagnostic's
+central value interpretable. The second form is <strong>Phase II only</strong>;
+Phase I reports the first, at $s = s_{\mathrm{en}}$ alone.</p></div>
+<p><strong>Status: a diagnostic, NOT a confirmatory endpoint.</strong> This is stated in the protocol because the
+temptation to promote it is exactly the failure this design is built to avoid.</p>
+<ul>
+<li>It is <strong>not</strong> in the H1.1–H1.3 family, so <strong>Holm correction as specified in §4.5 does not apply</strong> and it
+is <strong>not</strong> covered by the α = 0.05 confirmatory claim.</li>
+<li>It is reported <strong>with an exact set-valued interval</strong>, not a bootstrap CI. See v1.8 CHANGE 1 below:
+$\Delta\tau^\star$ is a difference of two least-crossing estimators, and the bootstrap is not valid for
+that functional. The interval reported is the <strong>admissible set</strong> on the grid, which is exact and carries
+no distributional claim, so there is nothing for an interval to be inconsistent about. An interval that
+excludes 0 remains a <em>description of the dev-fitted threshold's behaviour</em>, <strong>not</strong> a hypothesis test
+about the population.</li>
+</ul>
+<div class="callout cw"><span class="ct-label">Status limit</span><p><strong>v1.8 CHANGE 1 — the bootstrap CI on <code>Δτ*</code> is withdrawn; the admissible set is reported instead.</strong></p>
+<p><code>τ*</code> is the <strong>least</strong> threshold whose dev silent-error is at most $\varepsilon$. That makes it a
+least-crossing (argmin-type) functional: it depends on the data through the <em>location of a first
+crossing</em>, not through a smooth average. Such functionals are not Hadamard-differentiable, so the
+nonparametric bootstrap does not consistently estimate their sampling distribution — a percentile
+interval built from resampling has no general coverage property, however carefully it is described.</p>
+<p><strong>And in this study the failure is not hypothetical.</strong> v1.6 established that the clean arm sits at the
+floor, so one endpoint of the difference is pinned to a boundary rather than estimated. A bootstrap
+interval at a boundary is degenerate rather than merely imprecise.</p>
+<p><strong>The interval does not need to be bootstrapped, because it can be written down.</strong> Admissibility is
+upward closed in $\tau$ (<code>admissible_mono</code>), so the set of thresholds consistent with the dev data is
+an interval; <code>lean-nhb</code> proves the exact form —
+<strong>$\tau$ is admissible if and only if $\tau \ge \tau^\star$</strong> (<code>admissible_iff_limen_le</code>). §4.4a
+therefore reports the interval $[\tau^\star,\ \tau_{\max}]$ on the grid
+(<code>AdmissibleInterval</code>), where $\tau_{\max}$ is the largest confidence in the sample. This is a
+set-valued statement about the data in hand: exact, resampling-free, and silent about a population
+distribution that the estimator cannot support a claim about.</p>
+<p><strong>What is lost, stated plainly.</strong> A set-valued interval cannot be reported as a value &quot;$\pm$&quot; an
+error, and it does not shrink with $n$ the way a standard error does. That is the honest cost of
+reporting a quantity whose estimator has no regular limit; the alternative was an interval that looked
+conventional and meant less.</p></div>
+<ul>
+<li><strong>Why it must stay non-confirmatory.</strong> $\tau^\star$ is a <em>fitted</em> quantity on a finite dev set: its
+sampling variability, and the degeneracy when no threshold is admissible, are properties of the
+estimator rather than of the instrument. Promoting it would import the estimator's behaviour into a
+claim about the model.</li>
+</ul>
+<p><strong>The degeneracy is reported, not hidden.</strong> If the budget selects no threshold at either end of the
+contrast — the clean-zero-floor case already measured on this instrument — then $\Delta\tau^\star$ is
+reported as <strong>undefined with the reason</strong>, and the one-sided 95 % upper bounds on the silent-error rate
+at both ends are reported in its place. <strong>A limen that cannot be located is not a limen at zero; it is
+an unidentifiable limen</strong>, and the two must never be reported the same way.</p>
+<p><strong>Interpretation boundaries.</strong> A $\Delta\tau^\star < 0$ (the fitted limen tightens under noise) and a
+$\Delta\tau^\star > 0$ (it loosens) are <strong>both compatible with the confirmatory hypotheses</strong> — <em>where the
+negative branch is attainable at all; when the clean arm sits at the floor it is not, and that must be
+reported rather than inferred from the sign (v1.6 CHANGE 1a)</em> —, because
+H1.2 and H1.3 are stated on <code>SilentError@τ</code> and <code>Coverage@ε</code> at <strong>fixed</strong> probes, not on the fitted
+limen. <strong>This diagnostic therefore cannot rescue or sink H1.1–H1.3, and it is not evidence for or
+against the control-law claim on its own.</strong> Its only job is to make the gate's own movement visible.</p>
+<hr />
+<h3 id="4-4b-what-machine-checking-changed-in-this-protocol">4.4b What machine-checking changed in this protocol</h3>
+<p>The mathematics of §3.4, §4.4a and §6 is formalised in <code>lean-nhb</code> (<code>NHB/PhaseI/Core.lean</code>): <strong>27
+theorems, zero errors, zero <code>sorry</code></strong>, each verified by Lean's own kernel through <code>#print axioms</code>,
+which fails on <code>sorryAx</code> — the axiom Lean substitutes for a proof it could not find. A grep for the
+literal word would not do: it proves a string is absent, not that a theorem is proved.</p>
+<p><strong>The formalisation is not an appendix. It is a feedback loop, and it changed the protocol.</strong> Seven
+substantive corrections came out of it, and each is recorded at the point it applies rather than only
+here.</p>
+<table>
+<thead>
+<tr>
+<th>What the protocol said</th>
+<th>What the kernel returned</th>
+<th>What changed</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>§6: <code>SilentError@τ</code> is &quot;non-decreasing in τ&quot;</td>
+<td><code>risk_mono</code> proves it <strong>falls</strong>: <code>Risk b ≤ Risk a</code> when <code>a ≤ b</code>. On <code>{c=3, wrong}, {c=9, wrong}</code> the count runs <code>2, 1, 1, 0</code> at τ = 2, 5, 9, 10</td>
+<td>§6 corrected to <strong>non-increasing</strong>. The wrong direction was load-bearing for the §3.4 argument that τ is pre-registered rather than chosen after seeing the curve, so a reader trusting the old wording reasoned about the gate backwards</td>
+</tr>
+<tr>
+<td>§6/v1.2 CHANGE 3: the least admissible threshold maximises coverage</td>
+<td><code>least_admissible_maximises_coverage</code> proves it — but only when the ordering is <strong>derived from</strong> least-admissibility. A first version assumed <code>a ≤ b</code> and left both <code>Admissible</code> hypotheses unused; Lean's linter reported them, which is how the gap surfaced</td>
+<td>The rule stands, and its justification is now machine-checked. <code>least_admissible_is_at_least_as_good</code> adds the limit the protocol must respect: the guarantee is a <strong>maximum, not a strict maximum</strong></td>
+</tr>
+<tr>
+<td>§6 degeneracy: covered the case where <em>every</em> threshold is admissible</td>
+<td><code>budget_collapses_to_zero_on_small_dev</code> exhibits the <strong>opposite</strong> degeneracy. With ε = 0.05 and a dev set below twenty trials, <code>floor(0.05·N) = 0</code> and the only admissible thresholds are those that admit nothing: <code>admissibleIn 0 0 12 dev = [10, 11, 12]</code>, so τ* = 10 and <code>Coverage@ε = 0</code></td>
+<td>§6's degeneracy clause extended to name both ends. See below</td>
+</tr>
+<tr>
+<td>§6 eq (7): <code>Acc</code> is defined by a sum over every trial</td>
+<td><code>acc_is_not_diagnostic_of_understanding</code> shows the sum is <strong>underspecified on deferred trials</strong> — and that the two readings move <strong>oppositely</strong> on samples with identical answer-correctness (Acc falls 2/3→1/3 while conditional accuracy rises 2/3→1/1)</td>
+<td>§6/v1.4 CHANGE 1 names both readings; <strong>H1.1 is co-reported with the conditional accuracy</strong>, because the bare inequality is satisfied by confidence deflation alone</td>
+</tr>
+<tr>
+<td>§4.4 H1.3 names &quot;error among accepted&quot; and §4.5 defines the family &quot;as defined in the OSF entry&quot;</td>
+<td><code>cond_error_complements_cond_accuracy</code> shows H1.3's second disjunct is the <strong>complement of the H1.1 co-report</strong> — one quantity, so not independent evidence; and a family defined outside the protocol cannot be checked against the family tested</td>
+<td>§6.1 defines both quantities; §4.5 states the family in the protocol and declares the dependency; §12 item 9 fixes the co-report as descriptive rather than a fourth test</td>
+</tr>
+<tr>
+<td>§4.4a: &quot;two estimated thresholds, not two measurements of one thing&quot;</td>
+<td><code>clean_pins_at_floor</code> + <code>delta_tau_reduces_to_the_noisy_selector</code> show that with the clean arm at the floor — the measured regime, silent-error 0.0000 — the clean selector returns a <strong>design constant</strong>, so <code>Δτ*</code> is one estimate minus a constant; <code>same_diagnostic_from_different_arms</code> shows <code>Δτ*=0</code> cannot distinguish no disturbance from a tolerance-absorbed one</td>
+<td>v1.6 CHANGE 1 corrects the sentence and adds a reporting requirement: the dev silent-error curve is reported alongside, so a zero is read against what was excluded</td>
+</tr>
+<tr>
+<td>§4.4a: &quot;It is reported with a bootstrap CI&quot;</td>
+<td><code>admissible_iff_limen_le</code> shows the interval is <strong>exactly writable down</strong> — τ is admissible iff τ ≥ τ* — so bootstrapping a least-crossing estimator (not Hadamard-differentiable, and boundary-degenerate here) was never necessary</td>
+<td>v1.8 CHANGE 1 withdraws the bootstrap and reports the exact admissible set <code>[τ*, τ_max]</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Why the third one matters for §4.4a specifically.</strong> The budget can collapse to zero for two opposite
+reasons — the gate is <em>too lenient to ever err</em> (the clean zero floor already measured on this
+instrument), or <em>too strict to ever answer</em>. §4.4a reports a <code>Δτ*</code> measured between two fitted
+thresholds, and if both ends are shut gates then the diagnostic describes <strong>when the gate closes</strong>, not
+whether selectivity moved. The two degeneracies must therefore be distinguished at reporting time, not
+averaged into one &quot;undefined&quot;.</p>
+<p><strong>And the pocket immediately below the limen is the worst gate on the grid.</strong>
+<code>the_threshold_below_the_limen_keeps_only_the_error</code> shows that on that sample τ = 9 — one step under
+the fitted limen — admits exactly the single confidently-wrong trial and rejects all seven correct
+ones. &quot;Just under the fitted threshold&quot; is not a near-optimal gate; it is the maximally anti-selective
+one. Nothing in the protocol previously said so.</p>
+<p><strong>What the formalisation does NOT establish, and cannot.</strong> Every theorem follows from the definitions
+alone — the gate, the budget, a finite sample. There is <strong>no theorem saying that noise changes any of
+these quantities</strong>. That is the empirical claim, carried as a named premise in §4.4, and asserting it
+in Lean would be proving the result by fiat.</p>
+<p><strong>Authority:</strong> <code>docs/LEAN_FORMALIZATION_STATUS.md</code> · <code>scripts/check_lean_axioms.py</code> ·
+<code>scripts/check_lean_status_freshness.py</code>.</p>
+<hr />
+<h2 id="5-phase-ii-cross-script-multilingual-extension">5. Phase II — Cross-script / multilingual extension</h2>
+<h3 id="5-1-entry-criteria-gates-from-phase-i">5.1 Entry criteria (gates from Phase I)</h3>
+<p>Phase II begins only if:</p>
+<ol>
+<li>Phase I pipeline error rate (tooling failures) &lt; pre-set bound;</li>
+<li>$\mathcal{N}_{\mathrm{en}}$ and labels stable under independent re-run;</li>
+<li>New pre-registration filed for Phase II hypotheses (no retroactive change to Phase I).</li>
+</ol>
+<h3 id="5-2-design">5.2 Design</h3>
+<p><strong>Factors</strong></p>
+<table>
+<thead>
+<tr>
+<th>Factor</th>
+<th>Levels</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Channel $s$</td>
+<td>$s_{\mathrm{en}}$, $s_1$ (one primary contrast)</td>
+</tr>
+<tr>
+<td>Noise $\lambda$</td>
+<td>$0$, lo, mid (<strong>channel-specific</strong> generators)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Critical rule:</strong> $\lambda$ levels are <strong>not</strong> equated by “same edit rate as English” alone. Equivalence is justified by (a) human pilot difficulty, or (b) documented empirical error rates per channel, stated in Phase II pre-registration.</p>
+<h3 id="5-3-channel-s-1-selection-criteria">5.3 Channel $s_1$ selection criteria</h3>
+<p>Choose <strong>one</strong> of:</p>
+<ul>
+<li>Non-Latin script with documented digital input confusions; or</li>
+<li>Same language family but distinct orthographic standard; or</li>
+<li>IME-mediated input ecology (e.g., conversion errors),</li>
+</ul>
+<p>with: (i) ability to build parallel intentions; (ii) annotators; (iii) a <strong>faithful</strong> $\mathcal{N}_{s_1}$.</p>
+<p><strong>Forbidden:</strong> implementing $\mathcal{N}_{s_1}$ as “run English typo ops on transliterated text” as the sole noise model.</p>
+<h3 id="5-4-phase-ii-hypotheses-full-structural-thesis">5.4 Phase II hypotheses (full structural thesis)</h3>
+<ul>
+<li><strong>H2.1:</strong> Script × noise interaction on error (mid vs clean deltas larger for $s_1$ than $s_{\mathrm{en}}$, or pre-registered directed form).</li>
+<li><strong>H2.2:</strong> SilentError@0.9 contrast $(s_1,\lambda_{\mathrm{mid}}) - (s_{\mathrm{en}},\lambda_{\mathrm{mid}}) > 0$.</li>
+<li><strong>H2.3:</strong> Coverage@0.05 disparity under the same gating discipline as Phase I.</li>
+</ul>
+<p>Optional mechanism arm: router <code>forced_en</code> vs <code>forced_multi</code> vs <code>auto</code> under $s_1$ inputs.</p>
+<h3 id="5-5-models-in-phase-ii">5.5 Models in Phase II</h3>
+<ul>
+<li>Keep Phase I pinned model as backbone when possible.</li>
+<li>If multilingual checkpoint / router is required for $s_1$, pin it explicitly; report English cells under the <strong>same</strong> artifact for comparability, plus a sensitivity run with Phase I English-only pin on English cells only.</li>
+</ul>
+<hr />
+<h2 id="6-metrics-both-phases">6. Metrics (both phases)</h2>
+<div class="eq-block"><div class="eq-body">$$\mathrm{Acc}(s,\lambda) = 1 - \frac{1}{|\mathcal{T}|}\sum \mathbb{1}\{\hat y \neq y^\star\}$$</div><span class='eq-num'>(7)</span></div>
+<p><strong>The three dependent variables, defined once.</strong> All three are functions of the same trial set, and they are read as a triple rather than separately.</p>
+<p>where $\mathcal{T}$ is the set of trials at that condition and $y^\star$ is the gold label fixed before the run. <strong>Accuracy is necessary and not sufficient</strong>: a model that answers every item with high confidence and is wrong on a quarter of them scores well here and fails the next metric — the failure this programme exists to separate.</p>
+<div class="callout cn"><span class="ct-label">Recorded decision</span><p><strong>v1.4 CHANGE 1 — equation (7) is UNDERSPECIFIED on deferred trials, and the two readings disagree.</strong></p>
+<p>The gate of §3.4 produces <code>defer</code> as well as <code>answer</code>, so on a deferred trial there is <strong>no $\hat y$</strong> and
+the indicator $\mathbb{1}\{\hat y \neq y^\star\}$ has no value. Equation (7) sums over <strong>every</strong> trial in
+$\mathcal{T}$ while the gate is free to produce no answer at all, so the estimating equation does not
+close as written. There are two readings and the protocol never chose:</p>
+<p><strong>(a) defers counted as errors</strong> — $\mathrm{Acc}$ becomes the count answered-and-correct over $|\mathcal{T}|$;
+<strong>(b) defers dropped</strong> — $\mathrm{Acc}$ becomes accuracy <strong>conditional on committing</strong>, a different
+estimand with a different denominator.</p>
+<p><strong>They can move in opposite directions on the same data.</strong> The <code>lean-nhb</code> theorem
+<code>acc_is_not_diagnostic_of_understanding</code> exhibits it: two samples carrying the <strong>same correctness
+profile</strong> — <code>[true, true, false]</code> in both, so nothing about any answer changed — and different
+confidences. Under (a) the score falls from $2/3$ to $1/3$; under (b) it rises from $2/3$ to $1/1$.
+<code>acc_defers_wrong_mono</code> adds that under (a) the score is <strong>non-increasing in $\tau$</strong> for a fixed
+sample, and §3.4 fixes $\tau$ at 0.80/0.90 across conditions, so this is not a free parameter the
+analysis can absorb.</p>
+<p><strong>What follows, and it is a correction to H1.1 rather than a footnote.</strong> $\mathrm{Acc}(\lambda_{\mathrm{mid}})
+> < \mathrm{Acc}(0)$ is therefore <strong>not diagnostic of understanding on its own</strong>: it is satisfied by an
+instrument that merely becomes less willing to commit, with nothing wrong with any answer it does
+commit to. Under reading (a) a pure confidence deflation reproduces the predicted result with the
+understanding untouched. <strong>Both readings must be reported</strong>, and the run must name which one
+equation (7) was evaluated under. H1.1 alone cannot separate &quot;the model understood less&quot; from &quot;the
+model committed less&quot;, which is why the gate's own metrics — and not accuracy — carry the thesis
+(§0.4).</p></div>
+<div class="eq-block"><div class="eq-body">$$\mathrm{SilentError@}\tau(s,\lambda) = \frac{1}{|\mathcal{T}|}\sum \mathbb{1}\{\hat y \neq y^\star \wedge c \ge \tau\}$$</div><span class='eq-num'>(8)</span></div>
+<p class="eq-note">where $c \ge \tau$ is the gate's own commit condition (equation (5)). <strong>This metric carries the programme's thesis</strong>, because it counts only trials on which the model both committed and was wrong — the subset no accuracy figure can see. It is $P_e$ in the noisy-channel reading of §0.1. Note it is <strong>non-increasing in $\tau$</strong> — a stricter gate cannot admit more errors — and <strong>verified by machine</strong>, not merely argued: <code>risk_mono</code> in the <code>lean-nhb</code> formalisation proves $a \le b \Rightarrow \mathrm{Risk}\, b \le \mathrm{Risk}\, a$ over the protocol's own definitions (<code>scripts/check_lean_axioms.py</code> reports no <code>sorryAx</code>). <strong>The direction matters and an earlier draft had it backwards</strong>, saying &quot;non-decreasing&quot;: Lean's kernel settles it, and on a two-item sample $\{\{c{=}3, \mathrm{wrong}\}, \{c{=}9, \mathrm{wrong}\}\}$ the count runs $2, 1, 1, 0$ at $\tau = 2, 5, 9, 10$ — falling, not rising. This is also why §3.4 pre-registers $\tau$ rather than choosing it after seeing the curve, and why $\tau^\star_\varepsilon$ must be fit on <strong>dev</strong> only (§4.4a).</p>
+<div class="eq-block"><div class="eq-body">$$\mathrm{Coverage@}\varepsilon(s,\lambda) = \frac{|\{x: c(x)\ge \tau^\star_\varepsilon\}|}{|\mathcal{T}|}$$</div><span class='eq-num'>(9)</span></div>
+<p class="eq-note">where $\tau^\star_\varepsilon$ is the least threshold whose <strong>dev</strong>-set SilentError is at most $\varepsilon = 0.05$ (least, because the tie-break maximises coverage — Amendment 2, B1). <strong>Coverage is the Rate of the same channel</strong>: the fraction of trials on which the gate transmits at all. Read as a pair, (SilentError, Coverage) traces a rate–error curve — so a claim that noise leaves the curve unchanged becomes testable rather than rhetorical, which is what H1.3 tests.</p>
+<h3 id="6-1-the-conditional-quantities-v1-5">6.1 The conditional quantities (v1.5)</h3>
+<p>Equations (7)–(9) all have $|\mathcal{T}|$ in the denominator, so all three are affected by how often the
+gate declines to answer. The two quantities the hypotheses refer to when they need to hold the
+denominator fixed were never written down. They are defined here once, and their relationship is the
+reason H1.1 and H1.3 are not independent.</p>
+<div class="eq-block"><div class="eq-body">$$\mathrm{CondErr@}\tau(s,\lambda) = \frac{\sum \mathbb{1}\{\hat y \neq y^\star \wedge c \ge \tau\}}{\sum \mathbb{1}\{c \ge \tau\}},
+\qquad
+\mathrm{CondAcc@}\tau(s,\lambda) = 1 - \mathrm{CondErr@}\tau(s,\lambda).$$</div><span class='eq-num'>(10)</span></div>
+<p>The denominator is the count of trials the gate <strong>committed on</strong>, not $|\mathcal{T}|$. <code>CondErr</code> is the
+quantity §4.4's H1.3 names as &quot;error among accepted&quot;; <code>CondAcc</code> is the quantity the H1.1 co-report names.
+<strong>By equation (10) they are one quantity, not two</strong> — so a rise in one is a fall in the other by
+algebra, and the confirmatory family carries a declared dependency rather than two independent chances
+(see §4.5). <code>lean-nhb</code> checks the complementarity on the correction witness
+(<code>cond_error_complements_cond_accuracy</code>) and checks that one movement of confidence alone drives
+$\mathrm{Acc}$ <strong>down</strong> while <code>CondErr</code> goes <strong>down</strong> as well and <code>CondAcc</code> goes <strong>up</strong>
+(<code>one_movement_three_readings</code>). Read together: the $|\mathcal{T}|$-denominator metrics and the
+conditional metrics can report opposite conclusions from identical answer-correctness, which is why
+both are reported and why the family's shape must be stated rather than implied.</p>
+<p>Phase I omits $s$ (always $s_{\mathrm{en}}$).</p>
+<div class="callout cn"><span class="ct-label">Recorded decision</span><p><strong>v1.2 CHANGE 3 — the fitting rule for $\tau^\star$ is stated, including the case where it does not
+exist.</strong></p>
+<p>v1.1 said only &quot;fitted on dev&quot; and never said <em>which</em> threshold is reported when several meet the
+budget. <strong>An admissible threshold is never unique:</strong> <code>Risk(τ)</code> is monotone non-increasing in τ, so if τ
+meets the budget then every τ′ ≥ τ meets it too. The admissible set is upward closed and typically has
+no distinguished element. <strong>This is not hypothetical</strong> — the pilot's clean <code>SilentError@0.9</code> was
+<strong>0/120</strong>, making <code>Risk(τ) = 0</code> across the whole grid and <em>every</em> τ admissible.</p>
+<p><strong>The rule:</strong> $\tau^\star_\varepsilon$ is the <strong>least admissible threshold</strong>, i.e. the loosest gate
+whose accepted-error rate fits ε. This is the only convention under which <code>Coverage@ε</code> is <strong>maximised</strong>
+among admissible thresholds, so the gap from any other choice is bounded by monotonicity rather than by
+luck.</p>
+<p><strong>And the case where the rule yields nothing — which has TWO opposite forms, and they must not be
+reported the same way.</strong></p>
+<p><strong>(a) The budget is met everywhere because the gate cannot err.</strong> If <code>Risk(τ) = 0</code> for every τ in the
+grid, the budget does not select a threshold at all. Then <code>Coverage@ε</code> is reported as <strong>undefined,
+with the reason stated</strong>, and the one-sided 95 % upper bound on the noisy silent-error rate is
+reported instead. <strong>A reported <code>Coverage@ε</code> of zero in that situation is a fact about the dev set,
+not about the model, and must never be read as &quot;the model was perfectly selective.&quot;</strong> This is the
+clean zero floor already measured on this instrument (<code>SilentError@0.9 = 0/120</code>).</p>
+<p><strong>(b) The budget is met ONLY by a gate that admits nothing.</strong> The opposite degeneracy, and the
+protocol did not previously name it. With <code>ε = 0.05</code> and a dev set below twenty trials,
+<code>floor(0.05·N) = 0</code>, so the budget is zero — and then the least admissible threshold is the loosest
+gate whose accepted-error count is zero, which can be a gate that <strong>defers on every item</strong>. The
+<code>lean-nhb</code> theorem <code>budget_collapses_to_zero_on_small_dev</code> exhibits it: on an eight-trial dev sample
+the admissible set is <code>{10, 11, 12}</code>, so <code>τ* = 10</code> and <code>Coverage@ε = 0</code>.</p>
+<p>The two are indistinguishable from the reported number — both give <code>Coverage@ε = 0</code> — and they mean
+opposite things: (a) says <em>the model was right whenever it committed</em>, (b) says <em>the model was never
+asked to commit</em>. A run must therefore report <strong>which</strong> degeneracy it hit, together with the dev-set
+size and the budget, and must never report the bare zero. §4.4a depends on this: a <code>Δτ*</code> computed
+between two (b)-type gates describes when the gate closes, not whether selectivity moved.</p>
+<p>Authority: <code>docs/PHASE_I_AMENDMENT_2.md</code> §B1 · <code>docs/LEAN_FORMALIZATION_STATUS.md</code> §4.4b.</p>
+<p><strong>v1.3 ADDENDUM — the rule's optimality is now machine-checked, and one limit is named.</strong> The
+<code>lean-nhb</code> formalisation builds clean (<strong>27 theorems, zero errors, zero <code>sorry</code></strong>, each verified by
+Lean's kernel via <code>#print axioms</code>, which fails on <code>sorryAx</code>). Two of its results bear directly on this
+rule. <code>admissible_mono</code> proves the admissible set is <strong>upward closed</strong>, so an admissible threshold is
+never unique — the premise of the problem this rule solves. <code>least_admissible_maximises_coverage</code>
+proves that <strong>among admissible thresholds the least one maximises <code>Coverage@ε</code></strong>, which is what
+licenses calling the rule <em>optimal</em> rather than merely conventional.</p>
+<p><strong>The guarantee is a maximum, not a strict maximum.</strong> <code>least_admissible_is_at_least_as_good</code> shows
+that a stricter threshold may admit exactly as much when no observation's confidence lies between the
+two. So the rule is to be reported as <em>&quot;maximises coverage among admissible thresholds&quot;</em> and <strong>never</strong>
+as <em>&quot;maximises it strictly&quot;</em> — the latter is an overclaim the data can refute.</p>
+<p><strong>What the formalisation does NOT establish, and cannot.</strong> Every theorem follows from the definitions
+alone — the gate, the budget, a finite sample. There is <strong>no theorem here saying that noise changes
+any of these quantities</strong>; that is the empirical claim, carried as a named premise in §4.4, not
+something a theorem can prove. The rule itself is unchanged by the formalisation: what changed is that
+its justification is machine-checked rather than asserted.</p>
+<p>Authority: <code>docs/PHASE_I_AMENDMENT_2.md</code> §B1 · <code>docs/LEAN_FORMALIZATION_STATUS.md</code>.</p></div>
+<hr />
+<hr />
+<h2 id="7-what-phase-i-contributes-to-the-global-thesis">7. What Phase I contributes to the global thesis</h2>
+<table>
+<thead>
+<tr>
+<th>Global thesis element</th>
+<th>Phase I role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Noise as normal disturbance</td>
+<td><strong>Directly tested</strong> in English</td>
+</tr>
+<tr>
+<td>Control law (SilentError, coverage)</td>
+<td><strong>Instrumented</strong> via System One</td>
+</tr>
+<tr>
+<td>Structural bias across scripts</td>
+<td><strong>Not tested</strong> (deferred to Phase II)</td>
+</tr>
+<tr>
+<td>Feedback / accommodation</td>
+<td>Optional later Study C</td>
+</tr>
+<tr>
+<td>JEV tooling validity</td>
+<td><strong>ADMITTED, not validated</strong> — see below</td>
+</tr>
+</tbody>
+</table>
+<p>Phase I is therefore <strong>necessary infrastructure science</strong> for the control-systems claim, not a diluted substitute for Phase II.</p>
+<div class="callout ci"><span class="ct-label">Note</span><p><strong>On the last row — a wording correction that matters.</strong> v1.1 said JEV tooling validity would be
+<strong>&quot;validated&quot;</strong> under typo stress. That is not what this programme does, and the word implies a
+research output that is not claimed. The programme's rule is a three-criterion <strong>admission test</strong>
+(<code>docs/INSTRUMENT_POSTURE.md</code>): <strong>usable</strong>, <strong>scientific</strong>, <strong>reproducible</strong> — each answered with
+evidence, and each passing means <strong>use the component exactly as shipped</strong>.</p>
+<p><strong>Admission is not validation.</strong> A validated instrument would be an object of study, benchmarked and
+improved, which is precisely what this programme forbids: the instrument is one tool on one link of a
+pipeline. <strong>The pilot exercised the instrument under noise; that is an exercise, not a validation.</strong>
+The row is corrected rather than deleted so the change of posture is visible.</p></div>
+<hr />
+<h2 id="8-explicit-non-goals">8. Explicit non-goals</h2>
+<table>
+<thead>
+<tr>
+<th>Non-goal</th>
+<th>Phase</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Claim writing-system fairness from English typos alone</td>
+<td>I</td>
+</tr>
+<tr>
+<td>Universal typo intensity across languages without justification</td>
+<td>II</td>
+</tr>
+<tr>
+<td>Confirmatory fine-tuning / QLoRA</td>
+<td>I–II</td>
+</tr>
+<tr>
+<td>Paid API dependency</td>
+<td>I–II</td>
+</tr>
+<tr>
+<td>Leaderboard Intelligence maximisation</td>
+<td>I–II</td>
+</tr>
+<tr>
+<td>Equating self-healing spelling with primary endpoints</td>
+<td>I–II</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="9-open-science">9. Open science</h2>
+<ul>
+<li><strong>Two pre-registrations:</strong> Phase I; Phase II (after Phase I freeze).</li>
+<li>Release English typo generator, items (or controlled access), JSONL schema, analysis code.</li>
+<li>Phase II adds $s_1$ materials under the same discipline.</li>
+<li>All confirmatory model commits pinned.</li>
+</ul>
+<hr />
+<h2 id="10-limitations">10. Limitations</h2>
+<ul>
+<li>Phase I generalises only to English Latin keyboard-like noise.</li>
+<li>Single System One pin may not represent all JEV-ecosystem models.</li>
+<li>Parallel Phase II items introduce translation/construction bias; mitigated by adjudication codebook.</li>
+<li>Gating simulates allocation; not a field deployment RCT.</li>
+</ul>
+<hr />
+<h2 id="11-timeline-indicative">11. Timeline (indicative)</h2>
+<table>
+<thead>
+<tr>
+<th>Stage</th>
+<th>Months</th>
+<th>Output</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Phase I pre-reg + items + $\mathcal{N}_{\mathrm{en}}$</td>
+<td>1–3</td>
+<td>Locked English bank</td>
+</tr>
+<tr>
+<td>Phase I pilot + power</td>
+<td>3–4</td>
+<td>Final $N$</td>
+</tr>
+<tr>
+<td>Phase I confirmatory + report</td>
+<td>4–7</td>
+<td>H1.x results, frozen tooling</td>
+</tr>
+<tr>
+<td>Phase II design + pre-reg</td>
+<td>7–9</td>
+<td>$s_1$, $\mathcal{N}_{s_1}$</td>
+</tr>
+<tr>
+<td>Phase II data + tests</td>
+<td>9–14</td>
+<td>H2.x results</td>
+</tr>
+<tr>
+<td>Integrated manuscript</td>
+<td>14–18</td>
+<td>Phased narrative</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="12-phase-i-pre-registration-checklist">12. Phase I pre-registration checklist</h2>
+<p>The checklist as the <strong>protocol</strong> states it, with the current state of each item. <strong>The protocol states
+the requirement; the state column is maintained by <code>docs/PHASE_I_PREREGISTRATION.md</code> and its
+amendments.</strong> A protocol item may not be marked satisfied by a downstream document alone.</p>
+<ul class="ck"><li><span class="ic-ok">✓</span><span><b>1.</b> English only; no script factor in confirmatory tests <span class="badge b-yes">YES</span><br><span style='font-size:7.6pt;color:var(--text3)'>frozen; `ok` and `escalate` dropped &middot; `docs/PHASE_I_PREREGISTRATION.md` §12</span></span></li><li><span class="ic-ok">✓</span><span><b>2.</b> Typo classes and λ rates fixed <span class="badge b-yes">YES</span><br><span style='font-size:7.6pt;color:var(--text3)'>frozen; `ok` and `escalate` dropped &middot; O1, Amendment 3 v3: the rates are selected by the noisy-channel recoverability index (`scripts/o1_recoverability.py`) against a published human anchor — Rayner et al. (2006), interior-scrambled, `mean_r = 0.4480`. `λ_lo` is the smallest grid point clearing the anchor, `λ_mid` the largest; separation 0.0309 = 6.07 pooled seed SD. Determined by the rule, with no discretion.</span></span></li><li><span class="ic-ok">✓</span><span><b>3.</b> Generator seed policy <span class="badge b-yes">YES</span><br><span style='font-size:7.6pt;color:var(--text3)'>frozen; `ok` and `escalate` dropped &middot; pure function of `(item_id, λ, seed)`; `seeds ∈ {0,1,2}`</span></span></li><li><span class="ic-ok">✓</span><span><b>4.</b> Model ID + commit + SHA256 <span class="badge b-yes">YES</span><br><span style='font-size:7.6pt;color:var(--text3)'>frozen; `ok` and `escalate` dropped &middot; v1.2 CHANGE 2 — `55cf4c4e…`, `config/pin_laya.json`, verified by execution</span></span></li><li><span class="ic-ok">✓</span><span><b>5.</b> $Q_0$ frozen <span class="badge b-yes">YES</span><br><span style='font-size:7.6pt;color:var(--text3)'>frozen; `ok` and `escalate` dropped &middot; v1.2 CHANGE 1. v1.1 said `(intent, ok, escalate)`; `ok` and `escalate` are dropped, since the `noul` primitive measured at chance (`docs/C2_NOUL_VALIDITY.md`). This checklist entry is therefore amended by the protocol itself, not by a downstream note.</span></span></li><li><span class="ic-ok">✓</span><span><b>6.</b> Confidence rule frozen <span class="badge b-yes">YES</span><br><span style='font-size:7.6pt;color:var(--text3)'>frozen; `ok` and `escalate` dropped &middot; §3.3 — `c = max_j p_j` for choice; `c = max(p, 1−p)` for noul</span></span></li><li><span class="ic-ok">✓</span><span><b>7.</b> τ ∈ {0.80, 0.90}, ε = 0.05 <span class="badge b-yes">YES</span><br><span style='font-size:7.6pt;color:var(--text3)'>frozen; `ok` and `escalate` dropped &middot; §3.4. `τ*` fitting rule is now stated by v1.2 CHANGE 3.</span></span></li><li><span class="ic-ok">✓</span><span><b>8.</b> Dev/test split by item <span class="badge b-yes">YES</span><br><span style='font-size:7.6pt;color:var(--text3)'>frozen; `ok` and `escalate` dropped &middot; 30/70 by `item_id`</span></span></li><li><span class="ic-ok">✓</span><span><b>9.</b> Primary endpoints H1.1–H1.3; confirmatory family = exactly these three, Holm, $\alpha=0.05$ <span class="badge b-yes">YES</span><br><span style='font-size:7.6pt;color:var(--text3)'>frozen; `ok` and `escalate` dropped &middot; §4.4; co-primaries are H1.2 and H1.3; the H1.1 `CondAcc` co-report is descriptive, not a fourth test; H1.3 disjunct 2 is the complement of that co-report and is therefore not independent evidence (§4.5, §6.1)</span></span></li><li><span class="ic-ok">✓</span><span><b>10.</b> FAILURES policy <span class="badge b-yes">YES</span><br><span style='font-size:7.6pt;color:var(--text3)'>frozen; `ok` and `escalate` dropped &middot; every attempted trial recorded; failures logged, never dropped</span></span></li><li><span class="ic-ok">✓</span><span><b>11.</b> No confirmatory training <span class="badge b-yes">YES</span><br><span style='font-size:7.6pt;color:var(--text3)'>frozen; `ok` and `escalate` dropped &middot; θ frozen; no fine-tuning, no QLoRA, no adapter</span></span></li><li><span class="ic-ok">✓</span><span><b>12.</b> Cross-script claims reserved for Phase II <span class="badge b-yes">YES</span><br><span style='font-size:7.6pt;color:var(--text3)'>frozen; `ok` and `escalate` dropped &middot; §0.2, §5.2; §5.1 gates Phase II</span></span></li><li><span class="ic-ok">✓</span><span><b>—.</b> Item bank <span class="badge b-yes">YES</span><br><span style='font-size:7.6pt;color:var(--text3)'>accepted; plausibility pass scoped to 47 templates &middot; O3 closed: six automatic checks (`scripts/o3_consistency_audit.py`) — structure clean, rival criteria absent, routability measured with a shuffled-label control at chance, and split-half stability as the reliability measure. Inter-rater kappa is rejected as the reliability instrument: it measures agreement between people, collapses on uneven categories, and is compatible with two raters sharing a bias. `docs/O3_BANK_DECISION.md`</span></span></li><li><span class="ic-ok">✓</span><span><b>—.</b> N_item <span class="badge b-yes">YES</span><br><span style='font-size:7.6pt;color:var(--text3)'>frozen &middot; O2, with Erratum 1 — the corrected π_d is 0.1833; 652 is conservative</span></span></li></ul>
+<p><strong>THE SEAL IS NOT BLOCKED BY O3.</strong> Consistency is measured from the items by six automatic checks with a control, and reliability is carried by split-half stability rather than by rater agreement — so <strong>no human pass remains</strong> (<code>docs/O3_BANK_DECISION.md</code>). <strong>O1 is closed</strong> by Amendment 3 v3, and <strong>O3 is closed by measurement</strong>. What remains before the confirmatory run is operational, not scientific: the pinned-instrument end-to-end pre-run on dev.</p>
+<hr />
+<!-- PROVENANCE:BEGIN - generated by scripts/build_provenance_table.py; do not edit by hand -->
+<h3 id="12-1-claim-provenance-what-is-proved-what-is-assumed">12.1 Claim provenance — what is proved, what is assumed, what is tested</h3>
+<p>Generated by <code>scripts/build_provenance_table.py</code> from the kernel-verified set of <strong>27 theorems</strong>. A row marked <strong>PROVED</strong> names a theorem the kernel checked; the generator fails if such a theorem does not exist, so this table cannot claim a proof that was never done. <strong>No row here is marked PROVED for a statement that noise changes Accuracy, SilentError or Coverage</strong> — those are the empirical claims, and no theorem can settle them.</p>
+<table>
+<thead>
+<tr>
+<th>Claim as the protocol states it</th>
+<th>Status</th>
+<th>Authority</th>
+<th>Note</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>SilentError@τ</code> is non-increasing in τ</td>
+<td><strong>PROVED</strong></td>
+<td><code>risk_mono</code></td>
+<td>§6 stated the opposite until the kernel refuted it</td>
+</tr>
+<tr>
+<td><code>Coverage@ε</code> is non-increasing in τ</td>
+<td><strong>PROVED</strong></td>
+<td><code>coverage_mono</code></td>
+<td>the tie-break's premise, machine-checked</td>
+</tr>
+<tr>
+<td>raising τ can only discard accepted trials</td>
+<td><strong>PROVED</strong></td>
+<td><code>accepted_mono</code></td>
+<td>the gate cannot un-reject</td>
+</tr>
+<tr>
+<td>admissibility is monotone in τ</td>
+<td><strong>PROVED</strong></td>
+<td><code>admissible_mono</code></td>
+<td>used by the tie-break proof</td>
+</tr>
+<tr>
+<td>a least admissible threshold exists</td>
+<td><strong>PROVED</strong></td>
+<td><code>admissible_exists, top_admissible</code></td>
+<td>§B1 needs existence before it can prefer one</td>
+</tr>
+<tr>
+<td>the least admissible threshold maximises coverage among admissible ones</td>
+<td><strong>PROVED</strong></td>
+<td><code>least_admissible_maximises_coverage, least_admissible_is_at_least_as_good</code></td>
+<td>§B1, and the reason the rule reads LEAST</td>
+</tr>
+<tr>
+<td>an empty dev set is degenerate, not neutral</td>
+<td><strong>PROVED</strong></td>
+<td><code>empty_dev_is_degenerate</code></td>
+<td>every τ admissible and coverage zero</td>
+</tr>
+<tr>
+<td>for small dev sets, ε = 0.05 drives the least admissible τ to close every gate</td>
+<td><strong>PROVED</strong></td>
+<td><code>budget_collapses_to_zero_on_small_dev</code></td>
+<td>first end of the degeneracy spectrum</td>
+</tr>
+<tr>
+<td>immediately below the limen the gate keeps only the error</td>
+<td><strong>PROVED</strong></td>
+<td><code>the_threshold_below_the_limen_keeps_only_the_error</code></td>
+<td>the opposite end of the same spectrum</td>
+</tr>
+<tr>
+<td>§6's original 'non-decreasing in τ' wording is false</td>
+<td><strong>PROVED</strong></td>
+<td><code>protocol_said_nondecreasing_is_FALSE</code></td>
+<td>kept as evidence that the feedback loop ran</td>
+</tr>
+<tr>
+<td><code>Acc</code> read as defers-counted-as-errors is non-increasing in τ</td>
+<td><strong>PROVED</strong></td>
+<td><code>acc_defers_wrong_mono</code></td>
+<td>why §3.4's fixed τ cannot be tuned away</td>
+</tr>
+<tr>
+<td><code>Acc</code> cannot separate 'understood less' from 'committed less'</td>
+<td><strong>PROVED</strong></td>
+<td><code>acc_is_not_diagnostic_of_understanding, one_movement_three_readings</code></td>
+<td>the H1.1 correction</td>
+</tr>
+<tr>
+<td>§6.1's <code>CondErr</code> and <code>CondAcc</code> are one quantity</td>
+<td><strong>PROVED</strong></td>
+<td><code>cond_error_complements_cond_accuracy</code></td>
+<td>the declared dependency in the confirmatory family</td>
+</tr>
+<tr>
+<td>at the clean end the fitted selector returns a design constant</td>
+<td><strong>PROVED</strong></td>
+<td><code>clean_pins_at_floor, delta_tau_reduces_to_the_noisy_selector</code></td>
+<td>the §4.4a correction</td>
+</tr>
+<tr>
+<td>the set of thresholds consistent with the dev data is exactly an interval from the limen up</td>
+<td><strong>PROVED</strong></td>
+<td><code>admissible_iff_limen_le</code></td>
+<td>the exact interval §4.4a reports in place of a bootstrap</td>
+</tr>
+<tr>
+<td><code>Δτ* = 0</code> does not identify 'no disturbance'</td>
+<td><strong>PROVED</strong></td>
+<td><code>same_diagnostic_from_different_arms</code></td>
+<td>tolerance-absorbed disturbance reports identically</td>
+</tr>
+<tr>
+<td>the gate commits on <code>argmax p</code></td>
+<td><em>ASSUMED</em></td>
+<td>§3.4</td>
+<td>a definitional choice; a different rule would move every number</td>
+</tr>
+<tr>
+<td><code>c = max_j p_j</code> is comparable across conditions</td>
+<td><em>ASSUMED</em></td>
+<td>§3.3</td>
+<td>a calibration assumption about the instrument, not a theorem</td>
+</tr>
+<tr>
+<td>λ acts only through the text channel</td>
+<td><em>ASSUMED</em></td>
+<td>§2, §3.2</td>
+<td>if noise also perturbed the encoder internals the channel reading would need restating</td>
+</tr>
+<tr>
+<td><code>τ*</code> fitted on dev transfers to test</td>
+<td><em>ASSUMED</em></td>
+<td>§6/v1.2 CHANGE 3</td>
+<td>dev and test are disjoint by item; transfer is a premise, not a result</td>
+</tr>
+<tr>
+<td><code>intent</code> alone captures Q0</td>
+<td><em>ASSUMED</em></td>
+<td>v1.2 CHANGE 1</td>
+<td><code>ok</code> and <code>escalate</code> were dropped after measuring at chance</td>
+</tr>
+<tr>
+<td>the generator is keyboard-faithful and λ controls the rate</td>
+<td><em>ASSUMED</em></td>
+<td>§3.2, <code>N_en</code> implementation</td>
+<td>a construction property, checkable by inspection rather than by the kernel</td>
+</tr>
+<tr>
+<td>H1.1 — <code>Acc(λ_mid) &lt; Acc(0)</code></td>
+<td><strong>TO BE TESTED</strong></td>
+<td>§4.4; co-reported with <code>CondAcc</code></td>
+<td>no theorem can prove it; that is why it is the empirical claim</td>
+</tr>
+<tr>
+<td>H1.2 — <code>SilentError@0.9(λ_mid) &gt; SilentError@0.9(0)</code></td>
+<td><strong>TO BE TESTED</strong></td>
+<td>§4.4; co-primary</td>
+<td></td>
+</tr>
+<tr>
+<td>H1.3 — coverage falls, or <code>CondErr@τ</code> rises</td>
+<td><strong>TO BE TESTED</strong></td>
+<td>§4.4; co-primary</td>
+<td>disjunct 2 is not independent evidence for H1.1</td>
+</tr>
+<tr>
+<td><code>Δτ* &gt; 0</code> — the fitted limen moves under noise</td>
+<td><strong>TO BE TESTED</strong></td>
+<td>§4.4a; reported, not confirmatory</td>
+<td>usually unattainable when the clean arm sits at the floor</td>
+</tr>
+<tr>
+<td>the Phase II cross-script law</td>
+<td><strong>TO BE TESTED</strong></td>
+<td>§4.4 H2.1–H2.2</td>
+<td>reserved for Phase II</td>
+</tr>
+<tr>
+<td>the λ rates are readable at the intended level</td>
+<td><strong>TO BE TESTED</strong></td>
+<td>O1, Amendment 3 v3</td>
+<td>closed by rule: λ_lo = 0.05 and λ_mid = 0.18 selected against the published Rayner (2006) anchor</td>
+</tr>
+<tr>
+<td>the paired discordance rate <code>π_d</code></td>
+<td><strong>MEASURED</strong></td>
+<td>0.2036</td>
+<td>against the 0.1833 that froze <code>N</code>; higher, and favourable</td>
+</tr>
+<tr>
+<td>the minimum detectable effect at 80 % power</td>
+<td><strong>MEASURED</strong></td>
+<td>5.41 accuracy points</td>
+<td>against the 5.0-point target this design pre-registered</td>
+</tr>
+<tr>
+<td><code>λ_lo</code> does not degrade accuracy</td>
+<td><strong>MEASURED</strong></td>
+<td>0.9071</td>
+<td>against clean 0.8750 — <code>lo</code> is genuinely unperturbed</td>
+</tr>
+<tr>
+<td><code>SilentError@0.9</code> does not rise under noise</td>
+<td><strong>MEASURED</strong></td>
+<td>0.0107</td>
+<td>it FALLS, which is why H1.2 is flagged at §4.4</td>
+</tr>
+<tr>
+<td>the pinned instrument's confidence carries no substitution</td>
+<td><strong>MEASURED</strong></td>
+<td>2,520</td>
+<td>0 of 2,520 rows carry the constant 0.5 the library warns about</td>
+</tr>
+<tr>
+<td>the confidence gate becomes more discriminative under noise</td>
+<td><strong>MEASURED</strong></td>
+<td>0.1201</td>
+<td>within-arm AUC 0.6533 -&gt; 0.7734, paired permutation p = 2e-4 — the basis of H1.2'</td>
+</tr>
+</tbody>
+</table>
+<p><strong>16 proved · 6 measured on the pinned instrument · 6 assumed · 6 to be tested.</strong> The third column is the whole point: a reader can see which conclusions rest on the kernel, which on a pre-run the instrument actually produced, which on a premise the design chose, and which on the confirmatory run that has not happened yet. A <strong>PROVED</strong> row names a theorem the kernel checked and a <strong>MEASURED</strong> row quotes a value the pre-run reported; the generator fails if either is absent, so this table cannot claim a proof that was never done or a measurement quoted from nowhere.</p>
+<!-- PROVENANCE:END -->
+<hr />
+<h2 id="13-minimal-phase-i-runbook">13. Minimal Phase I runbook</h2>
+<pre><code class="language-text">1. Pin System One checkpoint
+2. Build English intent items + gold
+3. Generate x(item, λ∈{0,lo,mid}, seed) via N_en
+4. predict(state=x, questions=Q0) → JSONL
+5. Fit τ* on dev if using Coverage@0.05
+6. Test H1.1–H1.3 on locked test
+7. Freeze all artifacts before any Phase II work
+</code></pre>
+<hr />
+<h2 id="14-document-control">14. Document control</h2>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Role</strong></td>
+<td><strong>THE PROGRAMME'S GLOBAL ANCHOR.</strong> All other documents are subordinate; see the note at the head of §0</td>
+</tr>
+<tr>
+<td>Version</td>
+<td><strong>1.23</strong></td>
+</tr>
+<tr>
+<td>v1.23 changes</td>
+<td>Abstract added (Stage 2), status updated</td>
+</tr>
+<tr>
+<td>v1.22 changes</td>
+<td>§17 confirmatory results added; all three hypotheses confirmed, no direction violations</td>
+</tr>
+<tr>
+<td>v1.21 changes</td>
+<td>static window-comparability check added as a guard and recorded in §16; no erratum required</td>
+</tr>
+<tr>
+<td>v1.20 changes</td>
+<td>§12.1 34 claims, H1.2' measurement added</td>
+</tr>
+<tr>
+<td>v1.19 changes</td>
+<td>H1.2 → H1.2' (gate discriminability rises under noise); estimator reuses §4.5; frozen family and thresholds unchanged</td>
+</tr>
+<tr>
+<td>v1.18 changes</td>
+<td>(c)/(d) testability probed on dev (<code>docs/PHASE_I_DEV_PRERUN_RESULTS.md</code> §8); (d) refuted, (c) testable at the cost of a second estimator</td>
+</tr>
+<tr>
+<td>v1.17 changes</td>
+<td>option (a) for H1.2 measured and withdrawn (<code>docs/PHASE_I_DEV_PRERUN_RESULTS.md</code> §7); H1.2 flag updated; decision open</td>
+</tr>
+<tr>
+<td>v1.16 changes</td>
+<td>§12.1 extended to four statuses (PROVED / MEASURED / ASSUMED / TO BE TESTED) with MEASURED rows validated against the pre-run results document</td>
+</tr>
+<tr>
+<td>v1.15 changes</td>
+<td>§16 dev pre-run (non-confirmatory): feasibility, π_d = 0.2036, power re-derived (MDE 5.41 pts vs a 5.0-pt target), H1.2 direction contradiction seed-robust</td>
+</tr>
+<tr>
+<td>v1.14 changes</td>
+<td>H1.2 flagged (direction contradicted on dev; amendment tabled); dev pre-run results recorded (<code>docs/PHASE_I_DEV_PRERUN_RESULTS.md</code>)</td>
+</tr>
+<tr>
+<td>v1.13 changes</td>
+<td>§4.5 estimator = exact paired permutation + direction enforcement; O3 closed automatically (<code>scripts/o3_consistency_audit.py</code>), kappa rejected</td>
+</tr>
+<tr>
+<td>v1.12 changes</td>
+<td>§4.5 covariates + exploratory interaction; item-bank capitalisation corrected (69 states, 3 urgency templates, 0 packed stimuli affected)</td>
+</tr>
+<tr>
+<td>v1.11 changes</td>
+<td>O3 scoped: stratified pass over 47 templates; routability margin pre-registered as a covariate and the interaction as exploratory (<code>docs/O3_BANK_DECISION.md</code>)</td>
+</tr>
+<tr>
+<td>v1.10 changes</td>
+<td>§12 item 2 → <code>FIXED</code>; the O1 criterion restated on the recoverability axis with a published anchor (<code>docs/PHASE_I_AMENDMENT_3_O1_READABILITY.md</code> §8)</td>
+</tr>
+<tr>
+<td>v1.9 changes</td>
+<td>§15 machine-checked core, generated by <code>scripts/build_proof_appendix.py</code> with <code>--check</code> and a negative control. <strong>Additive, presentation only — it introduces no new claim.</strong></td>
+</tr>
+<tr>
+<td>v1.8 changes</td>
+<td>§4.4a bootstrap CI withdrawn and replaced by the exact admissible-set interval (<code>admissible_iff_limen_le</code>, <code>AdmissibleInterval</code>). <strong>Withdraws a procedure; no frozen value moved.</strong></td>
+</tr>
+<tr>
+<td>v1.7 changes</td>
+<td>§12.1 claim provenance table, generated by <code>scripts/build_provenance_table.py</code> and guarded by <code>--check</code> plus a negative control. <strong>Additive, presentation only.</strong></td>
+</tr>
+<tr>
+<td>v1.6 changes</td>
+<td>(1) §4.4a's &quot;two estimated thresholds&quot; corrected — the clean endpoint is a design constant; (2) the tightening branch is normally unattainable; (3) <code>Δτ*=0</code> is an identification failure, not an absence — report the dev silent-error curve alongside. <strong>Additive.</strong></td>
+</tr>
+<tr>
+<td>v1.5 changes</td>
+<td>(1) §6.1 conditional quantities defined, eq (10); (2) §4.5 Holm family stated in the protocol; (3) H1.3/H1.1 declared dependency; (4) H1.1 co-report fixed as descriptive. <strong>Additive — the family stays at three tests.</strong></td>
+</tr>
+<tr>
+<td>v1.4 changes</td>
+<td>(1) <strong>eq (7) underspecified on deferred trials</strong> — both readings named and shown to move oppositely on identical correctness (<code>lean-nhb</code>: <code>acc_is_not_diagnostic_of_understanding</code>); (2) <strong>H1.1 co-reported with conditional accuracy</strong>; (3) §4.4b: what machine-checking changed. <strong>Additive — no frozen value moved and no confirmatory endpoint was added.</strong></td>
+</tr>
+<tr>
+<td>v1.3 changes</td>
+<td>(1) <strong>LIMEN</strong> named as the gate's threshold (§0.3), with four things the name explicitly does not assert; (2) the <strong>thesis, mechanism, objective and non-claim</strong> stated directly (§0.4), with a constraint on how the objective may be worded per phase; (3) the <strong>limen-shift diagnostic</strong> $\Delta\tau^\star$ added as a <strong>reported, non-confirmatory</strong> quantity (§4.4a); (4) §3.4 states exactly what the gate reads. <strong>Additive only — no frozen value moved and no confirmatory endpoint was added.</strong></td>
+</tr>
+<tr>
+<td>v1.2 changes</td>
+<td>(1) <code>Q0</code> is <code>intent</code> alone; (2) the pin is decided — Laya English root at <code>55cf4c4e…</code>; (3) the <code>τ*</code> fitting rule is stated, including when it yields nothing</td>
+</tr>
+<tr>
+<td>Staging</td>
+<td><strong>Phase I English typo → Phase II cross-script</strong></td>
+</tr>
+<tr>
+<td>Primary DVs (I)</td>
+<td>Acc, SilentError@τ, Coverage@ε vs $\lambda$, <strong>all over <code>intent</code></strong></td>
+</tr>
+<tr>
+<td>Primary DVs (II)</td>
+<td>Script × noise interaction; cross-channel SilentError / coverage</td>
+</tr>
+<tr>
+<td>Named quantity</td>
+<td><strong>LIMEN</strong> $= \tau$, the argument of $g_\tau$. Fixed probes $\tau \in \{0.80, 0.90\}$; fitted $\tau^\star_\varepsilon$; their shift $\Delta\tau^\star$ is <strong>reported, not confirmatory</strong></td>
+</tr>
+<tr>
+<td>Tooling</td>
+<td>One JEV-compatible System One component, <strong>admitted on three criteria and used as shipped</strong> — not validated, not tuned</td>
+</tr>
+<tr>
+<td>Thesis</td>
+<td>Coupled control under normal orthographic disturbance; structural bias tested only from Phase II</td>
+</tr>
+<tr>
+<td>Anchor identity</td>
+<td>sha256 recorded in <code>config/anchor.json</code>, verified by <code>scripts/check_anchor.py</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="16-dev-pre-run-on-the-pinned-instrument-non-confirma">16. Dev pre-run on the pinned instrument (NON-CONFIRMATORY)</h2>
+<p><strong>Run before the seal, on the dev split only (280 items). The test split is untouched and nothing here
+enters a confirmatory result.</strong> Authority: <code>docs/PHASE_I_DEV_PRERUN_RESULTS.md</code>.</p>
+<p><strong>Why it was run.</strong> Every quantitative claim in this protocol had been checked by proof or by measurement on
+synthetic and dev data — but the <em>instrument chain</em> had never executed end to end. A pre-registration whose
+pipeline has never run is a plan, and the difference shows up as operational surprises after the seal, when
+they can no longer be fixed without an amendment.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Measured</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>feasibility</td>
+<td><strong>560 records in 28.8 s</strong>, 0 failures; projected confirmatory load ≈ 5,900 conditions, under ten minutes of GPU</td>
+</tr>
+<tr>
+<td>confidence integrity</td>
+<td>the <code>c == 0.5</code> substitution the library warns about appears in <strong>0 of 560</strong> rows; <code>c</code> spans 0.296–1.000 over 514 distinct values</td>
+</tr>
+<tr>
+<td><strong>π_d</strong></td>
+<td><strong>0.2036</strong> against the frozen 0.1833 — higher, and favourable, so <code>N = 652</code> stands</td>
+</tr>
+<tr>
+<td>accuracy contrast</td>
+<td>0.8750 → 0.7571 from λ = 0 to 0.18 (<strong>11.8 points</strong>)</td>
+</tr>
+<tr>
+<td><strong>power re-derived</strong></td>
+<td>minimum detectable effect <strong>5.41 points</strong> at 80 % power, against the <strong>5.0-point</strong> target this design pre-registered</td>
+</tr>
+<tr>
+<td>confidence moves</td>
+<td>median <code>c</code> 0.886 → 0.765</td>
+</tr>
+<tr>
+<td><strong>all three seeds, both endpoints</strong></td>
+<td>2,520 records in 69.9 s, 0 failures. The clean cell is <strong>identical across seeds</strong> (0.8750 / 0.0357 / 0.4321 × 3) — a self-check that passes, since λ = 0 leaves the seed nothing to perturb. <code>λ_lo = 0.05</code> does <strong>not degrade</strong> accuracy (0.864–0.907 against clean 0.875), so <code>lo</code> is genuinely unperturbed. <strong>Every direction is seed-consistent</strong>, including the H1.2 contradiction</td>
+</tr>
+</tbody>
+</table>
+<p><strong>The power result is a validation rather than a change.</strong> McNemar is a binomial test on the <em>discordant</em>
+pairs, so power depends on <code>N · π_d</code> and on the conditional asymmetry. At N = 652 that gives 132.7 discordant
+pairs, and the minimum detectable effect is <strong>5.41 points against a 5.0-point target</strong> — a match to within a
+point. The frozen sample size is sized for exactly the effect it declared, and the measured effect being
+about twice the target is why achieved power reads ≈ 1.</p>
+<p><strong>One finding required a flag rather than a fix.</strong> The dev pre-run contradicts the direction of H1.2:
+<code>SilentError@0.9</code> <strong>falls</strong> (0.0357 → 0.0107) under noise. The mechanism is already proved in this protocol —
+<code>risk_mono</code> (§15) makes <code>SilentError@τ</code> non-increasing in τ — and noise deflates confidence, so fewer trials
+clear the gate at all (coverage 0.432 → 0.218) and the admitted-and-wrong share falls with them. <strong>A fixed-τ
+silent-error rate cannot rise under a confidence-deflating manipulation</strong>, so H1.2 as written is un-runnable
+and is flagged at §4.4. The amendment to restate it on <code>CondErr@τ</code> (§6.1) is tabled and not accepted.</p>
+<p><strong>Two claims in this protocol were made before the chain ran and are now measured rather than asserted:</strong>
+that the generator's regeneration equals the frozen packs (§12 item 3 and §6), and that the pinned
+instrument's confidence is usable as <code>c = max_j p_j</code>. The first holds exactly; the second holds on a sample
+that found the affected route unreached, which is why it is carried as a <strong>checked invariant</strong>
+(<code>scripts/check_confidence_contamination.py</code>) rather than as an observation.</p>
+<p>| <strong>window comparability (static)</strong> | the 652-item window against dev: domain χ² p = 0.2932, TV = 0.0562; template χ² p = 0.7289; every domain covered by 10–12 templates in both splits; template imbalance in the window 27.0×. <strong>No erratum required</strong> — checked on the bank alone, never on instrument behaviour |</p>
+<p><strong>Operational verdict: the confirmatory run is feasible as frozen, and the sample size is correct.</strong> What
+remains before it is the H1.2 amendment and nothing else.</p>
+<hr />
+<h2 id="17-confirmatory-results-stage-2">17. Confirmatory results (Stage 2)</h2>
+<p><strong>Run 2026-10-05</strong> on the pinned instrument at revision <code>55cf4c4ebb4e…</code>, cuda, θ frozen, no training.
+<strong>The test split: 652 items × 7 λ × 3 seeds = 13,692 trial records, 0 failures, 366.5 s.</strong> Analysis:
+<code>scripts/analyze_phase1.py</code>, the exact paired permutation of §4.5, Holm at FWER α = 0.05 over the frozen
+three-hypothesis family, <strong>direction enforced as part of each hypothesis</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>hypothesis</th>
+<th>pre-registered direction</th>
+<th>raw p</th>
+<th>Holm threshold</th>
+<th>verdict</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>H1.1</strong> accuracy falls at λ_mid</td>
+<td>falls</td>
+<td><strong>4.42 × 10⁻³⁶</strong></td>
+<td>0.0167</td>
+<td><strong>rejected — supported</strong></td>
+</tr>
+<tr>
+<td><strong>H1.2′</strong> the gate's discriminability rises at λ_mid</td>
+<td>rises</td>
+<td><strong>2.00 × 10⁻⁴</strong></td>
+<td>0.0500</td>
+<td><strong>rejected — supported</strong></td>
+</tr>
+<tr>
+<td><strong>H1.3</strong> coverage falls at λ_mid</td>
+<td>falls</td>
+<td><strong>5.00 × 10⁻⁵</strong></td>
+<td>0.0250</td>
+<td><strong>rejected — supported</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>No direction violations. Every hypothesis moved the way it was pre-registered to move.</strong></p>
+<ul>
+<li><strong>H1.1</strong> discordant pairs <strong>b = 71, c = 307</strong> — more than four items newly wrong for every one newly right.</li>
+<li><strong>H1.2′</strong> within-arm AUC <strong>0.6014 → 0.7601</strong>, contrast <strong>+0.1587</strong> over <strong>1,956</strong> exchangeable units.</li>
+<li><strong>H1.3</strong> mean coverage fall <strong>0.2904</strong>, 95 % CI <strong>[0.2679, 0.3154]</strong>, 648 units down against 80 up.</li>
+</ul>
+<p><strong>The original H1.2 is co-reported and nothing more:</strong> <code>SilentError@0.9</code> moves <strong>−0.0266</strong>, i.e. it <strong>falls</strong>,
+opposite to the refuted direction. It reproduces on the confirmatory data exactly as the dev pre-run
+predicted, which is why §4.4 carries H1.2′ in its place.</p>
+<h3 id="predictions-made-before-the-run-and-whether-they-hel">Predictions made before the run, and whether they held</h3>
+<table>
+<thead>
+<tr>
+<th>predicted on dev, before the seal</th>
+<th>confirmatory outcome</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>π_d ≈ 0.2036</td>
+<td><strong>0.19</strong> (b + c = 378 over 1,956 units)</td>
+</tr>
+<tr>
+<td>minimum detectable effect 5.41 accuracy points</td>
+<td>accuracy contrast <strong>≈ 12 points</strong> — about twice the target</td>
+</tr>
+<tr>
+<td>H1.2′ contrast ≈ +0.1201</td>
+<td><strong>+0.1587</strong></td>
+</tr>
+<tr>
+<td>the original fixed-τ H1.2 falls</td>
+<td><strong>−0.0266</strong></td>
+</tr>
+<tr>
+<td>no confidence contamination</td>
+<td><strong>0 of 13,692 rows</strong> carry the substituted constant</td>
+</tr>
+</tbody>
+</table>
+<p><strong>The replacement hypothesis replicated, and the invariant held.</strong> Both were predictions made before the run
+and both were borne out, which is the only kind of agreement that counts here.</p>
+<h3 id="what-this-establishes-in-one-sentence">What this establishes, in one sentence</h3>
+<p><strong>Typo noise at λ = 0.18 costs about 12 accuracy points and 29 coverage points, and the confidence gate
+becomes MORE discriminative under noise rather than less</strong> — 93.6 % of noise-induced errors arrive below the
+gate, against 71.4 % clean. <strong>The &quot;silent error&quot; premise does not hold: the errors are loud, and the gate can
+hear them.</strong></p>
+<h3 id="provenance">Provenance</h3>
+<p>Every number above comes from <code>measurement/out/confirm_results.json</code>, written by the analysis script on
+<code>measurement/out/confirm_trials.jsonl</code>. <code>measurement/out/</code> is not tracked, so the record is this section, the
+narrative record in <code>docs/PHASE_I_CONFIRMATORY_RESULTS.md</code>, and the scripts that produced both.</p>
+<hr />
+<!-- PROOF-APPENDIX:BEGIN - generated by scripts/build_proof_appendix.py; do not edit by hand -->
+<h2 id="15-machine-checked-core">15. Machine-checked core</h2>
+<p><strong>This section is generated from the Lean source, not transcribed from it.</strong> Every statement below was extracted from the source by a bracket-depth scan and every theorem named here was verified by the kernel (<code>#print axioms</code>) to depend on no <code>sorry</code>. The generator fails the build if a theorem has no declared bearing below, or if a bearing cites a theorem that does not exist, so the table cannot quietly acquire a proof that was never done or lose one that was.</p>
+<p><strong>27 theorems, zero errors, zero <code>sorry</code>.</strong> The permitted axioms are <code>propext</code>, <code>Quot.sound</code> and <code>Classical.choice</code> - the last being Lean's classical logic, not a gap in a proof.</p>
+<p><strong>How the check runs, and why it is trusted.</strong> Three things had to hold before any of these statements could be used to correct the protocol: (1) the kernel query returns a <code>#print axioms</code> line for every theorem, and an empty answer <em>raises</em> rather than passing - because absent output reads exactly like &quot;axiom-free&quot;; (2) a negative control injects a <code>sorry</code>-proved theorem into the real file, rebuilds, and requires the check to catch it; (3) a freshness guard re-derives every theorem and line count from the source so a stale number in a document cannot survive. Without (2) and (3) the first check is a green light with nothing behind it.</p>
+<p><strong>The correction record in §4.4b was produced by this machinery, not confirmed by it.</strong> Each of the seven entries there is a place where a machine-checked statement contradicted a sentence the protocol had already written - a direction, an optimality claim, a degeneracy, a domain of definition, a family's dependence structure, an endpoint's identifiability, and a reporting procedure. So the table below is the evidence for §4.4b, and §4.4b is the interpretation of it.</p>
+<p><strong>definitions and the gate's monotonicity</strong></p>
+<table>
+<thead>
+<tr>
+<th>Theorem</th>
+<th>Statement</th>
+<th>What it bears on</th>
+<th>Section</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>silent_iff_acceptedAndWrong</code></td>
+<td><code>(tau : Nat) (o : Obs) : (Accepted tau o /\ o.correct = false) ↔ ((tau &lt;= o.c &amp;&amp; o.correct = false) = true)</code></td>
+<td><code>SilentError@τ</code> and the accepted-error rate are ONE count, not two</td>
+<td>§6</td>
+</tr>
+<tr>
+<td><code>accepted_mono</code></td>
+<td><code>(o : Obs) {a b : Nat} (h : a &lt;= b) (hb : Accepted b o) : Accepted a o</code></td>
+<td>a stricter gate cannot un-reject a trial - the premises of every monotonicity below</td>
+<td>§3.4</td>
+</tr>
+<tr>
+<td><code>coverage_mono</code></td>
+<td><code>(xs : List Obs) {a b : Nat} (h : a &lt;= b) : Coverage b xs &lt;= Coverage a xs</code></td>
+<td><code>Coverage@ε</code> falls as τ rises: the tie-break's premise</td>
+<td>§6</td>
+</tr>
+<tr>
+<td><code>risk_mono</code></td>
+<td><code>(xs : List Obs) {a b : Nat} (h : a &lt;= b) : Risk b xs &lt;= Risk a xs</code></td>
+<td><code>SilentError@τ</code> is NON-INCREASING in τ - §6 said the opposite</td>
+<td>§6 — v1.3 CHANGE 2</td>
+</tr>
+<tr>
+<td><code>admissible_mono</code></td>
+<td><code>{eps : Nat} {xs : List Obs} {a b : Nat} (h : a &lt;= b) (ha : Admissible eps a xs) : Admissible eps b xs</code></td>
+<td>admissibility is upward closed, so the admissible set is an interval</td>
+<td>§6.1</td>
+</tr>
+<tr>
+<td><code>mem_maxC</code></td>
+<td><code>(o : Obs) : ∀ (xs : List Obs), o ∈ xs -&gt; o.c &lt;= maxC xs | [], h =&gt; by simp at h | a :: rest, h =&gt; by simp only [List.mem_cons] at h rcases h with rfl | h . exact Nat.le_max_left _ _ . exact Nat.le_trans (…</code></td>
+<td>a threshold above the largest confidence admits nothing - the search bound</td>
+<td>§6/v1.2 CHANGE 3</td>
+</tr>
+<tr>
+<td><code>top_admissible</code></td>
+<td><code>(eps : Nat) (xs : List Obs) : Admissible eps (maxC xs + 1) xs</code></td>
+<td>the top of the grid is always admissible, so a limen always exists</td>
+<td>§6/v1.2 CHANGE 3</td>
+</tr>
+<tr>
+<td><code>admissible_exists</code></td>
+<td><code>(eps : Nat) (xs : List Obs) : ∃ tau, Admissible eps tau xs</code></td>
+<td>existence, needed before §B1 can prefer one threshold to another</td>
+<td>Amendment 2 §B1</td>
+</tr>
+<tr>
+<td><code>coverage_decreases</code></td>
+<td><code>(xs : List Obs) {a b : Nat} (h : a &lt;= b) : Coverage a xs &gt;= Coverage b xs</code></td>
+<td>the tie-break buys coverage at the limen, stated as a loss above it</td>
+<td>Amendment 2 §B1</td>
+</tr>
+</tbody>
+</table>
+<p><strong>§6's direction, refuted</strong></p>
+<table>
+<thead>
+<tr>
+<th>Theorem</th>
+<th>Statement</th>
+<th>What it bears on</th>
+<th>Section</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>protocol_said_nondecreasing_is_FALSE</code></td>
+<td><code>: Risk 2 counterexample = 2 /\ Risk 9 counterexample = 1</code></td>
+<td>§6's original wording, kept as the evidence that the feedback loop ran</td>
+<td>§4.4b</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Amendment 2 §B1, in full</strong></p>
+<table>
+<thead>
+<tr>
+<th>Theorem</th>
+<th>Statement</th>
+<th>What it bears on</th>
+<th>Section</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>least_admissible_maximises_coverage</code></td>
+<td><code>{eps : Nat} {xs : List Obs} {a b : Nat} (hmin : IsLeastAdmissible eps a xs) (hb : Admissible eps b xs) : Coverage a xs &gt;= Coverage b xs</code></td>
+<td>LEAST is optimal, not merely conventional - the reason the rule reads that way</td>
+<td>Amendment 2 §B1</td>
+</tr>
+<tr>
+<td><code>least_admissible_is_at_least_as_good</code></td>
+<td><code>{eps : Nat} {xs : List Obs} {a b : Nat} (hmin : IsLeastAdmissible eps a xs) (hb : Admissible eps b xs) : Coverage a xs = Coverage b xs ∨ Coverage b xs &lt; Coverage a xs</code></td>
+<td>the same optimality from the other side, so the rule is not direction-sensitive</td>
+<td>Amendment 2 §B1</td>
+</tr>
+</tbody>
+</table>
+<p><strong>degeneracy, named rather than averaged</strong></p>
+<table>
+<thead>
+<tr>
+<th>Theorem</th>
+<th>Statement</th>
+<th>What it bears on</th>
+<th>Section</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>empty_dev_is_degenerate</code></td>
+<td><code>(eps : Nat) (tau : Nat) : Admissible eps tau [] /\ Coverage tau [] = 0</code></td>
+<td>an empty dev set makes every threshold admissible and coverage zero</td>
+<td>§6</td>
+</tr>
+</tbody>
+</table>
+<p><strong>the budget collapse</strong></p>
+<table>
+<thead>
+<tr>
+<th>Theorem</th>
+<th>Statement</th>
+<th>What it bears on</th>
+<th>Section</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>budget_collapses_to_zero_on_small_dev</code></td>
+<td><code>: admissibleIn 0 0 12 dev = [10, 11, 12] ∧ Coverage 10 dev = 0</code></td>
+<td>for N &lt; 20 the ε=0.05 budget is 0, so the least admissible τ closes every gate</td>
+<td>§6</td>
+</tr>
+<tr>
+<td><code>the_threshold_below_the_limen_keeps_only_the_error</code></td>
+<td><code>: Risk 9 dev = 1 ∧ Coverage 9 dev = 1</code></td>
+<td>immediately below the limen the gate retains the error and nothing else - the opposite degeneracy</td>
+<td>§6</td>
+</tr>
+</tbody>
+</table>
+<p><strong>eq (7), audited against the gate</strong></p>
+<table>
+<thead>
+<tr>
+<th>Theorem</th>
+<th>Statement</th>
+<th>What it bears on</th>
+<th>Section</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>acc_is_not_diagnostic_of_understanding</code></td>
+<td><code>: highconf.map (fun o =&gt; o.correct) = lowconf.map (fun o =&gt; o.correct) ∧ AccDefersWrong 9 lowconf &lt; AccDefersWrong 9 highconf ∧ AnsweredCorrect 9 lowconf * AnsweredTotal 9 highconf &gt; AnsweredCorrect 9 highco…</code></td>
+<td><code>Acc</code> falls while accuracy conditional on committing rises, on IDENTICAL answer-correctness</td>
+<td>§6 — v1.4 CHANGE 1</td>
+</tr>
+<tr>
+<td><code>acc_defers_wrong_mono</code></td>
+<td><code>(xs : List Obs) {a b : Nat} (h : a &lt;= b) : AccDefersWrong b xs &lt;= AccDefersWrong a xs</code></td>
+<td>under defers-as-errors <code>Acc</code> is non-increasing in τ, and §3.4 fixes τ</td>
+<td>§4.4 H1.1</td>
+</tr>
+<tr>
+<td><code>cond_error_complements_cond_accuracy</code></td>
+<td><code>: CondError 9 highconf + AnsweredCorrect 9 highconf = AnsweredTotal 9 highconf ∧ CondError 9 lowconf + AnsweredCorrect 9 lowconf = AnsweredTotal 9 lowconf</code></td>
+<td>H1.3's &quot;error among accepted&quot; is the COMPLEMENT of the H1.1 co-report - one quantity, so not independent evidence</td>
+<td>§4.5 — v1.5</td>
+</tr>
+<tr>
+<td><code>one_movement_three_readings</code></td>
+<td><code>: highconf.map (fun o =&gt; o.correct) = lowconf.map (fun o =&gt; o.correct) ∧ AccDefersWrong 9 lowconf &lt; AccDefersWrong 9 highconf ∧ CondError 9 lowconf &lt; CondError 9 highconf ∧ AnsweredCorrect 9 lowconf * Answer…</code></td>
+<td>one confidence movement drives <code>Acc</code> down, <code>CondErr</code> down and <code>CondAcc</code> up simultaneously</td>
+<td>§6.1</td>
+</tr>
+</tbody>
+</table>
+<p><strong>§4.4a's diagnostic</strong></p>
+<table>
+<thead>
+<tr>
+<th>Theorem</th>
+<th>Statement</th>
+<th>What it bears on</th>
+<th>Section</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>clean_pins_at_floor</code></td>
+<td><code>(dev : Nat → Nat) (eps n : Nat) (h : dev 0 &lt;= eps) : LeastAdmissible dev eps n = some 0</code></td>
+<td>with a clean arm at the floor the selector returns a DESIGN CONSTANT for every ε</td>
+<td>§4.4a — v1.6 CHANGE 1</td>
+</tr>
+<tr>
+<td><code>delta_tau_reduces_to_the_noisy_selector</code></td>
+<td><code>(devClean devNoisy : Nat → Nat) (eps n k : Nat) (hClean : devClean 0 &lt;= eps) (hNoisy : LeastAdmissible devNoisy eps n = some k) : DeltaTau devClean devNoisy eps n = some k</code></td>
+<td>so <code>Δτ*</code> is one estimate minus a constant, not two estimates</td>
+<td>§4.4a — v1.6 CHANGE 1</td>
+</tr>
+<tr>
+<td><code>same_diagnostic_from_different_arms</code></td>
+<td><code>: DeltaTau pilotCleanDev pinnedNoisyDev 5 10 = DeltaTau pilotCleanDev hiddenNoisyDev 5 10 ∧ hiddenNoisyDev 0 ≠ pinnedNoisyDev 0</code></td>
+<td><code>Δτ* = 0</code> cannot distinguish no disturbance from a tolerance-absorbed one</td>
+<td>§4.4a — v1.6 CHANGE 1</td>
+</tr>
+</tbody>
+</table>
+<p><strong>§4.4a's interval, made exact</strong></p>
+<table>
+<thead>
+<tr>
+<th>Theorem</th>
+<th>Statement</th>
+<th>What it bears on</th>
+<th>Section</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>admissible_iff_limen_le</code></td>
+<td><code>{eps tauStar tau : Nat} {xs : List Obs} (hmin : IsLeastAdmissible eps tauStar xs) : Admissible eps tau xs ↔ tauStar &lt;= tau</code></td>
+<td>τ is admissible IFF τ ≥ τ*, so the interval §4.4a reports is EXACTLY writable down - which is why the bootstrap was withdrawn</td>
+<td>§4.4a — v1.8 CHANGE 1</td>
+</tr>
+<tr>
+<td><code>lt_of_map_lt</code></td>
+<td><code>{f : Nat → Nat} (hf : ∀ a b, a &lt; b → f a &lt; f b) {a b : Nat} (h : f a &lt; f b) : a &lt; b</code></td>
+<td>a strictly increasing rescaling of the confidence scale preserves the strict order of confidences</td>
+<td>§4.4</td>
+</tr>
+<tr>
+<td><code>lt_iff_of_strictMono</code></td>
+<td><code>{f : Nat → Nat} (hf : ∀ a b, a &lt; b → f a &lt; f b) (a b : Nat) : f a &lt; f b ↔ a &lt; b</code></td>
+<td>the order comparison holds in BOTH directions under such a rescaling, so the invariance is an equivalence rather than one-way</td>
+<td>§4.4</td>
+</tr>
+<tr>
+<td><code>countLt_map</code></td>
+<td><code>{f : Nat → Nat} (hf : ∀ a b, a &lt; b → f a &lt; f b) (c : Nat) : ∀ es : List Nat, countLt (f c) (es.map f) = countLt c es</code></td>
+<td>the ordered-pair count at the heart of the AUC is unchanged by such a rescaling</td>
+<td>§4.4</td>
+</tr>
+<tr>
+<td><code>winsAux_map_of_strictMono</code></td>
+<td><code>(f : Nat → Nat) (hf : ∀ a b, a &lt; b → f a &lt; f b) : ∀ cs es : List Nat, winsAux (cs.map f) (es.map f) = winsAux cs es</code></td>
+<td><strong>the AUC itself is invariant under any strictly increasing rescaling of the confidence scale</strong> - so H1.2' does not rest on the absolute calibration that the instrument's own library warns is invalid; <strong>no axioms at all</strong></td>
+<td>§4.4</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Authority:</strong> <code>scripts/check_lean_axioms.py</code> (kernel query, with a negative control), <code>scripts/check_lean_status_freshness.py</code> (derived counts), <code>scripts/build_proof_appendix.py --check</code> (this section is current, and the map is a bijection).</p>
+<!-- PROOF-APPENDIX:END -->
+<hr />
+<p><em>End of protocol v1.23</em></p>
+<style>.figures-plate figure{margin:0 0 22px 0} .figures-plate img{width:100%;height:auto;display:block} .figures-plate figcaption{font-size:.83em;line-height:1.45;color:var(--fg-soft,#444);margin-top:7px} @media print{.figures-plate figure{page-break-inside:avoid}}</style>
+<div class="figures-plate">
+<h2 id="stage-2-figures">Stage 2 figures</h2>
+<p>Each figure is followed by its long caption, and the captions are generated from the same data as the plots. The images are not captioned internally: a caption belongs to the document, where it can be typeset, translated and restyled.</p>
+<figure><img src="figures/fig1_stage2_hypotheses.png" alt="Figure 1. The three pre-registered hypotheses across the noise grid"><figcaption><strong>The three pre-registered hypotheses across the noise grid.</strong> <strong>Typo noise costs accuracy and coverage while making the confidence gate MORE discriminative, not less.</strong> Each panel is one pre-registered hypothesis, tested with the exact paired permutation of the protocol and Holm-corrected across the three-hypothesis family; all three were confirmed with no direction violations. (a) Accuracy falls by 12.1 percentage points from lambda = 0 to lambda_mid (H1.1, p = 4.4e-36). (b) The within-arm AUC between correct and incorrect trials RISES from 0.601 to 0.760 (H1.2', p = 2.0e-04) -- the gate separates right from wrong more sharply under noise. (c) Coverage at tau = 0.9 falls by 23.7 points (H1.3, p = 5.0e-05), so far fewer trials are answered at all. All panels use the <strong>test split</strong> of the pre-registered window: 652 items x 3 frozen noise seeds = 13,692 trial records from the pinned instrument, 0 failures. The confidence rule is `answer if c >= tau else defer`. Dashed vertical lines mark the two calibrated noise levels, lambda_lo = 0.05 and lambda_mid = 0.18. Every plotted value is read from `data/processed/stage2_lambda_summary.csv`, which `scripts/build_stage2_figures.py` derives from `measurement/out/confirm_trials.jsonl`. No point is interpolated or modelled.</figcaption></figure>
+<figure><img src="figures/fig2_stage2_error_destination.png" alt="Figure 2. Where the errors go: the gate rejects most of what noise breaks"><figcaption><strong>Where the errors go: the gate rejects most of what noise breaks.</strong> <strong>The errors noise creates arrive below the gate: they are loud, not silent.</strong> Panel (a) decomposes every error at each noise level into the share the gate rejects and the share it admits. Under noise the rejected share rises from 61.4% to 93.5%, so the gate catches most of what noise breaks. Panel (b) shows the two error measures diverging: the conditional error among admitted trials is flat (0.092 to 0.070), while the all-trial silent error FALLS (0.041 to 0.015). A fixed-threshold silent-error rate cannot rise under a manipulation that deflates confidence, which is why the original H1.2 was refuted and replaced by H1.2'. All panels use the <strong>test split</strong> of the pre-registered window: 652 items x 3 frozen noise seeds = 13,692 trial records from the pinned instrument, 0 failures. The confidence rule is `answer if c >= tau else defer`. Dashed vertical lines mark the two calibrated noise levels, lambda_lo = 0.05 and lambda_mid = 0.18. Every plotted value is read from `data/processed/stage2_lambda_summary.csv`, which `scripts/build_stage2_figures.py` derives from `measurement/out/confirm_trials.jsonl`. No point is interpolated or modelled.</figcaption></figure>
+<figure><img src="figures/fig3_stage2_gate_separation.png" alt="Figure 3. Why the gate separates better under noise"><figcaption><strong>Why the gate separates better under noise.</strong> <strong>The gate does not merely shift down with noise -- it separates correct from incorrect trials more sharply.</strong> Median confidence for correct and for incorrect trials, at the clean level (left) and at lambda_mid (right); the double arrow is the separation between them. Correct-trial confidence falls from 0.888 to 0.783, but incorrect-trial confidence falls more than twice as far, from 0.784 to 0.549. The separation therefore widens from +0.103 to +0.234, and the corresponding within-arm AUC rises from 0.601 to 0.760. The estimand reads only the ORDER of confidences, so it is invariant to any monotone rescaling of the instrument's confidence scale -- machine-checked in the formalization repository. All panels use the <strong>test split</strong> of the pre-registered window: 652 items x 3 frozen noise seeds = 13,692 trial records from the pinned instrument, 0 failures. The confidence rule is `answer if c >= tau else defer`. Dashed vertical lines mark the two calibrated noise levels, lambda_lo = 0.05 and lambda_mid = 0.18. Every plotted value is read from `data/processed/stage2_lambda_summary.csv`, which `scripts/build_stage2_figures.py` derives from `measurement/out/confirm_trials.jsonl`. No point is interpolated or modelled.</figcaption></figure>
+<figure><img src="figures/fig4_stage2_scale_free.png" alt="Figure 4. The scale-free property, measured on the confirmatory record"><figcaption><strong>The scale-free property, measured on the confirmatory record.</strong> <strong>The estimand chosen for H1.2′ is invariant under exactly the distortion the instrument's own library warns about, and a threshold quantity is not.</strong> The confirmatory record was rescaled by a family of strictly increasing maps $c \mapsto c^{\gamma}$, $\gamma \in [0.35, 3.00]$ — nineteen transforms applied to all 6,067 confidences of the $\lambda = 0.18$ arm. <strong>(a)</strong> The within-arm AUC does not move: its spread across the entire family is <strong>0.000 × 10⁰</strong>, not merely small, because the statistic reads only the ORDER of confidences and a strictly increasing map cannot change an order. This is the content of the kernel-verified scale-free theorem, measured rather than asserted. <strong>(b)</strong> Under the *same* family, coverage at the fixed threshold $\tau = 0.90$ moves by <strong>43.6 percentage points</strong> (0.054 to 0.489) while accuracy is unchanged at 0.772 — accuracy cannot move, since rescaling confidences cannot reorder correctness. <strong>The contrast is the point:</strong> an estimand that bounds a rate at an absolute threshold inherits the instrument's calibration, and one that reads order does not. The instrument's library states unprompted that this checkpoint's temperatures are invalid and that affected confidences are uncalibrated; H1.2′ was chosen, before the confirmatory run, precisely so that the hypothesis would not rest on the quantity that warning puts in question. n = 6,067 trials at $\lambda = 0.18$, all three frozen seeds pooled. Every plotted number is computed in the figure script from the confirmatory trial record; none is typed in.</figcaption></figure>
+<figure><img src="figures/fig5_stage2_proof_graph.png" alt="Figure 5. The proof dependency graph, parsed from the kernel source"><figcaption><strong>The proof dependency graph, parsed from the kernel source.</strong> <strong>The 27 machine-checked results form a directed proof structure with 14 independent premises and 15 invocations among them, and the theorem the design rests on sits in a module of its own.</strong> Each node is a theorem in the kernel; arrows point from a proof to the results it invokes. The graph is <strong>parsed from the formalisation's source</strong> — each declaration is sliced up to the next and searched for the names of its siblings — so the arrows are the formalisation's own structure rather than a transcription of how it is described. The four blue nodes are the scale-free module of the sibling formalisation repository; `#print axioms` reports at build time that <strong>none of its theorems depends on any axiom at all</strong>, a stronger bar than the no-`sorry` standard the rest of the kernel is held to. No empirical premise appears anywhere in the graph: every result follows from the protocol's definitions alone, and no theorem here states that noise changes any quantity — that is the empirical claim, and it is settled by the confirmatory run, not by proof.</figcaption></figure>
+<figure><img src="figures/fig6_stage2_corrections.png" alt="Figure 6. The formalisation corrected the protocol, and the corrections were kept"><figcaption><strong>The formalisation corrected the protocol, and the corrections were kept.</strong> <strong>The formalisation changed the research, and the corrections were kept rather than edited away.</strong> A formalisation that only confirms what was already written is decoration. This one refuted its own protocol's wording: the kernel establishes by `decide` that the silent-error count is <strong>non-increasing</strong> in the threshold, where the protocol had asserted the opposite and built a hypothesis on it. Three further statements were settled the same way — the $\varepsilon = 0.05$ budget rule was shown to give a shut gate for $N < 20$, the accuracy reading was shown not to be diagnostic of understanding, and two readings the family treated as distinct were shown to be <strong>one</strong> quantity. The left column reproduces claims from the record's own corrections table, kept there on the stated grounds that an inaccurate status record is worse than an absent one; the right column gives what was measured or proved, with the italic name of the kernel result that settled it. <strong>The figure's content is parsed from those two documents</strong>, so it cannot assert a correction the repository does not record.</figcaption></figure>
+<figure><img src="figures/fig7_stage2_evidence_chain.png" alt="Figure 7. What the manuscript's claims rest on"><figcaption><strong>What the manuscript's claims rest on.</strong> <strong>A third of this manuscript's claims rest on a machine-checked proof, and the assumptions are visible as assumptions.</strong> The protocol's provenance table classifies every claim by its authority, and this figure counts that table: <strong>16 claims PROVED</strong> — each naming a theorem the kernel checked, with the table's generator failing if such a theorem does not exist — <strong>6 MEASURED</strong> off the confirmatory or pre-run record, <strong>6 ASSUMED</strong> and carried as assumptions rather than as results, and <strong>6 TO BE TESTED</strong> in Phase II. The count matches the generator's own independent total of 34, which is the property that makes the figure worth drawing: it is derived from the table rather than summarised from it. <strong>No claim about the effect of noise on accuracy, silent error or coverage appears as PROVED</strong> — those are the empirical claims, settled by the confirmatory run and by nothing else, and a figure that blurred that distinction would misrepresent the work it describes.</figcaption></figure>
+</div>
+
+  </article>
+</div>
+<script>document.body.classList.remove('no-js');</script>
+<script>
+window.MathJax = {
+  tex: {
+    inlineMath: [['$', '$']],
+    displayMath: [['$$', '$$']],
+    processEscapes: true,
+    processEnvironments: true,
+    packages: {'[+]': ['ams', 'boldsymbol', 'textmacros', 'noerrors', 'noundefined']}
+  },
+  options: {
+    skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+    renderActions: {addMenu: []}
+  },
+  chtml: {scale: 1.0, displayAlign: 'center'},
+  startup: {
+    pageReady: function () {
+      return MathJax.startup.defaultPageReady().then(function () {
+        var n = document.querySelectorAll('mjx-container').length;
+        var d = document.querySelectorAll('mjx-container[display="true"]').length;
+        var badge = document.createElement('p');
+        badge.className = 'mathcount';
+        badge.textContent = 'math rendered: ' + n + ' expression(s), ' + d + ' display';
+        document.body.appendChild(badge);
+        if (n === 0) {
+          var warn = document.createElement('p');
+          warn.className = 'mathfail';
+          warn.textContent = 'No mathematics was rendered. The TeX source below is still readable.';
+          document.body.insertBefore(warn, document.body.firstChild);
+        }
+      });
+    }
+  }
+};
+</script>
+<script src="mathjax/tex-mml-chtml.js" id="MathJax-script"></script>
+
+<script>
+// Scroll-spy for the sidebar. On purpose the only behaviour: it marks the visible section. The TOC
+// is hidden in print, so nothing here can affect the submitted PDF.
+(function () {
+  var links = [].slice.call(document.querySelectorAll('.toc a'));
+  if (!links.length) return;
+  var map = {};
+  links.forEach(function (a) {
+    var el = document.getElementById(a.getAttribute('href').slice(1));
+    if (el) (map[el.id] = map[el.id] || []).push(a);
+  });
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (en) {
+      if (!en.isIntersecting) return;
+      links.forEach(function (a) { a.classList.remove('active'); });
+      (map[en.target.id] || []).forEach(function (a) { a.classList.add('active'); });
+    });
+  }, { rootMargin: '0px 0px -72%% 0px', threshold: 0 });
+  Object.keys(map).forEach(function (id) {
+    var el = document.getElementById(id);
+    if (el) io.observe(el);
+  });
+})();
+</script>
+</body>
+</html>

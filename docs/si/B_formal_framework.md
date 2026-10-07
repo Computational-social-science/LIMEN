@@ -42,7 +42,7 @@ Everything else is a **definition**, including $\mathrm{Adm}$, $\mathrm{Cov}$, $
 
 **Proposition 3 (the silent-error count is NON-INCREASING in the threshold).** *For $\tau_1 \le \tau_2$, $\mathrm{Risk}_{\tau_2}(T) \le \mathrm{Risk}_{\tau_1}(T)$.* Formal name `risk_mono`.
 
-> **This proposition refuted the protocol.** The protocol originally asserted the *opposite* — that raising the threshold could only increase the silent-error count. The kernel proved otherwise, and the refutation is preserved in the development as `protocol_said_nondecreasing_is_FALSE` so that the error is visible rather than quietly corrected. The direction matters because it is the formal reason the original H1.2 could not hold: **a fixed-threshold silent-error rate cannot rise under a manipulation that deflates confidence**, since deflation moves trials out of the accepted set entirely.
+*‹**This proposition refuted the protocol.** The protocol originally asserted the *opposite* — that raising the threshold could only increase the silent-error count. The kernel proved otherwise, and the refutation is preserved in the development as `protocol_said_nondecreasing_is_FALSE` so that the error is visible rather than quietly corrected. The direction matters because it is the formal reason the original H1.2 could not hold: **a fixed-threshold silent-error rate cannot rise under a manipulation that deflates confidence**, since deflation moves trials out of the accepted set entirely.›*
 
 *Proof.* By case analysis on whether a trial is bad at the higher threshold. If $c \ge \tau_2$ and $y = 0$ then $c \ge \tau_1$, so the same trial is bad at the lower threshold and contributes no increase; if not, it contributes nothing at either. Induction over the list.
 

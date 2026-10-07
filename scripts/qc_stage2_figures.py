@@ -30,6 +30,7 @@ TARGETS = [
     ("build_stage2_figures.py", "FIG_DIR"),
     ("build_lean_figures.py", "OUT"),
     ("build_lean_figures2.py", "OUT"),
+    ("build_partition_figure.py", "FIG_DIR"),
 ]
 MIN_PT, MAX_PT = 4.5, 9.0
 

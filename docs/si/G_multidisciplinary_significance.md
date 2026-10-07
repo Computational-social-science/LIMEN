@@ -1,0 +1,41 @@
+## G. Significance across disciplines
+
+### G.1 What the result is, stated so that other fields can use it
+
+The manipulation is narrow on purpose: a single frozen encoder, one language, one synthetic but keystroke-faithful noise process, one typed decision task. What generalises is not the magnitude but the **decomposition**, and the decomposition is what other disciplines have a use for.
+
+Type errors cost accuracy and coverage, and the two costs are worth stating separately because they are different quantities that are easy to conflate. Accuracy falls from **0.8926 to 0.7720**, a loss of **12.1 points** ($p = 4.4 \times 10^{-36}$). Coverage at the fixed threshold $\tau = 0.90$ falls from **0.4479 to 0.2111**, a loss of **23.7 points** — while the H1.3 estimand, the **mean paired fall across units**, is **0.2904** with 95 % CI $[0.2679, 0.3154]$ ($p = 5.0 \times 10^{-5}$). The two coverage figures are not the same measurement: one is the level at a threshold in a given condition, the other is the average within-unit change, and a reader who takes either for the other will misstate the result by five points. Both losses are expected. The unexpected part is the third quantity: the confidence gate's **discriminability rises** under the same manipulation — the within-arm AUC between correct and incorrect trials goes from **0.601 to 0.760** ($p = 2.0 \times 10^{-4}$) — and the share of errors arriving below the gate rises from **61.4 % to 93.5 %**. Errors under this corruption are not quieter; they are **louder**, and they are loudest exactly where the model is least reliable.
+
+### G.2 Signal-detection theory: this is a criterion shift, not a sensitivity loss
+
+The AUC is a nonparametric measure of sensitivity — the probability that a randomly chosen correct trial outranks a randomly chosen incorrect one — and it is the ordinal form of $d'$. Reading the three results in those terms gives a clean statement: **noise moves the operating point (the effective criterion, through a downward shift of the confidence distribution) while leaving the underlying separability not merely intact but improved.** The apparent paradox — accuracy collapsing while discrimination sharpens — dissolves once accuracy and coverage are recognised as **criterion-dependent** quantities (they read a fixed threshold in confidence units) and the AUC as **criterion-free**. A field that reports only accuracy under corruption will therefore read a criterion shift as a sensitivity loss, and will misattribute the remedy: it will try to repair discrimination when the discrimination was never the problem.
+
+### G.3 Human factors and automation: the risk moves from misuse to disuse
+
+The automation literature separates **misuse** — accepting the system's output when it is wrong — from **disuse** — declining to use a system that works. The result here is a **dependability-class** statement about which one this manipulation produces. It produces disuse: the system does not commit to more wrong answers, it commits to far fewer answers at all, and it does so *because* its own confidence collapses on exactly the trials it is getting wrong. Read as a trust calibration, that is the well-behaved direction — the system's self-assessment degrades *with* its performance rather than independently of it. The practical consequence runs against the common remedy: an operator worried about silent errors under noisy input would recalibrate or replace the gate, and **for this corruption there is nothing to repair in the gate**. What needs provisioning is throughput, because the failure is availability, not correctness.
+
+### G.4 Safety engineering: fail-safe rather than fail-operational degradation
+
+Coverage is an **availability** property and correctness-among-committed-answers is a **safety** property. Systems are classified by how they degrade: a *fail-safe* system degrades by ceasing to act, a *fail-operational* system degrades by continuing to act while wrong. This manipulation drives the system along the fail-safe path — and it does so without any of the machinery usually needed to guarantee it, because the degradation is produced by the model's own confidence rather than by an external monitor. That is a useful, narrow, and honest claim: **for orthographic noise, the gate is the safety mechanism and it is not defeated by the noise**. Whether the same holds for noise that corrupts *meaning* rather than *form* is an empirical question this study does not answer, and it is the obvious next one.
+
+### G.5 Reading research: confidence tracks a noisy channel
+
+The stimuli are calibrated against a published human result — the interior-scrambled condition of Rayner and colleagues (2006), whose readers recovered the intended word at a rate of 0.4480 — and the noise generator is a keyboard-adjacency channel in the tradition of noisy-channel spelling correction. The finding that connects these to the model is that **the model's confidence behaves like a noisy-channel posterior**: it falls when the surface form becomes unlikely under the intended word, which is what makes the errors self-announcing. A reader recovers from a typo by detecting that the surface form is improbable; the instrument here appears to do the same thing through its confidence. That is a mechanism-level correspondence, not an analogy, and it is testable: a noise process whose corruptions are *plausible* under the channel should produce errors that are **not** self-announcing, and the AUC should then fail to rise.
+
+### G.6 Methodology: choose estimands that cannot inherit an instrument's calibration
+
+The design decision that made the third result usable was made before the run and is transferable. The instrument's own library warns, unprompted, that this checkpoint's temperatures are invalid and that affected confidences are uncalibrated. An estimand that bounds a rate **at an absolute threshold** inherits that warning; an estimand that reads only the **order** of confidences cannot. Measured on the confirmatory record, this is not a subtlety — rescaling every confidence by a family of strictly increasing maps leaves the AUC with a spread of exactly **0.000** while moving coverage at the fixed threshold by **43.6 percentage points**. The general principle is stated in the formal framework and machine-checked there; its use is not specific to this study. **Wherever a measurement device's calibration is in question, the ordinal estimand is the one that survives the doubt** — and choosing it in advance is what makes the resulting claim robust to a caveat that would otherwise have to be argued away afterwards.
+
+### G.7 What this does not license
+
+Five boundaries, stated because each of them is a way the result could be over-read.
+
+It does **not** show that confidence is calibrated, comparable across models, or comparable across tasks. It shows that the *ordering* is stable under this corruption, which is weaker and is all the claim needs.
+
+It does **not** show that any deployed gate is safe. The gate here is a fixed threshold on a single instrument's confidence; a deployed system's gate is a composition, and composition is where these guarantees are usually lost.
+
+It does **not** show that the direction generalises beyond orthographic noise. Noise that corrupts meaning rather than form — a plausible substitution, a homophone, an adversarial token — is the case where the mechanism identified in §F.5 predicts the opposite result, and predicting the opposite result is the point of identifying a mechanism.
+
+It does **not** show that the model "knows when it is uncertain" in any reflective sense. The measurement is compatible with a purely distributional account of confidence, and nothing here distinguishes the two.
+
+It does **not** establish that silent refusal is a lesser harm than a confident error out of context. That is a judgement about a deployment, and the study's contribution is to establish **which** of the two failure modes this manipulation produces, not which one a given application should prefer.

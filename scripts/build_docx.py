@@ -1,5 +1,13 @@
 #!/usr/bin/env python
-"""build_si_docx.py -- the SI as a Word document with REAL equations (OMML), not TeX text.
+"""build_docx.py -- a markdown document as a Word file with REAL equations (OMML), not TeX text.
+
+RENAMED FROM build_si_docx.py. It was written for the supplementary information and its name said so, but it
+takes --src and --out and renders ANY markdown; the manuscript DOCX comes from it too. A name that lies
+about the scope of a script is how the next person writes a second renderer instead of finding this one - and
+the defect that rename fixes was found exactly that way, when the paper was built through it and nobody had
+said it could be.
+
+Originally: the SI as a Word document with REAL equations (OMML), not TeX text.
 
 Two stages, because one needs a browser and one needs Python:
 
@@ -115,6 +123,48 @@ def add_figure(doc, ref: str, stats: dict) -> None:
     stats["missing_figures"] = stats.get("missing_figures", 0) + 1
 
 
+def bold_parts(text: str) -> list[tuple[str, bool, bool]]:
+    """Split a chunk into (text, is_bold, is_italic) parts, REMOVING the emphasis markers.
+
+    WHY THIS IS NOT A ONE-LINE REGEX. The paragraph is split at every `$...$` span so mathematics can be
+    inserted, and the old code stripped `**` from each chunk ON ITS OWN. A span written `**text $math$ more**`
+    becomes the chunks `**text `, the equation, and ` more**`; neither chunk contains a matched pair, so the
+    regex found nothing to replace and BOTH markers printed. Word's own PDF export showed it: six literal `**`
+    in the manuscript and four in the supplementary information, in a file whose HTML was clean - a format that
+    works saying nothing about its siblings (rule 14).
+
+    ITALICS WERE THE SAME DEFECT AND WERE MISSED THE FIRST TIME. The fix above handled `**`; the SI's standfirst
+    still showed `*sharper*` in Word, because a single asterisk was never handled by anything. Fixing the
+    instance and not the class is how the second form survives, so both markers are parsed here, with `**`
+    taking precedence at each position.
+
+    Emphasis is tracked across the WHOLE paragraph and expressed as run properties, which is what it is.
+    """
+    parts: list[tuple[str, bool, bool]] = []
+    pos, bold, ital = 0, False, False
+    n = len(text)
+    while pos < n:
+        if text.startswith("**", pos):
+            if parts and parts[-1][0] == "":
+                parts.pop()
+            bold = not bold
+            marker_end = pos + 2
+            if marker_end > pos and pos > 0 and text[pos - 1:pos] and False:
+                pass
+            pos = marker_end
+            continue
+        if text[pos] == "*":
+            ital = not ital
+            pos += 1
+            continue
+        j = pos
+        while j < n and text[j] != "*":
+            j += 1
+        parts.append((text[pos:j], bold, ital))
+        pos = j
+    return [p for p in parts if p[0]]
+
+
 def add_math_paragraph(doc, text: str, mml: dict, stats: dict, style: str | None = None) -> None:
     """One paragraph, with every `$...$` / `$$...$$` span replaced by an OMML equation object."""
     from docx.oxml import parse_xml
@@ -133,7 +183,14 @@ def add_math_paragraph(doc, text: str, mml: dict, stats: dict, style: str | None
     for m in pattern.finditer(text):
         before = text[pos:m.start()]
         if before:
-            p.add_run(re.sub(r"\*\*(.+?)\*\*", r"\1", before))
+            for chunk, is_bold, is_ital in bold_parts(before):
+                if chunk:
+                    r = p.add_run(chunk)
+                    r.bold = is_bold or None
+                    r.italic = is_ital or None
+        # a math span inside a bold run must not leave the bold state open on the far side
+        if text[:m.start()].count("**") % 2:
+            stats["math_in_bold"] = stats.get("math_in_bold", 0) + 1
         tex = m.group(0)
         # LOOK THE EXPRESSION UP BY ITS OWN TEXT. Searching for the span's position and using that as a key
         # reintroduces the defect the text key exists to prevent: the position is the CURRENT one, the map's
@@ -141,6 +198,24 @@ def add_math_paragraph(doc, text: str, mml: dict, stats: dict, style: str | None
         mml_str = mml["map"].get(tex)
         omml_xml = O.mml_to_omml(mml_str) if mml_str else None
         if omml_xml:
+            # A WIDE DISPLAY EQUATION IS SPLIT AT ITS ARROWS so WORD lays it out in readable lines. Handed
+            # over as one `m:oMath` it wrapped wherever it ran out of width, which stacked the loop diagram
+            # into 26 vertical lines in an otherwise correct file. `m:oMathPara` may hold several `m:oMath`,
+            # one per line, so the layout is decided here rather than left to Word's wrapping.
+            #
+            # LAYOUT ONLY: the same `m:oMath` children regrouped. Nothing is simplified, reordered or dropped.
+            # An earlier attempt "fixed" the same symptom by rewriting the equation without its `\underbrace`
+            # labels, and that was a deformation of the mathematics rather than a fix of the rendering.
+            # LOOK BEFORE CUTTING. A wide display equation looked like a 26-line vertical stack for three
+            # rounds of this session, and it was a TEXT-EXTRACTION ARTEFACT: a PDF extractor emits every
+            # mathematical run on its own line whether or not they share a baseline, and the measurement could
+            # not see the thing it claimed to measure. Measured properly, by y-coordinate through Word's own
+            # export, the equation renders as ONE main line (all elements at y=392.8) with arrow labels above
+            # (y=385.7) and `\underbrace` labels below their bases - correct structured layout all along.
+            #
+            # Two "fixes" were built on that phantom and both are gone: rewriting the equation without its
+            # labels, which deformed the mathematics, and splitting it at the arrows into separate paragraphs,
+            # which was never needed. The lesson is on the measurement, not the renderer.
             # `m:oMath` IS A SIBLING OF `w:r`, NOT A CHILD OF IT. `CT_R`'s content model - the run - has no
             # member for it, so appending the equation to a run produces a document that is well formed XML,
             # passes every count-based check, and which WORD REFUSES TO OPEN. Word emits inline mathematics as
@@ -157,9 +232,12 @@ def add_math_paragraph(doc, text: str, mml: dict, stats: dict, style: str | None
         pos = m.end()
     tail = text[pos:]
     if tail:
-        p.add_run(re.sub(r"\*\*(.+?)\*\*", r"\1", tail))
-    if not text.strip():
-        doc.add_paragraph("")
+        # the trailing chunk needs the same treatment: an unclosed `**` here is exactly the case that printed
+        for chunk, is_bold, is_ital in bold_parts(tail):
+            if chunk:
+                r = p.add_run(chunk)
+                r.bold = is_bold or None
+                r.italic = is_ital or None
 
 
 def build() -> int:
@@ -251,11 +329,28 @@ def main() -> int:
     # `mathjax/tex-mml-chtml.js` RELATIVELY, so a page written next to the SOURCE resolves that to a
     # directory that does not exist, the script never loads, and every expression silently harvests as
     # missing. Anchoring the page to the asset directory is what makes the relative reference correct.
-    HARVEST_HTML = ROOT / "viz" / "_mml_harvest.html"; MML_MAP = ROOT / "viz" / "mml_map.json"
+    # DERIVED FROM THE OUTPUT NAME, NOT FIXED. These were two constants pointing at the supplementary
+    # information's files, so building any second document would overwrite the first one's harvest page and
+    # its MathML map: the map is what turns each TeX span into an OMML equation, so a clobbered map does not
+    # fail loudly, it silently falls back to source text. Same defect as two scripts sharing one output path,
+    # one level down.
+    _stem = OUT_DOCX.stem
+    HARVEST_HTML = ROOT / "viz" / f"_{_stem}_mml_harvest.html"
+    MML_MAP = ROOT / "viz" / f"{_stem}_mml_map.json"
     if args.harvest:
         return harvest()
     if args.build:
         return build()
+    # NOTHING WAS DONE, AND IT NOW SAYS SO IN ONE LINE BEFORE THE USAGE TEXT. The exit code was already 2 -
+    # the script never lied - but it printed a help page and nothing else, so a caller piping it into `tail`
+    # saw usage text and a zero status from the pipe, concluded success, and moved on. That is rule 12 seen
+    # from the other side: a failure that cannot reach the step that decides is not a check, and here the
+    # step that hid it was the pipe in the CALLER. The script cannot fix a caller's pipeline; it can refuse
+    # to be mistaken for one that did work.
+    print("NOTHING WAS DONE: neither --harvest nor --build was given.")
+    print("  --harvest   write the MathML harvest page for a browser to render")
+    print("  --build     assemble the DOCX from an existing harvest map")
+    print()
     ap.print_help()
     return 2
 

@@ -36,9 +36,12 @@ SECTION_ORDER = [
     ("C", "C_stimuli_and_instrument.md", "Stimuli, noise model and instrument"),
     ("D", "D_analysis_power_and_results.md", "Analysis, power and results"),
     ("E", "E_interpretation_and_reproducibility.md", "Interpretation, limitations and reproduction"),
-    ("F", "F_multidisciplinary_significance.md", "Significance across disciplines"),
-    ("G", "G_registration.md", "Pre-registration: the frozen checklist"),
-    ("H", "H_references.md", "References"),
+    # The era section carries the title's own frame, so it precedes the outward generalisation: what this
+    # means where the study lives, then what it means to fields that do not share its setting.
+    ("F", "F_llm_era_significance.md", "Significance in the age of large language models"),
+    ("G", "G_multidisciplinary_significance.md", "Significance across disciplines"),
+    ("H", "H_registration.md", "Pre-registration: the frozen checklist"),
+    ("I", "I_references.md", "References"),
 ]
 
 FIGURES = [
@@ -50,6 +53,8 @@ FIGURES = [
     ("fig6_stage2_corrections",
      "The formalisation corrected the protocol, and the corrections were kept"),
     ("fig7_stage2_evidence_chain", "What the manuscript's claims rest on"),
+    ("fig8_stage2_failure_partition",
+     "The failure-class partition, drawn on the two diagnostics that separate the classes"),
 ]
 
 
@@ -61,21 +66,26 @@ def registration_table() -> str:
     """
     text = PROTOCOL.read_text(encoding="utf-8")
     m = re.search(r"^## 12\..*?^\| # \|.*?\n((?:^\|[^\n]*\n)+)", text, re.S | re.M)
-    out = ["## G. Pre-registration: the frozen checklist", "",
+    out = ["## H. Pre-registration: the frozen checklist", "",
            "The values below are read from the protocol's own checklist rather than restated, so this table "
            "cannot claim a frozen value the protocol does not carry.", ""]
     if not m:
         out.append("*The protocol's checklist could not be read; this is reported rather than silently omitted.*")
         return "\n".join(out) + "\n"
-    lines = [f"| {l}" for l in m.group(1).strip().splitlines()]
-    # normalise to a well-formed table: header + separator + body
-    rows = [l for l in lines if l.strip("| ")]
+    # THE ROWS ALREADY CARRY THEIR LEADING PIPE. Prefixed with another, every row began "| | 1 | … |", the
+    # first cell parsed as the EMPTY STRING, and `set("") <= set("-: ")` is TRUE - the empty set is a subset of
+    # everything - so every row was discarded as the separator and the assembled SI shipped a registration
+    # table with a header and no body. The separator test now requires a NON-EMPTY first cell, because "empty
+    # passes the test" is the same defect as "an empty Counter reported zero duplicates as a finding": a check
+    # that a missing value satisfies is not a check.
+    rows = [l for l in m.group(1).strip().splitlines() if l.strip("| ")]
     out.append("| Item | Requirement | State |")
     out.append("|---|---|---|")
     for r in rows:
         cells = [c.strip() for c in r.strip().strip("|").split("|")]
-        if len(cells) >= 3 and set(cells[0]) <= set("-: "):
-            continue
+        first = cells[0] if cells else ""
+        if len(cells) >= 3 and first and set(first) <= set("-: "):
+            continue                       # a separator row, identified by a non-empty dash-or-colon first cell
         if len(cells) >= 3:
             out.append("| " + " | ".join(cells[:3]) + " |")
     out.append("")
@@ -89,7 +99,9 @@ def figure_plate() -> str:
     caps = {m.group(1): m.group(2).strip()
             for m in re.finditer(r"^## (\S+)\n\n(.*?)(?=\n## |\Z)",
                                  FIG_CAPTIONS.read_text(encoding="utf-8"), re.S | re.M)}
-    out = ["## E2. Figures", ""]
+    # A plate, not a numbered section: it carries no letter in the contents, exactly like "Contents" itself,
+    # so it cannot collide with the A-H sequence however that sequence changes.
+    out = ["## Figures", ""]
     for i, (stem, title) in enumerate(FIGURES, start=1):
         if stem not in caps or not (FIG_DIR / f"{stem}.png").exists():
             continue
@@ -108,12 +120,18 @@ def main() -> int:
         t = PREV.read_text(encoding="utf-8")
         m = re.search(r"^## Appendix J.*?(?=\n## |\Z)", t, re.S | re.M)
         if m:
-            refs = re.sub(r"^## Appendix J.*?\n", "## H. References\n", m.group(0), count=1, flags=re.S)
+            refs = re.sub(r"^## Appendix J.*?\n", "## I. References\n", m.group(0), count=1, flags=re.S)
 
     parts = ["# Supplementary information", "",
              "**LIMEN Phase I — orthographic channels and input noise as structural disturbances in human–model "
-             "interaction**", "",
+             "interaction in the age of large language models**", "",
              "*Supplementary information provided by the authors; not edited.*", "",
+             # A standfirst, so the finding is visible before the appendices begin. Everything below elaborates
+             # this sentence, and a reader who stops here should still have the result.
+             "**The result in one sentence.** Typing errors cost a language model accuracy and coverage, yet the "
+             "confidence gate that decides whether to answer becomes *sharper* under them — the errors arrive "
+             "below the gate rather than above it — so in the age of language models the damage from the input "
+             "channel lands on what the system declines to answer, not on what it commits to.", "",
              "---", "", "## Contents", ""]
     body: list[str] = []
 
@@ -123,22 +141,30 @@ def main() -> int:
         if p.exists():
             body.append(p.read_text(encoding="utf-8").rstrip() + "\n")
             have.append((letter, title))
-        elif fname == "G_registration.md":
+        elif fname == "H_registration.md":
             body.append(registration_table())
             have.append((letter, title))
-        elif fname == "H_references.md":
+        elif fname == "I_references.md":
             if refs:
                 body.append(refs.rstrip() + "\n")
                 have.append((letter, title))
     for letter, title in have:
         parts.append(f"**{letter}.** {title}")
     parts += ["", "---", ""]
+    # The spine goes first: everything else elaborates it.
+    spine = SI_DIR / "T_thesis_gap_contribution.md"
+    if spine.exists():
+        parts.append(spine.read_text(encoding="utf-8").rstrip() + "\n")
+        parts.append("---")
+        parts.append("")
 
-    # the figure plate sits after the results section, before the registration appendix
+
+    # The plate sits AFTER the results and BEFORE the interpretation: a reader should meet the figures their
+    # own text points at, not arrive at them past a discussion that already assumes them.
     plate = figure_plate()
     assembled: list[str] = []
     for block in body:
-        if block.lstrip().startswith("## G. ") and plate:
+        if block.lstrip().startswith("## E. ") and plate:
             assembled.append(plate)
         assembled.append(block)
     parts += assembled

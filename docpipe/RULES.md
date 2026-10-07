@@ -43,7 +43,7 @@ and is reported, rather than silently wrong.
 and used it against a map harvested earlier, so after any edit span *i* received the mathematics of whatever
 used to sit at *i* — and the build reported success because an entry existed at that key.
 
-**Enforced by.** `scripts/build_si_docx.py` and `docpipe/render.py`, which key by the expression's own TeX.
+**Enforced by.** `scripts/build_docx.py` and `docpipe/render.py`, which key by the expression's own TeX.
 
 ## 4. One producer per output
 

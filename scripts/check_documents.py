@@ -47,12 +47,26 @@ DOC_SETS: dict[str, dict] = {
         "pdf": "viz/supplementary_information.pdf",
         "renderer": "mathjax",
     },
+    # THE PAPER. Rendered from `docs/PAPER.md`, which is authored as a paper. This entry previously said
+    # `md: None - built from the protocol`, which was the defect stated plainly: there was no manuscript
+    # source, and the file at this path was a rendering of the protocol with a paper's title on it. The
+    # renderer is mathjax, not katex: the paper imports the same configuration and font set as the SI.
     "manuscript": {
-        "md": None,                     # built from the protocol, not from markdown
+        "md": "docs/PAPER.md",
         "html": "viz/manuscript.html",
+        "docx": "viz/manuscript.docx",
+        "pdf": "viz/manuscript.pdf",
+        "renderer": "mathjax",
+    },
+    # THE PROTOCOL, AS A DOCUMENT. It is the anchor, so it keeps its own output path. When both artefacts
+    # wrote to `viz/manuscript.html`, running the protocol renderer silently replaced the paper, and no check
+    # could see it because both were "the manuscript".
+    "protocol": {
+        "md": None,                      # rendered from the pinned anchor protocol file
+        "html": "viz/protocol.html",
         "docx": None,
         "pdf": None,
-        "renderer": "katex",
+        "renderer": "mathjax",
     },
 }
 
@@ -108,8 +122,32 @@ def check_source(name: str, spec: dict) -> tuple[list[str], dict]:
 
 
 def check_docx(name: str, path: pathlib.Path, facts: dict) -> tuple[list[str], dict]:
+
     findings: list[str] = []
     out: dict = {}
+
+    # HTML LEAKAGE. The reader received an HTML whose figures were literal `![Figure 1](path)` and whose
+    # bold markers had been split across a line break, so the page showed `**` and raw `$...$`. None of it was
+    # missing - it was all present, unrendered, which is why counting said the document was fine. Three
+    # assertions: no Markdown image syntax survives, no literal emphasis marker survives, and the number of
+    # <img> elements equals the number of figures the source declares.
+    if path.suffix.lower() == ".html":
+        html = path.read_text(encoding="utf-8")
+        leaks = re.findall(r"!\[[^\]]*\]\([^)]*\)", html)
+        if leaks:
+            findings.append(f"{name}: {len(leaks)} Markdown image(s) reached the HTML unrendered, e.g. {leaks[0][:60]}")
+        literal = re.findall(r"\*\*[^*\n]{1,60}\*\*", html)
+        if literal:
+            findings.append(f"{name}: {len(literal)} literal emphasis marker(s) survived, e.g. {literal[0][:60]}")
+        n_img = len(re.findall(r"<img\s+src=", html))
+        want = len(facts.get("figures") or [])
+        if want and n_img != want:
+            findings.append(f"{name}: the source declares {want} figure(s) and the page embeds {n_img}")
+        # a raw dollar that is not inside a stashed maths span means mathematics will show as source
+        stray = re.findall(r"(?<![\\$>])\$[A-Za-z0-9\\\\{}_^{} ]{2,40}\$", html)
+        if stray:
+            findings.append(f"{name}: {len(stray)} mathematics span(s) look unrendered, e.g. {stray[0][:50]}")
+        return findings, out   # an HTML document has no OOXML parts to inspect below this line
     if not path.exists():
         findings.append(f"{name}: DOCX missing at {path.relative_to(ROOT)}")
         return findings, out
@@ -156,6 +194,22 @@ def check_docx(name: str, path: pathlib.Path, facts: dict) -> tuple[list[str], d
         for req in ("[Content_Types].xml", "_rels/.rels", "word/document.xml"):
             if req not in parts:
                 findings.append(f"{name}: the archive is missing required part {req}")
+
+    # MARKDOWN MARKERS MUST NOT REACH A DOCX EITHER. Two defects of this class shipped in one session: six
+    # literal `**` in the manuscript and four in the supplementary information, then `*sharper*` in the SI after
+    # the bold case had been "fixed" - an instance repaired while the class survived. Word's own PDF export is
+    # what showed both, and nothing in this repository was looking at the produced DOCX for them, because the
+    # HTML check was already green: a format that works says nothing about its siblings (rule 14).
+    #
+    # Only the PROSE is scanned. Asterisks inside an equation are inside a `m:oMath` and are excluded, so a
+    # legitimate `T^*` cannot be reported as a marker.
+    prose = re.sub(r"<m:oMath>.*?</m:oMath>", " ", xml, flags=re.S)
+    prose = re.sub(r"<[^>]+>", "", prose)
+    for marker, what in (("**", "bold marker"), ("*", "emphasis marker"), ("![", "Markdown image")):
+        if marker in prose:
+            k = prose.count(marker)
+            findings.append(f"{name}: {k} literal {what}(s) in the DOCX prose - the emphasis or image was "
+                            f"never rendered and the reader sees the markup")
 
     n_omml = len(re.findall(r"<m:oMath[ >]", xml))
     out["omml"] = n_omml
