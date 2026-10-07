@@ -121,6 +121,42 @@ def check_docx(name: str, path: pathlib.Path, facts: dict) -> tuple[list[str], d
         findings.append(f"{name}: DOCX is not a valid zip archive")
         return findings, out
 
+    # STRUCTURE, NOT JUST COUNTS. Everything below this line counted elements; none of it asked whether the
+    # document could be OPENED. A DOCX with 154 native equations, no fallen-back source and seven embedded
+    # figures was produced and Word refused to open it, because `m:oMath` had been appended to a run - and
+    # `CT_R`, the run's content model, has no member for it. The equation belongs to the PARAGRAPH, between
+    # runs. Counting said yes; the application said no.
+    from lxml import etree
+    try:
+        root = etree.fromstring(xml.encode("utf-8"))
+    except Exception as e:
+        findings.append(f"{name}: word/document.xml is not well-formed XML ({type(e).__name__})")
+        return findings, out
+    W = "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}"
+    M = "{http://schemas.openxmlformats.org/officeDocument/2006/math}"
+    if root.find(f".//{M}oMath") is None and facts.get("math"):
+        findings.append(f"{name}: the source declares mathematics and document.xml holds no m:oMath element")
+    misplaced = [r for r in root.iter(f"{W}r") if r.find(f"{M}oMath") is not None]
+    if misplaced:
+        findings.append(
+            f"{name}: {len(misplaced)} equation(s) are children of a RUN. `CT_R` has no member for `m:oMath`, "
+            f"so the file is well-formed XML that violates the schema and Word refuses to open it - all counts "
+            f"still pass. The equation belongs to the paragraph, as a sibling of the runs.")
+    # every part must parse: a document with one broken part does not open at all.
+    # The archive is re-opened here rather than reused: the block above closes it, and a read from a closed
+    # ZipFile raises ValueError, which this loop would have reported as "all parts are not well-formed".
+    with zipfile.ZipFile(path) as zz:
+        parts = zz.namelist()
+        for part in parts:
+            if part.endswith((".xml", ".rels")):
+                try:
+                    etree.fromstring(zz.read(part))
+                except Exception as e:
+                    findings.append(f"{name}: {part} is not well-formed - {type(e).__name__}: {e}")
+        for req in ("[Content_Types].xml", "_rels/.rels", "word/document.xml"):
+            if req not in parts:
+                findings.append(f"{name}: the archive is missing required part {req}")
+
     n_omml = len(re.findall(r"<m:oMath[ >]", xml))
     out["omml"] = n_omml
     out["media"] = len(media)

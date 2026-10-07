@@ -1,8 +1,8 @@
-## G. References
+## H. References
 
 **Provenance of this list.** Every entry was taken from a source rather than from memory: the works in J.1 are recorded verbatim in this project's own files (the amendment and validation documents that used them), and the two canonical methods references in J.2 were each verified against a published record at the time of writing, with their identifiers given so a reader can check them. No entry here was written from recollection.
 
-### G.1 Cited works
+### H.1 Cited works
 
 Brill, E., & Moore, R. C. (2000). An improved error model for noisy channel spelling correction. *Proceedings of the 38th Annual Meeting of the Association for Computational Linguistics*, 286–293. *(error model for the recoverability index)*
 
@@ -12,7 +12,7 @@ Kernighan, M. D., Church, K. W., & Gale, W. A. (1990). A spelling correction pro
 
 Rayner, K., White, S. J., Johnson, R. L., & Liversedge, S. P. (2006). Raeding wrods with jubmled lettres: There is a cost. *Psychological Science*, 17(3), 192–193. *(the human readability anchor; the interior-scrambled variant at 0.4480 is the floor against which `λ_lo` and `λ_mid` are selected)*
 
-### G.2 Methods references, verified against a published record
+### H.2 Methods references, verified against a published record
 
 Holm, S. (1979). A simple sequentially rejective multiple test procedure. *Scandinavian Journal of Statistics*, 6(2), 65–70. doi:10.2307/4615733. *(the family-wise correction applied to the three-hypothesis family)*
 

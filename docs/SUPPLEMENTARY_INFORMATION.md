@@ -13,8 +13,9 @@
 **C.** Stimuli, noise model and instrument
 **D.** Analysis, power and results
 **E.** Interpretation, limitations and reproduction
-**F.** Pre-registration: the frozen checklist
-**G.** References
+**F.** Significance across disciplines
+**G.** Pre-registration: the frozen checklist
+**H.** References
 
 ---
 
@@ -170,9 +171,8 @@ Two earlier instruments were measured and **rejected**, and the reason is quanti
 
 The instrument is a non-autoregressive encoder under a permissive licence, **pinned by revision digest and by per-file SHA-256**, with an integrity guard that re-verifies the pin on every run. It was never trained: the study measures a fixed device, and holding parameters frozen is what makes a contrast between noise levels a statement about the manipulation rather than about the model's drift. What the pin does **not** guarantee is that the instrument's confidence is calibrated — the library warns, unprompted, that the checkpoint ships temperatures outside its valid range and that affected confidences are substituted with a constant and are uncalibrated. Two of the three dependent variables are functions of confidence, so the warning was bounded by measurement rather than trusted: on the confirmatory run **0 of 13,692 rows carry the substituted constant**, and the confidence values span 0.2652–1.0000 over 5,026 distinct values. Because a single sample cannot make a guarantee, the observation is now carried as a **checked invariant** that fails on any trial file containing the constant. Reading a warning is not the same as acting on one.
 
-# Appendix D — Analysis, Power and Results
-
-## 1 Estimators
+## D. Analysis, power and results
+### 1 Estimators
 
 The design is paired at the **unit** level: a unit is an item crossed with a seed, and it carries exactly one clean and one noisy observation, each with its own confidence $c$ and correctness $y$. Let $u = 1, \dots, n$ enumerate the units, and let a signed statistic be any function $T$ of the paired sample.
 
@@ -205,7 +205,7 @@ and the tested contrast is $T = \mathrm{AUC}(\lambda_{\mathrm{mid}}) - \mathrm{A
 
 **One estimand is deliberately excluded from the family.** The conditional error among admitted trials, $\mathrm{CondErr}@\tau = \Pr(y = 0 \mid c \ge \tau)$, has a denominator that **changes with the condition** — the admitted set is 121 items clean against 61 under noise, with an intersection of only 51 — so the within-item pairing that the permutation test relies on does not exist for it. It is reported in §D.4 and is **not** a member of the confirmatory family. Naming an estimator the code does not implement is how a pre-registration and an analysis drift apart without anyone noticing.
 
-## 2 The family and direction enforcement
+### 2 The family and direction enforcement
 
 The confirmatory family comprises exactly three hypotheses, corrected by the Holm sequentially rejective procedure at family-wise $\alpha = 0.05$: the smallest $p$-value is compared against $0.05/3 = 0.0167$, the next against $0.05/2 = 0.0250$, and the last against $0.05$. Holm requires no independence assumption among the tests and is uniformly more powerful than Bonferroni.
 
@@ -219,7 +219,7 @@ The three hypotheses and their predicted directions are:
 
 This rule is not a technicality; it is what converted a genuine result into a correction. The original fixed-threshold silent-error hypothesis moved significantly in the *opposite* direction: silent error fell rather than rose. Without the direction rule, the two-sided $p$-value of $5.00 \times 10^{-5}$ would have been entered into Holm as support for a hypothesis that the data had actually refuted. The direction rule correctly classified it as a refutation, which motivated the replacement hypothesis H1.2′.
 
-## 3 Power
+### 3 Power
 
 McNemar is a binomial test on the **discordant** pairs, so power depends on $n \cdot \pi_d$ and on the conditional asymmetry $\pi = c/(b + c)$, not on $n$ alone. A design sized on the McNemar structure is insensitive to the total sample size $n$ once the discordant-pair count is fixed.
 
@@ -234,7 +234,7 @@ McNemar is a binomial test on the **discordant** pairs, so power depends on $n \
 
 The minimum detectable effect — 5.41 points against a pre-registered target of 5.0 — is a match to within a point, so the sample size is sized for exactly the effect the design declared. A first version of this calculation reported the design as *over-powered by 5.11×*, obtained by comparing the MDE against the **measured** effect rather than the pre-registered target; that comparison is misleading because a design is sized for the effect it declares, and a larger observed effect does not render its sizing a defect. Converting $\pi$ into accuracy points reverses the conclusion, and the conversion now lives in the analysis script rather than in a reader's head.
 
-## 4 Results
+### 4 Results
 
 The confirmatory run used the test split: **652 items × 7 noise levels × 3 frozen seeds = 13,692 trial records, zero failures**. Table D1 gives every quantity at every noise level, read from the derived per-level summary.
 
@@ -262,7 +262,7 @@ The family. All three hypotheses were rejected under Holm with **no direction vi
 
 H1.1 discordant pairs: $b = 71$, $c = 307$ — more than four items newly wrong for every one newly right. H1.2′ contrast $+0.1587$ over 1,956 units. H1.3 mean coverage fall $0.2904$, 95 % CI $[0.2679, 0.3154]$.
 
-### 4.1 What the pre-run predicted
+#### 4.1 What the pre-run predicted
 
 | Predicted on dev, before the seal | Confirmatory outcome |
 |---|---|
@@ -274,7 +274,7 @@ H1.1 discordant pairs: $b = 71$, $c = 307$ — more than four items newly wrong 
 
 Both prediction classes held. The replacement hypothesis replicated, and the refuted hypothesis reproduced its refutation exactly.
 
-### 4.2 Scientific significance
+#### 4.2 Scientific significance
 
 For this manipulation the silent-error premise **fails, and it fails in a specific way**. Typo noise costs about twelve accuracy points and twenty-nine coverage points, yet the gate's discriminability *rises* — from 0.601 to 0.760 — and the share of errors the gate rejects rises from 61.4 % to 93.5 %. The damage therefore concentrates in **what the model declines to answer**, not in what it confidently gets wrong. Two consequences follow. First, confidence remains a usable control signal under orthographic noise, so the common remedy for a feared silent-error problem — recalibrating or replacing the gate — addresses a failure that does not occur here. Second, the real failure is a **coverage** failure rather than a correctness one, and coverage is remedied by throughput rather than by thresholds.
 
@@ -317,6 +317,110 @@ Two bodies of practice bear on this. Work using **model confidence as a control 
 7. **Formal core.** The machine-checked development accompanies the repository: every theorem kernel-verified, none depending on `sorry`, and the scale-free discrimination theorem reported as depending on **no axioms at all**.
 
 Everything above is released together, so that the record of what was decided, the code that decided it, and the checks that would have caught it being wrong travel as one artefact.
+
+## F. Significance across disciplines
+
+### F.1 What the result is, stated so that other fields can use it
+
+The manipulation is narrow on purpose: a single frozen encoder, one language, one synthetic but
+keystroke-faithful noise process, one typed decision task. What generalises is not the magnitude but the
+**decomposition**, and the decomposition is what other disciplines have a use for.
+
+Type errors cost accuracy and coverage, and the two costs are worth stating separately because they are
+different quantities that are easy to conflate. Accuracy falls from **0.8926 to 0.7720**, a loss of **12.1
+points** ($p = 4.4 \times 10^{-36}$). Coverage at the fixed threshold $\tau = 0.90$ falls from **0.4479 to
+0.2111**, a loss of **23.7 points** — while the H1.3 estimand, the **mean paired fall across units**, is
+**0.2904** with 95 % CI $[0.2679, 0.3154]$ ($p = 5.0 \times 10^{-5}$). The two coverage figures are not the
+same measurement: one is the level at a threshold in a given condition, the other is the average within-unit
+change, and a reader who takes either for the other will misstate the result by five points. Both losses are
+expected. The unexpected part is the third quantity: the confidence gate's
+**discriminability rises** under the same manipulation — the within-arm AUC between correct and incorrect trials
+goes from **0.601 to 0.760** ($p = 2.0 \times 10^{-4}$) — and the share of errors arriving below the gate rises
+from **61.4 % to 93.5 %**. Errors under this corruption are not quieter; they are **louder**, and they are
+loudest exactly where the model is least reliable.
+
+### F.2 Signal-detection theory: this is a criterion shift, not a sensitivity loss
+
+The AUC is a nonparametric measure of sensitivity — the probability that a randomly chosen correct trial
+outranks a randomly chosen incorrect one — and it is the ordinal form of $d'$. Reading the three results in
+those terms gives a clean statement: **noise moves the operating point (the effective criterion, through a
+downward shift of the confidence distribution) while leaving the underlying separability not merely intact but
+improved.** The apparent paradox — accuracy collapsing while discrimination sharpens — dissolves once accuracy
+and coverage are recognised as **criterion-dependent** quantities (they read a fixed threshold in confidence
+units) and the AUC as **criterion-free**. A field that reports only accuracy under corruption will therefore
+read a criterion shift as a sensitivity loss, and will misattribute the remedy: it will try to repair
+discrimination when the discrimination was never the problem.
+
+### F.3 Human factors and automation: the risk moves from misuse to disuse
+
+The automation literature separates **misuse** — accepting the system's output when it is wrong — from
+**disuse** — declining to use a system that works. The result here is a **dependability-class** statement about
+which one this manipulation produces. It produces disuse: the system does not commit to more wrong answers, it
+commits to far fewer answers at all, and it does so *because* its own confidence collapses on exactly the trials
+it is getting wrong. Read as a trust calibration, that is the well-behaved direction — the system's
+self-assessment degrades *with* its performance rather than independently of it. The practical consequence runs
+against the common remedy: an operator worried about silent errors under noisy input would recalibrate or
+replace the gate, and **for this corruption there is nothing to repair in the gate**. What needs provisioning is
+throughput, because the failure is availability, not correctness.
+
+### F.4 Safety engineering: fail-safe rather than fail-operational degradation
+
+Coverage is an **availability** property and correctness-among-committed-answers is a **safety** property.
+Systems are classified by how they degrade: a *fail-safe* system degrades by ceasing to act, a
+*fail-operational* system degrades by continuing to act while wrong. This manipulation drives the system along
+the fail-safe path — and it does so without any of the machinery usually needed to guarantee it, because the
+degradation is produced by the model's own confidence rather than by an external monitor. That is a useful,
+narrow, and honest claim: **for orthographic noise, the gate is the safety mechanism and it is not defeated by
+the noise**. Whether the same holds for noise that corrupts *meaning* rather than *form* is an empirical
+question this study does not answer, and it is the obvious next one.
+
+### F.5 Reading research: confidence tracks a noisy channel
+
+The stimuli are calibrated against a published human result — the interior-scrambled condition of Rayner and
+colleagues (2006), whose readers recovered the intended word at a rate of 0.4480 — and the noise generator is a
+keyboard-adjacency channel in the tradition of noisy-channel spelling correction. The finding that connects these
+to the model is that **the model's confidence behaves like a noisy-channel posterior**: it falls when the
+surface form becomes unlikely under the intended word, which is what makes the errors self-announcing. A reader
+recovers from a typo by detecting that the surface form is improbable; the instrument here appears to do the
+same thing through its confidence. That is a mechanism-level correspondence, not an analogy, and it is testable:
+a noise process whose corruptions are *plausible* under the channel should produce errors that are **not**
+self-announcing, and the AUC should then fail to rise.
+
+### F.6 Methodology: choose estimands that cannot inherit an instrument's calibration
+
+The design decision that made the third result usable was made before the run and is transferable. The
+instrument's own library warns, unprompted, that this checkpoint's temperatures are invalid and that affected
+confidences are uncalibrated. An estimand that bounds a rate **at an absolute threshold** inherits that warning;
+an estimand that reads only the **order** of confidences cannot. Measured on the confirmatory record, this is not
+a subtlety — rescaling every confidence by a family of strictly increasing maps leaves the AUC with a spread of
+exactly **0.000** while moving coverage at the fixed threshold by **43.6 percentage points**. The general
+principle is stated in the formal framework and machine-checked there; its use is not specific to this study.
+**Wherever a measurement device's calibration is in question, the ordinal estimand is the one that survives the
+doubt** — and choosing it in advance is what makes the resulting claim robust to a caveat that would otherwise
+have to be argued away afterwards.
+
+### F.7 What this does not license
+
+Five boundaries, stated because each of them is a way the result could be over-read.
+
+It does **not** show that confidence is calibrated, comparable across models, or comparable across tasks. It
+shows that the *ordering* is stable under this corruption, which is weaker and is all the claim needs.
+
+It does **not** show that any deployed gate is safe. The gate here is a fixed threshold on a single instrument's
+confidence; a deployed system's gate is a composition, and composition is where these guarantees are usually
+lost.
+
+It does **not** show that the direction generalises beyond orthographic noise. Noise that corrupts meaning
+rather than form — a plausible substitution, a homophone, an adversarial token — is the case where the mechanism
+identified in §F.5 predicts the opposite result, and predicting the opposite result is the point of identifying
+a mechanism.
+
+It does **not** show that the model "knows when it is uncertain" in any reflective sense. The measurement is
+compatible with a purely distributional account of confidence, and nothing here distinguishes the two.
+
+It does **not** establish that silent refusal is a lesser harm than a confident error out of context. That is a
+judgement about a deployment, and the study's contribution is to establish **which** of the two failure modes
+this manipulation produces, not which one a given application should prefer.
 
 ## E2. Figures
 
@@ -363,7 +467,7 @@ Everything above is released together, so that the record of what was decided, t
 **A third of this manuscript's claims rest on a machine-checked proof, and the assumptions are visible as assumptions.** The protocol's provenance table classifies every claim by its authority, and this figure counts that table: **16 claims PROVED** — each naming a theorem the kernel checked, with the table's generator failing if such a theorem does not exist — **6 MEASURED** off the confirmatory or pre-run record, **6 ASSUMED** and carried as assumptions rather than as results, and **6 TO BE TESTED** in Phase II. The count matches the generator's own independent total of 34, which is the property that makes the figure worth drawing: it is derived from the table rather than summarised from it. **No claim about the effect of noise on accuracy, silent error or coverage appears as PROVED** — those are the empirical claims, settled by the confirmatory run and by nothing else, and a figure that blurred that distinction would misrepresent the work it describes.
 
 
-## F. Pre-registration: the frozen checklist
+## G. Pre-registration: the frozen checklist
 
 The values below are read from the protocol's own checklist rather than restated, so this table cannot claim a frozen value the protocol does not carry.
 
@@ -371,11 +475,11 @@ The values below are read from the protocol's own checklist rather than restated
 |---|---|---|
 
 
-## G. References
+## H. References
 
 **Provenance of this list.** Every entry was taken from a source rather than from memory: the works in J.1 are recorded verbatim in this project's own files (the amendment and validation documents that used them), and the two canonical methods references in J.2 were each verified against a published record at the time of writing, with their identifiers given so a reader can check them. No entry here was written from recollection.
 
-### G.1 Cited works
+### H.1 Cited works
 
 Brill, E., & Moore, R. C. (2000). An improved error model for noisy channel spelling correction. *Proceedings of the 38th Annual Meeting of the Association for Computational Linguistics*, 286–293. *(error model for the recoverability index)*
 
@@ -385,7 +489,7 @@ Kernighan, M. D., Church, K. W., & Gale, W. A. (1990). A spelling correction pro
 
 Rayner, K., White, S. J., Johnson, R. L., & Liversedge, S. P. (2006). Raeding wrods with jubmled lettres: There is a cost. *Psychological Science*, 17(3), 192–193. *(the human readability anchor; the interior-scrambled variant at 0.4480 is the floor against which `λ_lo` and `λ_mid` are selected)*
 
-### G.2 Methods references, verified against a published record
+### H.2 Methods references, verified against a published record
 
 Holm, S. (1979). A simple sequentially rejective multiple test procedure. *Scandinavian Journal of Statistics*, 6(2), 65–70. doi:10.2307/4615733. *(the family-wise correction applied to the three-hypothesis family)*
 

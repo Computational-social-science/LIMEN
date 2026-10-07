@@ -1,6 +1,5 @@
-# Appendix D — Analysis, Power and Results
-
-## 1 Estimators
+## D. Analysis, power and results
+### 1 Estimators
 
 The design is paired at the **unit** level: a unit is an item crossed with a seed, and it carries exactly one clean and one noisy observation, each with its own confidence $c$ and correctness $y$. Let $u = 1, \dots, n$ enumerate the units, and let a signed statistic be any function $T$ of the paired sample.
 
@@ -33,7 +32,7 @@ and the tested contrast is $T = \mathrm{AUC}(\lambda_{\mathrm{mid}}) - \mathrm{A
 
 **One estimand is deliberately excluded from the family.** The conditional error among admitted trials, $\mathrm{CondErr}@\tau = \Pr(y = 0 \mid c \ge \tau)$, has a denominator that **changes with the condition** — the admitted set is 121 items clean against 61 under noise, with an intersection of only 51 — so the within-item pairing that the permutation test relies on does not exist for it. It is reported in §D.4 and is **not** a member of the confirmatory family. Naming an estimator the code does not implement is how a pre-registration and an analysis drift apart without anyone noticing.
 
-## 2 The family and direction enforcement
+### 2 The family and direction enforcement
 
 The confirmatory family comprises exactly three hypotheses, corrected by the Holm sequentially rejective procedure at family-wise $\alpha = 0.05$: the smallest $p$-value is compared against $0.05/3 = 0.0167$, the next against $0.05/2 = 0.0250$, and the last against $0.05$. Holm requires no independence assumption among the tests and is uniformly more powerful than Bonferroni.
 
@@ -47,7 +46,7 @@ The three hypotheses and their predicted directions are:
 
 This rule is not a technicality; it is what converted a genuine result into a correction. The original fixed-threshold silent-error hypothesis moved significantly in the *opposite* direction: silent error fell rather than rose. Without the direction rule, the two-sided $p$-value of $5.00 \times 10^{-5}$ would have been entered into Holm as support for a hypothesis that the data had actually refuted. The direction rule correctly classified it as a refutation, which motivated the replacement hypothesis H1.2′.
 
-## 3 Power
+### 3 Power
 
 McNemar is a binomial test on the **discordant** pairs, so power depends on $n \cdot \pi_d$ and on the conditional asymmetry $\pi = c/(b + c)$, not on $n$ alone. A design sized on the McNemar structure is insensitive to the total sample size $n$ once the discordant-pair count is fixed.
 
@@ -62,7 +61,7 @@ McNemar is a binomial test on the **discordant** pairs, so power depends on $n \
 
 The minimum detectable effect — 5.41 points against a pre-registered target of 5.0 — is a match to within a point, so the sample size is sized for exactly the effect the design declared. A first version of this calculation reported the design as *over-powered by 5.11×*, obtained by comparing the MDE against the **measured** effect rather than the pre-registered target; that comparison is misleading because a design is sized for the effect it declares, and a larger observed effect does not render its sizing a defect. Converting $\pi$ into accuracy points reverses the conclusion, and the conversion now lives in the analysis script rather than in a reader's head.
 
-## 4 Results
+### 4 Results
 
 The confirmatory run used the test split: **652 items × 7 noise levels × 3 frozen seeds = 13,692 trial records, zero failures**. Table D1 gives every quantity at every noise level, read from the derived per-level summary.
 
@@ -90,7 +89,7 @@ The family. All three hypotheses were rejected under Holm with **no direction vi
 
 H1.1 discordant pairs: $b = 71$, $c = 307$ — more than four items newly wrong for every one newly right. H1.2′ contrast $+0.1587$ over 1,956 units. H1.3 mean coverage fall $0.2904$, 95 % CI $[0.2679, 0.3154]$.
 
-### 4.1 What the pre-run predicted
+#### 4.1 What the pre-run predicted
 
 | Predicted on dev, before the seal | Confirmatory outcome |
 |---|---|
@@ -102,6 +101,6 @@ H1.1 discordant pairs: $b = 71$, $c = 307$ — more than four items newly wrong 
 
 Both prediction classes held. The replacement hypothesis replicated, and the refuted hypothesis reproduced its refutation exactly.
 
-### 4.2 Scientific significance
+#### 4.2 Scientific significance
 
 For this manipulation the silent-error premise **fails, and it fails in a specific way**. Typo noise costs about twelve accuracy points and twenty-nine coverage points, yet the gate's discriminability *rises* — from 0.601 to 0.760 — and the share of errors the gate rejects rises from 61.4 % to 93.5 %. The damage therefore concentrates in **what the model declines to answer**, not in what it confidently gets wrong. Two consequences follow. First, confidence remains a usable control signal under orthographic noise, so the common remedy for a feared silent-error problem — recalibrating or replacing the gate — addresses a failure that does not occur here. Second, the real failure is a **coverage** failure rather than a correctness one, and coverage is remedied by throughput rather than by thresholds.

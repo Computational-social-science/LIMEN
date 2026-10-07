@@ -36,8 +36,9 @@ SECTION_ORDER = [
     ("C", "C_stimuli_and_instrument.md", "Stimuli, noise model and instrument"),
     ("D", "D_analysis_power_and_results.md", "Analysis, power and results"),
     ("E", "E_interpretation_and_reproducibility.md", "Interpretation, limitations and reproduction"),
-    ("F", "F_registration.md", "Pre-registration: the frozen checklist"),
-    ("G", "G_references.md", "References"),
+    ("F", "F_multidisciplinary_significance.md", "Significance across disciplines"),
+    ("G", "G_registration.md", "Pre-registration: the frozen checklist"),
+    ("H", "H_references.md", "References"),
 ]
 
 FIGURES = [
@@ -60,7 +61,7 @@ def registration_table() -> str:
     """
     text = PROTOCOL.read_text(encoding="utf-8")
     m = re.search(r"^## 12\..*?^\| # \|.*?\n((?:^\|[^\n]*\n)+)", text, re.S | re.M)
-    out = ["## F. Pre-registration: the frozen checklist", "",
+    out = ["## G. Pre-registration: the frozen checklist", "",
            "The values below are read from the protocol's own checklist rather than restated, so this table "
            "cannot claim a frozen value the protocol does not carry.", ""]
     if not m:
@@ -107,7 +108,7 @@ def main() -> int:
         t = PREV.read_text(encoding="utf-8")
         m = re.search(r"^## Appendix J.*?(?=\n## |\Z)", t, re.S | re.M)
         if m:
-            refs = re.sub(r"^## Appendix J.*?\n", "## G. References\n", m.group(0), count=1, flags=re.S)
+            refs = re.sub(r"^## Appendix J.*?\n", "## H. References\n", m.group(0), count=1, flags=re.S)
 
     parts = ["# Supplementary information", "",
              "**LIMEN Phase I — orthographic channels and input noise as structural disturbances in human–model "
@@ -122,10 +123,10 @@ def main() -> int:
         if p.exists():
             body.append(p.read_text(encoding="utf-8").rstrip() + "\n")
             have.append((letter, title))
-        elif fname == "F_registration.md":
+        elif fname == "G_registration.md":
             body.append(registration_table())
             have.append((letter, title))
-        elif fname == "G_references.md":
+        elif fname == "H_references.md":
             if refs:
                 body.append(refs.rstrip() + "\n")
                 have.append((letter, title))
@@ -137,7 +138,7 @@ def main() -> int:
     plate = figure_plate()
     assembled: list[str] = []
     for block in body:
-        if block.lstrip().startswith("## F. ") and plate:
+        if block.lstrip().startswith("## G. ") and plate:
             assembled.append(plate)
         assembled.append(block)
     parts += assembled

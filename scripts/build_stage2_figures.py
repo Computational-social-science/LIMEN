@@ -124,7 +124,17 @@ def main() -> int:
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
-    import scienceplots          # noqa: F401  (registers the 'science'/'nature'/'ieee' styles)
+    try:
+        import scienceplots  # noqa: F401 - registers the styles on import
+    except ImportError:  # pragma: no cover - the figures must be produced even so
+        # A STYLE PACKAGE IS NOT A DEPENDENCY OF THE RESULT. This environment lost `scienceplots` twice in
+        # one session (toolchain updates) and each time the layout audit went red and blocked commits - a
+        # missing font for the figures blocking the pipeline that publishes them. The figures are produced
+        # either way and the audit measures geometry, which the style does not change; what must NOT happen
+        # is a SILENT substitution, so the fallback says so, loudly, every run.
+        scienceplots = None
+        print("  [WARN] scienceplots is NOT installed - falling back to the default matplotlib style. "
+              "The figures are still correct; they are not in the journal house style.")
 
     # OFFICIAL JOURNAL STYLES, then project overrides.
     #   'science' + 'nature' give the Nature/Science typographic conventions (sans-serif, small ticks,
@@ -132,7 +142,8 @@ def main() -> int:
     #   required -- without it the style asks for usetex and every mathtext label fails.
     # The project palette, DPI and line widths are then pinned ON TOP, because a style sheet is a starting
     # point and the journal's own numbers (400 dpi, 0.4 pt ticks) are not negotiable.
-    plt.style.use(["science", "nature", "no-latex"])
+    if scienceplots is not None:
+        plt.style.use(["science", "nature", "no-latex"])
     plt.rcParams.update({
         "figure.dpi": 150, "savefig.dpi": 600,
         "axes.linewidth": 0.5, "xtick.major.width": 0.4, "ytick.major.width": 0.4,

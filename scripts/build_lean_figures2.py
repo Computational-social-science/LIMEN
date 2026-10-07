@@ -27,9 +27,20 @@ import sys
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-import scienceplots  # noqa: F401 - registers the styles on import
+try:
+    import scienceplots  # noqa: F401 - registers the styles on import
+except ImportError:  # pragma: no cover - the figures must still be produced and still be audited
+    # A STYLE PACKAGE IS NOT A DEPENDENCY OF THE RESULT. This environment lost `scienceplots` twice in one
+    # session (toolchain updates), and each time the layout audit went red and blocked commits - a missing
+    # font for the figures blocking the pipeline that publishes them. The figures are produced either way and
+    # the audit measures geometry, which the style does not change; what must NOT happen is a SILENT
+    # substitution, so the fallback says so, loudly, every run.
+    scienceplots = None
+    print("  [WARN] scienceplots is NOT installed - falling back to the default matplotlib style. "
+          "The figures are still correct; they are not in the journal house style.")
 
-plt.style.use(["science", "nature", "no-latex"])
+if scienceplots is not None:
+    plt.style.use(["science", "nature", "no-latex"])
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 OUT = ROOT / "viz" / "figures"

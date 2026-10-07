@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
   "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="513.552304pt" height="447.762206pt" viewBox="0 0 513.552304 447.762206" xmlns="http://www.w3.org/2000/svg" version="1.1">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="513.552304pt" height="429.587966pt" viewBox="0 0 513.552304 429.587966" xmlns="http://www.w3.org/2000/svg" version="1.1">
  <metadata>
   <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
    <cc:Work>
     <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
-    <dc:date>2026-10-06T23:51:09.029652</dc:date>
+    <dc:date>2026-10-07T15:39:14.170678</dc:date>
     <dc:format>image/svg+xml</dc:format>
     <dc:creator>
      <cc:Agent>
@@ -21,8 +21,8 @@
  </defs>
  <g id="figure_1">
   <g id="patch_1">
-   <path d="M 0 447.762206 
-L 513.552304 447.762206 
+   <path d="M 0 429.587966 
+L 513.552304 429.587966 
 L 513.552304 0 
 L 0 0 
 z
@@ -30,136 +30,136 @@ z
   </g>
   <g id="axes_1">
    <g id="patch_2">
-    <path d="M 5.850909 41.153516 
-L 185.923629 41.153516 
-L 185.923629 77.125718 
-L 5.850909 77.125718 
+    <path d="M 5.850909 34.662716 
+L 185.923629 34.662716 
+L 185.923629 70.634918 
+L 5.850909 70.634918 
 z
-" clip-path="url(#pf63d8859c0)" style="fill: #f6f7f9; stroke: #e0c9c4; stroke-width: 0.6; stroke-linejoin: miter"/>
+" clip-path="url(#pa5d7eaead5)" style="fill: #f6f7f9; stroke: #e0c9c4; stroke-width: 0.6; stroke-linejoin: miter"/>
    </g>
    <g id="patch_3">
-    <path d="M 233.192718 41.153516 
-L 449.279982 41.153516 
-L 449.279982 77.125718 
-L 233.192718 77.125718 
+    <path d="M 233.192718 34.662716 
+L 449.279982 34.662716 
+L 449.279982 70.634918 
+L 233.192718 70.634918 
 z
-" clip-path="url(#pf63d8859c0)" style="fill: #eef6f1; stroke: #c3ddcd; stroke-width: 0.6; stroke-linejoin: miter"/>
+" clip-path="url(#pa5d7eaead5)" style="fill: #eef6f1; stroke: #c3ddcd; stroke-width: 0.6; stroke-linejoin: miter"/>
    </g>
    <g id="patch_4">
-    <path d="M 5.850909 88.48536 
-L 185.923629 88.48536 
-L 185.923629 124.457562 
-L 5.850909 124.457562 
+    <path d="M 5.850909 81.99456 
+L 185.923629 81.99456 
+L 185.923629 117.966762 
+L 5.850909 117.966762 
 z
-" clip-path="url(#pf63d8859c0)" style="fill: #f6f7f9; stroke: #e0c9c4; stroke-width: 0.6; stroke-linejoin: miter"/>
+" clip-path="url(#pa5d7eaead5)" style="fill: #f6f7f9; stroke: #e0c9c4; stroke-width: 0.6; stroke-linejoin: miter"/>
    </g>
    <g id="patch_5">
-    <path d="M 233.192718 88.48536 
-L 449.279982 88.48536 
-L 449.279982 124.457562 
-L 233.192718 124.457562 
+    <path d="M 233.192718 81.99456 
+L 449.279982 81.99456 
+L 449.279982 117.966762 
+L 233.192718 117.966762 
 z
-" clip-path="url(#pf63d8859c0)" style="fill: #eef6f1; stroke: #c3ddcd; stroke-width: 0.6; stroke-linejoin: miter"/>
+" clip-path="url(#pa5d7eaead5)" style="fill: #eef6f1; stroke: #c3ddcd; stroke-width: 0.6; stroke-linejoin: miter"/>
    </g>
    <g id="patch_6">
-    <path d="M 5.850909 135.817204 
-L 185.923629 135.817204 
-L 185.923629 171.789406 
-L 5.850909 171.789406 
+    <path d="M 5.850909 129.326404 
+L 185.923629 129.326404 
+L 185.923629 165.298606 
+L 5.850909 165.298606 
 z
-" clip-path="url(#pf63d8859c0)" style="fill: #f6f7f9; stroke: #e0c9c4; stroke-width: 0.6; stroke-linejoin: miter"/>
+" clip-path="url(#pa5d7eaead5)" style="fill: #f6f7f9; stroke: #e0c9c4; stroke-width: 0.6; stroke-linejoin: miter"/>
    </g>
    <g id="patch_7">
-    <path d="M 233.192718 135.817204 
-L 449.279982 135.817204 
-L 449.279982 171.789406 
-L 233.192718 171.789406 
+    <path d="M 233.192718 129.326404 
+L 449.279982 129.326404 
+L 449.279982 165.298606 
+L 233.192718 165.298606 
 z
-" clip-path="url(#pf63d8859c0)" style="fill: #eef6f1; stroke: #c3ddcd; stroke-width: 0.6; stroke-linejoin: miter"/>
+" clip-path="url(#pa5d7eaead5)" style="fill: #eef6f1; stroke: #c3ddcd; stroke-width: 0.6; stroke-linejoin: miter"/>
    </g>
    <g id="patch_8">
-    <path d="M 5.850909 183.149048 
-L 185.923629 183.149048 
-L 185.923629 219.12125 
-L 5.850909 219.12125 
+    <path d="M 5.850909 176.658248 
+L 185.923629 176.658248 
+L 185.923629 212.63045 
+L 5.850909 212.63045 
 z
-" clip-path="url(#pf63d8859c0)" style="fill: #f6f7f9; stroke: #e0c9c4; stroke-width: 0.6; stroke-linejoin: miter"/>
+" clip-path="url(#pa5d7eaead5)" style="fill: #f6f7f9; stroke: #e0c9c4; stroke-width: 0.6; stroke-linejoin: miter"/>
    </g>
    <g id="patch_9">
-    <path d="M 233.192718 183.149048 
-L 449.279982 183.149048 
-L 449.279982 219.12125 
-L 233.192718 219.12125 
+    <path d="M 233.192718 176.658248 
+L 449.279982 176.658248 
+L 449.279982 212.63045 
+L 233.192718 212.63045 
 z
-" clip-path="url(#pf63d8859c0)" style="fill: #eef6f1; stroke: #c3ddcd; stroke-width: 0.6; stroke-linejoin: miter"/>
+" clip-path="url(#pa5d7eaead5)" style="fill: #eef6f1; stroke: #c3ddcd; stroke-width: 0.6; stroke-linejoin: miter"/>
    </g>
    <g id="patch_10">
-    <path d="M 5.850909 230.480892 
-L 185.923629 230.480892 
-L 185.923629 266.453094 
-L 5.850909 266.453094 
+    <path d="M 5.850909 223.990092 
+L 185.923629 223.990092 
+L 185.923629 259.962294 
+L 5.850909 259.962294 
 z
-" clip-path="url(#pf63d8859c0)" style="fill: #fdf2f0; stroke: #e0c9c4; stroke-width: 0.6; stroke-linejoin: miter"/>
+" clip-path="url(#pa5d7eaead5)" style="fill: #fdf2f0; stroke: #e0c9c4; stroke-width: 0.6; stroke-linejoin: miter"/>
    </g>
    <g id="patch_11">
-    <path d="M 233.192718 230.480892 
-L 449.279982 230.480892 
-L 449.279982 266.453094 
-L 233.192718 266.453094 
+    <path d="M 233.192718 223.990092 
+L 449.279982 223.990092 
+L 449.279982 259.962294 
+L 233.192718 259.962294 
 z
-" clip-path="url(#pf63d8859c0)" style="fill: #eef6f1; stroke: #c3ddcd; stroke-width: 0.6; stroke-linejoin: miter"/>
+" clip-path="url(#pa5d7eaead5)" style="fill: #eef6f1; stroke: #c3ddcd; stroke-width: 0.6; stroke-linejoin: miter"/>
    </g>
    <g id="patch_12">
-    <path d="M 5.850909 277.812736 
-L 185.923629 277.812736 
-L 185.923629 313.784938 
-L 5.850909 313.784938 
+    <path d="M 5.850909 271.321936 
+L 185.923629 271.321936 
+L 185.923629 307.294138 
+L 5.850909 307.294138 
 z
-" clip-path="url(#pf63d8859c0)" style="fill: #fdf2f0; stroke: #e0c9c4; stroke-width: 0.6; stroke-linejoin: miter"/>
+" clip-path="url(#pa5d7eaead5)" style="fill: #fdf2f0; stroke: #e0c9c4; stroke-width: 0.6; stroke-linejoin: miter"/>
    </g>
    <g id="patch_13">
-    <path d="M 233.192718 277.812736 
-L 449.279982 277.812736 
-L 449.279982 313.784938 
-L 233.192718 313.784938 
+    <path d="M 233.192718 271.321936 
+L 449.279982 271.321936 
+L 449.279982 307.294138 
+L 233.192718 307.294138 
 z
-" clip-path="url(#pf63d8859c0)" style="fill: #eef6f1; stroke: #c3ddcd; stroke-width: 0.6; stroke-linejoin: miter"/>
+" clip-path="url(#pa5d7eaead5)" style="fill: #eef6f1; stroke: #c3ddcd; stroke-width: 0.6; stroke-linejoin: miter"/>
    </g>
    <g id="patch_14">
-    <path d="M 5.850909 325.14458 
-L 185.923629 325.14458 
-L 185.923629 361.116782 
-L 5.850909 361.116782 
+    <path d="M 5.850909 318.65378 
+L 185.923629 318.65378 
+L 185.923629 354.625982 
+L 5.850909 354.625982 
 z
-" clip-path="url(#pf63d8859c0)" style="fill: #fdf2f0; stroke: #e0c9c4; stroke-width: 0.6; stroke-linejoin: miter"/>
+" clip-path="url(#pa5d7eaead5)" style="fill: #fdf2f0; stroke: #e0c9c4; stroke-width: 0.6; stroke-linejoin: miter"/>
    </g>
    <g id="patch_15">
-    <path d="M 233.192718 325.14458 
-L 449.279982 325.14458 
-L 449.279982 361.116782 
-L 233.192718 361.116782 
+    <path d="M 233.192718 318.65378 
+L 449.279982 318.65378 
+L 449.279982 354.625982 
+L 233.192718 354.625982 
 z
-" clip-path="url(#pf63d8859c0)" style="fill: #eef6f1; stroke: #c3ddcd; stroke-width: 0.6; stroke-linejoin: miter"/>
+" clip-path="url(#pa5d7eaead5)" style="fill: #eef6f1; stroke: #c3ddcd; stroke-width: 0.6; stroke-linejoin: miter"/>
    </g>
    <g id="patch_16">
-    <path d="M 5.850909 372.476424 
-L 185.923629 372.476424 
-L 185.923629 408.448626 
-L 5.850909 408.448626 
+    <path d="M 5.850909 365.985624 
+L 185.923629 365.985624 
+L 185.923629 401.957826 
+L 5.850909 401.957826 
 z
-" clip-path="url(#pf63d8859c0)" style="fill: #fdf2f0; stroke: #e0c9c4; stroke-width: 0.6; stroke-linejoin: miter"/>
+" clip-path="url(#pa5d7eaead5)" style="fill: #fdf2f0; stroke: #e0c9c4; stroke-width: 0.6; stroke-linejoin: miter"/>
    </g>
    <g id="patch_17">
-    <path d="M 233.192718 372.476424 
-L 449.279982 372.476424 
-L 449.279982 408.448626 
-L 233.192718 408.448626 
+    <path d="M 233.192718 365.985624 
+L 449.279982 365.985624 
+L 449.279982 401.957826 
+L 233.192718 401.957826 
 z
-" clip-path="url(#pf63d8859c0)" style="fill: #eef6f1; stroke: #c3ddcd; stroke-width: 0.6; stroke-linejoin: miter"/>
+" clip-path="url(#pa5d7eaead5)" style="fill: #eef6f1; stroke: #c3ddcd; stroke-width: 0.6; stroke-linejoin: miter"/>
    </g>
    <g id="text_1">
     <!-- "9 errors" -->
-    <g style="fill: #b03a2e" transform="translate(11.703272 60.700508) scale(0.067 -0.067)">
+    <g style="fill: #b03a2e" transform="translate(11.703272 54.209708) scale(0.067 -0.067)">
      <defs>
       <path id="STIXGeneral-Regular-22" d="M 1914 2758 
 L 1779 2758 
@@ -334,18 +334,18 @@ z
     </g>
    </g>
    <g id="patch_18">
-    <path d="M 192.429339 59.139617 
-Q 209.561952 59.139617 225.688336 59.139617 
+    <path d="M 192.429339 52.648817 
+Q 209.561952 52.648817 225.688336 52.648817 
 " style="fill: none; stroke: #6b7a8d; stroke-width: 0.9; stroke-linecap: round"/>
-    <path d="M 222.728336 57.659617 
-L 225.688336 59.139617 
-L 222.728336 60.619617 
+    <path d="M 222.728336 51.168817 
+L 225.688336 52.648817 
+L 222.728336 54.128817 
 z
 " style="fill: #6b7a8d; stroke: #6b7a8d; stroke-width: 0.9; stroke-linecap: round"/>
    </g>
    <g id="text_2">
     <!-- 3, then 1, then 0 -->
-    <g style="fill: #1d5c3a" transform="translate(239.945445 60.700508) scale(0.067 -0.067)">
+    <g style="fill: #1d5c3a" transform="translate(239.945445 54.209708) scale(0.067 -0.067)">
      <defs>
       <path id="STIXGeneral-Regular-33" d="M 390 3264 
 L 288 3290 
@@ -549,7 +549,7 @@ z
    </g>
    <g id="text_3">
     <!-- "the remedy is `lake add mathlib`" -->
-    <g style="fill: #b03a2e" transform="translate(11.703272 108.029211) scale(0.067 -0.067)">
+    <g style="fill: #b03a2e" transform="translate(11.703272 101.538411) scale(0.067 -0.067)">
      <defs>
       <path id="STIXGeneral-Regular-6d" d="M 4960 0 
 L 3565 0 
@@ -876,18 +876,18 @@ z
     </g>
    </g>
    <g id="patch_19">
-    <path d="M 192.429339 106.471461 
-Q 209.561952 106.471461 225.688336 106.471461 
+    <path d="M 192.429339 99.980661 
+Q 209.561952 99.980661 225.688336 99.980661 
 " style="fill: none; stroke: #6b7a8d; stroke-width: 0.9; stroke-linecap: round"/>
-    <path d="M 222.728336 104.991461 
-L 225.688336 106.471461 
-L 222.728336 107.951461 
+    <path d="M 222.728336 98.500661 
+L 225.688336 99.980661 
+L 222.728336 101.460661 
 z
 " style="fill: #6b7a8d; stroke: #6b7a8d; stroke-width: 0.9; stroke-linecap: round"/>
    </g>
    <g id="text_4">
     <!-- Wrong layer: not one failure was a missing lemma -->
-    <g style="fill: #1d5c3a" transform="translate(239.945445 108.029211) scale(0.067 -0.067)">
+    <g style="fill: #1d5c3a" transform="translate(239.945445 101.538411) scale(0.067 -0.067)">
      <defs>
       <path id="STIXGeneral-Regular-57" d="M 5965 4237 
 L 5965 4115 
@@ -1157,7 +1157,7 @@ z
    </g>
    <g id="text_5">
     <!-- "It does not compile" -->
-    <g style="fill: #b03a2e" transform="translate(11.703272 155.364196) scale(0.067 -0.067)">
+    <g style="fill: #b03a2e" transform="translate(11.703272 148.873396) scale(0.067 -0.067)">
      <defs>
       <path id="STIXGeneral-Regular-49" d="M 2016 0 
 L 115 0 
@@ -1264,18 +1264,18 @@ z
     </g>
    </g>
    <g id="patch_20">
-    <path d="M 192.429339 153.803305 
-Q 209.561952 153.803305 225.688336 153.803305 
+    <path d="M 192.429339 147.312505 
+Q 209.561952 147.312505 225.688336 147.312505 
 " style="fill: none; stroke: #6b7a8d; stroke-width: 0.9; stroke-linecap: round"/>
-    <path d="M 222.728336 152.323305 
-L 225.688336 153.803305 
-L 222.728336 155.283305 
+    <path d="M 222.728336 145.832505 
+L 225.688336 147.312505 
+L 222.728336 148.792505 
 z
 " style="fill: #6b7a8d; stroke: #6b7a8d; stroke-width: 0.9; stroke-linecap: round"/>
    </g>
    <g id="text_6">
     <!-- It compiles; three subagents and the scratch-file method fixed it -->
-    <g style="fill: #1d5c3a" transform="translate(239.945445 155.361055) scale(0.067 -0.067)">
+    <g style="fill: #1d5c3a" transform="translate(239.945445 148.870255) scale(0.067 -0.067)">
      <defs>
       <path id="STIXGeneral-Regular-3b" d="M 1116 2832 
 Q 1222 2726 1222 2579 
@@ -1423,7 +1423,7 @@ z
    </g>
    <g id="text_7">
     <!-- "the obstacle is one tactic's normalised form" -->
-    <g style="fill: #b03a2e" transform="translate(11.703272 202.69604) scale(0.067 -0.067)">
+    <g style="fill: #b03a2e" transform="translate(11.703272 196.20524) scale(0.067 -0.067)">
      <defs>
       <path id="STIXGeneral-Regular-27" d="M 646 2758 
 L 512 2758 
@@ -1485,18 +1485,18 @@ z
     </g>
    </g>
    <g id="patch_21">
-    <path d="M 192.429339 201.135149 
-Q 209.561952 201.135149 225.688336 201.135149 
+    <path d="M 192.429339 194.644349 
+Q 209.561952 194.644349 225.688336 194.644349 
 " style="fill: none; stroke: #6b7a8d; stroke-width: 0.9; stroke-linecap: round"/>
-    <path d="M 222.728336 199.655149 
-L 225.688336 201.135149 
-L 222.728336 202.615149 
+    <path d="M 222.728336 193.164349 
+L 225.688336 194.644349 
+L 222.728336 196.124349 
 z
 " style="fill: #6b7a8d; stroke: #6b7a8d; stroke-width: 0.9; stroke-linecap: round"/>
    </g>
    <g id="text_8">
     <!-- It was the guard's *shape*; naming it ended the guessing -->
-    <g style="fill: #1d5c3a" transform="translate(239.945445 202.692899) scale(0.067 -0.067)">
+    <g style="fill: #1d5c3a" transform="translate(239.945445 196.202099) scale(0.067 -0.067)">
      <defs>
       <path id="STIXGeneral-Regular-2a" d="M 1715 3014 
 L 1773 2976 
@@ -1617,7 +1617,7 @@ z
    </g>
    <g id="text_9">
     <!-- the §6 wording: “SilentError is non-decreasing in τ” -->
-    <g style="fill: #b03a2e" transform="translate(11.703272 250.028407) scale(0.067 -0.067)">
+    <g style="fill: #b03a2e" transform="translate(11.703272 243.537607) scale(0.067 -0.067)">
      <defs>
       <path id="STIXGeneral-Regular-a7" d="M 1280 3283 
 L 2157 2560 
@@ -1917,18 +1917,18 @@ z
     </g>
    </g>
    <g id="patch_22">
-    <path d="M 192.429339 248.466993 
-Q 209.561952 248.466993 225.688336 248.466993 
+    <path d="M 192.429339 241.976193 
+Q 209.561952 241.976193 225.688336 241.976193 
 " style="fill: none; stroke: #6b7a8d; stroke-width: 0.9; stroke-linecap: round"/>
-    <path d="M 222.728336 246.986993 
-L 225.688336 248.466993 
-L 222.728336 249.946993 
+    <path d="M 222.728336 240.496193 
+L 225.688336 241.976193 
+L 222.728336 243.456193 
 z
 " style="fill: #6b7a8d; stroke: #6b7a8d; stroke-width: 0.9; stroke-linecap: round"/>
    </g>
    <g id="text_10">
     <!-- the §6 wording "non-decreasing in τ" is **refuted by `decide`** -->
-    <g style="fill: #1d5c3a" transform="translate(239.945445 250.028407) scale(0.067 -0.067)">
+    <g style="fill: #1d5c3a" transform="translate(239.945445 243.537607) scale(0.067 -0.067)">
      <use xlink:href="#STIXGeneral-Regular-74"/>
      <use xlink:href="#STIXGeneral-Regular-68" transform="translate(27.799988 0)"/>
      <use xlink:href="#STIXGeneral-Regular-65" transform="translate(77.799973 0)"/>
@@ -1996,7 +1996,7 @@ z
    </g>
    <g id="text_11">
     <!-- protocol_said_nondecreasing_is_FALSE -->
-    <g style="fill: #1b6ca8" transform="translate(357.896167 271.527626) scale(0.054 -0.054)">
+    <g style="fill: #1b6ca8" transform="translate(357.896167 265.036826) scale(0.054 -0.054)">
      <defs>
       <path id="STIXGeneral-Italic-70" d="M 1376 2739 
 L 1190 2099 
@@ -2622,7 +2622,7 @@ z
    </g>
    <g id="text_12">
     <!-- the ε = 0.05 budget rule: assumed a usable gate at every N -->
-    <g style="fill: #b03a2e" transform="translate(11.703272 297.373337) scale(0.067 -0.067)">
+    <g style="fill: #b03a2e" transform="translate(11.703272 290.882537) scale(0.067 -0.067)">
      <defs>
       <path id="STIXGeneral-Regular-3b5" d="M 2515 928 
 L 2605 870 
@@ -2836,18 +2836,18 @@ z
     </g>
    </g>
    <g id="patch_23">
-    <path d="M 192.429339 295.798837 
-Q 209.561952 295.798837 225.688336 295.798837 
+    <path d="M 192.429339 289.308037 
+Q 209.561952 289.308037 225.688336 289.308037 
 " style="fill: none; stroke: #6b7a8d; stroke-width: 0.9; stroke-linecap: round"/>
-    <path d="M 222.728336 294.318837 
-L 225.688336 295.798837 
-L 222.728336 297.278837 
+    <path d="M 222.728336 287.828037 
+L 225.688336 289.308037 
+L 222.728336 290.788037 
 z
 " style="fill: #6b7a8d; stroke: #6b7a8d; stroke-width: 0.9; stroke-linecap: round"/>
    </g>
    <g id="text_13">
     <!-- protocol's ε=0.05 gives floor(0.05·N)=0 for N&lt;20; least admissible is a shut gate (Coverage=0); not -->
-    <g style="fill: #1d5c3a" transform="translate(239.945445 293.897607) scale(0.067 -0.067)">
+    <g style="fill: #1d5c3a" transform="translate(239.945445 287.406807) scale(0.067 -0.067)">
      <defs>
       <path id="STIXGeneral-Regular-28" d="M 1946 -1030 
 L 1869 -1133 
@@ -3043,7 +3043,7 @@ z
      <use xlink:href="#STIXGeneral-Regular-74" transform="translate(4002.09877 0)"/>
     </g>
     <!-- covered by degeneracy clause -->
-    <g style="fill: #1d5c3a" transform="translate(239.945445 300.849067) scale(0.067 -0.067)">
+    <g style="fill: #1d5c3a" transform="translate(239.945445 294.358267) scale(0.067 -0.067)">
      <use xlink:href="#STIXGeneral-Regular-63"/>
      <use xlink:href="#STIXGeneral-Regular-6f" transform="translate(44.399994 0)"/>
      <use xlink:href="#STIXGeneral-Regular-76" transform="translate(94.399979 0)"/>
@@ -3076,7 +3076,7 @@ z
    </g>
    <g id="text_14">
     <!-- budget_collapses_to_zero_on_small_dev -->
-    <g style="fill: #1b6ca8" transform="translate(357.899542 318.85947) scale(0.054 -0.054)">
+    <g style="fill: #1b6ca8" transform="translate(357.899542 312.36867) scale(0.054 -0.054)">
      <defs>
       <path id="STIXGeneral-Italic-62" d="M 1043 1856 
 L 1050 1856 
@@ -3292,7 +3292,7 @@ z
    </g>
    <g id="text_15">
     <!-- the accuracy reading: treated Acc as evidence about understanding -->
-    <g style="fill: #b03a2e" transform="translate(11.703272 344.688431) scale(0.067 -0.067)">
+    <g style="fill: #b03a2e" transform="translate(11.703272 338.197631) scale(0.067 -0.067)">
      <defs>
       <path id="STIXGeneral-Regular-41" d="M 4525 0 
 L 2893 0 
@@ -3393,18 +3393,18 @@ z
     </g>
    </g>
    <g id="patch_24">
-    <path d="M 192.429339 343.130681 
-Q 209.561952 343.130681 225.688336 343.130681 
+    <path d="M 192.429339 336.639881 
+Q 209.561952 336.639881 225.688336 336.639881 
 " style="fill: none; stroke: #6b7a8d; stroke-width: 0.9; stroke-linecap: round"/>
-    <path d="M 222.728336 341.650681 
-L 225.688336 343.130681 
-L 222.728336 344.610681 
+    <path d="M 222.728336 335.159881 
+L 225.688336 336.639881 
+L 222.728336 338.119881 
 z
 " style="fill: #6b7a8d; stroke: #6b7a8d; stroke-width: 0.9; stroke-linecap: round"/>
    </g>
    <g id="text_16">
     <!-- Acc falls while conditional accuracy rises on IDENTICAL answer-correctness: §6 eq (7) does not -->
-    <g style="fill: #1d5c3a" transform="translate(239.945445 341.216365) scale(0.067 -0.067)">
+    <g style="fill: #1d5c3a" transform="translate(239.945445 334.725565) scale(0.067 -0.067)">
      <defs>
       <path id="STIXGeneral-Regular-44" d="M 102 4237 
 L 1830 4237 
@@ -3622,7 +3622,7 @@ z
      <use xlink:href="#STIXGeneral-Regular-74" transform="translate(3890.598907 0)"/>
     </g>
     <!-- isolate understanding, and H1.1 alone is not diagnos… -->
-    <g style="fill: #1d5c3a" transform="translate(239.945445 348.167825) scale(0.067 -0.067)">
+    <g style="fill: #1d5c3a" transform="translate(239.945445 341.677025) scale(0.067 -0.067)">
      <defs>
       <path id="STIXGeneral-Regular-48" d="M 4499 0 
 L 2714 0 
@@ -3752,7 +3752,7 @@ z
    </g>
    <g id="text_17">
     <!-- acc_is_not_diagnostic_of_understanding -->
-    <g style="fill: #1b6ca8" transform="translate(357.610136 366.18836) scale(0.054 -0.054)">
+    <g style="fill: #1b6ca8" transform="translate(357.610136 359.69756) scale(0.054 -0.054)">
      <defs>
       <path id="STIXGeneral-Italic-66" d="M 262 2739 
 L 858 2739 
@@ -3832,7 +3832,7 @@ z
    </g>
    <g id="text_18">
     <!-- the hypothesis family: counted two readings of one quantity -->
-    <g style="fill: #b03a2e" transform="translate(11.703272 392.020275) scale(0.067 -0.067)">
+    <g style="fill: #b03a2e" transform="translate(11.703272 385.529475) scale(0.067 -0.067)">
      <use xlink:href="#STIXGeneral-Regular-74"/>
      <use xlink:href="#STIXGeneral-Regular-68" transform="translate(27.799988 0)"/>
      <use xlink:href="#STIXGeneral-Regular-65" transform="translate(77.799973 0)"/>
@@ -3895,18 +3895,18 @@ z
     </g>
    </g>
    <g id="patch_25">
-    <path d="M 192.429339 390.462525 
-Q 209.561952 390.462525 225.688336 390.462525 
+    <path d="M 192.429339 383.971725 
+Q 209.561952 383.971725 225.688336 383.971725 
 " style="fill: none; stroke: #6b7a8d; stroke-width: 0.9; stroke-linecap: round"/>
-    <path d="M 222.728336 388.982525 
-L 225.688336 390.462525 
-L 222.728336 391.942525 
+    <path d="M 222.728336 382.491725 
+L 225.688336 383.971725 
+L 222.728336 385.451725 
 z
 " style="fill: #6b7a8d; stroke: #6b7a8d; stroke-width: 0.9; stroke-linecap: round"/>
    </g>
    <g id="text_19">
     <!-- H1.3's "error among accepted" and the H1.1 co-report are ONE quantity — the confirmatory family -->
-    <g style="fill: #1d5c3a" transform="translate(239.945445 388.544545) scale(0.067 -0.067)">
+    <g style="fill: #1d5c3a" transform="translate(239.945445 382.053745) scale(0.067 -0.067)">
      <defs>
       <path id="STIXGeneral-Regular-4f" d="M 4403 2118 
 Q 4403 1133 3820 521 
@@ -4036,7 +4036,7 @@ z
      <use xlink:href="#STIXGeneral-Regular-79" transform="translate(3943.098816 0)"/>
     </g>
     <!-- has a declared dependency, not two independent chan… -->
-    <g style="fill: #1d5c3a" transform="translate(239.945445 395.496005) scale(0.067 -0.067)">
+    <g style="fill: #1d5c3a" transform="translate(239.945445 389.005205) scale(0.067 -0.067)">
      <use xlink:href="#STIXGeneral-Regular-68"/>
      <use xlink:href="#STIXGeneral-Regular-61" transform="translate(49.999985 0)"/>
      <use xlink:href="#STIXGeneral-Regular-73" transform="translate(94.399979 0)"/>
@@ -4093,7 +4093,7 @@ z
    </g>
    <g id="text_20">
     <!-- cond_error_complements_cond_accuracy -->
-    <g style="fill: #1b6ca8" transform="translate(355.812948 413.523157) scale(0.054 -0.054)">
+    <g style="fill: #1b6ca8" transform="translate(355.812948 407.032357) scale(0.054 -0.054)">
      <defs>
       <path id="STIXGeneral-Italic-79" d="M 1555 1190 
 L 1690 486 
@@ -4172,7 +4172,7 @@ z
    </g>
    <g id="text_21">
     <!-- what the record said -->
-    <g style="fill: #b03a2e" transform="translate(11.703272 33.107103) scale(0.074 -0.074)">
+    <g style="fill: #b03a2e" transform="translate(11.703272 26.616303) scale(0.074 -0.074)">
      <defs>
       <path id="STIXGeneral-Bold-77" d="M 4525 2950 
 L 4525 2797 
@@ -4523,7 +4523,7 @@ z
    </g>
    <g id="text_22">
     <!-- what was measured, or proved -->
-    <g style="fill: #1d5c3a" transform="translate(239.945445 33.107103) scale(0.074 -0.074)">
+    <g style="fill: #1d5c3a" transform="translate(239.945445 26.616303) scale(0.074 -0.074)">
      <defs>
       <path id="STIXGeneral-Bold-6d" d="M 5210 0 
 L 3693 0 
@@ -4787,7 +4787,7 @@ z
   </g>
   <g id="text_24">
    <!-- 4 claims from the record's own corrections table and 4 protocol statements refuted or qualified by a named theorem; the italic names are the kernel results that settled them. -->
-   <g style="fill: #6b7a8d" transform="translate(40.753531 442.8108) scale(0.062 -0.062)">
+   <g style="fill: #6b7a8d" transform="translate(40.753531 424.63656) scale(0.062 -0.062)">
     <defs>
      <path id="STIXGeneral-Regular-34" d="M 3027 1069 
 L 2368 1069 
@@ -4987,8 +4987,8 @@ z
   </g>
  </g>
  <defs>
-  <clipPath id="pf63d8859c0">
-   <rect x="3.6" y="35.473695" width="450.1818" height="392.854305"/>
+  <clipPath id="pa5d7eaead5">
+   <rect x="3.6" y="28.982895" width="450.1818" height="392.854305"/>
   </clipPath>
  </defs>
 </svg>

@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
   "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="506.736pt" height="183.483281pt" viewBox="0 0 506.736 183.483281" xmlns="http://www.w3.org/2000/svg" version="1.1">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="506.736pt" height="177.723281pt" viewBox="0 0 506.736 177.723281" xmlns="http://www.w3.org/2000/svg" version="1.1">
  <metadata>
   <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
    <cc:Work>
     <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
-    <dc:date>2026-10-06T23:51:09.644247</dc:date>
+    <dc:date>2026-10-07T15:39:15.230616</dc:date>
     <dc:format>image/svg+xml</dc:format>
     <dc:creator>
      <cc:Agent>
@@ -21,8 +21,8 @@
  </defs>
  <g id="figure_1">
   <g id="patch_1">
-   <path d="M 0 183.483281 
-L 506.736 183.483281 
+   <path d="M 0 177.723281 
+L 506.736 177.723281 
 L 506.736 0 
 L 0 0 
 z
@@ -35,7 +35,7 @@ L 238.675765 60.864675
 L 238.675765 12.373155 
 L 3.6 12.373155 
 z
-" clip-path="url(#p0fc54f9f9a)" style="fill: #1b6ca8; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
+" clip-path="url(#p247e7c2c5b)" style="fill: #1b6ca8; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
    </g>
    <g id="patch_3">
     <path d="M 238.675765 60.864675 
@@ -43,7 +43,7 @@ L 326.829176 60.864675
 L 326.829176 12.373155 
 L 238.675765 12.373155 
 z
-" clip-path="url(#p0fc54f9f9a)" style="fill: #2e8b57; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
+" clip-path="url(#p247e7c2c5b)" style="fill: #2e8b57; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
    </g>
    <g id="patch_4">
     <path d="M 326.829176 60.864675 
@@ -51,7 +51,7 @@ L 414.982588 60.864675
 L 414.982588 12.373155 
 L 326.829176 12.373155 
 z
-" clip-path="url(#p0fc54f9f9a)" style="fill: #c45e11; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
+" clip-path="url(#p247e7c2c5b)" style="fill: #c45e11; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
    </g>
    <g id="patch_5">
     <path d="M 414.982588 60.864675 
@@ -59,7 +59,7 @@ L 503.136 60.864675
 L 503.136 12.373155 
 L 414.982588 12.373155 
 z
-" clip-path="url(#p0fc54f9f9a)" style="fill: #6b7a8d; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
+" clip-path="url(#p247e7c2c5b)" style="fill: #6b7a8d; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
    </g>
    <g id="patch_6">
     <path d="M 6.09768 82.837395 
@@ -67,7 +67,7 @@ L 17.087472 82.837395
 L 17.087472 69.199155 
 L 6.09768 69.199155 
 z
-" clip-path="url(#p0fc54f9f9a)" style="fill: #1b6ca8"/>
+" clip-path="url(#p247e7c2c5b)" style="fill: #1b6ca8"/>
    </g>
    <g id="patch_7">
     <path d="M 6.09768 108.598515 
@@ -75,7 +75,7 @@ L 17.087472 108.598515
 L 17.087472 94.960275 
 L 6.09768 94.960275 
 z
-" clip-path="url(#p0fc54f9f9a)" style="fill: #2e8b57"/>
+" clip-path="url(#p247e7c2c5b)" style="fill: #2e8b57"/>
    </g>
    <g id="patch_8">
     <path d="M 6.09768 134.359635 
@@ -83,7 +83,7 @@ L 17.087472 134.359635
 L 17.087472 120.721395 
 L 6.09768 120.721395 
 z
-" clip-path="url(#p0fc54f9f9a)" style="fill: #c45e11"/>
+" clip-path="url(#p247e7c2c5b)" style="fill: #c45e11"/>
    </g>
    <g id="patch_9">
     <path d="M 6.09768 160.120755 
@@ -91,7 +91,7 @@ L 17.087472 160.120755
 L 17.087472 146.482515 
 L 6.09768 146.482515 
 z
-" clip-path="url(#p0fc54f9f9a)" style="fill: #6b7a8d"/>
+" clip-path="url(#p247e7c2c5b)" style="fill: #6b7a8d"/>
    </g>
    <g id="text_1">
     <!-- PROVED -->
@@ -2012,7 +2012,7 @@ z
   </g>
   <g id="text_14">
    <!-- 34 claims in the protocol's provenance table, counted from the table itself. A claim whose status cannot be read from the table is not counted here, so the bar is a lower bound rather than a summary. -->
-   <g style="fill: #6b7a8d" transform="translate(8.809969 178.531875) scale(0.062 -0.062)">
+   <g style="fill: #6b7a8d" transform="translate(8.809969 172.771875) scale(0.062 -0.062)">
     <defs>
      <path id="STIXGeneral-Regular-33" d="M 390 3264 
 L 288 3290 
@@ -2384,7 +2384,7 @@ z
   </g>
  </g>
  <defs>
-  <clipPath id="p0fc54f9f9a">
+  <clipPath id="p247e7c2c5b">
    <rect x="3.6" y="15.403875" width="499.536" height="151.536"/>
   </clipPath>
  </defs>

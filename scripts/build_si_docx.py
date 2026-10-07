@@ -141,8 +141,15 @@ def add_math_paragraph(doc, text: str, mml: dict, stats: dict, style: str | None
         mml_str = mml["map"].get(tex)
         omml_xml = O.mml_to_omml(mml_str) if mml_str else None
         if omml_xml:
-            run = p.add_run()
-            run._r.append(parse_xml(omml_xml))
+            # `m:oMath` IS A SIBLING OF `w:r`, NOT A CHILD OF IT. `CT_R`'s content model - the run - has no
+            # member for it, so appending the equation to a run produces a document that is well formed XML,
+            # passes every count-based check, and which WORD REFUSES TO OPEN. Word emits inline mathematics as
+            # a direct child of the paragraph, between runs, and so must this.
+            #
+            # What made this survivable for a whole session is that the artefact checks were counting elements
+            # rather than validating structure: 154 `m:oMath` objects, none fallen back, seven images - all
+            # true, in a file that cannot be read.
+            p._p.append(parse_xml(omml_xml))
             stats["omml"] += 1
         else:
             p.add_run(tex)
