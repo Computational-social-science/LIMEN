@@ -35,6 +35,33 @@ LEAN_STATUS = ROOT / "docs" / "LEAN_FORMALIZATION_STATUS.md"
 ANCHOR = ROOT / "config" / "anchor.json"
 OUT = ROOT / "docs" / "SUPPLEMENTARY_INFORMATION.md"
 
+# ─────────────────────────────────────────────────────────────────────────────────────────────
+# THIS SCRIPT IS NOT THE PRODUCER OF `docs/SUPPLEMENTARY_INFORMATION.md`, AND IT REFUSES TO WRITE IT.
+#
+# `check_output_collisions.py` declares the sole producer of that path to be
+# `assemble_supplementary_information.py`, and it is right: this generator is the OLDER one, from the period
+# when the SI was a by-product of code holding its prose inline. It still writes the same path, and running it
+# by mistake OVERWRITES the assembled document - which is exactly what happened: a 624-line, 85 KB SI became a
+# 255-line, 23 KB file, and the difference was caught by the document check and the paper-numbers check rather
+# than by anything in this file.
+#
+# DECLARING AN OWNER DOES NOT STOP A NON-OWNER FROM RUNNING. A registry that is consulted by a guard is not a
+# permission system, and the guard runs in a suite rather than at every invocation. So the refusal is here, in
+# the script that would do the damage: a check the offender performs on itself cannot be skipped by forgetting.
+#
+# To build the SI: `python scripts/assemble_supplementary_information.py` (from `docs/si/*.md`), then
+# `python scripts/build_si_documents.py` to render it.
+# ─────────────────────────────────────────────────────────────────────────────────────────────
+import sys as _sys
+_refuse = "--i-am-the-legacy-generator-and-accept-overwriting-the-assembled-si" in _sys.argv
+if pathlib.Path(_sys.argv[0]).name == "build_supplementary_information.py" and not _refuse:
+    print("REFUSED: this is the legacy SI generator, and `docs/SUPPLEMENTARY_INFORMATION.md` belongs to")
+    print("         `assemble_supplementary_information.py` (see check_output_collisions.py).")
+    print("         Run that instead, then `build_si_documents.py` to render.")
+    print("         Override with --i-am-the-legacy-generator-and-accept-overwriting-the-assembled-si")
+    raise SystemExit(3)
+
+
 
 def md_table(rows: list[list[str]], header: list[str]) -> str:
     out = ["| " + " | ".join(header) + " |", "|" + "|".join(["---"] * len(header)) + "|"]
