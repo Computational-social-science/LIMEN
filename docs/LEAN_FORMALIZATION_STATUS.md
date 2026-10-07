@@ -89,7 +89,7 @@ several meet the budget. The mathematics needed to close that is small and entir
 | `mem_maxC` | every observation's confidence is `<= maxC xs` |
 | `top_admissible` | `maxC xs + 1` is always admissible |
 | `admissible_exists` | hence an admissible threshold always exists |
-| `coverage_decreases_along_admissibles` | coverage decreases as tau increases |
+| `coverage_decreases` | coverage decreases as tau increases |
 | `empty_dev_is_degenerate` | an empty dev set admits everything and covers nothing |
 | `silent_iff_acceptedAndWrong` | `SilentError@tau` and the accepted-error rate are **one** quantity |
 | `least_admissible_maximises_coverage` | the §B1 tie-break rule, proved in full (§B1 below) |
