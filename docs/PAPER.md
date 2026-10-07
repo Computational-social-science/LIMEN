@@ -70,6 +70,20 @@ The propositions that follow from these definitions are machine-checked. The **p
 
 **The gate is the only stage this study manipulates or fits.** The instrument is frozen and the channel is what is being disturbed; $g_\tau$ is where evidence becomes action, and its threshold is what the title means by a *limen*.
 
+### The theoretical frame
+
+The system model above is not a picture drawn for this paper. It is a channel with a decision rule on its output, and four classical results say what can and cannot follow from that — including the one that dissolves the apparent paradox this study reports.
+
+**A channel has a capacity, and that is what "structural" means** (Shannon 1948). The intention-to-text map $E$ is a transmitter; the model's reading of $x$ is a receiver; and Shannon's noisy-channel coding theorem says that below the channel's capacity $C$ reliable transmission is achievable *by coding*, while above it no scheme achieves it. The word **structural** in this paper's title is that theorem, not a figure of speech: the ecologically relevant regime has $\lambda > 0$ because the encoder is a human and a human's channel is noisy by construction, and no threshold, prompt or confidence rule removes the noise. What a design controls is therefore **not whether the channel is noisy but where it operates** — which is the question this study asks.
+
+**The gate selects an operating point on a rate–distortion curve** (Shannon 1959). Rate–distortion theory gives, for a source and a fidelity criterion, the least rate $R(D)$ at which the source can be represented with distortion no greater than $D$. Read on this loop, **coverage is the rate** — the share of decisions the system commits to — and **the conditional error among committed decisions is the distortion**. The gate's threshold $\tau$ picks a point on that curve, and the curve itself is a property of the channel and the instrument together. Two consequences follow, and both are visible in the results. The manipulable quantity is the **operating point**, not the curve; and because noise moves the curve, **the same threshold buys a different point at each $\lambda$**. "Accuracy fell and coverage fell" is a statement about which point was occupied. "The gate became more discriminative" is a statement about the curve.
+
+**Criterion and sensitivity are different quantities, and reading them as one is a known error** (Green & Swets 1966). Signal detection theory separates the observer's **criterion** — where it places its decision boundary — from its **sensitivity** — how far apart the underlying distributions are — and relates them on a single receiver-operating-characteristic curve. Whole-sample accuracy and coverage read the criterion: both are functions of where the threshold sits in confidence units. The between-class AUC reads sensitivity, and is the ordinal form of $d'$, ordinal because the confidence scale is specified only up to an increasing map. **The apparent paradox — accuracy collapsing while discrimination sharpens — is therefore not a paradox.** It is a criterion shift with sensitivity improving, and it was classified as a contradiction only while the two families of measure were read as one kind of thing.
+
+**The loop is a feedback control system, and the disturbance is the human's own** (Wiener 1948). Cybernetics treats a regulator as holding a variable against disturbance, with the disturbance exogenous and normal rather than exceptional. Here the gate is the control law, the human is a second controller who re-prompts, and the disturbance is produced by **the controller's own input channel** — not an attack, not a failure of either party, but a property of the pairing. This is why the failure class matters: an incorrect action and a **refusal to act** are different failures with different remedies in a control system, and the result below says which one this disturbance produces.
+
+**What the frame does not claim.** A thermodynamic reading of this loop is available in the literature — Landauer's principle bounds the energy of erasure — and it is **not invoked here**, because this study measures no energy and no erasure cost. A thermal framing would be a metaphor wearing a citation. The same discipline applies to a common taxonomy that places a model's confabulation inside "channel noise": in the partition this study reports, that is the **model-side** class, and placing it in the channel would collapse the distinction the result rests on. **The channel's noise is what the human's channel produces; what the instrument does with it is a separate stage of the chain.**
+
 ### The premise under test
 
 The worry that motivated this study is stated often and is easy to state precisely: noise corrupts the input in a way that corrupts the *judgement* while leaving the *reported confidence* intact, so a gate calibrated on clean text waves through errors it was built to catch. Call this the **silent-error premise**. If it holds, every deployed gate is a liability under noise and the remedy is recalibration — a stricter threshold, a different confidence estimator, or abstention that does not use confidence.
@@ -152,11 +166,11 @@ The within-arm AUC is not monotone in noise: it rises to 0.7601 at $\lambda_{\ma
 
 ### A partition of failure classes: what is silent, and what is loud
 
-Read in signal-detection terms the three results stop looking paradoxical. Accuracy and coverage are **criterion-dependent** — they read a fixed threshold in confidence units — while the AUC is the ordinal form of $d'$ and is **criterion-free**. Noise shifts the operating point downward, through a downward shift of the whole confidence distribution, without damaging separability; separability in fact improves, because the trials the channel corrupts lose confidence faster than the trials it does not. **The apparent contradiction — accuracy collapsing while discrimination sharpens — dissolves once the quantities are classified by whether they depend on the criterion.**
+The frame set out in the Introduction is what makes this legible, and it is a classical one: **signal detection theory** separates the observer's criterion from its sensitivity, and reading the two as one kind of measure is a known error (Green & Swets 1966). Accuracy and coverage are **criterion-dependent** — they read a fixed threshold in confidence units — while the AUC is the ordinal form of $d'$ and is **criterion-free**. Noise shifts the operating point downward, through a downward shift of the whole confidence distribution, without damaging separability; separability in fact improves, because the trials the channel corrupts lose confidence faster than the trials it does not. **The apparent contradiction — accuracy collapsing while discrimination sharpens — dissolves once the quantities are classified by whether they depend on the criterion.**
 
 The practical consequence is that a field reporting only accuracy under corruption will read a criterion shift as a sensitivity loss, and will attempt to repair discrimination when discrimination was never the problem.
 
-The result is therefore a **partition** of failure classes, and stating it cleanly is the contribution this study is most likely to be used for.
+The result is therefore a **partition** of failure classes, and stating it cleanly is the contribution this study is most likely to be used for. Seen against the rate-distortion reading of the same section, the partition says where a disturbance enters the curve: **channel-side noise moves the curve and shifts the operating point; model-side noise leaves the curve's position intact and moves the point in the other direction, toward committed error.**
 
 The axis is **where the unreliability originates**, because that is what decides whether the system's own confidence can see it.
 
@@ -187,7 +201,7 @@ It is also **falsifiable, and the falsification is the next experiment.** The me
 
 Three things are specific to this period, and they are why the result matters now rather than as a robustness footnote.
 
-**The typed channel is the interface, and it composes.** Prompt text, dictation transcripts, OCR'd documents, retrieved passages and an agent's own prior turns are all noisy channels, and in an agent runtime they compose across hops. A single corrupted request at the head of a chain is consumed by every subsequent commit-or-decline decision.
+**The disturbance is the pairing's, and cybernetics already named the failure class** (Wiener 1948): a regulator that declines to act has failed differently from one that acts wrongly, and only the second is a correctness failure. **The typed channel is the interface, and it composes.** Prompt text, dictation transcripts, OCR'd documents, retrieved passages and an agent's own prior turns are all noisy channels, and in an agent runtime they compose across hops. A single corrupted request at the head of a chain is consumed by every subsequent commit-or-decline decision.
 
 **Abstention became a product feature.** It is benchmarked and trained for on the explicit grounds that knowing when not to answer is as critical as answering correctly (Kirichenko et al. 2025, arXiv:2506.09038). That changes what a coverage number is. In a benchmark, a 23.7-point fall is a statistic; in deployment it is a **volume of work returned to humans** — every deferral becomes a regeneration, a reprompt, a manual answer or an abandoned session. **The finding is therefore about human time, not about committed correctness.**
 
@@ -333,6 +347,7 @@ The conditional error among admitted trials, $\mathrm{CondErr}@\tau$, is **exclu
 
 Chhikara, P. (2025). Mind the confidence gap: Overconfidence, calibration, and distractor effects in large language models. *arXiv preprint* arXiv:2502.11028.
 
+Green, D. M., & Swets, J. A. (1966). *Signal Detection Theory and Psychophysics*. John Wiley & Sons.
 Hua, A., Tang, K., Gu, C., Gu, J., Wong, E., & Qin, Y. (2025). Flaw or artifact? Rethinking prompt sensitivity in evaluating LLMs. *arXiv preprint* arXiv:2509.01790.
 
 Kirichenko, P., Ibrahim, M., Chaudhuri, K., & Bell, S. J. (2025). AbstentionBench: Reasoning LLMs fail on unanswerable questions. *arXiv preprint* arXiv:2506.09038.
@@ -345,8 +360,11 @@ Phillips, E., Gustafsson, F. K., Wu, S., Thakur, A., & Clifton, D. A. (2026). En
 
 Rayner, K., White, S. J., Johnson, R. L., & Liversedge, S. P. (2006). Raeding wrods with jubmled lettres: There is a cost. *Psychological Science*, 17(3), 192–193.
 
+Shannon, C. E. (1948). A mathematical theory of communication. *Bell System Technical Journal*, 27(3), 379-423. doi:10.1002/j.1538-7305.1948.tb01338.x.
+Shannon, C. E. (1959). Coding theorems for a discrete source with a fidelity criterion. *IRE National Convention Record*, 7. Reprinted in *Claude E. Shannon: Collected Papers*, ch. 21, IEEE, 2009. doi:10.1109/9780470544242.ch21.
 Soni, H. (2026). ToolFailBench: Diagnosing tool-use failures in LLM agents. *arXiv preprint* arXiv:2607.04686.
 
+Wiener, N. (1948). *Cybernetics, or Control and Communication in the Animal and the Machine*. John Wiley & Sons.
 Wu, W. (2026). When errors become narratives: A longitudinal taxonomy of silent failures in a production LLM agent runtime. *arXiv preprint* arXiv:2606.14589.
 
 Xie, Q., Liang, Z., Wu, J., Chen, Y., Wang, W., Ma, W., Ming, Z., Yang, H., & Wu, K. (2026). Beyond prompt engineering: A systematic analysis of prompt lexical sensitivity and its impacts on quality. *arXiv preprint* arXiv:2608.20349.
