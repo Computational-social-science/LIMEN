@@ -100,7 +100,7 @@ Two mature literatures bear on the question and neither covers it.
 
 **Selective prediction models the policy and assumes clean input.** This literature is equally developed and has correctly insisted that uncertainty methods be evaluated inside the wider abstention policy and against the risk–coverage trade-off, because a method that looks good in isolation can abstain unreliably at low target error rates (Phillips et al. 2026, arXiv:2603.21172, evaluated on TriviaQA, BioASQ and MedicalQA — all clean). The human-factors frame for what a changing deferral rate does to an operator exists and is well established — the misuse / disuse / abuse taxonomy, and the analysis of trust as appropriate reliance (Parasuraman & Riley 1997; Lee & See 2004) — and it has not been brought to bear on corrupted input.
 
-**The intersection is empty.** (The gap is set out at length, with the two literatures named, in the Supplementary information, §T.2.) No study measures how the *input channel* moves a *selective-prediction policy's* risk–coverage frontier, and none prices the result as a human-facing cost. That intersection is where deployment lives: a human types, a model answers or defers, and a human receives whichever happened.
+**The intersection is empty, and saying what it would predict is what makes the question worth posing.** Joined, the two literatures imply a claim neither makes alone: if typographic noise degrades performance in the aggregate, and if a deployed system decides from its own confidence, then **corrupted input should push errors past the gate that was calibrated on clean text** — the *silent-error premise*. It is a consequence of the join rather than of either half, it is testable on a frozen instrument, and **it has not been tested.** (The surveys behind this reading, with both literatures enumerated, are in the Supplementary information, §T.2.) No study measures how the *input channel* moves a *selective-prediction policy's* risk–coverage frontier, and none prices the result as a human-facing cost. That intersection is where deployment lives: a human types, a model answers or defers, and a human receives whichever happened.
 
 ### This study
 
@@ -120,11 +120,11 @@ The programme is staged, and **no single phase tests both $\lambda$ and $s$.** T
 
 ## Results
 
-### The manipulation, and that it was the intended one
+### The disturbance was the one that was pre-registered
 
 *Full detail of the bank, the generator and the calibration is in the Supplementary information, §C.* The confirmatory run used the 652-item test split of a 932-item typed-decision bank, at seven noise levels and three frozen seeds: **13,692 trial records, zero failures**. The two operating levels were fixed before the run by a non-saturating recoverability index — the posterior mass a noisy channel places on the intended word, with the channel being the generator's own QWERTY model — anchored on a published human result: the interior-scrambled condition of Rayner et al. (2006), in which readers recovered the intended word 0.4480 of the time. The milder level, $\lambda_{\mathrm{lo}} = 0.05$, is the smallest grid point clearing that anchor; $\lambda_{\mathrm{mid}} = 0.18$ is the largest. No human rater was used and no threshold was chosen for convenience.
 
-### Accuracy and coverage fall, as expected
+### The operating point moves down: the system answers less, not more wrongly
 
 Accuracy falls from 0.8926 to 0.7720 at $\lambda_{\mathrm{mid}}$, a loss of **12.1 points** (exact McNemar on paired discordant pairs, $b = 71$, $c = 307$; two-sided $p = 4.4 \times 10^{-36}$). Coverage at the fixed threshold $\tau = 0.90$ falls from 0.4479 to 0.2111, **23.7 points**, and the H1.3 estimand — the mean paired fall across units — is **0.2904** with 95 % CI [0.2679, 0.3154] ($p = 5.0 \times 10^{-5}$). These two coverage figures are different quantities and are reported separately: one is a level at a threshold in a condition, the other an average within-unit change.
 
@@ -136,7 +136,7 @@ At the highest level examined, $\lambda = 0.25$, coverage is 0.1585 against 0.44
 
 **Figure 2 | Where the errors go.** **(a)** Every error at each noise level, decomposed into the share the gate rejects and the share it admits. The rejected share rises from 61.4 % to 93.5 % — the gate catches most of what noise breaks. **(b)** The two error measures diverge: the conditional error among admitted trials is flat (0.092 to 0.070), while the all-trial silent error *falls* (0.041 to 0.015). A fixed-threshold silent-error rate cannot rise under a manipulation that deflates confidence, which is why the original hypothesis was refuted and replaced.
 
-### The gate becomes more discriminative, not less
+### The gate becomes sharper, not weaker — the direction the premise denies
 
 This is the finding that decides between the two diagnoses. The within-arm AUC between correct and incorrect trials — a criterion-free, ordinal measure — **rises** from **0.6014** at $\lambda = 0$ to **0.7601** at $\lambda_{\mathrm{mid}}$, a contrast of **+0.1587** over 1,956 units ($p = 2.0 \times 10^{-4}$). The share of errors arriving below the gate rises from **61.4 %** to **93.5 %**.
 
@@ -152,11 +152,11 @@ All three pre-registered hypotheses were rejected under Holm correction with **n
 
 **Figure 3 | Why the gate separates better under noise.** Median confidence for correct and incorrect trials, clean (left) and at $\lambda_{\mathrm{mid}}$ (right). Correct-trial confidence falls 0.888 to 0.783; incorrect-trial confidence falls more than twice as far, 0.784 to 0.549. The separation widens from +0.103 to +0.234.
 
-### One hypothesis was replaced before the run, and the record says so
+### The original hypothesis was refuted before the run, and its replacement then replicated
 
 The original H1.2 asserted that the fixed-threshold silent error *rises* with noise. A pre-registered pre-run on the development split refuted it in four independent formulations, and the reason is structural: noise deflates confidence, so fewer trials clear the gate at all, and the admitted-and-wrong share falls with them. **A fixed-threshold silent-error rate cannot rise under a confidence-deflating manipulation.** The replacement hypothesis — that the gate's discriminability rises — was chosen **before any confirmatory data existed**, and it is reported here having replicated. The pre-run's quantitative predictions held: predicted contrast +0.1201, observed +0.1587; predicted accuracy contrast 12.1 points; zero confidence contamination, confirmed as 0 of 13,692 rows.
 
-### The non-monotonicity is reported rather than smoothed
+### Sensitivity rises and then falls: the curve, not the point
 
 The within-arm AUC is not monotone in noise: it rises to 0.7601 at $\lambda_{\mathrm{mid}}$ and then **falls** to 0.7483 at $\lambda = 0.25$. Discrimination improves with corruption up to a point and then begins to degrade. The pre-registered contrast is unaffected, since it compares $\lambda_{\mathrm{mid}}$ against zero as fixed in advance, but the impression of a monotone trend would be wrong. **This is also a prediction, not an anomaly** — at high enough corruption the surface form stops carrying the information that lets confidence track it, and the mechanism proposed below says so. **Stated in the frame's terms: what rises and then falls is the *curve* — sensitivity — while the movement of the criterion is monotone in the disturbance. A study reporting only its endpoint at $\lambda_{\mathrm{mid}}$ would have described this curve with one measurement and could not have seen it at all.**
 
@@ -164,7 +164,7 @@ The within-arm AUC is not monotone in noise: it rises to 0.7601 at $\lambda_{\ma
 
 ## Discussion
 
-*This section states the contribution first and then its reach and its limits. It **partitions failure classes** into what is silent and what is loud; reads that partition **in the age of large language models**; sets out what the **machine-checked core** contributes as science rather than as quality control; describes the **human** the study measures only half of; states its **limitations** and its explicit **non-goals**; sets out what this phase **contributes and defers**; and closes on what would **falsify** the account. Throughout, `§` marks a section of the *Supplementary information*.*
+*This section states the contribution first and then its reach and its limits. It **partitions failure classes** into what is silent and what is loud; reads that partition **in the age of large language models**; sets out what the **machine-checked core** contributes as science rather than as quality control; describes the **human** the study measures only half of; states its **limitations** together with the **prediction that would falsify the mechanism** and its explicit **non-goals**; sets out what this phase **contributes and defers**; and closes on what would **falsify** the account. Throughout, `§` marks a section of the *Supplementary information*.*
 
 ### A partition of failure classes: what is silent, and what is loud
 
@@ -231,7 +231,7 @@ The formal development accompanying this study was built as a feedback instrumen
 
 The disturbance modelled here is the human's; the deferral it produces is the human's to absorb. **This study measures the model-side half of the interface under a human-derived disturbance, and it prices the deferral as a human cost without observing a human pay it.** In the classical automation literature the same failure mode — disuse — meant an operator switching an aid off; in a conversational system it is quieter and continuous, as the human edits the prompt, regenerates, or gives up, absorbing the channel's noise as their own labour. Which of those a given deployment produces, and whether the trust calibration that §3 predicts is the benign direction actually holds, is a question for a study with humans in it. **That is the measurement most worth making next.**
 
-### Limitations
+### Limitations, and the prediction that would falsify the mechanism
 
 **One instrument, one language.** The study is English-only on one frozen non-autoregressive encoder. The direction *is* the finding, so it must be re-established per instrument rather than assumed.
 
