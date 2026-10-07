@@ -20,7 +20,7 @@ WHAT IS CHECKED, AND WHY EACH ONE EARNS ITS PLACE
     C1  every display equation carries a `.eq-num`, and the count equals the anchor's `$$` count
     C2  every `.eq-num` is sequential from (1) - mis-numbering is silent otherwise
     C3  no U+FFFD and no Private Use Area codepoint survives into the output (defect 5)
-    C4  the KaTeX assets are present and referenced, so an offline page cannot silently lose its maths
+    C4  the renderer is present and referenced AND has its fonts, so an offline page cannot silently lose its maths
     C5  the stamp carries the anchor's CURRENT sha256, so a stale page is visible rather than plausible
     C6  the four callout variants and the sidebar TOC are present when the anchor has the content for
         them - a component that silently stopped matching is invisible in the page
@@ -84,13 +84,27 @@ def c3_no_sentinels_or_replacement(msgs, html, raw):
 
 
 @check
-def c4_katex_assets(msgs, html, raw):
-    for rel in ("katex/katex.min.js", "katex/katex.min.css", "katex/auto-render.min.js"):
+def c4_math_assets(msgs, html, raw):
+    """The renderer is present, referenced, AND has the fonts it cannot render without.
+
+    This check required the KaTeX assets until the repository moved to one renderer. It failed the moment the
+    KaTeX references were removed, which is what a guard is for: it held the old design and demanded that the
+    check be brought in line rather than letting the change pass unexamined. The font assertion is new, and it
+    is the one that matters most - a renderer without its fonts does not fail, it SUBSTITUTES, and the page
+    still looks like a page while every variable loses its italic.
+    """
+    for rel in ("mathjax/tex-mml-chtml.js",):
         if ('"' + rel) not in html and ("'" + rel) not in html:
             msgs.append(f"C4 the page does not reference {rel}")
             continue
         if not (PAGE.parent / rel).is_file():
             msgs.append(f"C4 {rel} is referenced but missing from disk - the page would lose its maths")
+    fd = PAGE.parent / "mathjax" / "output" / "chtml" / "fonts" / "woff-v2"
+    n = len([f for f in fd.glob("*") if f.suffix in (".woff", ".woff2")]) if fd.is_dir() else 0
+    if n < 15:
+        msgs.append(f"C4 the MathJax font directory holds {n} file(s) in mathjax/output/chtml/fonts/woff-v2, "
+                    f"fewer than the 15 it ships - the renderer would substitute silently and the variables "
+                    f"would not be italic")
 
 
 @check

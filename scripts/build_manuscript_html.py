@@ -59,6 +59,13 @@ import sys
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 ANCHOR = ROOT / "protocol/NHB_Orthographic_Channels_JEV_Research_Protocol.md"
 ANCHOR_JSON = ROOT / "config/anchor.json"
+# ONE MATH PIPELINE FOR THE REPOSITORY. The SI renders with MathJax and this script used KaTeX, so two
+# renderers, two asset trees and two failure modes were maintained side by side. The configuration now comes
+# from the other script rather than being restated - the only form of "unified" that cannot drift apart.
+import sys as _sys
+_sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+import si_render as _sr  # noqa: E402
+
 OUT_DIR = ROOT / "viz"
 NL = chr(10)
 BS = chr(92)
@@ -273,7 +280,6 @@ HTML = """<!doctype html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{title}</title>
-<link rel="stylesheet" href="katex/katex.min.css">
 <style>{css}</style>
 </head>
 <body class="no-js">
@@ -292,34 +298,7 @@ HTML = """<!doctype html>
   </article>
 </div>
 <script>document.body.classList.remove('no-js');</script>
-<script src="katex/katex.min.js"></script>
-<script src="katex/auto-render.min.js"></script>
-<script>
-(function () {{
-  if (typeof renderMathInElement !== 'function') {{
-    document.querySelector('.stamp').insertAdjacentHTML('afterend',
-      '<p class="stamp" style="border-color:#c00">Math did not load: KaTeX is missing from ' +
-      'viz/katex/. The raw TeX below is still readable.</p>');
-    return;
-  }}
-  renderMathInElement(document.body, {{
-    delimiters: [
-      {{left: '$$', right: '$$', display: true}},
-      {{left: '$',  right: '$',  display: false}}
-    ],
-    throwOnError: false, strict: false,
-    trust: function (ctx) {{ return ctx.command !== '\\href'; }}
-  }});
-  var s = document.querySelector('.stamp');
-  var e = document.createElement('p');
-  e.className = 'stamp';
-  e.textContent = 'math rendered: ' + document.querySelectorAll('.katex').length +
-    ' expression(s), ' + document.querySelectorAll('.katex-display').length +
-    ' display block(s), ' + document.querySelectorAll('.eq-block').length +
-    ' numbered equation(s), ' + document.querySelectorAll('.eq-note').length + ' note(s)';
-  s.parentNode.insertBefore(e, s.nextSibling);
-}})();
-</script>
+{mathjax_scripts}
 <script>
 // Scroll-spy for the sidebar. On purpose the only behaviour: it marks the visible section. The TOC
 // is hidden in print, so nothing here can affect the submitted PDF.
@@ -793,9 +772,8 @@ def main() -> int:
                          "silently vanished.")
     html = grid + html
 
-    katex_src = find_katex()
     OUT_DIR.mkdir(parents=True, exist_ok=True)
-    katex_ver = copy_katex(katex_src, OUT_DIR / "katex")
+    mathjax_ver = _sr.copy_mathjax(OUT_DIR / "mathjax")
     (OUT_DIR / "protocol.md").write_text(raw, encoding="utf-8", newline=NL)
 
     stamp = ("GENERATED FILE — DO NOT EDIT.  Source of truth: protocol/" + ANCHOR.name
@@ -822,7 +800,7 @@ def main() -> int:
     banner_meta = ("v" + ver + " · " + str(len(r.display)) + " equations · "
                    + str(len(toc)) + " sections · " + datetime.date.today().isoformat())
 
-    out_html = HTML.format(title=title, subtitle=subtitle, banner_meta=banner_meta,
+    out_html = HTML.format(mathjax_scripts=_sr.MATHJAX_SCRIPTS, title=title, subtitle=subtitle, banner_meta=banner_meta,
                            toc=toc_links, head=head, body=html,
                            css=CSS % {"root": root, "dark": dark})
     out = ROOT / args.out
@@ -833,7 +811,7 @@ def main() -> int:
     print("  anchor    : protocol/" + ANCHOR.name + "  v" + ver
           + "  " + str(len(raw.splitlines())) + " lines")
     print("  sha256    : " + digest)
-    print("  katex     : " + katex_ver + "  (copied locally; no network request)")
+    print("  mathjax   : " + mathjax_ver + "  (copied locally; no network request)")
     print("  equations : " + str(len(r.display)) + " numbered, "
           + str(len(r.notes)) + " with a note, " + str(len(r.purposes)) + " with a purpose line")
     print("  prose cites equation(s): " + (", ".join(str(c) for c in cited) or "none"))
