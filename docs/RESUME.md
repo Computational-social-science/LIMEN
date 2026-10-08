@@ -1,7 +1,7 @@
 # Resume here
 
 **Updated 2026-10-08.** Working tree clean, everything pushed.
-`local = origin` at `0a2e662`. 41 guards green. Nothing depends on an unlogged conversation.
+`local = origin` at `36594ae`. 45 guards green. Nothing depends on an unlogged conversation.
 
 > **Transport note, kept because it recurs and the diagnosis is the useful part.** Pushes failed eleven times
 > across this session — `Connection was reset`, then `Failed to connect to github.com port 443` — while
@@ -69,12 +69,21 @@ first time. Two guards were added, each from a defect made in this session.
    scripts "cannot necessarily be extended to other writing systems" and that the comparison "should be [made]
    within the same study". **The review is now queryable as an agent**:
    `universal-reading-mechanisms-paper` (installed, verified, recorded in `docs/PAPER_AGENT_LIBRARY.md` §6).
-   **What remains:** the programme owner directed that each channel's noise process must rest on an
-   authoritative research dataset, and with the coverage fixed the datasets must be selected on that basis
-   (candidates identified and partly verified: JWTD for Japanese; SIGHAN 2013/2014/2015, Liu et al. 2011
-   `10.1145/1967293.1967297`, CSCD-NS/IME `arXiv:2211.08788`, Readin `arXiv:2302.07324` and LEMON
-   `arXiv:2305.17721` for Chinese; Birkbeck and the GitHub Typo Corpus for English). **Then** the amendment is
-   filed. Evidence so far is in `docs/PHASE_II_S1_CHANNEL_EVIDENCE.md`.
+   **DATASETS ARE NOW SETTLED (2026-10-08), BY THE OBSERVED-BEHAVIOUR RULE.** The programme owner directed that
+   where a real human behavioural dataset exists it is the one to use, and made that a global rule; it is
+   recorded as rule 17 of `global-research-project-rules`, and the project-side declaration is
+   `config/datasets.json` with `scripts/check_dataset_provenance.py` reading it (a declaration nothing reads is
+   a comment). Each channel's primary is `observed`: **English — Birkbeck Spelling Error Corpus** (real
+   native-speaker errors; scope caveat recorded that it includes children and very poor spellers, so the
+   distribution is usable but the rate must not be quoted as typical); **Japanese — JWTD** (real Wikipedia
+   revision history; the paper states it is publicly available); **Chinese — CSCD-NS** (40,000 sentences from
+   REAL Sina Weibo posts by official media accounts, MIT, ACL 2024, pp. 146–159). **The rejected alternative
+   matters as much as the choice:** `LCSTS-IME-2M` sits in the *same repository* as CSCD-NS, is ~50× larger and
+   far tidier, and is constructed by **simulating** pinyin IME input — it would measure the simulator's
+   assumptions, which is the quantity under study. **Remaining:** confirm the three datasets actually download
+   (Birkbeck and JWTD by URL; CSCD-NS from the drive link the repository documents, its data not being in the
+   repo because of the host's LFS quota), **then** file the amendment. Evidence so far is in
+   `docs/PHASE_II_S1_CHANNEL_EVIDENCE.md`.
 4. ~~**The superseded SI generator is a live hazard, contained but not removed.**~~ **It no longer exists in
    this repository: deleted 2026-10-08.** It was the generator whose inline prose made the SI read like an
    engineering log — the reason the assembler exists — and it still defaulted to the assembler's own output
@@ -112,7 +121,7 @@ PY="C:/Users/Administrator/AppData/Local/hermes/tools/python-3.14.7+202****0901-
 "$PY" -B scripts/build_si_documents.py                   # HTML + DOCX + PDF
 
 # the gate
-"$PY" -B scripts/run_all_guards.py                       # 43 guards, each with a negative control
+"$PY" -B scripts/run_all_guards.py                       # 45 guards, each with a negative control
 ```
 
 **The superseded generator that used to sit beside the assembler was deleted on 2026-10-08.** It defaulted to

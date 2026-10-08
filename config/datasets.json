@@ -1,0 +1,96 @@
+{
+  "_why": [
+    "Every dataset this programme may draw on is declared here with an explicit provenance, because the",
+    "programme's global rules require OBSERVED human behaviour as the primary evidence for a claim about",
+    "human behaviour, and a declaration that nothing reads is a comment rather than a rule.",
+    "scripts/check_dataset_provenance.py reads this file: it requires that each channel's `primary` entry be",
+    "`observed`, that every `rejected` entry carry a reason, and it fails if any of that stops being true.",
+    "`simulated` entries are permitted here and are permitted in the pipeline for warm-up, power analysis and",
+    "bring-up; they may not be a channel's primary evidence and may not appear in a success criterion."
+  ],
+  "schema_version": 1,
+  "updated": "2026-10-08",
+  "provenance_values": {
+    "observed": "produced by people doing the thing, and collected rather than generated",
+    "simulated": "produced by a program modelling what people do"
+  },
+  "channels": {
+    "english": {
+      "primary": {
+        "name": "Birkbeck Spelling Error Corpus",
+        "compiler": "Roger Mitton",
+        "provenance": "observed",
+        "what_it_is": "36,133 misspellings of 6,136 words, amalgamated from the native-speaker section (British or American writers) of several error collections",
+        "availability": "distributed by the compiler; also recorded at the Oxford Text Archive, handle 20.500.12024/0643",
+        "scope_caveat": "the compiler states it includes the efforts of young children and of extremely poor spellers working beyond their ability, so the error rate is not that of an adult typist - the distribution is usable, the rate must not be quoted as typical"
+      },
+      "additional_observed": [
+        {
+          "name": "Mitton 'wikipedia' misspelling list",
+          "provenance": "observed",
+          "what_it_is": "2,455 misspellings of 1,922 words collected from real Wikipedia editors' edits"
+        }
+      ],
+      "rejected": [
+        {
+          "name": "character-level typo generators (e.g. keyboard-adjacency models)",
+          "provenance": "simulated",
+          "reason": "generates the substitution class of implausible surfaces, which is the class Phase I already contrasts against; a second channel built from it would illustrate the mechanism rather than test it"
+        }
+      ],
+      "category": "alphabetic",
+      "qualifier": "spaced; phonology is recoverable from the form"
+    },
+    "japanese": {
+      "primary": {
+        "name": "JWTD - Japanese Typo Dataset from Wikipedia's Revision History",
+        "paper": "Tanaka, Murawaki, Kawahara & Kurohashi, ACL 2020 SRW, DOI 10.18653/v1/2020.acl-srw.31",
+        "provenance": "observed",
+        "what_it_is": "over half a million typo-correction pairs extracted from real Wikipedia revision history; the paper states that 'the way people inputting kanji logographs results in typos with drastically different surface forms from correct ones'",
+        "availability": "publicly available from the authors' Kyoto University page (the paper states JWTD is publicly available, and calls it the first freely available Japanese typo dataset)",
+        "why_it_fits": "the kanji-input error is a CONVERSION channel - the committed form is a different but ordinary word sharing the reading - which is the signature the Phase II pre-registration predicts will be quiet"
+      },
+      "rejected": [
+        {
+          "name": "synthetic kana/kanji substitution generators",
+          "provenance": "simulated",
+          "reason": "would restate the assumption that IME conversion produces wrong-but-ordinary words, which is the hypothesis, instead of measuring whether it does"
+        }
+      ],
+      "category": "syllabic",
+      "qualifier": "kana is syllabic; the kanji inside it is logographic - Japanese is the mixed case, and the review classifies it under syllabic (Fig. 1a)"
+    },
+    "chinese": {
+      "primary": {
+        "name": "CSCD-NS",
+        "paper": "Hu, Meng & Zhou, ACL 2024 long paper 10, pp. 146-159 (arXiv:2211.08788)",
+        "provenance": "observed",
+        "what_it_is": "40,000 annotated sentences taken from REAL posts by official media accounts on Sina Weibo; split 30,000 / 5,000 / 5,000; format 'label \\t origin \\t corrected'",
+        "licence": "MIT",
+        "availability": "github.com/nghuyong/cscd-ns (the repository was later renamed nghuyong/cscd-ime and both names resolve to it); the data folder is hosted on an external drive link because of the host's LFS quota",
+        "scope_caveat": "the posts are from official media accounts, so the register is formal written Chinese rather than personal messaging - recorded, because a channel's error ecology is a property of its register as well as its script"
+      },
+      "rejected": [
+        {
+          "name": "LCSTS-IME-2M",
+          "provenance": "simulated",
+          "reason": "2,000,000+ samples, ~50x larger than CSCD-NS, uniformly formatted and trivially loadable - and constructed by SIMULATING pinyin IME input. Preferring it would measure the simulator's assumptions about IME errors, which is the quantity under study. It sits in the SAME repository as CSCD-NS, which is why the distinction is recorded here: the convenient dataset and the observed one look like two entries in one folder."
+        },
+        {
+          "name": "SIGHAN CSC bake-off sets (2013/2014/2015)",
+          "provenance": "observed",
+          "availability_not_established": true,
+          "reason": "not rejected on provenance but not selected: the shared-task sets are smaller and the source-distribution documentation is thinner than CSCD-NS; retained as a cross-check candidate rather than the primary"
+        }
+      ],
+      "category": "logographic",
+      "qualifier": "unspaced; a character maps to a morpheme and the form does not indicate phonology"
+    }
+  },
+  "category_values": {
+    "alphabetic": "graphemes map to phonemes",
+    "syllabic": "graphemes map to syllables",
+    "logographic": "graphemes map to morphemes",
+    "_note": "The three categories are the review's and they are exhaustive. A language whose script mixes categories carries the category the taxonomy assigns it and states the mixture in `qualifier`, rather than a fourth value being invented for it - an enum widened for one entry admits the next."
+  }
+}
