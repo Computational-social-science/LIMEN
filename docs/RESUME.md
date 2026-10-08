@@ -1,7 +1,7 @@
 # Resume here
 
-**Updated at shutdown, 2026-10-07.** Working tree clean, everything pushed.
-`local = origin` at `b361fea`. 41 guards green. Nothing depends on an unlogged conversation.
+**Updated 2026-10-08.** Working tree clean, everything pushed.
+`local = origin` at `0a2e662`. 41 guards green. Nothing depends on an unlogged conversation.
 
 > **Transport note, kept because it recurs and the diagnosis is the useful part.** Pushes failed eleven times
 > across this session — `Connection was reset`, then `Failed to connect to github.com port 443` — while
@@ -22,12 +22,14 @@
 | main repository | `Computational-social-science/LIMEN` (public) — local `E:/2026-AI4S/autoresearch`, branch `main` |
 | formalization | `Computational-social-science/LIMEN-lean` (private) — local `E:/2026-AI4S/lean-nhb`, branch `main` |
 | authority for the object | `CURRENT_OBJECT.md` |
-| protocol | `protocol/NHB_Orthographic_Channels_JEV_Research_Protocol.md` (v1.21, sha256 pinned) |
+| protocol | `protocol/NHB_Orthographic_Channels_JEV_Research_Protocol.md` (**v1.24**, sha256 pinned) |
 | pre-run evidence | `docs/PHASE_I_DEV_PRERUN_RESULTS.md` (§1–§10) |
 | Lean status | `docs/LEAN_FORMALIZATION_STATUS.md` |
 | the HTML deliverable | `viz/manuscript.html` |
+| the reference audit | `docs/REFERENCE_AUDIT.md` |
+| Phase II, drafted | `docs/PHASE_II_PREREGISTRATION.md` |
 
-Both repositories were verified against the GitHub API at shutdown: LIMEN `main` = `34236cc`, LIMEN-lean
+Both repositories were verified at the start of this session: LIMEN `main` = `0a2e662`, LIMEN-lean
 `main` = `fea32ab`. Working trees clean.
 
 ## STATE: Phase I complete; the manuscript is written and the bibliography is audited
@@ -45,13 +47,12 @@ first time. Two guards were added, each from a defect made in this session.
 
 ## Do these first
 
-1. **The protocol's attribution is imprecise and HELD OPEN deliberately.** Lines **60** and **949** of
-   `protocol/NHB_Orthographic_Channels_JEV_Research_Protocol.md` call the Rayner anchor value "the published
-   Rayner (2006) anchor". The accurate statement — and the one the corrected prose now uses everywhere else —
-   is that **Rayner published the *manipulation* and this project measured *the number* under its own
-   recoverability index**. Correcting the protocol changes its sha256, which is a **re-pin with a version
-   bump** — a governance act, not a prose fix. `check_attributed_numbers.py` excludes the protocol for this
-   reason and prints the exclusion. **Decide: re-pin, or record the wording as accepted.**
+1. ~~**The protocol's attribution is imprecise and HELD OPEN deliberately.**~~ **DONE 2026-10-07 — protocol
+   v1.24.** The protocol now states that the anchor is a **published human *manipulation* measured under this
+   index**, not a number quoted from the paper, and `config/anchor.json` was re-pinned through
+   `repin_anchor.py` (sha256 `81dcbad6…` → `724fb00f…`). The same session found and fixed the copy at
+   `viz/protocol.md`, which had drifted out of sync with the protocol. **Closed; recorded here rather than
+   deleted, because the entry stayed open long enough to send a session after work already finished.**
 2. **`System One` / `JEV-Ecosystem` are still undecided** in the protocol's vocabulary. Same decision shape as
    (1): renaming means a version bump and a re-pin, with `PHASE_I_PREREGISTRATION.md` and `CURRENT_OBJECT.md`
    kept coherent.
@@ -141,21 +142,21 @@ HF_ENDPOINT=https://hf-mirror.com "$PY" -B measurement/run_phase1.py \
 `measurement/out/` is gitignored; `measurement/out/confirm_test.jsonl` is already built (652 items, test
 split only, static — no model was run to create it).
 
-## Open items, in the order they matter
+## Open items carried from the 2026-10-05 shutdown (three of four now closed)
 
-1. **Run the confirmatory analysis above**, then fill the Stage 1 manuscript skeleton with real numbers.
-   Section 16 of the protocol already carries the pre-run evidence; the abstract and key-results boxes need
-   the confirmatory data and nothing else does.
+**Kept as a list rather than deleted, because two of its entries are the evidence that this file goes stale
+when its items are executed and it is not updated.** Item 1 and item 3 were done and the entries stayed open.
+
+1. ~~**Run the confirmatory analysis**, then fill the Stage 1 manuscript skeleton with real numbers.~~
+   **DONE 2026-10-05** — the run produced 13,692 records, and the manuscript's numbers were filled from it.
 2. **Decide the visibility of `LIMEN-lean`.** It was created **private** because it was created on
    instruction to protect against loss, and publishing a new repository is not a decision to take on
-   someone else's behalf. One click in repository settings flips it.
-3. **A guard for the recurring ordering mistake.** Three times in one session two steps were run in the
-   wrong order and produced output that looked fine — a commit that included its own transient message file,
-   a guard suite run in the same shell invocation as the commit it was supposed to gate, and a derived table
-   refreshed between a version bump and its re-pin. A check asserting no transient files are staged and that
-   the version field agrees with the content digest would cover the whole class.
+   someone else's behalf. One click in repository settings flips it. **STILL OPEN.**
+3. ~~**A guard for the recurring ordering mistake.**~~ **DONE** — `scripts/check_step_order.py` asserts that
+   no transient artefact is staged and that the protocol's version, digest and byte count agree, and it runs
+   in the suite with a negative control.
 4. **`R6/`** is untracked and holds the user's reference materials. Classified as toolbox by the tool
-   boundary rule; left alone deliberately.
+   boundary rule; left alone deliberately. **STILL OPEN (deliberately).**
 
 ## Two habits worth keeping, both learned the hard way today
 
