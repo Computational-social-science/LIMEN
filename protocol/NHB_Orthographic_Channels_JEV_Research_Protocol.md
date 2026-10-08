@@ -3,7 +3,7 @@
 ## A Pre-Registered, Phased Protocol Integrating System One / JEV-Ecosystem Tooling
 
 **Document type:** Detailed research protocol (*Nature Human Behaviour*–oriented framing)  
-**Version:** 1.23 (English typo first, then cross-script / multilingual expansion)  
+**Version:** 1.24 (English typo first, then cross-script / multilingual expansion)  
 **Status:** Stage 1 pre-registration complete; Stage 2 confirmatory run complete  
 **Compute envelope:** Single consumer GPU admissible; zero paid API on confirmatory path  
 **Primary interface class:** Typed decision models (System One):  
@@ -57,7 +57,7 @@ the formalization repository.*
 > | **1.13** | **Estimator named**: §4.5 now specifies **exact paired permutation tests** instead of "paired / mixed models with item random intercepts", and enforces the DIRECTION of each hypothesis (a significant movement in the opposite direction is barred from the family rather than counted as support). **O3 closed without a human pass**: six automatic consistency checks with a shuffled-label control, reliability carried by **split-half stability**; **inter-rater kappa is rejected** as the reliability instrument. The seal is no longer blocked by O3 | **names the estimator that runs; removes the last human dependency** |
 > | **1.12** | §4.5 gains **two pre-registered covariates** (`realised_edit_rate`, **lexical routability margin**) and registers the routability × noise **interaction as EXPLORATORY**, so the confirmatory family stays at three tests. The item bank is also corrected: 69 states opened with a lowercase letter, **all of them in three urgency templates**, which would have made a domain-by-formatting confound — found by the new mechanical template audit and fixed semantics-preservingly, with **0 packed stimuli affected** | **adds covariates; adds NO confirmatory hypothesis** |
 > | **1.11** | **O3 scoped by measurement**: the plausibility pass shrinks from 932 items to **47**, one per template, justified by `η²(margin \| template) = 0.9142`; lexical routability is measured (median +0.111, 8.5 % above 0.30) and pre-registered as a **covariate**, with the routability × noise interaction registered as **exploratory** so the confirmatory family stays at three tests | **scopes a pre-registration item; adds no confirmatory hypothesis** |
-> | **1.10** | **O1 CLOSED**: §12 item 2 moves to `FIXED` — λ_lo = 0.05, λ_mid = 0.18 selected by the noisy-channel recoverability index against the published Rayner (2006) anchor (0.4480), separation 6.07 pooled seed SD. The seal is now blocked by O3 alone | **closes a pre-registration item; the criterion is stated on a measured axis and is fully determined by it** |
+> | **1.10** | **O1 CLOSED**: §12 item 2 moves to `FIXED` — λ_lo = 0.05, λ_mid = 0.18 selected by the noisy-channel recoverability index against the Rayner (2006) anchor value (0.4480) — the anchor is a **published human manipulation measured under this index**, not a number quoted from the paper, separation 6.07 pooled seed SD. The seal is now blocked by O3 alone | **closes a pre-registration item; the criterion is stated on a measured axis and is fully determined by it** |
 > | **1.9** | **§15 Machine-checked core** added — every theorem with its statement and the claim it bears on, generated from the Lean source. The theorem-to-claim map must be a **bijection** or the generator fails, so no proof can be undeclared and none can be cited that does not exist; the section also states HOW the check is trusted (kernel query, negative control, freshness guard) | **additive; presentation of proofs already relied on** |
 > | **1.8** | §4.4a's bootstrap CI on `Δτ*` **withdrawn** — the estimator is a least-crossing
 functional and the bootstrap has no general coverage for it, and at the boundary the clean arm
@@ -946,7 +946,7 @@ amendments.** A protocol item may not be marked satisfied by a downstream docume
 | # | Protocol requirement | State | Where decided |
 |---|---|---|---|
 | 1 | English only; no script factor in confirmatory tests | **FIXED** | `docs/PHASE_I_PREREGISTRATION.md` §12 |
-| 2 | Typo classes and λ rates fixed | **FIXED — λ_lo = 0.05, λ_mid = 0.18** | O1, **Amendment 3 v3**: the rates are selected by the noisy-channel recoverability index (`scripts/o1_recoverability.py`) against a **published human anchor** — Rayner et al. (2006), interior-scrambled, `mean_r = 0.4480`. `λ_lo` is the smallest grid point clearing the anchor, `λ_mid` the largest; separation 0.0309 = **6.07 pooled seed SD**. Determined by the rule, with no discretion. |
+| 2 | Typo classes and λ rates fixed | **FIXED — λ_lo = 0.05, λ_mid = 0.18** | O1, **Amendment 3 v3**: the rates are selected by the noisy-channel recoverability index (`scripts/o1_recoverability.py`) against the Rayner et al. (2006) interior-scrambled **manipulation**, whose `mean_r = 0.4480` is **this index's reading of that condition, measured under this index rather than quoted from the paper**. `λ_lo` is the smallest grid point clearing the anchor, `λ_mid` the largest; separation 0.0309 = **6.07 pooled seed SD**. Determined by the rule, with no discretion. |
 | 3 | Generator seed policy | **FIXED** | pure function of `(item_id, λ, seed)`; `seeds ∈ {0,1,2}` |
 | 4 | Model ID + commit + SHA256 | **FIXED** | v1.2 CHANGE 2 — `55cf4c4e…`, `config/pin_laya.json`, verified by execution |
 | 5 | **$Q_0$ frozen** | **FIXED — as `intent` alone** | **v1.2 CHANGE 1.** v1.1 said `(intent, ok, escalate)`; `ok` and `escalate` are **dropped**, since the `noul` primitive measured at chance (`docs/C2_NOUL_VALIDITY.md`). This checklist entry is therefore **amended by the protocol itself**, not by a downstream note. |
@@ -1032,7 +1032,8 @@ Generated by `scripts/build_provenance_table.py` from the kernel-verified set of
 | Field | Value |
 |-------|--------|
 | **Role** | **THE PROGRAMME'S GLOBAL ANCHOR.** All other documents are subordinate; see the note at the head of §0 |
-| Version | **1.23** |
+| Version | **1.24** |
+| v1.24 changes | **Attribution corrected**: the Rayner (2006) anchor is described as a published human **manipulation measured under this index**, not as a number quoted from that paper. The value is unchanged; the provenance statement was imprecise, and it is load-bearing because the anchor selects `lambda_lo` and `lambda_mid`. Found by auditing the manuscript's citations against fetched records (`docs/REFERENCE_AUDIT.md`). |
 | v1.23 changes | Abstract added (Stage 2), status updated |
 | v1.22 changes | §17 confirmatory results added; all three hypotheses confirmed, no direction violations |
 | v1.21 changes | static window-comparability check added as a guard and recorded in §16; no erratum required |
@@ -1247,4 +1248,4 @@ narrative record in `docs/PHASE_I_CONFIRMATORY_RESULTS.md`, and the scripts that
 
 ---
 
-*End of protocol v1.23*
+*End of protocol v1.24*
