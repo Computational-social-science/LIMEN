@@ -35,11 +35,28 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 
-# scienceplots registers its styles as an IMPORT SIDE EFFECT; without this the style name is unknown. The
-# existing Stage 2 figure script does the same, and a missing import here failed exactly as loudly.
-import scienceplots  # noqa: F401
+# scienceplots registers its styles as an IMPORT SIDE EFFECT; without this the style name is unknown.
+#
+# THIS WAS THE LAST UNGUARDED IMPORT OF THE FOUR, AND IT IS THE ONE THAT CRASHED. The three sibling scripts
+# (build_stage2_figures, build_lean_figures2, build_partition_figure) were given a guarded import when the
+# class was first understood, and this file was missed - while its own comment said "the existing Stage 2
+# figure script does the same", which had been true when it was written and had stopped being true.
+# qc_stage2_figures imports this module, so its unguarded import took the whole layout audit down with it and
+# blocked two commits tonight. A class fixed at three of four sites is a class not fixed.
+try:
+    import scienceplots  # noqa: F401 - registers the styles on import
+except ImportError:  # pragma: no cover - the figures must be produced even so
+    # A STYLE PACKAGE IS NOT A DEPENDENCY OF THE RESULT. The figures are produced either way and the audit
+    # measures geometry, which the style does not change; what must NOT happen is a SILENT substitution, so
+    # the fallback says so, loudly, every run.
+    scienceplots = None
+    print("  [WARN] scienceplots is NOT installed - falling back to the default matplotlib style. "
+          "The figures are still correct; they are not in the journal house style.")
 
-plt.style.use(["science", "nature", "no-latex"])
+# OFFICIAL JOURNAL STYLES, then project overrides. Skipped when the package is absent rather than crashing:
+# the geometry the audit measures does not depend on the style sheet.
+if scienceplots is not None:
+    plt.style.use(["science", "nature", "no-latex"])
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 OUT = ROOT / "viz" / "figures"
