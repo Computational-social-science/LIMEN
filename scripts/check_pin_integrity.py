@@ -71,8 +71,15 @@ def resolve_snapshot(cfg: dict) -> pathlib.Path:
             / "snapshots" / cfg["revision"])
 
 
-def check(verbose: bool = False) -> tuple[list[str], dict]:
-    cfg_path = REPO_ROOT / "config" / "pin_laya.json"
+def check(verbose: bool = False, cfg_path: pathlib.Path | None = None) -> tuple[list[str], dict]:
+    """Verify one pin against the snapshot on disk.
+
+    `cfg_path` defaults to the root pin. IT IS A PARAMETER NOW BECAUSE THERE IS MORE THAN ONE PIN: the
+    multilingual artifact is a separate file set at the same revision, so it carries its own pin, and a pin
+    file that nothing verifies is a record rather than a check. The called-for behaviour when a second pin
+    was added was to widen the check, not to leave half the pinned bytes unchecked.
+    """
+    cfg_path = cfg_path or (REPO_ROOT / "config" / "pin_laya.json")
     cfg = json.loads(cfg_path.read_text(encoding="utf-8"))
 
     findings: list[str] = []
@@ -168,6 +175,15 @@ def negative_test() -> int:
     return 0 if ok else 1
 
 
+def pin_files() -> list[pathlib.Path]:
+    """Every pin in config/, discovered rather than listed.
+
+    Discovery matters: a hand-maintained list of pins is the same defect as a hand-maintained list of anything
+    - add a pin and forget the list, and the new pin is unchecked while the check still reports success.
+    """
+    return sorted((REPO_ROOT / "config").glob("pin_laya*.json"))
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=(__doc__ or "pin integrity").split("\n")[0])
     ap.add_argument("--verbose", action="store_true", help="print each file as it is verified")
@@ -178,17 +194,36 @@ def main() -> int:
     if args.negative_test:
         return negative_test()
 
-    findings, stats = check(verbose=args.verbose)
-    cfg = json.loads((REPO_ROOT / "config" / "pin_laya.json").read_text(encoding="utf-8"))
+    all_findings: list[str] = []
+    total_compared = total_expected = total_bytes = 0
 
-    if findings:
-        print(f"PIN FAIL: {len(findings)} finding(s) over {stats['expected']} pinned file(s)")
-        for f in findings:
+    for cfg_path in pin_files():
+        cfg = json.loads(cfg_path.read_text(encoding="utf-8"))
+        label = cfg_path.name
+        variant = cfg.get("variant", "?")
+        # The variant string is long by design - it carries the reasoning. Print its first line only.
+        variant_short = variant.split(".")[0].split("\n")[0][:58]
+        findings, stats = check(verbose=args.verbose, cfg_path=cfg_path)
+        total_compared += stats["compared"]
+        total_expected += stats["expected"]
+        total_bytes += stats.get("total_bytes", 0)
+        if findings:
+            all_findings.extend(f"[{label}] " + f for f in findings)
+            print(f"  [FAIL] {label:<32} {variant_short}")
+        else:
+            print(f"  [OK]   {label:<32} {variant_short}  "
+                  f"{stats['compared']}/{stats['expected']} files, "
+                  f"{sum(f['bytes'] for f in cfg['files']):,} B")
+
+    if all_findings:
+        print(f"\nPIN FAIL: {len(all_findings)} finding(s) over {total_expected} pinned file(s) "
+              f"across {len(pin_files())} pin(s)")
+        for f in all_findings:
             print("  " + f)
         return 1
 
-    print(f"OK: instrument {cfg['instrument']} @ {cfg['revision'][:12]}… verified against disk — "
-          f"{stats['compared']}/{stats['expected']} files, {stats['total_bytes']:,} B, all digests match")
+    print(f"\nOK: {len(pin_files())} pin(s) verified against disk — "
+          f"{total_compared}/{total_expected} files, {total_bytes:,} B, all digests match")
     return 0
 
 

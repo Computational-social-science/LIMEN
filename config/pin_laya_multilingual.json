@@ -1,0 +1,57 @@
+{
+  "instrument": "convaiinnovations/laya",
+  "variant": "multilingual (non-Latin). SEPARATE ARTIFACT at the SAME commit as the pinned root: the multilingual/ subtree carries its own weights, its own tokenizer (34 MB against the root's 3.6 MB) and its own encoder config. Because config/pin_laya.json fixes PER-FILE SHA-256, adopting it is a RE-PIN of the instrument, not a subdirectory of the existing pin.",
+  "revision": "55cf4c4ebb4ebe31b2550e8bdf3bd21b99753851",
+  "revision_kind": "immutable commit sha, shared with the root pin; the artifact identity is the file set below",
+  "relation_to_root_pin": "supersedes variant 'root (English)' for any run that must read a non-Latin script",
+  "endpoint": "https://hf-mirror.com",
+  "local_snapshot": "C:/Users/Administrator/.cache/huggingface/hub/models--convaiinnovations--laya/snapshots/55cf4c4ebb4ebe31b2550e8bdf3bd21b99753851",
+  "file_count": 5,
+  "total_bytes": 678201636,
+  "files": [
+    {
+      "path": "multilingual/encoder/config.json",
+      "bytes": 1938,
+      "sha256": "83f6916d13ef0f556ac461f28308dc2bffa7ebeadee8ec9e2db5812020ea5bb4",
+      "sha256_source": "computed locally over the downloaded bytes"
+    },
+    {
+      "path": "multilingual/model.safetensors",
+      "bytes": 643835514,
+      "sha256": "9d628fd971b700382ac6f65920a86f149777b2e748e0c955fb3b19695aa8f204",
+      "sha256_source": "LFS oid, Hub tree API at the pinned revision"
+    },
+    {
+      "path": "multilingual/rl_agent_config.json",
+      "bytes": 472,
+      "sha256": "25061739243b617ad88d1219ba6f8a9c86c5881ca28df024fa2d9b3b2fcc30c6",
+      "sha256_source": "computed locally over the downloaded bytes"
+    },
+    {
+      "path": "multilingual/tokenizer/tokenizer.json",
+      "bytes": 34363188,
+      "sha256": "609d8f4c067cd3950f88594c5a802616cea245823836ef5848ee4fc40aab5b6f",
+      "sha256_source": "LFS oid, Hub tree API at the pinned revision"
+    },
+    {
+      "path": "multilingual/tokenizer/tokenizer_config.json",
+      "bytes": 524,
+      "sha256": "6c6b2d8e3c84ce0e671c129cd6b374b235d6f9863042a5836358d00a89bbb5a1",
+      "sha256_source": "computed locally over the downloaded bytes"
+    }
+  ],
+  "verified": {
+    "status": "PASS - smoke run performed 2026-10-08",
+    "content": "every file's sha256 was recomputed from the local bytes and matches the Hub's LFS oid at the pinned revision (model.safetensors and tokenizer/tokenizer.json against the Hub oids; the three small non-LFS files against hashes computed over the downloaded bytes)",
+    "runner": "measurement/smoke_predict_multilingual.py",
+    "result": "PASS - resolved revision 55cf4c4ebb4ebe31b2550e8bdf3bd21b99753851, subfolder 'multilingual', router selected for both non-Latin scripts. Routed 7 items: 3 English (control) and 4 non-Latin (2 Japanese, 2 Chinese). The router's own reason for the non-Latin items: 'non-Latin script (kana, 100% of letters); the English checkpoint cannot read it' and the same for han.",
+    "observations_recorded_not_claimed_as_results": [
+      "The four non-Latin items' intent argmax matched the author's gloss (billing, access, billing, access) with c between 0.9430 and 0.9986.",
+      "The three English control items under this artifact gave c of 0.9589, 0.6756 and 0.3346 - LOWER than the non-Latin items. The two item sets are NOT difficulty-matched and the glosses are not gold labels, so this is NOT a cross-channel result; it is exactly the kind of difference the English sensitivity run required by SS5.5/SS12 exists to separate from the channel effect."
+    ],
+    "log": "docs/SMOKE_MULTILINGUAL_2026-10-08.log",
+    "scope": "Proves the artifact runs from the pin and reads the non-Latin scripts through the frozen wire format (Phase II SS5 criterion (iii)). Does NOT prove any Phase II result: no noise, no gold labels, no accuracy."
+  },
+  "drift_note": "The revision is the same commit the root pin uses, so no drift was possible at download time. What distinguishes the two pins is not the commit but the FILE SET: a pin that fixes the root's five files does not describe these five.",
+  "local_snapshot_note": "The SNAPSHOT ROOT, matching the root pin's convention: entries in `files` are relative to it, so they carry the `multilingual/` prefix. An earlier version of this file pointed it at the `multilingual/` subdirectory while the paths also carried the prefix, which resolved to `multilingual/multilingual/...`. check_pin_integrity.py caught it as five MISSING FILE findings on the first run after the check was widened to cover this pin - which is the argument for widening a check rather than recording a pin."
+}

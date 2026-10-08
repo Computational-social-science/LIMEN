@@ -1,0 +1,108 @@
+==============================================================================
+Pinned-Laya smoke test -- multilingual artifact, English / Japanese / Chinese
+==============================================================================
+python       : 3.14.7
+laya         : 0.3.26
+torch        : 2.13.0+cu126  cuda_available=True
+gpu          : NVIDIA GeForce RTX 4070
+hf endpoint  : https://hf-mirror.com
+revision pin : 55cf4c4ebb4ebe31b2550e8bdf3bd21b99753851
+variant      : multilingual
+
+Fetching 5 files:   0%|          | 0/5 [00:00<?, ?it/s]Fetching 5 files: 100%|██████████| 5/5 [00:00<00:00, 1760.54it/s]
+The `reference_compile` argument is deprecated and will be removed in `transformers v5.2.0`Use `torch.compile()` directly on the model instead.
+checkpoint   : repo='convaiinnovations/laya' subfolder='multilingual'
+resolved rev : 55cf4c4ebb4ebe31b2550e8bdf3bd21b99753851
+device used  : cuda
+
+Fetching 5 files:   0%|          | 0/5 [00:00<?, ?it/s]Fetching 5 files: 100%|██████████| 5/5 [00:00<00:00, 1794.74it/s]
+C:\Users\Administrator\AppData\Roaming\Python\Python314\site-packages\laya\router.py:688: RuntimeWarning: laya: this checkpoint ships invalid temperatures or values outside [0.5, 5]; using choice:11+=0.10058280825614929 -> 0.5. Treat confidence from the affected entries as uncalibrated.
+  return Agent(repo, **kwargs)
+------------------------------------------------------------------------------
+item smoke_en_01   script=English
+  routing : model='english'  repo='convaiinnovations/laya'
+            reason='English Latin text'
+  reading : {'intent': 'billing', 'ok': 'true', 'escalate': 'false'}   (author's gloss, NOT a gold label)
+  state   : Hi, I was charged twice for my subscription this month. Both charges are on the same card and the second one was not authorized. Please refund the duplicate charge.
+  intent   [choice] p = billing=0.9589  access=0.0077  urgency=0.0215  info=0.0119
+           argmax='billing'   c = max_j p_j = 0.9589
+  ok       [noul]   p(true)=0.7628  p(false)=0.2372   c = max(p,1-p) = 0.7628
+  escalate [noul]   p(true)=0.1217  p(false)=0.8783   c = max(p,1-p) = 0.8783
+
+------------------------------------------------------------------------------
+item smoke_en_02   script=English
+  routing : model='english'  repo='convaiinnovations/laya'
+            reason='English Latin text'
+  reading : {'intent': 'access', 'ok': 'true', 'escalate': 'either'}   (author's gloss, NOT a gold label)
+  state   : I changed phones last week and now I cannot sign in to my account. The password reset email never arrives, and I need access restored before my team's review tomorrow morning.
+  intent   [choice] p = billing=0.0629  access=0.6756  urgency=0.1978  info=0.0637
+           argmax='access'   c = max_j p_j = 0.6756
+  ok       [noul]   p(true)=0.4336  p(false)=0.5664   c = max(p,1-p) = 0.5664
+  escalate [noul]   p(true)=0.0302  p(false)=0.9698   c = max(p,1-p) = 0.9698
+
+------------------------------------------------------------------------------
+item smoke_en_03   script=English
+  routing : model='english'  repo='convaiinnovations/laya'
+            reason='English Latin text'
+  reading : {'intent': 'ambiguous (access or info)', 'ok': 'false', 'escalate': 'plausibly true'}   (author's gloss, NOT a gold label)
+  state   : Something is wrong with my account. Please look into it and let me know what you find. Thanks.
+  intent   [choice] p = billing=0.2835  access=0.1057  urgency=0.3346  info=0.2762
+           argmax='urgency'   c = max_j p_j = 0.3346
+  ok       [noul]   p(true)=0.5662  p(false)=0.4338   c = max(p,1-p) = 0.5662
+  escalate [noul]   p(true)=0.0642  p(false)=0.9358   c = max(p,1-p) = 0.9358
+
+------------------------------------------------------------------------------
+item smoke_ja_01   script=Japanese
+  routing : model='multilingual'  repo='convaiinnovations/laya/multilingual'
+            reason='non-Latin script (kana, 100% of letters); the English checkpoint cannot read it'
+  reading : billing / duplicate charge / refund requested   (author's gloss, NOT a gold label)
+  state   : 今月、サブスクリプションの料金が二重に請求されました。同じカードで二回引き落とされており、二回目は承認していません。重複した請求を返金してください。
+  intent   [choice] p = billing=0.9917  access=0.0011  urgency=0.0018  info=0.0054
+           argmax='billing'   c = max_j p_j = 0.9917
+  ok       [noul]   p(true)=0.6330  p(false)=0.3670   c = max(p,1-p) = 0.6330
+  escalate [noul]   p(true)=0.0162  p(false)=0.9838   c = max(p,1-p) = 0.9838
+
+------------------------------------------------------------------------------
+item smoke_ja_02   script=Japanese
+  routing : model='multilingual'  repo='convaiinnovations/laya/multilingual'
+            reason='non-Latin script (kana, 100% of letters); the English checkpoint cannot read it'
+  reading : access / cannot sign in / urgent deadline   (author's gloss, NOT a gold label)
+  state   : 先週スマートフォンを変えてからアカウントにサインインできません。パスワード再設定のメールが届かず、明日の朝のチームレビューまでにアクセスを復旧する必要があります。
+  intent   [choice] p = billing=0.0001  access=0.9950  urgency=0.0045  info=0.0003
+           argmax='access'   c = max_j p_j = 0.9950
+  ok       [noul]   p(true)=0.0079  p(false)=0.9921   c = max(p,1-p) = 0.9921
+  escalate [noul]   p(true)=0.0622  p(false)=0.9378   c = max(p,1-p) = 0.9378
+
+------------------------------------------------------------------------------
+item smoke_zh_01   script=Chinese
+  routing : model='multilingual'  repo='convaiinnovations/laya/multilingual'
+            reason='non-Latin script (han, 100% of letters); the English checkpoint cannot read it'
+  reading : billing / duplicate charge / refund requested   (author's gloss, NOT a gold label)
+  state   : 这个月我的订阅被重复扣款了两次。两笔都扣在同一张卡上，第二笔我并没有授权。请退还重复的扣款。
+  intent   [choice] p = billing=0.9986  access=0.0002  urgency=0.0002  info=0.0010
+           argmax='billing'   c = max_j p_j = 0.9986
+  ok       [noul]   p(true)=0.0840  p(false)=0.9160   c = max(p,1-p) = 0.9160
+  escalate [noul]   p(true)=0.0562  p(false)=0.9438   c = max(p,1-p) = 0.9438
+
+------------------------------------------------------------------------------
+item smoke_zh_02   script=Chinese
+  routing : model='multilingual'  repo='convaiinnovations/laya/multilingual'
+            reason='non-Latin script (han, 100% of letters); the English checkpoint cannot read it'
+  reading : access / cannot sign in / urgent deadline   (author's gloss, NOT a gold label)
+  state   : 我上周换了手机，现在无法登录我的账户。密码重置邮件一直没有收到，而我需要在明天早上团队评审之前恢复访问。
+  intent   [choice] p = billing=0.0058  access=0.9430  urgency=0.0438  info=0.0073
+           argmax='access'   c = max_j p_j = 0.9430
+  ok       [noul]   p(true)=0.0033  p(false)=0.9967   c = max(p,1-p) = 0.9967
+  escalate [noul]   p(true)=0.1725  p(false)=0.8275   c = max(p,1-p) = 0.8275
+
+==============================================================================
+SUMMARY
+  variant exercised : multilingual
+  resolved revision : 55cf4c4ebb4ebe31b2550e8bdf3bd21b99753851
+  routers observed  : ['english', 'multilingual']
+  non-Latin items answered by the multilingual router: True
+
+  PASS - the pinned multilingual artifact runs locally and answers Japanese and
+         Chinese items through the frozen wire format. Criterion (iii) of Phase II
+         section 5 is satisfied for a non-Latin channel, subject to the English
+         sensitivity comparison the pre-registration requires for a new artifact.
