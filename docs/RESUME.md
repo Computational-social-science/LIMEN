@@ -56,11 +56,25 @@ first time. Two guards were added, each from a defect made in this session.
 2. **`System One` / `JEV-Ecosystem` are still undecided** in the protocol's vocabulary. Same decision shape as
    (1): renaming means a version bump and a re-pin, with `PHASE_I_PREREGISTRATION.md` and `CURRENT_OBJECT.md`
    kept coherent.
-3. **Phase II's second channel `s_1` is not chosen.** §5 of `docs/PHASE_II_PREREGISTRATION.md` fixes the
-   criteria and records a mechanism-based tie-breaker: a **segmentation-or-conversion** channel would *test* the
-   Phase I mechanism (unremarkable surface, wrong answer → predicted silent), while a **substitution-style**
-   channel would merely illustrate it. Choosing needs evidence — documented digital-input confusions, parallel
-   intentions constructible under the template, and an instrument pinned at a revision that reads the script.
+3. **Phase II's second channel `s_1` is now derived, and the dataset choice remains.** §5 of
+   `docs/PHASE_II_PREREGISTRATION.md` fixes the criteria and records a mechanism-based tie-breaker: a
+   **segmentation-or-conversion** channel would *test* the Phase I mechanism (unremarkable surface, wrong
+   answer → predicted silent), while a **substitution-style** channel would merely illustrate it.
+   **COVERAGE IS SETTLED (2026-10-08), ON A SOURCE RATHER THAN BY PREFERENCE.** The programme owner directed
+   that the coverage be decided from the literature first, and pointed at
+   `Refs/2022-NRP_Universal and specific reading mechanisms across different writing systems.pdf`
+   (Li, Huang, Yao & Hyönä, *Nature Reviews Psychology* **1**, 133–144; DOI `10.1038/s44159-022-00022-6`). That
+   review defines the categories by how graphemes map to speech — alphabetic / syllabic / logographic — so one
+   channel per category gives **English · Japanese · Chinese**, and it states that findings from alphabetic
+   scripts "cannot necessarily be extended to other writing systems" and that the comparison "should be [made]
+   within the same study". **The review is now queryable as an agent**:
+   `universal-reading-mechanisms-paper` (installed, verified, recorded in `docs/PAPER_AGENT_LIBRARY.md` §6).
+   **What remains:** the programme owner directed that each channel's noise process must rest on an
+   authoritative research dataset, and with the coverage fixed the datasets must be selected on that basis
+   (candidates identified and partly verified: JWTD for Japanese; SIGHAN 2013/2014/2015, Liu et al. 2011
+   `10.1145/1967293.1967297`, CSCD-NS/IME `arXiv:2211.08788`, Readin `arXiv:2302.07324` and LEMON
+   `arXiv:2305.17721` for Chinese; Birkbeck and the GitHub Typo Corpus for English). **Then** the amendment is
+   filed. Evidence so far is in `docs/PHASE_II_S1_CHANNEL_EVIDENCE.md`.
 4. ~~**The superseded SI generator is a live hazard, contained but not removed.**~~ **It no longer exists in
    this repository: deleted 2026-10-08.** It was the generator whose inline prose made the SI read like an
    engineering log — the reason the assembler exists — and it still defaulted to the assembler's own output

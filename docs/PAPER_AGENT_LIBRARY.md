@@ -50,6 +50,7 @@ one still needs its provenance stated.
 | 4 | `!2024-Nature-Detecting hallucinations in large language models using semantic entropy` | The canonical uncertainty-estimation method behind "confidently wrong". | queued |
 | 5 | `2026-NHB-The shrinking landscape of linguistic diversity in the age of large language models` | **Phase II's channel question** — language/script diversity under LLM pressure, from the target journal. | queued |
 | 6 | `2025-Science-Large AI models are cultural and social technologies` | The programme's own meta-position: what class of artefact a model is. | queued |
+| 7 | `2022-NRP_Universal and specific reading mechanisms across different writing systems` (Refs/) | **The script-coverage question itself.** Supplies the alphabetic / syllabic / logographic taxonomy and the mechanism that differs per category, so the Phase II channel set is derived rather than chosen by taste. | **converted 2026-10-08** — see §6 |
 
 **Deliberately not selected**, with reasons: the on-disk *agent-engineering* papers (Nature/NMI pieces
 on turning papers into agents, agent failure modes, agentic data) are about the **toolchain**, not the
@@ -98,3 +99,55 @@ The engine is another project's (`nhb-llm-mistranslation`); its audit notes are 
 source PDFs live in `D:/2026-AI4S/` and are **not** copied into this repository — this repository's
 `archive/` discipline is unaffected, and the converted agents live in the shared skills directory so
 that any project can load them.
+
+---
+
+## 6. Conversion record — `universal-reading-mechanisms-paper` (2026-10-08)
+
+**Source.** `Refs/2022-NRP_Universal and specific reading mechanisms across different writing systems.pdf`
+(Li, Huang, Yao & Hyönä, *Nature Reviews Psychology* **1**, 133–144; DOI `10.1038/s44159-022-00022-6`;
+published online 22 February 2022). Bibliographic fields verified against the PDF itself and Crossref.
+
+**Output contract, with the numbers:**
+
+| Requirement | Measured |
+|---|---|
+| `SKILL.md` present | yes — authored in this repository's house style, not the generator's template |
+| `references/` with a non-trivial `paper.md` | `paper.md` **91,334 B / 622 lines**; plus `index.md` (corrected) and a faithful stub `supplement.md` |
+| `verify` verdict | `reviewed_with_limitations`, `mechanical_ok: true`, `issues: []`, **36/36 adjudications applied, 0 stale**, `all_sources_agent_reviewed: true` |
+| Assets | 4 figures (JPEG) + 2 tables (CSV), incl. **Table 1**, the universal-versus-specific summary |
+| Installed at | `~/AppData/Local/hermes/skills/research/universal-reading-mechanisms-paper/` |
+| Loads | `skill_view` → `readiness_status: available`; `rg` navigation and passage reads verified |
+
+**Why `reviewed_with_limitations` and not `reviewed`.** The generator returns the stronger verdict only when a
+source carries no extractor warnings. This one carries the typesetter's page furniture on every page, so the
+lesser verdict is the honest one. It is not a defect state: `issues` is empty and every page was reviewed.
+
+**Three extraction findings, all recorded in the agent's own SKILL.md rather than smoothed over:**
+
+1. **The generated `index.md` omitted every substantive section.** The generator indexes only level-`##`
+   headings and **all eleven content sections of this paper are level `#`**, so the first index listed the
+   glossary and the back matter and nothing else. Corrected by hand from `paper.md`, with line numbers verified.
+   **A navigation artefact that silently omits the content is worse than no index**, because its silence reads
+   as absence.
+2. **Reference 21's identifier was altered**: the page prints `GB 2312-1980`, the extractor wrote `GB 23121980`
+   (hyphen lost). Found by the automated number check, not by reading — and recorded, because an identifier is
+   an assertion.
+3. **Figure 1's legend is fragmented** across cells of a CSV the extractor created by reading the figure's
+   columns as a table. The content survives; the sentence does not, so the agent is told to read the CSV.
+
+**What it settles for Phase II.** The review supplies the **script set as a derived consequence**, not a menu:
+the three categories are defined by how graphemes map to speech, so one channel per category is
+**English (alphabetic) · Japanese (syllabic) · Chinese (logographic)** — which is exactly the coverage the
+programme owner specified. It also supplies the mechanism that should differ across them, and the one claim
+that most directly underwrites the design: for a logographic script **"Form does not indicate phonology"** and
+the **direct semantic route is used primarily** (Table 1), whereas for alphabetic scripts phonology "can be
+easily extracted from form" and both routes are used. **The paper makes the cross-script comparison necessary
+in its own voice** — "conclusions obtained from studies of alphabetic scripts cannot necessarily be extended to
+other writing systems", and the comparison "should be [made] within the same study".
+
+**This agent must be interrogated, not merely installed** (§3). Its first interrogations: the exact wording of
+the route claim and its scope; whether the review supports a *segmentation* channel for Chinese as a property
+of the script or only of the eye-movement literature; and what it does **not** license — it says nothing about
+models, input methods, or noise, so any link from its reading mechanisms to a model's confidence gate is an
+inference this project must make and defend.
