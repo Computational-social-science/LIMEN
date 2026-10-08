@@ -1,13 +1,16 @@
 # Resume here
 
-**Updated at shutdown, 2026-10-07.** Working tree clean, everything pushed.
-`local = origin = 6671ecaa5e94`. 41 guards green. Nothing depends on an unlogged conversation.
+**Updated at shutdown, 2026-10-07.** Working tree clean. 41 guards green.
 
-> **Transport note, kept because it will recur.** The push of `fc9381c` failed five times with
-> `Connection was reset` / `Failed to connect to github.com port 443` **while `api.github.com` and
-> `github.com` both returned HTTP 200** — measured at the same moment. On this host the git transport path
-> is the flaky one, not the network (`github-repo-management` skill). It went through unchanged on the next
-> attempt. **When the API answers, retry; do not start investigating credentials.**
+> ⚠️ **ONE COMMIT IS UNPUSHED: `5242eca` — the guarded scienceplots import.**
+> `local = 5242eca`, `origin = 041295e`. **First action next session: `git push origin main`.**
+> Nothing is lost by waiting; the commit is safe locally and the working tree is clean.
+>
+> **This host's git transport is the flaky part, not the network.** Measured at the moment of failure:
+> `api.github.com` HTTP 200 and `github.com` HTTP 200, while `git push` reported `Connection was reset` and
+> then `Failed to connect to github.com port 443`. Eleven attempts across two sessions and both
+> `http.postBuffer`/`lowSpeedLimit` and default settings failed; earlier the same command went through
+> unchanged on a later attempt. **When the API answers, retry — do not investigate credentials.**
 
 ## Where the work lives
 
