@@ -1,0 +1,59 @@
+{
+  "_what": "Phase I's recoverability index applied to the Phase II channels' attested corruption pairs. Levels are NOT set here; see docs/PHASE_II_NOISE_EVIDENCE.md section 6.",
+  "anchor_measured_for_this_index": 0.448,
+  "anchor_citation": "Rayner, White, Johnson & Liversedge (2006), interior-scrambled condition",
+  "pair_limit": 3000,
+  "channels": {
+    "en": {
+      "label": "English (alphabetic; Birkbeck misspellings)",
+      "language": "en",
+      "channel_fitted_on": "aligned character pairs from 692 training pairs",
+      "channel_units_parameterised": 287,
+      "pairs_fitted": 2400,
+      "pairs_scored": 600,
+      "share_of_scored_pairs_whose_committed_unit_the_channel_has_seen": 0.003333,
+      "share_of_scored_pairs_that_saturated_to_one_candidate": 0.0,
+      "mean_posterior_on_intended": 0.35127,
+      "median_posterior_on_intended": 0.0,
+      "share_where_intended_is_MAP": 0.351667,
+      "mean_candidates": 29.988,
+      "vocabulary": 40000,
+      "zipf_floor": 1.0,
+      "anchor_for_comparison": 0.448
+    },
+    "ja": {
+      "label": "Japanese (syllabic; JWTD kanji-conversion)",
+      "language": "ja",
+      "channel_fitted_on": "aligned character pairs from 2325 training pairs",
+      "channel_units_parameterised": 1850,
+      "pairs_fitted": 2400,
+      "pairs_scored": 600,
+      "share_of_scored_pairs_whose_committed_unit_the_channel_has_seen": 0.076667,
+      "share_of_scored_pairs_that_saturated_to_one_candidate": 0.0,
+      "mean_posterior_on_intended": 0.306185,
+      "median_posterior_on_intended": 0.053798,
+      "share_where_intended_is_MAP": 0.35,
+      "mean_candidates": 123.907,
+      "vocabulary": 40000,
+      "zipf_floor": 1.0,
+      "anchor_for_comparison": 0.448
+    },
+    "zh": {
+      "label": "Chinese (logographic; CSCD-NS substitutions)",
+      "language": "zh",
+      "channel_fitted_on": "aligned character pairs from 2400 training pairs",
+      "channel_units_parameterised": 2400,
+      "pairs_fitted": 2400,
+      "pairs_scored": 600,
+      "share_of_scored_pairs_whose_committed_unit_the_channel_has_seen": 0.598333,
+      "share_of_scored_pairs_that_saturated_to_one_candidate": 0.0,
+      "mean_posterior_on_intended": 0.271768,
+      "median_posterior_on_intended": 0.056253,
+      "share_where_intended_is_MAP": 0.278333,
+      "mean_candidates": 106.128,
+      "vocabulary": 40000,
+      "zipf_floor": 1.0,
+      "anchor_for_comparison": 0.448
+    }
+  }
+}

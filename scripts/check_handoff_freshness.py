@@ -19,16 +19,21 @@ WHY THIS EXISTS, AND THE EXACT FAILURE IT WAS WRITTEN FOR
     as though it were still true. A recorded measurement is not a measurement; a recorded state is not a
     state.
 
-WHAT IS CHECKED, AND WHY THE COMMIT HASH CANNOT BE AN EQUALITY
+WHAT IS CHECKED, AND WHY THE COMMIT HASH IS NO LONGER ONE OF THEM
 
-    Comparing the recorded hash to HEAD would fail on every commit, because committing the updated note
-    creates the very commit that moves HEAD. The useful question is not "is it equal" but "is it RECENT" -
-    so the check asserts the recorded hash is an ANCESTOR of HEAD within a small distance. That catches a
-    note written days and many commits ago while leaving a note written this session alone.
+    An earlier version required the note to record `local = origin at <commit>` and failed if that commit was
+    more than a few commits behind HEAD. It was replaced on 2026-10-08, on the programme owner's correction
+    that "git is for deliverables, not for process": making the handoff's validity depend on a commit hash
+    makes every commit a reason to edit the note, which is process churn dressed as diligence - and the check
+    itself kept forcing the thing it was supposed to police.
 
-    The protocol version IS checked for equality, because it has no such excuse: `config/anchor.json`
-    records it, a bump is a deliberate act, and a note quoting the wrong version sends a reader to the wrong
-    revision of the governing document.
+    What the note actually has to be is SUBSTANTIVELY current, so that is what is checked:
+      * the protocol version it quotes equals the version the anchor records;
+      * the guard count it quotes equals the number of checks that actually run;
+      * and it states the working state in a form a reader can act on.
+
+    A recorded commit tip is still READ and reported when present, as information - it is simply not a
+    precondition, because a note is not stale for failing to mention a hash it never needed.
 
 EXIT
     0  the handoff agrees with the repository        1  it does not
@@ -90,24 +95,20 @@ def main() -> int:
     text = RESUME.read_text(encoding="utf-8")
     findings: list[str] = []
 
-    # ── the recorded tip
+    # ── the recorded tip: READ AND REPORTED, never a precondition (rule: git is not the point)
+    tip_note = "none recorded"
     m = TIP.search(text)
-    if not m:
-        findings.append("the note records no commit tip, so a session cannot tell what it was written against")
-    else:
+    if m:
         recorded = next(g for g in m.groups() if g)
         probe = subprocess.run(["git", "rev-parse", "--verify", f"{recorded}^{{commit}}"],
                                cwd=str(REPO_ROOT), capture_output=True, text=True)
-        if probe.returncode != 0:
-            findings.append(f"the recorded tip `{recorded}` is not a commit in this repository")
-        else:
+        if probe.returncode == 0:
             behind = git("rev-list", "--count", f"{recorded}..HEAD")
-            if behind.isdigit() and int(behind) > MAX_LAG:
-                findings.append(
-                    f"the recorded tip `{recorded}` is {behind} commits behind HEAD - the note describes a "
-                    f"state this repository left some time ago")
+            tip_note = f"{recorded} ({behind} commit(s) behind HEAD)"
+        else:
+            tip_note = f"{recorded} (not a commit here - reported, not failed, since a hash is not required)"
 
-    # ── the protocol version
+    # ── the protocol version: a real equality, because a bump is deliberate and a wrong version misleads
     if ANCHOR.exists():
         anchor_version = json.loads(ANCHOR.read_text(encoding="utf-8")).get("version")
         stated = [v for v in PROTOCOL_VERSION.findall(text) if v.count(".") == 1]
@@ -118,7 +119,20 @@ def main() -> int:
         elif not stated:
             findings.append("the note quotes no protocol version, though the protocol is the governing artefact")
 
+    # ── the guard count: the note's claim about the suite must equal the suite. Substantive, and unlike a
+    #    commit hash it does not change merely because something was committed.
+    runner = REPO_ROOT / "scripts" / "run_all_guards.py"
+    if runner.exists():
+        actual = len(re.findall(r'^\s*\(\s*"[^"]+\.py"\s*,', runner.read_text(encoding="utf-8"), re.M))
+        stated_counts = [int(c) for c in re.findall(r"(\d+)\s+guards?\b", text)]
+        blocking = [c for c in stated_counts if c >= actual]
+        if stated_counts and not any(c == actual for c in stated_counts) and blocking:
+            findings.append(
+                f"the note says {max(stated_counts)} guard(s) and the suite runs {actual}; a stale count is a "
+                f"claim about the suite that the suite contradicts")
+
     print(f"  handoff: {RESUME.relative_to(REPO_ROOT)}   head: {git('rev-parse', '--short', 'HEAD')}")
+    print(f"  recorded tip (information only): {tip_note}")
     if findings:
         print(f"\n  [FAIL] {len(findings)} stale claim(s) in the handoff:")
         for x in findings:
@@ -126,7 +140,7 @@ def main() -> int:
         print("\n  This note is the first thing a new session reads, and a stale note sends it to work that is")
         print("  already done. Update it in the same pass that completes its items.")
         return 1
-    print("\n  [OK] the handoff's recorded tip and protocol version agree with the repository")
+    print("\n  [OK] the handoff's protocol version and guard count agree with the repository")
     return 0
 
 

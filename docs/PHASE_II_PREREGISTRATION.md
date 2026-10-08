@@ -94,6 +94,14 @@ The protocol's §5.3 permits a non-Latin script with documented digital-input co
 standard within one language family, or an IME-mediated input ecology. This section fixes the **criteria**; the
 choice is recorded as an amendment once made, before any data.
 
+> **RESOLVED 2026-10-08 — see `docs/PHASE_II_AMENDMENT_1_CHANNELS.md`.** The coverage was **derived** rather than
+> chosen, from Li, Huang, Yao & Hyönä (2022), *Nature Reviews Psychology* 1, 133–144,
+> DOI `10.1038/s44159-022-00022-6`, which classifies writing systems by how graphemes map to speech:
+> **English (alphabetic) · Japanese (syllabic) · Chinese (logographic)**, one per category. That amendment also
+> records the instrument re-pin the non-Latin channels require, the three primary datasets with their measured
+> sizes, and the simulated alternative it rejects. **This section's criteria stand as written; what changed is
+> that the criteria have now been applied.**
+
 **Required:**
 
 - (i) parallel intentions can be constructed under the same template, with constructive labels;

@@ -1,0 +1,405 @@
+{
+  "_why": "Measured by scripts/measure_noise_distributions.py from the observed corpora. The levels themselves are NOT set here: section 6 requires the recoverability index and this script produces the empirical inputs it operates on.",
+  "channels": {
+    "english": {
+      "source": "Birkbeck Spelling Error Corpus (missp.dat)",
+      "unit": "word",
+      "correct_words": 6136,
+      "spectrum": {
+        "tokens": 36133,
+        "distinct": 36133,
+        "at_least": {
+          "2": {
+            "pairs": 0,
+            "share_of_pairs": 0.0,
+            "share_of_mass": 0.0
+          },
+          "3": {
+            "pairs": 0,
+            "share_of_pairs": 0.0,
+            "share_of_mass": 0.0
+          },
+          "5": {
+            "pairs": 0,
+            "share_of_pairs": 0.0,
+            "share_of_mass": 0.0
+          },
+          "10": {
+            "pairs": 0,
+            "share_of_pairs": 0.0,
+            "share_of_mass": 0.0
+          },
+          "50": {
+            "pairs": 0,
+            "share_of_pairs": 0.0,
+            "share_of_mass": 0.0
+          },
+          "100": {
+            "pairs": 0,
+            "share_of_pairs": 0.0,
+            "share_of_mass": 0.0
+          },
+          "1000": {
+            "pairs": 0,
+            "share_of_pairs": 0.0,
+            "share_of_mass": 0.0
+          }
+        }
+      },
+      "error_forms_per_word_mean": 5.889,
+      "most_error_forms": [
+        [
+          "miscellaneous",
+          226
+        ],
+        [
+          "magnificent",
+          185
+        ],
+        [
+          "beautiful",
+          179
+        ],
+        [
+          "enthusiasm",
+          167
+        ],
+        [
+          "especially",
+          156
+        ],
+        [
+          "prejudice",
+          154
+        ],
+        [
+          "enthusiastic",
+          153
+        ],
+        [
+          "conscientious",
+          152
+        ],
+        [
+          "guarantee",
+          149
+        ],
+        [
+          "immediately",
+          145
+        ],
+        [
+          "psychology",
+          136
+        ],
+        [
+          "special",
+          126
+        ]
+      ],
+      "interpretation": "Every pair is distinct, so this corpus records TYPES and not RATES: there is no frequency spectrum to sample, and the English level cannot be equated by section 6 route (b) from this corpus."
+    },
+    "japanese": {
+      "source": "JWTD kanji-conversion, train + test",
+      "unit": "kanji word",
+      "spectrum": {
+        "tokens": 246014,
+        "distinct": 26089,
+        "at_least": {
+          "2": {
+            "pairs": 12536,
+            "share_of_pairs": 0.4805,
+            "share_of_mass": 0.9449
+          },
+          "3": {
+            "pairs": 8853,
+            "share_of_pairs": 0.3393,
+            "share_of_mass": 0.915
+          },
+          "5": {
+            "pairs": 5859,
+            "share_of_pairs": 0.2246,
+            "share_of_mass": 0.8736
+          },
+          "10": {
+            "pairs": 3291,
+            "share_of_pairs": 0.1261,
+            "share_of_mass": 0.8056
+          },
+          "50": {
+            "pairs": 744,
+            "share_of_pairs": 0.0285,
+            "share_of_mass": 0.5934
+          },
+          "100": {
+            "pairs": 362,
+            "share_of_pairs": 0.0139,
+            "share_of_mass": 0.4876
+          },
+          "1000": {
+            "pairs": 17,
+            "share_of_pairs": 0.0007,
+            "share_of_mass": 0.1487
+          }
+        }
+      },
+      "diffs_per_sentence_mean": 1.031,
+      "diffs_per_sentence_max": 5,
+      "most_common_pairs": [
+        [
+          "製作",
+          "制作",
+          6957
+        ],
+        [
+          "勤め",
+          "務め",
+          3963
+        ],
+        [
+          "始めて",
+          "初めて",
+          3461
+        ],
+        [
+          "制作",
+          "製作",
+          2509
+        ],
+        [
+          "運行",
+          "運航",
+          2491
+        ],
+        [
+          "後",
+          "跡",
+          2327
+        ],
+        [
+          "作詩",
+          "作詞",
+          2218
+        ],
+        [
+          "勤める",
+          "務める",
+          1722
+        ],
+        [
+          "破れ",
+          "敗れ",
+          1717
+        ],
+        [
+          "開放",
+          "解放",
+          1353
+        ],
+        [
+          "付属",
+          "附属",
+          1246
+        ],
+        [
+          "再開",
+          "再会",
+          1194
+        ],
+        [
+          "召還",
+          "召喚",
+          1174
+        ],
+        [
+          "自信",
+          "自身",
+          1096
+        ],
+        [
+          "競争",
+          "競走",
+          1067
+        ],
+        [
+          "受賞",
+          "受章",
+          1043
+        ],
+        [
+          "回答",
+          "解答",
+          1034
+        ],
+        [
+          "内臓",
+          "内蔵",
+          986
+        ],
+        [
+          "努め",
+          "務め",
+          964
+        ],
+        [
+          "変わり",
+          "代わり",
+          887
+        ]
+      ],
+      "non_injective": {
+        "wrong_forms_with_multiple_correct": 3308,
+        "wrong_forms": 20853,
+        "share": 0.1586,
+        "why_it_matters": "a noise process assuming wrong -> correct is a function would mis-attribute these; the corpus records pre -> post and both directions are attested data"
+      }
+    },
+    "chinese": {
+      "source": "CSCD-NS labelled sentences, train + test",
+      "unit": "character",
+      "spectrum": {
+        "tokens": 17671,
+        "distinct": 5290,
+        "at_least": {
+          "2": {
+            "pairs": 1894,
+            "share_of_pairs": 0.358,
+            "share_of_mass": 0.8078
+          },
+          "3": {
+            "pairs": 1091,
+            "share_of_pairs": 0.2062,
+            "share_of_mass": 0.7169
+          },
+          "5": {
+            "pairs": 620,
+            "share_of_pairs": 0.1172,
+            "share_of_mass": 0.6274
+          },
+          "10": {
+            "pairs": 281,
+            "share_of_pairs": 0.0531,
+            "share_of_mass": 0.5081
+          },
+          "50": {
+            "pairs": 39,
+            "share_of_pairs": 0.0074,
+            "share_of_mass": 0.2476
+          },
+          "100": {
+            "pairs": 15,
+            "share_of_pairs": 0.0028,
+            "share_of_mass": 0.158
+          },
+          "1000": {
+            "pairs": 0,
+            "share_of_pairs": 0.0,
+            "share_of_mass": 0.0
+          }
+        }
+      },
+      "error_sentences": 16092,
+      "substitutions": 17671,
+      "substitutions_per_sentence_mean": 1.098,
+      "substitution_rate_over_characters": 0.019534,
+      "length_mismatched_rows": 0,
+      "most_common_pairs": [
+        [
+          "惟",
+          "唯",
+          350
+        ],
+        [
+          "作",
+          "做",
+          274
+        ],
+        [
+          "在",
+          "再",
+          245
+        ],
+        [
+          "那",
+          "哪",
+          231
+        ],
+        [
+          "做",
+          "作",
+          214
+        ],
+        [
+          "象",
+          "像",
+          204
+        ],
+        [
+          "带",
+          "戴",
+          191
+        ],
+        [
+          "收",
+          "受",
+          189
+        ],
+        [
+          "的",
+          "地",
+          162
+        ],
+        [
+          "再",
+          "在",
+          149
+        ],
+        [
+          "与",
+          "于",
+          147
+        ],
+        [
+          "力",
+          "利",
+          123
+        ],
+        [
+          "应",
+          "映",
+          109
+        ],
+        [
+          "己",
+          "已",
+          103
+        ],
+        [
+          "于",
+          "与",
+          101
+        ],
+        [
+          "须",
+          "需",
+          99
+        ],
+        [
+          "的",
+          "得",
+          96
+        ],
+        [
+          "有",
+          "由",
+          89
+        ]
+      ],
+      "non_injective": {
+        "origin_characters_with_multiple_substitutes": 1124,
+        "origin_characters": 2148
+      },
+      "interpretation": "zero length mismatches means the corruption is a pure aligned substitution, so a character-level process needs no alignment step and any length change it produced would be drift from the data"
+    }
+  }
+}

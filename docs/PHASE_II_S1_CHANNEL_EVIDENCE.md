@@ -172,7 +172,10 @@ noise.**
   both be right and the card is the primary source; the architecture is recorded as unresolved.
 - **"JWTD has four categories including a kanji-conversion category."** The abstract confirms the kanji-input
   typo class and the corpus size but **not a four-category taxonomy**. Category-level detail must be read from
-  the paper before it is quoted.
+  the paper before it is quoted. **RESOLVED 2026-10-08 by measuring the dataset itself**: the four categories are
+  substitution, deletion, insertion and kanji-conversion, and **kanji-conversion is 235,490 of 515,328 training
+  pairs — 45.7 %, the LARGEST category, not a small fraction as this document feared.** The dataset page states
+  the taxonomy; the measurement confirms it. See `docs/PHASE_II_AMENDMENT_1_CHANNELS.md` §A3.
 - **A "LDC 2023" frequency claim** (there : their = 4.7 : 1) that a draft marked unverified: **no DOI, no paper**
   — correctly flagged, and it is not used here.
 

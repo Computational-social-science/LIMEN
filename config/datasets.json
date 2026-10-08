@@ -77,6 +77,14 @@
           },
           "note": "The dataset's page states four categories including kanji-conversion; the measurement CONFIRMS this and settles a question the earlier evidence document left open - kanji-conversion is the LARGEST category at 45.7% of the training set, not a small fraction. The test set is crowdsource-filtered, so it carries LESS noise than the training set, which is recorded because it makes the test set the better source for a noise model even though it is 60x smaller.",
           "example_kanji_conversion": "入場 -> 入城 (both ordinary words, meaning flipped) / 固体 -> 個体"
+        },
+        "local_archive": {
+          "file": "external-data/jwtd/jwtd.tar.gz",
+          "bytes": 295802880,
+          "actual_format": "POSIX tar archive, UNCOMPRESSED",
+          "naming_warning": "The file carries a .gz extension but the bytes are a plain tar: the first 16 bytes are 'jwtd/' followed by NUL padding, `file` reports 'POSIX tar archive', and `gzip -t` correctly refuses it with 'not in gzip format'. A later script that trusts the extension will fail on the decompression step and may conclude the download is corrupt. Renaming is the reader's call; the fact is recorded here so the failure is diagnosable.",
+          "reconciles_with_the_upstream_size": "The DLcounter's direct URL advertises Content-Length 68,080,326 B (gzip, measured from the response headers); this local copy is the same content uncompressed. 295,802,880 B of tar covers 290,828,526 + 4,964,746 B of payload plus 9,608 B of tar headers and padding, so the two figures are consistent rather than contradictory - a 4.3:1 compression ratio.",
+          "payload_verified": "both members extracted and measured; 515,328 + 8,542 records, 0 unparseable"
         }
       },
       "rejected": [

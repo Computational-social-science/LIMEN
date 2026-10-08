@@ -1,19 +1,17 @@
 # Resume here
 
-**Updated 2026-10-08.** Working tree clean, everything pushed.
-`local = origin` at `6d06d2a`. 46 guards green. Nothing depends on an unlogged conversation.
+**Updated 2026-10-08.** Working tree clean. 49 guards green.
 
-> **Transport note, kept because it recurs and the diagnosis is the useful part.** Pushes failed eleven times
-> across this session — `Connection was reset`, then `Failed to connect to github.com port 443` — while
-> `api.github.com` and `github.com` both answered **HTTP 200 at the same moment**. Each time the same command
-> went through unchanged on a later attempt, including the one immediately after this note was written.
-> **On this host the git transport path is the flaky part, not the network. When the API answers, retry;
-> do not investigate credentials, and do not conclude the commit is lost.**
+> **GIT IS FOR DELIVERABLES, NOT FOR PROCESS** (global rule 18, adopted 2026-10-08 on the programme owner's
+> correction). A local commit is already durable; the remote adds off-machine redundancy, not truth. **Commit
+> at boundaries that mean something — a result, a corrected finding, a deliverable — and not the intermediate
+> steps of getting there.** If a push fails, say so in one line and go back to the work: **one retry, then
+> continue.** If several commits accumulate they push together later in a single action. Do not hold analysis,
+> measurement or writing pending a clean remote.
 >
-> **Do not pre-write an "unpushed" warning into this note again.** It was written three times tonight and was
-> stale three times within minutes — the push succeeds on the attempt after the note is committed. State the
-> commit and let the first action be a push; a note that announces a failure it then outlives is itself the
-> stale-claim defect this file exists to avoid.
+> The note that used to sit here did the opposite: it recorded each transport failure in detail and prescribed
+> a retry loop, which over one session turned a science session's attention into waiting on a network. The
+> diagnosis below is retained because it is still true and still useful; the practice it described is not.
 
 ## Where the work lives
 
@@ -93,7 +91,13 @@ first time. Two guards were added, each from a defect made in this session.
    `drive.google.com` answered **HTTP 000** after a 22 s timeout and the documented alternative is Baidu
    Netdisk, which needs an account and a client. The programme owner downloaded it by hand. **Neither
    provenance nor acquisition is a substitute for the other, and both are now recorded.**
-   **Then** file the amendment. Evidence so far is in `docs/PHASE_II_S1_CHANNEL_EVIDENCE.md`.
+   **THE AMENDMENT IS FILED: `docs/PHASE_II_AMENDMENT_1_CHANNELS.md` (2026-10-08).** It records the derived
+   coverage, the instrument re-pin with the English sensitivity obligation, the three datasets with their
+   measured sizes, the rejected simulated alternative, and three scope caveats. `PHASE_II_PREREGISTRATION.md`
+   §5 now points at it. **What is deliberately NOT fixed by it:** the form of $\mathcal{N}_{s_1}$ per channel,
+   $\lambda$ and the calibration ladder, the item count and power procedure, and the channel ordering — all of
+   which belong to §6's noise-equivalence step and may not be set by a script written before that argument is
+   made. **That step is the next scientific work.** Evidence is in `docs/PHASE_II_S1_CHANNEL_EVIDENCE.md`.
 4. ~~**The superseded SI generator is a live hazard, contained but not removed.**~~ **It no longer exists in
    this repository: deleted 2026-10-08.** It was the generator whose inline prose made the SI read like an
    engineering log — the reason the assembler exists — and it still defaulted to the assembler's own output
@@ -131,7 +135,7 @@ PY="C:/Users/Administrator/AppData/Local/hermes/tools/python-3.14.7+202****0901-
 "$PY" -B scripts/build_si_documents.py                   # HTML + DOCX + PDF
 
 # the gate
-"$PY" -B scripts/run_all_guards.py                       # 46 guards, each with a negative control
+"$PY" -B scripts/run_all_guards.py                       # 49 guards, each with a negative control
 ```
 
 **The superseded generator that used to sit beside the assembler was deleted on 2026-10-08.** It defaulted to
