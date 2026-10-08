@@ -1,16 +1,19 @@
 # Resume here
 
-**Updated at shutdown, 2026-10-07.** Working tree clean. 41 guards green.
+**Updated at shutdown, 2026-10-07.** Working tree clean, everything pushed.
+`local = origin` at `b361fea`. 41 guards green. Nothing depends on an unlogged conversation.
 
-> ⚠️ **ONE COMMIT IS UNPUSHED: `5242eca` — the guarded scienceplots import.**
-> `local = 5242eca`, `origin = 041295e`. **First action next session: `git push origin main`.**
-> Nothing is lost by waiting; the commit is safe locally and the working tree is clean.
+> **Transport note, kept because it recurs and the diagnosis is the useful part.** Pushes failed eleven times
+> across this session — `Connection was reset`, then `Failed to connect to github.com port 443` — while
+> `api.github.com` and `github.com` both answered **HTTP 200 at the same moment**. Each time the same command
+> went through unchanged on a later attempt, including the one immediately after this note was written.
+> **On this host the git transport path is the flaky part, not the network. When the API answers, retry;
+> do not investigate credentials, and do not conclude the commit is lost.**
 >
-> **This host's git transport is the flaky part, not the network.** Measured at the moment of failure:
-> `api.github.com` HTTP 200 and `github.com` HTTP 200, while `git push` reported `Connection was reset` and
-> then `Failed to connect to github.com port 443`. Eleven attempts across two sessions and both
-> `http.postBuffer`/`lowSpeedLimit` and default settings failed; earlier the same command went through
-> unchanged on a later attempt. **When the API answers, retry — do not investigate credentials.**
+> **Do not pre-write an "unpushed" warning into this note again.** It was written three times tonight and was
+> stale three times within minutes — the push succeeds on the attempt after the note is committed. State the
+> commit and let the first action be a push; a note that announces a failure it then outlives is itself the
+> stale-claim defect this file exists to avoid.
 
 ## Where the work lives
 
