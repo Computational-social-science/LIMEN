@@ -46,6 +46,8 @@ GUARDS: list[tuple[str, tuple[str, ...], str]] = [
     ("check_protocol_consistency.py", (), "protocol V/N/C/P/E claims agree with the anchor"),
     ("check_math_renders.py", (), "LaTeX uses renderer-compatible delimiters"),
     ("check_pin_integrity.py", (), "the pinned instrument on disk IS the pinned instrument"),
+    ("build_data_manifest.py", ("--check",),
+     "the data manifest still matches the datasets measured on disk"),
     ("check_dataset_provenance.py", (),
      "every channel's primary evidence is observed human behaviour"),
     ("check_dataset_provenance.py", ("--negative-test",),

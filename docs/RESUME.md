@@ -1,7 +1,7 @@
 # Resume here
 
 **Updated 2026-10-08.** Working tree clean, everything pushed.
-`local = origin` at `36594ae`. 45 guards green. Nothing depends on an unlogged conversation.
+`local = origin` at `6d06d2a`. 46 guards green. Nothing depends on an unlogged conversation.
 
 > **Transport note, kept because it recurs and the diagnosis is the useful part.** Pushes failed eleven times
 > across this session — `Connection was reset`, then `Failed to connect to github.com port 443` — while
@@ -80,10 +80,20 @@ first time. Two guards were added, each from a defect made in this session.
    REAL Sina Weibo posts by official media accounts, MIT, ACL 2024, pp. 146–159). **The rejected alternative
    matters as much as the choice:** `LCSTS-IME-2M` sits in the *same repository* as CSCD-NS, is ~50× larger and
    far tidier, and is constructed by **simulating** pinyin IME input — it would measure the simulator's
-   assumptions, which is the quantity under study. **Remaining:** confirm the three datasets actually download
-   (Birkbeck and JWTD by URL; CSCD-NS from the drive link the repository documents, its data not being in the
-   repo because of the host's LFS quota), **then** file the amendment. Evidence so far is in
-   `docs/PHASE_II_S1_CHANNEL_EVIDENCE.md`.
+   assumptions, which is the quantity under study. **ALL THREE ARE NOW ACQUIRED AND MEASURED (2026-10-08)** —
+   `config/data_manifest.json`, regenerated from disk by `scripts/build_data_manifest.py` and checked by the
+   guard suite, so the figures cannot drift from the bytes. **English**: 6,136 words / 36,133 misspellings,
+   which is *exactly* the compiler's published count. **Japanese**: 515,328 train + 8,542 test pairs, and the
+   measurement settles a question the earlier evidence document left open — kanji-conversion is **45.7 %** of
+   the training set (**235,490 pairs**), the LARGEST category, not a small fraction as feared. **Chinese**:
+   40,000 rows split 30,000 / 5,000 / 5,000, matching the published description exactly, and its errors are
+   **real ordinary words for other real ordinary words** (`说到→说道`, `惟一→唯一`, `共通→共同`) — the
+   conversion signature, so the channel TESTS the mechanism rather than illustrating it.
+   **One acquisition fact worth keeping:** the Chinese corpus could not be fetched from here at all —
+   `drive.google.com` answered **HTTP 000** after a 22 s timeout and the documented alternative is Baidu
+   Netdisk, which needs an account and a client. The programme owner downloaded it by hand. **Neither
+   provenance nor acquisition is a substitute for the other, and both are now recorded.**
+   **Then** file the amendment. Evidence so far is in `docs/PHASE_II_S1_CHANNEL_EVIDENCE.md`.
 4. ~~**The superseded SI generator is a live hazard, contained but not removed.**~~ **It no longer exists in
    this repository: deleted 2026-10-08.** It was the generator whose inline prose made the SI read like an
    engineering log — the reason the assembler exists — and it still defaulted to the assembler's own output
@@ -121,7 +131,7 @@ PY="C:/Users/Administrator/AppData/Local/hermes/tools/python-3.14.7+202****0901-
 "$PY" -B scripts/build_si_documents.py                   # HTML + DOCX + PDF
 
 # the gate
-"$PY" -B scripts/run_all_guards.py                       # 45 guards, each with a negative control
+"$PY" -B scripts/run_all_guards.py                       # 46 guards, each with a negative control
 ```
 
 **The superseded generator that used to sit beside the assembler was deleted on 2026-10-08.** It defaulted to
