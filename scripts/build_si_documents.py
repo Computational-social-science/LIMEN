@@ -184,7 +184,7 @@ def main() -> int:
     ap = argparse.ArgumentParser(description=(__doc__ or "").split("\n")[0])
     args = ap.parse_args()
     if not SRC.exists():
-        print(f"  [FAIL] no source at {SRC}; run scripts/build_supplementary_information.py first")
+        print(f"  [FAIL] no source at {SRC}; run scripts/assemble_supplementary_information.py first")
         return 1
     md = SRC.read_text(encoding="utf-8")
     body = SR.md_to_html_body(md)

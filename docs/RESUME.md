@@ -61,9 +61,12 @@ first time. Two guards were added, each from a defect made in this session.
    Phase I mechanism (unremarkable surface, wrong answer → predicted silent), while a **substitution-style**
    channel would merely illustrate it. Choosing needs evidence — documented digital-input confusions, parallel
    intentions constructible under the template, and an instrument pinned at a revision that reads the script.
-4. **`build_supplementary_information.py` is a live hazard, contained but not removed.** It writes the same path
-   as the real assembler and DESTROYED the SI on 2026-10-07 (624 lines → 255). It now refuses to run without an
-   explicit override flag. Whether to delete it is a judgement call left open.
+4. ~~**The superseded SI generator is a live hazard, contained but not removed.**~~ **It no longer exists in
+   this repository: deleted 2026-10-08.** It was the generator whose inline prose made the SI read like an
+   engineering log — the reason the assembler exists — and it still defaulted to the assembler's own output
+   path. Contained by a flag is not removed; `check_output_collisions.py` names this exact class. Deletion was
+   reported by three guards before the commit landed (two path promises in this file, and the collision map),
+   which is the behaviour wanted from them.
 
 ## The standing rule this session paid for three times
 
@@ -95,11 +98,13 @@ PY="C:/Users/Administrator/AppData/Local/hermes/tools/python-3.14.7+202****0901-
 "$PY" -B scripts/build_si_documents.py                   # HTML + DOCX + PDF
 
 # the gate
-"$PY" -B scripts/run_all_guards.py                       # 41 guards, each with a negative control
+"$PY" -B scripts/run_all_guards.py                       # 43 guards, each with a negative control
 ```
 
-**`build_supplementary_information.py` is NOT in that list and must not be.** `check_output_collisions.py`
-declares the assembler its sole producer.
+**The superseded generator that used to sit beside the assembler was deleted on 2026-10-08.** It defaulted to
+the assembler's own output path, and `check_output_collisions.py` declares the assembler its sole producer —
+a script that is not the producer must not carry the producer's path, and confinement by a flag is not
+removal. Git history keeps the file.
 
 ## Historical state before the 2026-10-07 work (superseded, kept for the record)
 
