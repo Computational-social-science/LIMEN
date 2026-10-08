@@ -68,13 +68,22 @@ EXCLUDED = {
     "docs/REFERENCE_AUDIT.md":
         "it QUOTES the misattribution verbatim as the record of the defect; the quotation is the evidence, "
         "not a repetition of the error",
-    # THE PROTOCOL IS THE PINNED ANCHOR. Editing it changes its sha256, which is a RE-PIN - a governance act
-    # with a version bump, not a prose fix, and it is recorded here as a KNOWN OPEN FINDING rather than
-    # quietly corrected. Its lines 60 and 949 still say the anchor is 'published', which the corrected
-    # attribution above shows is imprecise for the VALUE (the manipulation is published; the number is ours).
+    # V1.24 CORRECTED IT. This exclusion used to say the protocol 'still says the anchor is published' and was
+    # held open as a known finding; it no longer says that, because the attribution was corrected and the
+    # protocol re-pinned at v1.24. The exclusion stays for the only reason left, which is structural: editing
+    # the protocol changes its sha256, so any future finding here is a re-pin, not a prose fix.
     "protocol/NHB_Orthographic_Channels_JEV_Research_Protocol.md":
-        "PINNED BY CONTENT DIGEST - correcting it requires a version bump and a re-pin, which is a governance "
-        "decision; held open deliberately and visible in this run",
+        "PINNED BY CONTENT DIGEST - any edit is a version bump and a re-pin, a governance decision rather "
+        "than a prose fix; current at v1.24, whose attribution the evidence document records as corrected",
+    # RETAINED PROVENANCE OF A DRAFT, AND THE DRAFT IS ITSELF AN INSTANCE OF THIS DEFECT. The task2 draft
+    # writes 0.4480 - a value THIS PROJECT measured - beside an external citation, which is precisely the
+    # attribution error this guard exists for. It is kept readable rather than deleted so that the correction
+    # is auditable, and its README lists the instance. Excluding it is the same judgement as REFERENCE_AUDIT:
+    # the material is the record of a defect, not a fresh claim, and the superseding document is
+    # docs/PHASE_II_S1_CHANNEL_EVIDENCE.md.
+    "docs/evidence/drafts_unverified/task2_english_conversion_audit.md":
+        "unverified draft retained as provenance, superseded by docs/PHASE_II_S1_CHANNEL_EVIDENCE.md, and "
+        "itself listed in that directory's README as an instance of the defect this check detects",
 }
 
 
