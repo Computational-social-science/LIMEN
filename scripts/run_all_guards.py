@@ -169,7 +169,7 @@ GUARDS: list[tuple[str, tuple[str, ...], str]] = [
     # See archive/keystroke_channel_SUPERSEDED_2026-10-12/WHY_RETIRED.md.
     ("fig_reading_displacement.py", (),
      "the reading-displacement figure regenerates from the analyser artefact"),
-    ("qc_fig_reading_displacement.py", ("viz/figures/fig_reading_displacement.png",),
+    ("qc_figure_layout.py", ("viz/figures/fig_reading_displacement.png",),
      "the displacement figure has no overlapping labels and fonts in the journal band"),
     ("check_si_numbers.py", (),
      "every numeric cell of the SI's results tables equals its source, and quoted family figures match"),

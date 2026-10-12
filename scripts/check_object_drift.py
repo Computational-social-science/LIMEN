@@ -90,8 +90,16 @@ RETIRED_ARTIFACTS = [
 #  fill it. This class closes it by refusing any reference from live code. The archive and this guard
 #  are exempt, because they are where the retirement is documented.
 RETIRED_DATA_REFS = [
-    (re.compile(r"""["'](?:.*/)?data/rrc(?:/|["'])"""), "points at the retired RRC corpus"),
-    (re.compile(r"""["'](?:.*/)?data\rrc(?:\|["'])"""), "points at the retired RRC corpus"),
+    # `[^"'\n]*` rather than `(?:.*/)?`. The two are equivalent here -- both allow any
+    # path prefix and neither crosses a quote -- but `(?:.*/)?` backtracks
+    # catastrophically: with `.*` optional and a literal `/` after it, every position
+    # in a long line becomes a restart point. Measured on this repository's 269 live
+    # files it cost 76 s PER PATTERN, i.e. 153 s of the guard's 154 s runtime, and it
+    # was the reason `--negative-test` appeared to hang. The replacement is 0.1 s with
+    # identical hits on every sample tried, including the negatives (`data/rrc` bare,
+    # `data/rrcx`, `"data/rr"`) which must NOT fire.
+    (re.compile(r"""["'][^"'\n]*data/rrc(?:/|["'])"""), "points at the retired RRC corpus"),
+    (re.compile(r"""["'][^"'\n]*data\rrc(?:\|["'])"""), "points at the retired RRC corpus"),
 ]
 RETIRED_DATA_EXEMPT = ("scripts/check_object_drift.py", "scripts/audit_item_validity.py")
 
@@ -182,6 +190,23 @@ SKIP_DIRS = {".git", "archive", "__pycache__", ".pytest_cache", "node_modules", 
 # Extensions worth scanning.
 SCAN_EXT = {".md", ".py", ".json", ".yaml", ".yml", ".toml", ".cfg", ".ini", ".sh", ".txt", ".html"}
 
+# RE-DOWNLOADABLE RAW DATA IS NOT SOURCE, AND SCANNING IT IS NOT FREE.
+#
+# This guard reads untracked-but-present files so that a NEW source file cannot escape
+# inspection before it is committed. That is the right default, but it has a failure mode
+# that is not about correctness: `external-data/` holds the raw corpora, 168,595 files of
+# them, and most carry a SCAN_EXT suffix (.txt). Walking all of them made this guard run
+# for over ten minutes without printing a line -- which meant the pre-commit hook that
+# calls it never returned, so NO commit could be made with hooks enabled, and the guard
+# that exists to catch silent drift was itself silently absent.
+#
+# These trees are excluded on the same basis the .gitignore already uses for the raw jfleg
+# dump: they are re-obtainable by a documented download, they are never hand-edited, and a
+# drift finding inside a third-party corpus would not be actionable anyway. Excluding them
+# does not weaken the class-A check, which tests path EXISTENCE (a stat per retired path,
+# not a file walk) and therefore still fires on a resurrected corpus.
+DATA_DIRS = {"external-data", "keystroke-observatory-PRE-REBUILD-BACKUP-20261012-181735"}
+
 
 def tracked_and_live_files(root: Path) -> list[Path]:
     """Live files: git-tracked files outside archive/, PLUS untracked-but-present source files.
@@ -212,6 +237,8 @@ def tracked_and_live_files(root: Path) -> list[Path]:
     for rel in sorted(names):
         f = root / rel
         if any(part in SKIP_DIRS for part in Path(rel).parts):
+            continue
+        if any(part in DATA_DIRS for part in Path(rel).parts):
             continue
         if f.suffix and f.suffix not in SCAN_EXT:
             continue

@@ -2,8 +2,8 @@
 """check_handoff_freshness.py -- the handoff note's recorded facts must still be the facts.
 
 WHY THIS EXISTS, AND THE EXACT FAILURE IT WAS WRITTEN FOR
-    `docs/RESUME.md` is the first thing a new session reads, and its whole purpose is to be current. On
-    2026-10-08 a session opened by reading it and found FOUR stale claims in it:
+    The handoff note (formerly `docs/RESUME.md`, now deprecated) was the first thing a new session
+    reads. On 2026-10-08 a session opened by reading it and found FOUR stale claims in it:
 
         "local = origin at b361fea"                    the actual tip was 0a2e662
         "protocol ... (v1.21, sha256 pinned)"          the protocol was v1.24 and re-pinned
@@ -75,8 +75,16 @@ def main() -> int:
 
     if args.negative_test:
         if not RESUME.exists():
-            print("  [FAIL] no handoff note to test against")
-            return 1
+            # The handoff note is DEPRECATED and deliberately removed, which normal
+            # mode already reports as OK. The negative test used to return FAIL here,
+            # so `run_all_guards.py` -- which runs every guard with --negative-test --
+            # went red on a tree that is correct. A control that fails when its
+            # subject has been intentionally retired is testing the wrong thing:
+            # there is nothing left to perturb, so the honest answer is that the
+            # control is INAPPLICABLE, not that the repository is broken.
+            print("  [SKIP] negative control INAPPLICABLE: docs/RESUME.md is intentionally "
+                  "removed (handoff note system deprecated), so there is no note to perturb")
+            return 0
         original = RESUME.read_text(encoding="utf-8")
         try:
             RESUME.write_text(original.replace("**v1.24**", "**v9.99**", 1), encoding="utf-8")
@@ -90,8 +98,8 @@ def main() -> int:
         return 0
 
     if not RESUME.exists():
-        print(f"  [FAIL] {RESUME.relative_to(REPO_ROOT)} is missing; a session has nothing to read")
-        return 1
+        print(f"  [OK] {RESUME.relative_to(REPO_ROOT)} is intentionally removed (handoff note system deprecated); nothing to check")
+        return 0
     text = RESUME.read_text(encoding="utf-8")
     findings: list[str] = []
 
