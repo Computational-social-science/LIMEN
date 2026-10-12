@@ -1,0 +1,11 @@
+{
+  "sections": 300000,
+  "cls": {
+    "ins_align": 36070,
+    "case": 21854,
+    "del_align": 45146,
+    "other_sub": 11376,
+    "adjacent": 11903,
+    "transposition": 12285
+  }
+}

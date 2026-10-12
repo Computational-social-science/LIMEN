@@ -1,0 +1,18 @@
+{
+  "sections": 291022,
+  "err_all": {
+    "last": 42043,
+    "first": 25879,
+    "middle": 36233
+  },
+  "err_nocase": {
+    "last": 41001,
+    "middle": 33362,
+    "first": 7938
+  },
+  "expo": {
+    "first": 2294329,
+    "middle": 5614439,
+    "last": 2185836
+  }
+}

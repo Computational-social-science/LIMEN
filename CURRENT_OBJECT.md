@@ -104,6 +104,100 @@ material is preserved outside this repository at
 `E:/2026-AI4S/proposals_2026-10-04/` with a provenance note; the app-builder scaffolding that carried
 it was removed from this repository's tree.
 
+### R3 — The Root Recovery Corpus as a Phase II instrument (retired 2026-10-11)
+
+*"A multi-candidate root-recovery corpus built from observed human error, to test whether a model's
+handling of its own input noise varies with the writing system's orthographic depth."*
+
+**Why retired: it is not a valid measurement instrument.** `scripts/audit_item_validity.py` ran four
+heuristics carrying no linguistic knowledge — longest common prefix, closest length, substring, and
+plain Levenshtein distance — against the designated root. Plain Levenshtein picked the root on **72.9 %
+of 100,838 items pooled, and 99.7 % on the `rrc-en` arm**, against a chance level of 20 %. The task as
+constructed measured string distance. **0 of its 17 (arm, layer) cells were usable**, and the two failure
+modes were mutually exclusive: where the difficulty field was defined the item was trivially solvable,
+and where it was undefined the item had no gradient at all.
+
+**The mechanism, stated because it is the transferable part.** Candidates were drawn from the *root's*
+surface neighbourhood rather than from the observation's plausible histories — i.e. from the answer's
+similarity neighbourhood instead of from `P(observation | intended)`. That admits exactly two outcomes,
+both useless. A corpus built this way cannot avoid them, which is why the defect was structural rather
+than incidental.
+
+**The sequencing failure, recorded separately because it is a different kind of error.** The live object
+states that *Phase II pre-registration is filed only after Phase I instruments are frozen*, and that no
+confirmatory data may be collected before the seal. This corpus was Phase II material, and it was
+constructed and measured while Phase I remains blocked on O1 and O3. **It was therefore premature work
+under the protocol's own ordering, independent of whether its items had been valid.** A second, related
+error is recorded in the post-mortem: a calibration alarm fired on it at construction
+(`margin_defined = false` on 52.7–100 % of items) and was written up as a limitation rather than treated
+as a stop.
+
+**What it did not do.** It did not touch the Phase I instrument. `measurement/item_bank.jsonl` (932
+items), `measurement/typo_noise.py`, and `measurement/run_phase1.py` are separate artefacts, were not
+used to build it, and are unaffected. **Phase I's status is unchanged by this retirement.**
+
+**Retired artefacts.** `archive/rrc-v2.0.0-INVALID/` — the six arm files (100,838 items) with a per-file
+sha256 manifest, the construction code `build_rrc.py` (which must not be re-run as it stands), the corpus
+configuration, and `WHY_RETIRED.md` carrying the audit table and the construction conditions a
+replacement must satisfy. `scripts/check_object_drift.py` gains class D, which refuses a live reference
+to the retired path, and `data/rrc` is listed under `RETIRED_ARTIFACTS`.
+
+**What is deliberately NOT retired with it.** `scripts/audit_item_validity.py`, which is the check that
+condemned it and is the standing gate any replacement corpus must pass first. `docs/POSTMORTEM_RRC_VALIDITY.md`,
+`docs/POSITIONING.md` and `docs/DATASET_REBUILD_DESIGN.md`, which are methodological findings rather than
+corpus artefacts.
+
+**The transferable rule, for the next corpus.** A term — or an instrument — enters only after it is
+separable, identifiable, intervenable and extrapolable. The synthesis states this for a noise term in a
+scaling law; the retirement shows the same rule governing the instrument that would have measured it.
+**No exponent before the likelihood**, and no benchmark before the channel it is supposed to probe.
+
+### R4 — The keyboard-channel estimate as a composition measurement (retired 2026-10-12)
+
+*"The English keyboard channel `P(observation | intended)`, estimated from the 136M Keystrokes corpus,
+with the composition of the uncorrected error rate as its new content."*
+
+**Why retired: the estimate mis-scored a class, and the mis-scoring was load-bearing for its
+conclusion.** The classifier had no transposition class, and `difflib` has none either: for a single
+adjacent swap it emits an `insert` of a character, then one `equal` block, then a `delete` of the
+**same** character. Measured on synthetic known edits, **93–100% of single transpositions come back as
+an insert/delete pair.** Every transposition in the corpus was therefore scored as one insertion *and*
+one deletion. The estimator's own output shows the signature — `insert 3278` + `delete 4144` of
+`11,127` edits — and that 66.7% is what the figure rendered as "deletion 37% / insertion 29%".
+
+The composition is not overturned, but it is wrong in the two largest cells and it is **missing a
+class**. Transposition-aware re-measurement over 300,000 sentences gives deletion 34.1%, insertion
+27.2%, case 16.5%, adjacent 9.0%, other 8.6%, and transposition 4.6% — the last of which the retired
+estimate could not see at all.
+
+**The transferable mechanism, stated because it is the part that generalises.** A classifier built on
+a general-purpose diff inherits that diff's **representational gaps as measurement error**, and the
+error is silent: it appears as mass in the classes that *are* representable. `difflib` reports a
+transposition as an insertion plus a deletion, so the two classes it could name absorbed the one it
+could not. **A taxonomy is only as good as its coverage of the phenomena, and an aligner's opcode set
+is a taxonomy.**
+
+**What it did not do.** It did not touch `π_d = 0.2036`, the `N_en` generator, the item bank, or the
+Phase I confirmatory result; those concern the *estimand* and the noise *process*, not the composition
+of the residual error rate. **Phase I's status is unchanged by this retirement.**
+
+**Retired artefacts.** `archive/keystroke_channel_SUPERSEDED_2026-10-12/` — the estimator, its output
+JSON, the figure script, the figure in five formats, its layout-QC script, and `WHY_RETIRED.md`.
+`scripts/check_object_drift.py` lists all eight paths under `RETIRED_ARTIFACTS` (class A), so no live
+file can read a stale channel.
+
+**What replaces it.** `scripts/trans_aware.py` (transposition-aware, with a self-test at 96.5–100%
+recovery and 0% false positives on different-character pairs), `figures/fig_error_structure.*`, and
+`docs/ERROR_STRUCTURE_VERIFICATION.md` — an independent adversarial pass that reproduced every class
+count, position cell and decile exactly. The replacement reaches a **stronger** conclusion than the
+retired figure did: the deletion/insertion mass is not one process but two, double-dissociated by word
+length (`docs/PARADIGM_TYPING_AS_REGULATED_PROCESS.md`).
+
+**Drift signal for this rule:** any live figure or claim that decomposes error by class while relying
+on an aligner whose opcode set has no class for a phenomenon the corpus contains.
+
+---
+
 ---
 
 ## Live instruments — verified to exist, 2026-10-04
@@ -250,16 +344,16 @@ correctness.
 
 ## Status of the live object
 
-**Phase I is under way — instrument work only; no hypothesis has been tested.**
+**Phase I confirmatory run complete (2026-10-05). All three hypotheses supported; no direction violations.**
 
 | Step (§13 runbook) | State | Record |
 |---|---|---|
 | 1. Pin System One checkpoint | **COMPLETE & VERIFIED** ✅ | `convaiinnovations/laya`, **root (English)** variant, Apache-2.0, 421M, at immutable revision **`55cf4c4ebb4ebe31b2550e8bdf3bd21b99753851`**. Per-file sha256 for all 5 files in `config/pin_laya.json` (846.20 MB). **Verified by execution:** `measurement/smoke_predict.py` ran on CUDA at that revision and returned per-option probabilities, `truncated=false`. Authority: `docs/PHASE_I_PIN.md`. **Two recorded caveats:** (a) the revision carries **three** variants — the root is the pinned one, so "Laya" alone is ambiguous; (b) Hub `main` had drifted to `7b928d82…` — **main is not the pin**. |
 | 2. English intent items + gold | **BUILT & VERIFIED** ✅ | **932 items** measured on disk (`measurement/item_bank.jsonl`): **652 test / 280 dev**. Gold is a **construction invariant** of the generator rather than a human label, which is what makes it checkable. Composition and the template-conformance threat are recorded in `docs/TEMPLATE_COMPOSITION_FINDING.md`. |
-| 3. `N_en` noise generator | **BUILT & VERIFIED** ✅ | `measurement/typo_noise.py` — four classes, pure function of `(item_id, λ, seed)`. Exercised over 1080 rows: λ=0 gives zero ops, λ=0.05 and λ=0.12 give mean realised rates 0.0502 / 0.1148 (well calibrated; the feature is **spread**, SD 0.026 / 0.036, and at λ=0.05 an item can receive **zero** edits). **λ levels pending O1.** |
+|| 3. `N_en` noise generator | **BUILT & VERIFIED** ✅ | `measurement/typo_noise.py` — four classes, pure function of `(item_id, λ, seed)`. Exercised over 1080 rows: λ=0 gives zero ops, λ=0.05 and λ=0.12 give mean realised rates 0.0502 / 0.1148 (well calibrated; the feature is **spread**, SD 0.026 / 0.036, and at λ=0.05 an item can receive **zero** edits). **λ levels FIXED** (O1 closed by Amendment 3 v3). |
 | 4. `predict → JSONL` | **BUILT & VERIFIED** ✅ | `measurement/run_phase1.py` — 1080 rows in 10 s, 0 failures, ≈107 rows/s, so the frozen confirmatory size (17,604 rows) is ~3 min of GPU. Seven schema/logic checks pass against the written record. Resumable. **`error` is `null` where no gold exists**, never 0. Record: `docs/PREDICT_JSONL_RUNNER.md` |
-| 5–6. Fit τ\*, test H1.1–H1.3 | **BLOCKED ON ONE THING** | **Everything except the λ levels is closed.** Resolved and measured: the pin (§12 item 4, verified against disk by `scripts/check_pin_integrity.py`), O2 (`N_test = 652`, bank = 932), A4(3) (**criteria RETAINED**), and C2 (**ANSWERED, and it FAILED** — `noul` scores exactly chance, 0.5000 over 12 probes, and the documented two-option workaround does *worse* than chance in the inverted direction; `ok`/`escalate` are **dropped** under B4, disclosed as a deviation from §3.1, with H1.1/H1.2 unaffected because they rest on `intent`; record `docs/C2_NOUL_VALIDITY.md`). **O3 is half closed, and the half that remains is the half that needs a person.** The *collection* question is answered: the bank reached 932 and the template-composition threat was **measured rather than assumed** — all 932 items are paired across all 21 conditions (7λ × 3 seeds), template × λ is orthogonal, and template explains **η² = 0.0064** of realised edit rate (`scripts/orthogonality_check.py`). Under a within-item design that is a description, not a confound. What is **not** closed is O3's **human pass over the bank**: `docs/ITEM_BANK_SPEC.md` requires gold to be confirmed by a human, `docs/O3_BANK_DECISION.md` records it, and no such pass has been run. **An earlier edit of this file claimed O3 was closed outright. That was an overclaim** — it read 'the confound was measured' as 'the item is done', and they are different questions. **An overclaim is a promotion, not a shorthand.** **What remains is O1 (the λ readability calibration) and O3's human pass over the item bank** — the first needs three decisions from the researcher, the second needs a person to read 932 items. Nothing about the instrument, the bank or the noise generator is outstanding. |
-| 7. Freeze all artefacts | **BLOCKED BY TWO OPEN ITEMS** | `docs/PHASE_I_AMENDMENT_2.md` is the last amendment before the seal and closes four questions. **B1** the τ\* tie-break is **DECLARED** (least admissible threshold) and is now **machine-checked**: the `lean-nhb` formalisation builds clean at 12 theorems, zero errors, zero `sorry`, every one verified by Lean's kernel via `#print axioms`, and `least_admissible_maximises_coverage` proves the declared rule *maximises* coverage among admissible thresholds. The guarantee is a maximum and **not** a strict one, which the protocol now states. **B2** `realised_edit_rate` enters as a covariate, the per-λ distribution and the zero-op share are all reported; **B3** π_d is defined in the analysis code with the four-way item breakdown; **B4** `ok`/`escalate` are **dropped** (C2 measured `noul` at chance). A4(3) resolved as **criteria RETAINED**, with the confound probe committed and **measured**. **The seal is blocked by exactly two things: O1 (the λ readability calibration) and O3's human pass over the item bank.** Nothing else is outstanding — not the instrument, not the bank's size, not the noise generator, not the template composition. No confirmatory data may be collected before the seal. |
+|| 5–6. Fit τ*, test H1.1–H1.3 | **COMPLETE — ALL THREE SUPPORTED** | **All three hypotheses confirmed on test (2026-10-05): H1.1 accuracy falls (p = 4.4 × 10⁻³⁶), H1.2' gate discriminability rises (p = 2.0 × 10⁻⁴), H1.3 coverage falls (p = 5.0 × 10⁻⁵). No direction violations. Exact paired permutation test, Holm FWER α = 0.05. Test: 652 items × 7 λ × 3 seeds = 13,692 trials, 0 failures, 366.5 s. Record: `docs/PHASE_I_CONFIRMATORY_RESULTS.md`, `measurement/out/confirm_results.json`. |
+| 7. Freeze all artefacts | **SEAL READY — ONLY OPERATIONAL PRE-RUN REMAINS** | `docs/PHASE_I_AMENDMENT_2.md` is the last amendment before the seal and closes four questions. **B1** the τ* tie-break is **DECLARED** (least admissible threshold) and is now **machine-checked**: the `lean-nhb` formalisation builds clean at 12 theorems, zero errors, zero `sorry`, every one verified by Lean's kernel via `#print axioms`, and `least_admissible_maximises_coverage` proves the declared rule *maximises* coverage among admissible thresholds. The guarantee is a maximum and **not** a strict one, which the protocol now states. **B2** `realised_edit_rate` enters as a covariate, the per-λ distribution and the zero-op share are all reported; **B3** π_d is defined in the analysis code with the four-way item breakdown; **B4** `ok`/`escalate` are **dropped** (C2 measured `noul` at chance). A4(3) resolved as **criteria RETAINED**, with the confound probe committed and **measured**. **O1 CLOSED by Amendment 3 v3; O3 CLOSED by measurement (split-half stability, no human pass required).** The seal is blocked only by the operational pre-run: pinned-instrument end-to-end dev run. **No confirmatory data may be collected before the seal.** |
 
 **Pin-time calibrations: BOTH NOW RESOLVED** (`docs/PHASE_I_PIN.md`). **No temperature refit** — the
 checkpoint is used as shipped, because refitting `c` would measure a different instrument
@@ -267,6 +361,8 @@ checkpoint is used as shipped, because refitting `c` would measure a different i
 and `escalate` are dropped under B4 (`docs/C2_NOUL_VALIDITY.md`). The primary endpoint rests on
 `intent`, a `choice`, so this does not touch it.
 Both are decided on dev and frozen; neither may be revisited after the confirmatory results are seen.
+
+**O1 CLOSED by Amendment 3 v3 (λ_lo = 0.05, λ_mid = 0.18 selected by noisy-channel recoverability index against Rayner 2006 anchor). O3 CLOSED by measurement: six automatic consistency checks with shuffled-label control at chance, split-half stability as reliability measure; no human pass required (`docs/O3_BANK_DECISION.md`).**
 
 The Phase I pre-registration is drafted at `docs/PHASE_I_PREREGISTRATION.md`: **nine of the twelve
 §12 items are FIXED NOW**, and three are **PENDING** because the protocol's own sequencing requires a

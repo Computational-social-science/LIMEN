@@ -31,6 +31,11 @@ from pathlib import Path
 # ---------------------------------------------------------------- A: retired artifacts
 # Paths that must NOT exist in the live tree. These were moved into archive/ on 2026-10-04.
 RETIRED_ARTIFACTS = [
+    #  RRC v2.0.0, retired 2026-10-11 as an invalid measurement instrument: a knowledge-free
+    #  Levenshtein pick selects the root on 72.9 % of its items (99.7 % on rrc-en) and 0 of its 17
+    #  (arm, layer) cells are usable. The evidence is in archive/rrc-v2.0.0-INVALID/WHY_RETIRED.md.
+    #  The directory must not exist in the live tree, so no path can read a stale copy.
+    "data/rrc",
     "config/arm0_spec.json",
     "config/edit_guard.json",
     "config/science_state.json",
@@ -55,6 +60,20 @@ RETIRED_ARTIFACTS = [
     "evidence/arm0_result.md",
     "evidence/cost_ledger.md",
     "QTVtynAWErNOSxyf-grok-workspace",
+    #  The keyboard-channel ESTIMATE, retired 2026-10-12. Its classifier had no transposition
+    #  class and difflib reports a single adjacent swap as insert+delete of the SAME character
+    #  (93-100% of cases, measured), so every transposition was scored as one insertion AND one
+    #  deletion. The composition it produced is superseded by scripts/trans_aware.py; evidence in
+    #  archive/keystroke_channel_SUPERSEDED_2026-10-12/WHY_RETIRED.md. The paths must not exist in
+    #  the live tree, so no figure or guard can read a stale channel.
+    "data/processed/keystroke_channel.json",
+    "scripts/estimate_keystroke_channel_aligned.py",
+    "scripts/fig_keystroke_channel.py",
+    "scripts/qc_fig_keystroke_channel.py",
+    "viz/figures/fig_keystroke_channel.png",
+    "viz/figures/fig_keystroke_channel.jpg",
+    "viz/figures/fig_keystroke_channel.svg",
+    "viz/figures/fig_keystroke_channel.tiff",
 ]
 
 # ---------------------------------------------------------------- B: execution contexts
@@ -65,6 +84,17 @@ RETIRED_ARTIFACTS = [
 # mention: prose that happens to begin with a filename ("check_edit_guard.py is: the arm's spec
 # carries CRLF…") matched an earlier, looser form of the first rule. Requiring `python`/`py`/`bash`/
 # `sh`/`make`/`pytest` before the name keeps the rule to genuine invocations.
+# ---------------------------------------------------------------- D: retired data references
+#  A retired ARTIFACT is caught by class A when the path exists. That leaves a gap: a live script may
+#  still POINT at the retired path, and silently do nothing -- or worse, create the directory again and
+#  fill it. This class closes it by refusing any reference from live code. The archive and this guard
+#  are exempt, because they are where the retirement is documented.
+RETIRED_DATA_REFS = [
+    (re.compile(r"""["'](?:.*/)?data/rrc(?:/|["'])"""), "points at the retired RRC corpus"),
+    (re.compile(r"""["'](?:.*/)?data\rrc(?:\|["'])"""), "points at the retired RRC corpus"),
+]
+RETIRED_DATA_EXEMPT = ("scripts/check_object_drift.py", "scripts/audit_item_validity.py")
+
 RETIRED_RUN_PATTERNS = [
     # The line may begin with prose — "Run `python scripts/x.py` first" — so the interpreter token
           # is required but NOT anchored to the start of the line. **Anchoring it was a real blind spot,
@@ -215,6 +245,31 @@ def check_instructions(files: list[Path], root: Path) -> list[str]:
     return findings
 
 
+def check_data_refs(files: list[Path], root: Path) -> list[str]:
+    """[D] no live file may POINT at a retired DATA path.
+
+    Class A catches a retired artifact only while the path EXISTS, so a live script could keep
+    pointing at it and quietly do nothing -- or recreate the directory and refill it. This class
+    refuses the reference itself. Wiring it in is the whole point: defined-but-not-scanned is the
+    exact failure it exists to prevent, and this function was inert until it was added to main().
+    """
+    findings = []
+    for f in files:
+        rel = f.relative_to(root).as_posix()
+        if rel in SELF_EXEMPT or rel in RETIRED_DATA_EXEMPT:
+            continue
+        try:
+            text = f.read_text(encoding="utf-8", errors="replace")
+        except OSError:
+            continue
+        for i, line in enumerate(text.splitlines(), 1):
+            for pat, why in RETIRED_DATA_REFS:
+                if pat.search(line):
+                    findings.append(f"[D] {rel}:{i} {why} -> {line.strip()[:90]}")
+                    break
+    return findings
+
+
 def check_concepts(files: list[Path], root: Path) -> list[str]:
     findings = []
     for f in files:
@@ -252,6 +307,7 @@ def negative_test(root: Path) -> int:
 
     baseline = (check_artifacts(root)
                 + check_instructions(tracked_and_live_files(root), root)
+                + check_data_refs(tracked_and_live_files(root), root)
                 + check_concepts(tracked_and_live_files(root), root))
     results.append(("clean tree reports no drift", len(baseline) == 0))
 
@@ -327,6 +383,7 @@ def main() -> int:
     files = tracked_and_live_files(root)
 
     findings = (check_artifacts(root) + check_instructions(files, root) +
+                check_data_refs(files, root) +
                 check_concepts(files, root) + check_lean_sorry_admit(files, root))
 
     if args.verbose:
