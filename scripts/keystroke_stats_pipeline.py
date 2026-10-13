@@ -24,8 +24,10 @@ from pathlib import Path
 # CONFIGURATION
 # ──────────────────────────────────────────────────────────────────────────────
 
-INPUT_ROOT = Path(r"E:\2026-AI4S\autoresearch\external-data\Keystrokes\Keystrokes\files")
-OUTPUT_DIR = Path(r"E:\2026-AI4S\autoresearch\data\processed\keystroke_stats")
+INPUT_ROOT = (Path(__file__).resolve().parents[1]
+              / "external-data" / "Keystrokes" / "Keystrokes" / "files")
+OUTPUT_DIR = (Path(__file__).resolve().parents[1]
+              / "data" / "processed" / "keystroke_stats")
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
 PARQUET_OUT = OUTPUT_DIR / "keystroke_session_stats.parquet"

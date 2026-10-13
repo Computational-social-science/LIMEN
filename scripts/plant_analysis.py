@@ -10,7 +10,8 @@ opposite sign. Two questions follow, and they are different questions:
 import json, pathlib, random, math
 from collections import defaultdict
 
-P = pathlib.Path(r"E:\2026-AI4S\autoresearch\measurement\out\prop_a_planted.jsonl")
+REPO = pathlib.Path(__file__).resolve().parents[1]
+P = REPO / "measurement" / "out" / "prop_a_planted.jsonl"
 rows = [json.loads(l) for l in P.read_text(encoding="utf-8").splitlines() if l.strip() and '"correct"' in l]
 by = defaultdict(dict); dmg = defaultdict(list)
 for r in rows:

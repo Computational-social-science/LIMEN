@@ -21,7 +21,7 @@ that gap.
 import json, pathlib, sys
 import pandas as pd, numpy as np
 
-REPO = pathlib.Path(r"E:\2026-AI4S\autoresearch")
+REPO = pathlib.Path(__file__).resolve().parents[1]
 C = pathlib.Path(r"C:\keystroke-out")
 
 # surviving errors, from the transposition-aware measurement over 300,000 sentences

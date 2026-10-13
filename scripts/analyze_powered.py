@@ -77,7 +77,7 @@ def analyze(title, path, comps):
                   % (label+" "+key.split("@")[0], m, lo, hi, mde, pv, power, verdict))
         print()
 
-OUT = pathlib.Path(r"E:\2026-AI4S\autoresearch\measurement\out")
+OUT = pathlib.Path(__file__).resolve().parents[1] / "measurement" / "out"
 analyze("A. FAMILY, n=280", OUT/"prop_a_powered_family.jsonl",
         [("geometry","structure","geometry-structure"),
          ("geometry","clean","geometry-clean"),

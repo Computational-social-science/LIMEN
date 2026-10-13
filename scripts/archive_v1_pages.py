@@ -15,7 +15,7 @@ and let the rest go. ~20 KB replaces 34 MB.
 from __future__ import annotations
 import hashlib, json, pathlib, shutil, sys
 
-REPO = pathlib.Path(r"E:\2026-AI4S\autoresearch")
+REPO = pathlib.Path(__file__).resolve().parents[1]
 BACKUP = REPO / "keystroke-observatory-PRE-REBUILD-BACKUP-20261012-181735"
 OUT = REPO / "evidence" / "v1_superseded" / "v1_pages_snapshot"
 

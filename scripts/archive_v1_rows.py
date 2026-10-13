@@ -15,7 +15,7 @@ from __future__ import annotations
 import hashlib, json, pathlib, sys
 import pandas as pd
 
-REPO = pathlib.Path(r"E:\2026-AI4S\autoresearch")
+REPO = pathlib.Path(__file__).resolve().parents[1]
 V1B = (REPO / "keystroke-observatory" / "_legacy_v1" / "keystroke_observatory"
        / "dist" / "public" / "keystroke_session_stats.parquet")
 OUT = REPO / "evidence" / "v1_superseded"

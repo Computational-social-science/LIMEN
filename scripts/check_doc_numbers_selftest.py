@@ -6,7 +6,7 @@ Nothing in the real tree is modified.
 """
 import importlib.util, pathlib, shutil, sys, tempfile
 
-REPO = pathlib.Path(r"E:\2026-AI4S\autoresearch")
+REPO = pathlib.Path(__file__).resolve().parents[1]
 spec = importlib.util.spec_from_file_location("cdn", REPO/"scripts"/"check_doc_numbers.py")
 m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m)
 

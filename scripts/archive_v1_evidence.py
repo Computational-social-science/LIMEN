@@ -34,7 +34,7 @@ from __future__ import annotations
 import hashlib, json, pathlib, shutil, sys
 import pandas as pd
 
-REPO = pathlib.Path(r"E:\2026-AI4S\autoresearch")
+REPO = pathlib.Path(__file__).resolve().parents[1]
 OUT = REPO / "evidence" / "v1_superseded"
 V1 = REPO / "data" / "processed" / "keystroke_stats" / "keystroke_session_stats.parquet"
 

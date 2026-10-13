@@ -241,7 +241,7 @@ def main():
     # ---- 1. PLANT ---------------------------------------------------------------
     truth = planted_matrix(pos, nb)
     recovery_rate = 0.0
-    word_src = pathlib.Path(r"E:/2026-AI4S/external-data/birkbeck/missp.dat")
+    word_src = pathlib.Path(r(pathlib.Path(__file__).resolve().parents[2] / "external-data" / "birkbeck" / "missp.dat").as_posix())
     base_words = read_correct_words(word_src, limit=4000) if word_src.exists() else []
     if not base_words:
         base_words = ["the", "model", "channel", "keyboard", "estimate", "corpus", "signal"]

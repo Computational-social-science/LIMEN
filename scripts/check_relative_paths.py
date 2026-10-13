@@ -165,9 +165,28 @@ def scrub(text: str) -> str:
     text = re.sub(r"(?<!\$)\$[^$\n]*\$(?!\$)", lambda m: " " * len(m.group(0)), text)
 
     # A regex literal can contain something that looks like a machine path - e.g. a drive-letter
-    # class `[A-Za-z]:[\\/]` or the fragment `n:\*\*`. That is pattern text, not a path, so any span
-    # inside an r-string is blanked before the scan.
-    text = re.sub("r\"[^\"\\n]*\"", lambda m: " " * len(m.group(0)), text)
+    # class `[A-Za-z]:[\\/]` or the fragment `n:\*\*`. That is pattern text, not a path.
+    #
+    # BUT BLANKING EVERY r"..." STRING HIDES REAL PATHS, and that is what this line did until
+    # 2026-10-14. `pathlib.Path(r"E:\2026-AI4S\autoresearch\measurement\out")` is an r-string, so
+    # it was scrubbed before the scan could see it: EIGHT tracked scripts in scripts/ hardcoded an
+    # absolute path and this guard reported "no hardcoded absolute path in any code, config or
+    # script" on every run. A guard that cannot fail on the exact defect it exists for is worse
+    # than no guard, because it reports the property as verified.
+    #
+    # Found while preparing to RENAME the directory these paths point at -- which is precisely the
+    # situation the guard is supposed to make safe, and precisely when it would have said nothing.
+    #
+    # The distinction that matters is not the r-prefix but whether the content is a REGEX. A regex
+    # literal is blanked; a plain path literal is not. Heuristic: a string containing regex
+    # metacharacters (character classes, escaped classes, quantifiers) is pattern text.
+    def _blank_regex_only(m: re.Match) -> str:
+        body = m.group(0)
+        if re.search(r"\[[^\]]*\]|\\[dDsSwWbB]|\(\?|\*|\+|\\\.", body[2:-1]):
+            return " " * len(body)
+        return body
+
+    text = re.sub('r"[^"\\n]*"', _blank_regex_only, text)
 
     # A drive letter is a token START, so the character before it must not be a word character.
     # `false:/true:` is a wire-format token in prose: the `e` is mid-word, so this is not a drive.
