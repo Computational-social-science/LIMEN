@@ -47,11 +47,15 @@ try:
     import scienceplots  # noqa: F401 - registers the styles on import
 except ImportError:  # pragma: no cover - the figures must be produced even so
     # A STYLE PACKAGE IS NOT A DEPENDENCY OF THE RESULT. The figures are produced either way and the audit
-    # measures geometry, which the style does not change; what must NOT happen is a SILENT substitution, so
+    # MEASURED: the audit DOES depend on the style. With scienceplots present the layout audit exits 0;
+    # with it blocked in-process the same audit exits 1 on `fig4: '0.0' overlaps '0.70'` -- a collision
+    # the shipped figure does not have. So a silent fallback makes the audit report a defect that is not
+    # there, and hides one that might be. What must NOT happen is a SILENT substitution, so
     # the fallback says so, loudly, every run.
     scienceplots = None
     print("  [WARN] scienceplots is NOT installed - falling back to the default matplotlib style. "
-          "The figures are still correct; they are not in the journal house style.")
+          "A layout audit run in this state measures a DIFFERENT render, so its "
+                  "verdict is not about the shipped figures.")
 
 # OFFICIAL JOURNAL STYLES, then project overrides. Skipped when the package is absent rather than crashing:
 # the geometry the audit measures does not depend on the style sheet.

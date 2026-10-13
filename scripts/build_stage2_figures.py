@@ -130,11 +130,16 @@ def main() -> int:
         # A STYLE PACKAGE IS NOT A DEPENDENCY OF THE RESULT. This environment lost `scienceplots` twice in
         # one session (toolchain updates) and each time the layout audit went red and blocked commits - a
         # missing font for the figures blocking the pipeline that publishes them. The figures are produced
-        # either way and the audit measures geometry, which the style does not change; what must NOT happen
+        # either way and the audit DOES depend on the style: measured, with scienceplots present the
+# layout audit exits 0, and with it blocked in-process the same audit exits 1 on
+# `fig4: '0.0' overlaps '0.70'` -- a collision the shipped figure does not have.
+# So a silent fallback does not merely change the look; it makes the audit report a
+# defect that is not there, and hides one that might be; what must NOT happen
         # is a SILENT substitution, so the fallback says so, loudly, every run.
         scienceplots = None
         print("  [WARN] scienceplots is NOT installed - falling back to the default matplotlib style. "
-              "The figures are still correct; they are not in the journal house style.")
+              "A layout audit run in this state measures a DIFFERENT render, so its "
+                  "verdict is not about the shipped figures.")
 
     # OFFICIAL JOURNAL STYLES, then project overrides.
     #   'science' + 'nature' give the Nature/Science typographic conventions (sans-serif, small ticks,

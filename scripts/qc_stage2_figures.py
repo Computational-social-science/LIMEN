@@ -63,6 +63,33 @@ def main() -> int:
     captured: list = []
     real_subplots = plt.subplots
 
+    # REFUSE TO AUDIT A RENDER THE PROJECT DOES NOT SHIP.
+    #
+    # The figure scripts fall back to the default matplotlib style when
+    # `scienceplots` is absent, and print a warning. That warning was being read as
+    # advice rather than as a correctness problem, and the claim in those scripts --
+    # "the audit measures geometry, which the style does not change" -- is FALSE.
+    # Measured on 2026-10-14: with the style present this audit exits 0; with the
+    # style blocked in-process the SAME audit exits 1 on
+    #     fig4: '0.0' overlaps '0.70'
+    # which is a collision the shipped figure does not have.
+    #
+    # So in the fallback state this guard would report a defect that is not there and
+    # could hide one that is. An audit that cannot check what it claims to check must
+    # say so rather than produce a verdict about something else -- the same rule this
+    # suite applies to every other guard. Refusing is the honest outcome; the exit
+    # code is 2 ("unverified") rather than 1 ("failed"), because nothing has been
+    # shown to be wrong.
+    if importlib.util.find_spec("scienceplots") is None:
+        print("  [FAIL] scienceplots is NOT installed, so the figure scripts would fall")
+        print("         back to the default matplotlib style. This audit would then")
+        print("         measure a DIFFERENT render from the shipped figures: measured,")
+        print("         the same audit reports `fig4: '0.0' overlaps '0.70'` without the")
+        print("         style and passes with it. Refusing rather than reporting a")
+        print("         verdict about the wrong artefact.")
+        print("         Fix by installing the declared dependency (requirements.txt).")
+        return 2
+
     def spy(*a, **k):
         f, ax = real_subplots(*a, **k)
         captured.append(f)
