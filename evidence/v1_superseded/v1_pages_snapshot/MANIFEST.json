@@ -1,0 +1,36 @@
+{
+  "_why": "The pre-rebuild backup held these files and nothing else did. HANDOVER_AUDIT.md cites line numbers in them, so they are kept verbatim; the remaining 34 MB was redundant with _legacy_v1.",
+  "source": "keystroke-observatory-PRE-REBUILD-BACKUP-20261012-181735",
+  "files": {
+    "src/pages/index.md": {
+      "sha256": "3fafc495e71bea9ede8e5f3105b6beffeaab968d5b85d08b1a260fb9d9eae33c",
+      "bytes": 6509,
+      "line_count": 272
+    },
+    "src/pages/participants.md": {
+      "sha256": "f2c144a8257f949a4196a188c8424204c3228181c7a4d4d9e1656b3723ad6eee",
+      "bytes": 5327,
+      "line_count": 187
+    },
+    "src/pages/sessions.md": {
+      "sha256": "9ba0523bccc956f6a8b7e0a18a8f5d7e489b4ae70a0100c2ce5b8727167f3138",
+      "bytes": 6310,
+      "line_count": 210
+    },
+    "src/data/keystroke.js": {
+      "sha256": "2858006943b77406470c2c65294c0d320e3ec9d8d878aee73d2647577836a5ff",
+      "bytes": 3017,
+      "line_count": 102
+    },
+    "README.md": {
+      "sha256": "73603bffa74b3fb21ffaec787b64f1f60f2611a60fc6c59ccd2d39f4291a875d",
+      "bytes": 7926,
+      "line_count": 207
+    },
+    "observable.config.js": {
+      "sha256": "e31ea0bb09cd88dfa2ed453e73de4ccfd6bde4ee63a41c4487f2cb5dfe18f4e5",
+      "bytes": 292,
+      "line_count": 14
+    }
+  }
+}

@@ -10,10 +10,11 @@ alpha = 0.05, two-sided. For a paired binary endpoint the variance of the
 difference is driven by the discordance rate; for a continuous endpoint by the
 observed SD of the paired differences.
 """
-import json, pathlib, random, math
+import json, pathlib, random, math, sys
 from collections import defaultdict
 
-P = pathlib.Path(r"E:\2026-AI4S\autoresearch\measurement\out\prop_a_planted.jsonl")
+REPO = pathlib.Path(__file__).resolve().parents[1]
+P = REPO / "measurement" / "out" / "prop_a_planted.jsonl"
 rows = [json.loads(l) for l in P.read_text(encoding="utf-8").splitlines() if l.strip() and '"correct"' in l]
 by = defaultdict(dict)
 for r in rows: by[r["item_id"]][r["arm"]] = r
@@ -54,7 +55,7 @@ for a, b, label in [("content","function","PLANT content vs function"),
 print()
 print("=== the same, on the earlier endpoint run (n = 150) ===")
 for rate in ["0.12","0.3","0.5"]:
-    P2 = pathlib.Path(rf"E:\2026-AI4S\autoresearch\measurement\out\propa_endpoint_{rate}.jsonl")
+    P2 = REPO / "measurement" / "out" / f"propa_endpoint_{rate}.jsonl"
     if not P2.exists(): continue
     rows2 = [json.loads(l) for l in P2.read_text(encoding="utf-8").splitlines() if l.strip() and '"correct"' in l]
     b2 = defaultdict(dict)
@@ -75,7 +76,7 @@ for rate in ["0.12","0.3","0.5"]:
 print()
 print("=== and noise vs clean, where the harness DID fire ===")
 for rate in ["0.12","0.3","0.5"]:
-    P2 = pathlib.Path(rf"E:\2026-AI4S\autoresearch\measurement\out\propa_endpoint_{rate}.jsonl")
+    P2 = REPO / "measurement" / "out" / f"propa_endpoint_{rate}.jsonl"
     if not P2.exists(): continue
     rows2 = [json.loads(l) for l in P2.read_text(encoding="utf-8").splitlines() if l.strip() and '"correct"' in l]
     b2 = defaultdict(dict)

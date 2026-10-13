@@ -52,11 +52,11 @@ correct state for it here.
 
 **The platform limit is real and stated by the toolkit itself**: *"NOT Windows:
 `signal.SIGALRM` and the `resource` module do not exist there, and
-`run_selftests.py` itself dies decoding the local code page."* WSL is present
+BootLoops' own self-test runner (in the BootLoops tree, not this one) dies decoding the local code page."* WSL is present
 (`Ubuntu`, stopped; `docker-desktop`, running), so the toolkit is reachable there —
 but it was **not** invoked, because nothing in the current bottleneck needs it.
 
-**The skills, however, are plain `SKILL.md` documents and they apply directly.**
+**The skills, however, are plain SKILL.md documents and they apply directly.**
 Thirteen of them, of which four bear on the work in this repository:
 
 - **`planted-truth`** — synthetic-truth controls. *Applied this session*: it

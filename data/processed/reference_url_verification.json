@@ -1,0 +1,140 @@
+[
+ {
+  "key": "hagiwara2020",
+  "url": "https://aclanthology.org/2020.lrec-1.835/",
+  "verdict": "MATCH",
+  "detail": "GitHub Typo Corpus: A Large-Scale Multilingual Dataset of Misspellings"
+ },
+ {
+  "key": "tanaka2020",
+  "url": "https://aclanthology.org/2020.acl-srw.31/",
+  "verdict": "MATCH",
+  "detail": "Building a Japanese Typo Dataset from Wikipedia\u2019s Revision History"
+ },
+ {
+  "key": "liquid2026",
+  "url": "https://huggingface.co/LiquidAI/d1-3B",
+  "verdict": "UNREACHABLE",
+  "detail": "no response"
+ },
+ {
+  "key": "dhakal2018",
+  "url": "https://doi.org/10.1145/3173574.3174220",
+  "verdict": "UNREACHABLE",
+  "detail": "HTTP 403"
+ },
+ {
+  "key": "kargaran2024",
+  "url": "https://aclanthology.org/2024.lrec-main.687/",
+  "verdict": "MATCH",
+  "detail": "GlotScript: A Resource and Tool for Low Resource Writing System Identi"
+ },
+ {
+  "key": "ravichander2021",
+  "url": "https://aclanthology.org/2021.eacl-main.259/",
+  "verdict": "MATCH",
+  "detail": "NoiseQA: Challenge Set Evaluation for User-Centric Question Answering"
+ },
+ {
+  "key": "bexte2022",
+  "url": "https://aclanthology.org/2022.lrec-1.73/",
+  "verdict": "MATCH",
+  "detail": "LeSpell - A Multi-Lingual Benchmark Corpus of Spelling Errors to Devel"
+ },
+ {
+  "key": "sengupta2021",
+  "url": "https://aclanthology.org/2021.nlp4convai-1.7/",
+  "verdict": "MATCH",
+  "detail": "On the Robustness of Intent Classification and Slot Labeling in Goal-o"
+ },
+ {
+  "key": "unicodend",
+  "url": "https://cldr.unicode.org/",
+  "verdict": "UNREACHABLE",
+  "detail": "no response"
+ },
+ {
+  "key": "unicodend2",
+  "url": "https://unicode.org/reports/tr29/",
+  "verdict": "REACHABLE",
+  "detail": "HTTP 200 (resource page: reachability only)"
+ },
+ {
+  "key": "ritchie2024",
+  "url": "https://aclanthology.org/2024.lrec-main.921/",
+  "verdict": "MATCH",
+  "detail": "LinguaMeta: Unified Metadata for Thousands of Languages"
+ },
+ {
+  "key": "van2022",
+  "url": "https://aclanthology.org/2022.lrec-1.538/",
+  "verdict": "MATCH",
+  "detail": "Writing System and Speaker Metadata for 2,800+ Language Varieties"
+ },
+ {
+  "key": "silnd",
+  "url": "https://iso639-3.sil.org/",
+  "verdict": "REACHABLE",
+  "detail": "HTTP 200 (resource page: reachability only)"
+ },
+ {
+  "key": "speer2022",
+  "url": "https://doi.org/10.5281/zenodo.7199437",
+  "verdict": "MATCH",
+  "detail": "rspeer/wordfreq: v3.0"
+ },
+ {
+  "key": "kernighan1990",
+  "url": "https://aclanthology.org/C90-2036/",
+  "verdict": "MATCH",
+  "detail": "A Spelling Correction Program Based on a Noisy Channel Model"
+ },
+ {
+  "key": "katz1992",
+  "url": "https://doi.org/10.1016/S0166-4115(08)62789-2",
+  "verdict": "MATCH",
+  "detail": "Redirecting"
+ },
+ {
+  "key": "frost1987",
+  "url": "https://doi.org/10.1037/0096-1523.13.1.104",
+  "verdict": "MISMATCH",
+  "detail": "'Log in - American Psychological Association' -- 3 of 3 significant words absent from the entry"
+ },
+ {
+  "key": "coltheart1977",
+  "url": "https://doi.org/10.4324/9781003309734-29",
+  "verdict": "MATCH",
+  "detail": "Access to the Internal Lexicon"
+ },
+ {
+  "key": "lisbach2013",
+  "url": "https://doi.org/10.1007/978-3-8348-2095-2",
+  "verdict": "MATCH",
+  "detail": "Linguistic Identity Matching"
+ },
+ {
+  "key": "bender2013",
+  "url": "https://doi.org/10.2200/S00509ED1V01Y201305HLT020",
+  "verdict": "UNREACHABLE",
+  "detail": "HTTP 404"
+ },
+ {
+  "key": "bender2018",
+  "url": "https://doi.org/10.1162/tacl_a_00041",
+  "verdict": "UNREACHABLE",
+  "detail": "HTTP 403"
+ },
+ {
+  "key": "guo2017",
+  "url": "https://proceedings.mlr.press/v70/guo17a.html",
+  "verdict": "MATCH",
+  "detail": "On Calibration of Modern Neural Networks"
+ },
+ {
+  "key": "kadavath2022",
+  "url": "https://arxiv.org/abs/2207.05221",
+  "verdict": "MATCH",
+  "detail": "Language Models (Mostly) Know What They Know"
+ }
+]

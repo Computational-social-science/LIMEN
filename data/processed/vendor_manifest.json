@@ -1,0 +1,11 @@
+{
+  "name": "d3",
+  "version": "7.9.0",
+  "license": "ISC",
+  "file": "viz/report/vendor/d3.v7.9.0.min.js",
+  "bytes": 279706,
+  "sha256": "f2094bbf6141b359722c4fe454eb6c4b0f0e42cc10cc7af921fc158fceb86539",
+  "source": "registry.npmjs.org via npm pack d3@7.9.0",
+  "integrity_verified": "tarball sha512 matches npm dist.integrity bit-for-bit; dist/d3.min.js self-reports v7.9.0",
+  "tarball_integrity": "sha512-e1U46jVP+w7Iut8Jt8ri1YsPOvFpg46k+K8TpCb0P+zjCkjkPnV7WzfDJzMHy1LnA+wj5pLT1wjO901gLXeEhA=="
+}

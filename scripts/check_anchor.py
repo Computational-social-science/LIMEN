@@ -55,7 +55,9 @@ SKIP_DIR_PARTS = {".git", "archive", "node_modules", "__pycache__", ".p2a-work",
                   # promise found inside a third-party corpus would not be ours to keep.
                   "external-data",
                   # A frozen copy of the tree taken before a rebuild. Evidence, not source.
-                  "keystroke-observatory-PRE-REBUILD-BACKUP-20261012-181735"}
+                  # DELETED 2026-10-13: a pre-rebuild tree copy was listed here; its cited
+                  # files are kept in evidence/v1_superseded/v1_pages_snapshot/.
+                  }
 
 # A path token: backticked, or a bare path-like string.
 PATH_TOKEN = re.compile(

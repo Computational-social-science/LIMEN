@@ -1,0 +1,40 @@
+{
+  "generated_by": "scripts/check_frequency_provenance.py",
+  "negative_test": true,
+  "arms_with_l2c": [
+    "rrc-zh-gh",
+    "rrc-zh"
+  ],
+  "arm_source": {
+    "rrc-zh": "cscd",
+    "rrc-zh-gh": "github_han"
+  },
+  "tables": {
+    "cscd": {
+      "source": "cscd/train.tsv",
+      "detail": "training split only",
+      "rows_read": 30000,
+      "han_total": 2989950,
+      "distinct_characters": 4876,
+      "ten_commonest": "的一在中国人有是日了"
+    },
+    "github_han": {
+      "source": "GitHub_Typo_Corpus/github-typo-corpus.v1.0.0.jsonl",
+      "detail": "the arm's own release. Not a held-out split: this release IS the arm's source, so the frequency and the items share rows. Stated, not glossed.",
+      "rows_read": 203270,
+      "rows_with_han": 3960,
+      "han_total": 552161,
+      "distinct_characters": 2614,
+      "ten_commonest": "的用一是个数在以中有"
+    }
+  },
+  "checked": {
+    "arms_mapped": 2,
+    "items": 4678,
+    "roots_in_table": 4666
+  },
+  "findings": [
+    "B(control) rrc-zh-gh: item rrc-zh-gh-L2c-00000 records source 'cscd', arm maps to 'github_han'"
+  ],
+  "note": "Each arm's L2c difficulty is the root's rank under that arm's OWN corpus frequency. A shared table would be a mismatched denominator."
+}

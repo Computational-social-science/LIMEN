@@ -88,3 +88,15 @@ viz/*_mml_harvest.html
 # untracked binary swept in by `git add -A` is exactly how a repository grows 100 MB of accident
 Hermes-Setup.exe
 *Setup.exe
+
+# DERIVED PARQUET IS NOT TRACKED. `keystroke_section_stats.parquet` is 153 MB and
+# GitHub rejects any single file over 100 MB, so tracking it would break the push
+# rather than the commit -- the failure would appear at `git push`, after the work
+# looked finished. It is fully regenerable from the corpus in ~4 minutes by
+# `scripts/keystroke_stats_v2_parallel.py`, and its provenance travels instead:
+# MANIFEST.json carries the parquet sha256, the corpus zip sha256, the file count
+# and the skipped-row count, which is what a reader actually needs to verify a
+# number. Caught when `git add -A data/processed` staged it during the cleanup.
+data/processed/keystroke_stats_v2/keystroke_section_stats.parquet
+data/processed/keystroke_stats_v2_smoke/keystroke_section_stats.parquet
+data/processed/keystroke_stats/keystroke_session_stats.parquet

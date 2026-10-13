@@ -54,7 +54,9 @@ SKIP_DIRS = {".git", "archive", "node_modules", "__pycache__", ".p2a-work", "dis
              # absolute path inside it is not ours to make relative.
              "external-data",
              # A frozen pre-rebuild copy of the tree. Evidence, not source.
-             "keystroke-observatory-PRE-REBUILD-BACKUP-20261012-181735"}
+             # DELETED 2026-10-13: a pre-rebuild tree copy was listed here; its cited
+             # files are kept in evidence/v1_superseded/v1_pages_snapshot/.
+             }
 SKIP_SUFFIX = {".pdf", ".docx", ".png", ".jpg", ".jpeg", ".zip", ".gz", ".safetensors", ".ico",
                ".xlsx", ".pptx", ".pyc", ".woff", ".woff2", ".ttf", ".eot"}
 

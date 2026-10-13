@@ -1,0 +1,278 @@
+{
+  "dataset": "RRC",
+  "version": "2.0.0+n5",
+  "seed": 20261016,
+  "n_options": 5,
+  "total_items": 100838,
+  "arms": {
+    "rrc-en": {
+      "language": "English",
+      "source": "GitHub Typo Corpus prose (.md/.rst), lexicon-validated",
+      "n_items": 2337,
+      "source_records": 1404,
+      "sha256": "f51f7df47a195c7f539fd090293b0099514874dd38ef36d4d3becf2a78f8230b",
+      "chance": 0.2,
+      "dropped": 0,
+      "dropped_script": 0,
+      "dropped_margin": 110,
+      "layers": {
+        "L2": 1106,
+        "L4": 1216,
+        "L1": 15
+      },
+      "state_len": {
+        "min": 3,
+        "p25": 7,
+        "median": 8,
+        "p75": 10,
+        "max": 15
+      },
+      "root_len": {
+        "min": 3,
+        "p25": 7,
+        "median": 8,
+        "p75": 10,
+        "max": 15
+      },
+      "state_root_ratio_median": 1.0,
+      "state_root_ratio_min": 1.0,
+      "margin_median": 0.1914,
+      "margin_positive_share": 1.0,
+      "margin_ranked_layers": {
+        "L2": 1106
+      },
+      "group_size_median": null,
+      "group_size_max": null,
+      "group_size_n": 0,
+      "group_rank": null,
+      "unit_violations": 0,
+      "unit_checked": 2337
+    },
+    "rrc-en-word": {
+      "language": "English",
+      "source": "Birkbeck missp.dat (word-level; retained for comparison)",
+      "n_items": 84001,
+      "source_records": 36133,
+      "sha256": "b1a7024258913c50db878ad48db058de993551b1627e06ca10758a65905df765",
+      "chance": 0.2,
+      "dropped": 17,
+      "dropped_script": 0,
+      "dropped_margin": 16448,
+      "layers": {
+        "L4": 36116,
+        "L2": 19668,
+        "L1": 28217
+      },
+      "state_len": {
+        "min": 1,
+        "p25": 6,
+        "median": 8,
+        "p75": 10,
+        "max": 18
+      },
+      "root_len": {
+        "min": 1,
+        "p25": 7,
+        "median": 9,
+        "p75": 10,
+        "max": 17
+      },
+      "state_root_ratio_median": 0.889,
+      "state_root_ratio_min": 0.091,
+      "margin_median": 0.1111,
+      "margin_positive_share": 1.0,
+      "margin_ranked_layers": {
+        "L2": 19668
+      },
+      "group_size_median": null,
+      "group_size_max": null,
+      "group_size_n": 0,
+      "group_rank": null,
+      "unit_violations": 0,
+      "unit_checked": 84001
+    },
+    "rrc-ru": {
+      "language": "Russian",
+      "source": "GitHub Typo Corpus, Cyrillic lines",
+      "n_items": 302,
+      "source_records": 1046,
+      "sha256": "3c3d9609be6667a7a1c9c0edc33d9e6dc7c6c6268e5d4b09345aa58e044c0e24",
+      "chance": 0.2,
+      "dropped": 0,
+      "dropped_script": 73,
+      "dropped_margin": 199,
+      "layers": {
+        "L4": 219,
+        "L1": 63,
+        "L2": 20
+      },
+      "state_len": {
+        "min": 1,
+        "p25": 1,
+        "median": 1.0,
+        "p75": 2,
+        "max": 24
+      },
+      "root_len": {
+        "min": 1,
+        "p25": 1,
+        "median": 1.0,
+        "p75": 3,
+        "max": 23
+      },
+      "state_root_ratio_median": 1.0,
+      "state_root_ratio_min": 0.25,
+      "margin_median": 0.4472,
+      "margin_positive_share": 1.0,
+      "margin_ranked_layers": {
+        "L2": 20
+      },
+      "group_size_median": null,
+      "group_size_max": null,
+      "group_size_n": 0,
+      "group_rank": null,
+      "unit_violations": 0,
+      "unit_checked": 302
+    },
+    "rrc-ja": {
+      "language": "Japanese",
+      "source": "JWTD test.jsonl (kana/kanji revisions)",
+      "n_items": 1076,
+      "source_records": 7701,
+      "sha256": "1b842a31382d0c05da1bb54e899323db96feb1856ca1c865e9a4b97f8c41f971",
+      "chance": 0.2,
+      "dropped": 0,
+      "dropped_script": 2126,
+      "dropped_margin": 0,
+      "layers": {
+        "L1": 288,
+        "L4": 788
+      },
+      "state_len": {
+        "min": 1,
+        "p25": 1,
+        "median": 1.0,
+        "p75": 3,
+        "max": 24
+      },
+      "root_len": {
+        "min": 1,
+        "p25": 1,
+        "median": 1.0,
+        "p75": 2,
+        "max": 24
+      },
+      "state_root_ratio_median": 1.0,
+      "state_root_ratio_min": 0.25,
+      "margin_median": null,
+      "margin_positive_share": null,
+      "margin_ranked_layers": {},
+      "group_size_median": null,
+      "group_size_max": null,
+      "group_size_n": 0,
+      "group_rank": null,
+      "unit_violations": 0,
+      "unit_checked": 1076
+    },
+    "rrc-zh": {
+      "language": "Chinese",
+      "source": "CSCD all.tsv (IME errors)",
+      "n_items": 11590,
+      "source_records": 18406,
+      "sha256": "0ce0f730b74bad9ce9dccff99b0a2950f1467af1af0b2b2ea9f082456899e9d4",
+      "chance": 0.2,
+      "dropped": 0,
+      "dropped_script": 0,
+      "dropped_margin": 0,
+      "layers": {
+        "L2c": 4335,
+        "L4": 5652,
+        "L1": 1603
+      },
+      "state_len": {
+        "min": 1,
+        "p25": 1,
+        "median": 1.0,
+        "p75": 1,
+        "max": 24
+      },
+      "root_len": {
+        "min": 1,
+        "p25": 1,
+        "median": 1.0,
+        "p75": 1,
+        "max": 24
+      },
+      "state_root_ratio_median": 1.0,
+      "state_root_ratio_min": 1.0,
+      "margin_median": null,
+      "margin_positive_share": null,
+      "margin_ranked_layers": {},
+      "group_size_median": 14,
+      "group_size_max": 48,
+      "group_size_n": 4335,
+      "group_rank": {
+        "n": 4335,
+        "min": 1,
+        "p25": 2,
+        "median": 4,
+        "p75": 7,
+        "max": 48,
+        "share_first": 0.2104,
+        "share_last": 0.0277
+      },
+      "unit_violations": 0,
+      "unit_checked": 11590
+    },
+    "rrc-zh-gh": {
+      "language": "Chinese",
+      "source": "GitHub Typo Corpus, Han lines",
+      "n_items": 1532,
+      "source_records": 4991,
+      "sha256": "c1b33904ae49da015e83778c0e0152224fbea9d03940d91e7386c2254cf82561",
+      "chance": 0.2,
+      "dropped": 0,
+      "dropped_script": 1209,
+      "dropped_margin": 0,
+      "layers": {
+        "L2c": 343,
+        "L4": 1115,
+        "L1": 74
+      },
+      "state_len": {
+        "min": 1,
+        "p25": 1,
+        "median": 1.0,
+        "p75": 2,
+        "max": 23
+      },
+      "root_len": {
+        "min": 1,
+        "p25": 1,
+        "median": 1.0,
+        "p75": 2,
+        "max": 24
+      },
+      "state_root_ratio_median": 1.0,
+      "state_root_ratio_min": 0.125,
+      "margin_median": null,
+      "margin_positive_share": null,
+      "margin_ranked_layers": {},
+      "group_size_median": 9,
+      "group_size_max": 31,
+      "group_size_n": 343,
+      "group_rank": {
+        "n": 343,
+        "min": 1,
+        "p25": 1,
+        "median": 3,
+        "p75": 5,
+        "max": 21,
+        "share_first": 0.2915,
+        "share_last": 0.0437
+      },
+      "unit_violations": 0,
+      "unit_checked": 1532
+    }
+  }
+}

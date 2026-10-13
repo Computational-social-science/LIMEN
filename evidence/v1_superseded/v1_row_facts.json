@@ -1,0 +1,52 @@
+{
+  "_why": "Row-level facts the audit cites, which a column summary cannot answer. Archived before any deletion of the second v1 copy.",
+  "source_copy": "keystroke-observatory\\_legacy_v1\\keystroke_observatory\\dist\\public\\keystroke_session_stats.parquet",
+  "source_sha256": "58d674dd7b88b41e5f70069af7f8d34cebd717c21ab9db9b2031efe62ce36296",
+  "participant_100001": {
+    "test_section_id": 1090979,
+    "sentence_length": 43,
+    "iki_max_ms": 16344.0,
+    "iki_mean_ms": 190.11263318112634,
+    "total_time_ms": 125016,
+    "n_keystrokes": 658,
+    "n_backspace": 0,
+    "wpm": 60.37627183720483,
+    "file_name": "100001_keystrokes.txt"
+  },
+  "context_rows": [
+    {
+      "participant_id": 100001,
+      "test_section_id": 1090979,
+      "sentence_length": 43,
+      "iki_max_ms": 16344.0,
+      "iki_mean_ms": 190.11263318112634,
+      "n_keystrokes": 658,
+      "n_backspace": 0,
+      "wpm": 60.37627183720483,
+      "file_name": "100001_keystrokes.txt"
+    },
+    {
+      "participant_id": 100003,
+      "test_section_id": 1090988,
+      "sentence_length": 42,
+      "iki_max_ms": 5184.0,
+      "iki_mean_ms": 222.4583850931677,
+      "n_keystrokes": 806,
+      "n_backspace": 0,
+      "wpm": 51.84684860697878,
+      "file_name": "100003_keystrokes.txt"
+    },
+    {
+      "participant_id": 100007,
+      "test_section_id": 1091059,
+      "sentence_length": 57,
+      "iki_max_ms": 8689.0,
+      "iki_mean_ms": 262.27875,
+      "n_keystrokes": 801,
+      "n_backspace": 0,
+      "wpm": 44.57057960800746,
+      "file_name": "100007_keystrokes.txt"
+    }
+  ],
+  "_context_note": "context_rows is restricted to the columns that identify the rows; the full column statistics are in v1_column_summary.json."
+}

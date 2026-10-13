@@ -1,0 +1,207 @@
+{
+  "version": "2.0.0+n5",
+  "n_arms": 6,
+  "pairs": {
+    "rrc-en|rrc-en-word": {
+      "shared_layers": [
+        "L1",
+        "L2",
+        "L4"
+      ],
+      "n_shared_a": 2337,
+      "n_shared_b": 84001,
+      "n_total_a": 2337,
+      "n_total_b": 84001,
+      "share_a": 1.0,
+      "share_b": 1.0
+    },
+    "rrc-en|rrc-ru": {
+      "shared_layers": [
+        "L1",
+        "L2",
+        "L4"
+      ],
+      "n_shared_a": 2337,
+      "n_shared_b": 302,
+      "n_total_a": 2337,
+      "n_total_b": 302,
+      "share_a": 1.0,
+      "share_b": 1.0
+    },
+    "rrc-en|rrc-ja": {
+      "shared_layers": [
+        "L1",
+        "L4"
+      ],
+      "n_shared_a": 1231,
+      "n_shared_b": 1076,
+      "n_total_a": 2337,
+      "n_total_b": 1076,
+      "share_a": 0.5267,
+      "share_b": 1.0
+    },
+    "rrc-en|rrc-zh": {
+      "shared_layers": [
+        "L1",
+        "L4"
+      ],
+      "n_shared_a": 1231,
+      "n_shared_b": 7255,
+      "n_total_a": 2337,
+      "n_total_b": 11590,
+      "share_a": 0.5267,
+      "share_b": 0.626
+    },
+    "rrc-en|rrc-zh-gh": {
+      "shared_layers": [
+        "L1",
+        "L4"
+      ],
+      "n_shared_a": 1231,
+      "n_shared_b": 1189,
+      "n_total_a": 2337,
+      "n_total_b": 1532,
+      "share_a": 0.5267,
+      "share_b": 0.7761
+    },
+    "rrc-en-word|rrc-ru": {
+      "shared_layers": [
+        "L1",
+        "L2",
+        "L4"
+      ],
+      "n_shared_a": 84001,
+      "n_shared_b": 302,
+      "n_total_a": 84001,
+      "n_total_b": 302,
+      "share_a": 1.0,
+      "share_b": 1.0
+    },
+    "rrc-en-word|rrc-ja": {
+      "shared_layers": [
+        "L1",
+        "L4"
+      ],
+      "n_shared_a": 64333,
+      "n_shared_b": 1076,
+      "n_total_a": 84001,
+      "n_total_b": 1076,
+      "share_a": 0.7659,
+      "share_b": 1.0
+    },
+    "rrc-en-word|rrc-zh": {
+      "shared_layers": [
+        "L1",
+        "L4"
+      ],
+      "n_shared_a": 64333,
+      "n_shared_b": 7255,
+      "n_total_a": 84001,
+      "n_total_b": 11590,
+      "share_a": 0.7659,
+      "share_b": 0.626
+    },
+    "rrc-en-word|rrc-zh-gh": {
+      "shared_layers": [
+        "L1",
+        "L4"
+      ],
+      "n_shared_a": 64333,
+      "n_shared_b": 1189,
+      "n_total_a": 84001,
+      "n_total_b": 1532,
+      "share_a": 0.7659,
+      "share_b": 0.7761
+    },
+    "rrc-ru|rrc-ja": {
+      "shared_layers": [
+        "L1",
+        "L4"
+      ],
+      "n_shared_a": 282,
+      "n_shared_b": 1076,
+      "n_total_a": 302,
+      "n_total_b": 1076,
+      "share_a": 0.9338,
+      "share_b": 1.0
+    },
+    "rrc-ru|rrc-zh": {
+      "shared_layers": [
+        "L1",
+        "L4"
+      ],
+      "n_shared_a": 282,
+      "n_shared_b": 7255,
+      "n_total_a": 302,
+      "n_total_b": 11590,
+      "share_a": 0.9338,
+      "share_b": 0.626
+    },
+    "rrc-ru|rrc-zh-gh": {
+      "shared_layers": [
+        "L1",
+        "L4"
+      ],
+      "n_shared_a": 282,
+      "n_shared_b": 1189,
+      "n_total_a": 302,
+      "n_total_b": 1532,
+      "share_a": 0.9338,
+      "share_b": 0.7761
+    },
+    "rrc-ja|rrc-zh": {
+      "shared_layers": [
+        "L1",
+        "L4"
+      ],
+      "n_shared_a": 1076,
+      "n_shared_b": 7255,
+      "n_total_a": 1076,
+      "n_total_b": 11590,
+      "share_a": 1.0,
+      "share_b": 0.626
+    },
+    "rrc-ja|rrc-zh-gh": {
+      "shared_layers": [
+        "L1",
+        "L4"
+      ],
+      "n_shared_a": 1076,
+      "n_shared_b": 1189,
+      "n_total_a": 1076,
+      "n_total_b": 1532,
+      "share_a": 1.0,
+      "share_b": 0.7761
+    },
+    "rrc-zh|rrc-zh-gh": {
+      "shared_layers": [
+        "L1",
+        "L2c",
+        "L4"
+      ],
+      "n_shared_a": 11590,
+      "n_shared_b": 1532,
+      "n_total_a": 11590,
+      "n_total_b": 1532,
+      "share_a": 1.0,
+      "share_b": 1.0
+    }
+  },
+  "pairs_with_no_shared_layer": [],
+  "ranked_layer_items": {
+    "rrc-en": 1106,
+    "rrc-en-word": 19668,
+    "rrc-ru": 20,
+    "rrc-ja": 0,
+    "rrc-zh": 0,
+    "rrc-zh-gh": 0
+  },
+  "reading_channel_items": {
+    "rrc-en": 0,
+    "rrc-en-word": 0,
+    "rrc-ru": 0,
+    "rrc-ja": 0,
+    "rrc-zh": 4335,
+    "rrc-zh-gh": 343
+  }
+}

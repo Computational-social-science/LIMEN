@@ -1,0 +1,42 @@
+{
+  "sections": 2528895,
+  "participants": 168593,
+  "total_keystrokes": 123108012,
+  "total_backspaces": 6658536,
+  "total_deletes": 5333,
+  "sections_exact_match_pct": 72.03,
+  "wpm_mean": 53.51,
+  "wpm_median": 49.82,
+  "wpm_sd": 24.3,
+  "iki_mean_of_means_ms": 237.63,
+  "keypress_duration_mean_of_means_ms": 120.64,
+  "uncorrected_error_rate_mean_pct": 1.138,
+  "error_corrections_mean_pct": 6.36,
+  "kspc_mean": 1.1767,
+  "paper_comparison": {
+    "wpm_mean": {
+      "ours": 53.51,
+      "paper": 51.56
+    },
+    "iki_mean_ms": {
+      "ours": 237.63,
+      "paper": 238.66
+    },
+    "keypress_duration_mean_ms": {
+      "ours": 120.64,
+      "paper": 116.25
+    },
+    "uncorrected_error_rate_pct": {
+      "ours": 1.138,
+      "paper": 1.167
+    },
+    "error_corrections_pct": {
+      "ours": 6.36,
+      "paper": 6.31
+    },
+    "kspc_mean": {
+      "ours": 1.1767,
+      "paper": 1.173
+    }
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "rows": 157314,
+  "columns": 25,
+  "participants_distinct": 157314,
+  "total_keystrokes": 114683620,
+  "total_backspaces": 0,
+  "total_edits": 88249,
+  "rows_equal_participants": true,
+  "parquet_bytes": 17162399,
+  "parquet_sha256": "58d674dd7b88b41e5f70069af7f8d34cebd717c21ab9db9b2031efe62ce36296"
+}

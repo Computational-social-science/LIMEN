@@ -1,0 +1,41 @@
+{
+  "rrc-zh": {
+    "items": 11590,
+    "degeneracy": {
+      "margin_undefined": 11590,
+      "root_similarity_zero": 11436,
+      "all_decoys_zero": 10412
+    },
+    "degeneracy_rate": {
+      "margin_undefined": 1.0,
+      "root_similarity_zero": 0.9867,
+      "all_decoys_zero": 0.8984
+    },
+    "trivial_heuristic_accuracy": {
+      "prefix": 0.1977,
+      "length": 0.2728,
+      "substr": 0.1964,
+      "edit": 0.2278
+    },
+    "state_len_hist": {
+      "1": 10764,
+      "2": 611,
+      "3": 52,
+      "4": 37,
+      "5": 36,
+      "6": 19,
+      "7": 34,
+      "8": 22,
+      "12": 15
+    }
+  },
+  "_pooled": {
+    "items": 11590,
+    "trivial_heuristic_accuracy": {
+      "prefix": 0.1977,
+      "length": 0.2728,
+      "substr": 0.1964,
+      "edit": 0.2278
+    }
+  }
+}

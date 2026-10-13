@@ -205,7 +205,11 @@ SCAN_EXT = {".md", ".py", ".json", ".yaml", ".yml", ".toml", ".cfg", ".ini", ".s
 # drift finding inside a third-party corpus would not be actionable anyway. Excluding them
 # does not weaken the class-A check, which tests path EXISTENCE (a stat per retired path,
 # not a file walk) and therefore still fires on a resurrected corpus.
-DATA_DIRS = {"external-data", "keystroke-observatory-PRE-REBUILD-BACKUP-20261012-181735"}
+DATA_DIRS = {"external-data"}
+# A pre-rebuild tree copy was listed here too; it was DELETED on 2026-10-13, so the
+# entry would have been a name kept for a directory that no longer exists -- the same
+# "a rule that outlives its subject does not announce itself" failure the .gitignore
+# comments already record.
 
 
 def tracked_and_live_files(root: Path) -> list[Path]:

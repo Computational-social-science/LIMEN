@@ -1,0 +1,225 @@
+{
+  "rows": 157314,
+  "columns": [
+    {
+      "name": "participant_id",
+      "dtype": "int64",
+      "nulls": 0,
+      "min": 5.0,
+      "max": 517947.0,
+      "mean": 261370.0654995741,
+      "sum": 41117170484.0
+    },
+    {
+      "name": "test_section_id",
+      "dtype": "int64",
+      "nulls": 0,
+      "min": 7.0,
+      "max": 5579521.0,
+      "mean": 2817903.01137216,
+      "sum": 443295594331.0
+    },
+    {
+      "name": "sentence_length",
+      "dtype": "int64",
+      "nulls": 0,
+      "min": 15.0,
+      "max": 70.0,
+      "mean": 41.66684465463977,
+      "sum": 6554778.0
+    },
+    {
+      "name": "user_input_length",
+      "dtype": "int64",
+      "nulls": 0,
+      "min": 12.0,
+      "max": 77.0,
+      "mean": 41.662674650698605,
+      "sum": 6554122.0
+    },
+    {
+      "name": "n_keystrokes",
+      "dtype": "int64",
+      "nulls": 0,
+      "min": 16.0,
+      "max": 3419.0,
+      "mean": 729.010895406639,
+      "sum": 114683620.0
+    },
+    {
+      "name": "n_chars",
+      "dtype": "int64",
+      "nulls": 0,
+      "min": 14.0,
+      "max": 3339.0,
+      "mean": 705.0271050256175,
+      "sum": 110910634.0
+    },
+    {
+      "name": "n_backspace",
+      "dtype": "int64",
+      "nulls": 0,
+      "min": 0.0,
+      "max": 0.0,
+      "mean": 0.0,
+      "sum": 0.0
+    },
+    {
+      "name": "n_delete",
+      "dtype": "int64",
+      "nulls": 0,
+      "min": 0.0,
+      "max": 100.0,
+      "mean": 0.02795682520309699,
+      "sum": 4398.0
+    },
+    {
+      "name": "edits",
+      "dtype": "int64",
+      "nulls": 0,
+      "min": 0.0,
+      "max": 20.0,
+      "mean": 0.5609735942128482,
+      "sum": 88249.0
+    },
+    {
+      "name": "error_rate",
+      "dtype": "float64",
+      "nulls": 0,
+      "min": 0.0,
+      "max": 0.5,
+      "mean": 0.013963582392381985,
+      "sum": 2196.6670004751795
+    },
+    {
+      "name": "wpm",
+      "dtype": "float64",
+      "nulls": 0,
+      "min": 0.0,
+      "max": 1977.4943735933984,
+      "mean": 42.60297784321097,
+      "sum": 6702044.856426891
+    },
+    {
+      "name": "total_time_ms",
+      "dtype": "int64",
+      "nulls": 0,
+      "min": -3157512.0,
+      "max": 432198103.0,
+      "mean": 279702.8293031771,
+      "sum": 44001170889.0
+    },
+    {
+      "name": "session_duration_s",
+      "dtype": "float64",
+      "nulls": 0,
+      "min": -3157.512,
+      "max": 432198.103,
+      "mean": 279.70282930317705,
+      "sum": 44001170.889
+    },
+    {
+      "name": "iki_mean_ms",
+      "dtype": "float64",
+      "nulls": 0,
+      "min": -4012.2299872935196,
+      "max": 690412.0479233227,
+      "mean": 385.1158524539243,
+      "sum": 60584115.21293665
+    },
+    {
+      "name": "iki_std_ms",
+      "dtype": "float64",
+      "nulls": 0,
+      "min": 138.83747832681854,
+      "max": 17232642.274506845,
+      "mean": 2593.9423226703793,
+      "sum": 408063442.54856807
+    },
+    {
+      "name": "iki_median_ms",
+      "dtype": "float64",
+      "nulls": 0,
+      "min": 28.0,
+      "max": 1729.0,
+      "mean": 179.16150819380348,
+      "sum": 28184613.5
+    },
+    {
+      "name": "iki_q25_ms",
+      "dtype": "float64",
+      "nulls": 0,
+      "min": 6.0,
+      "max": 1071.0,
+      "mean": 130.2597273605655,
+      "sum": 20491678.75
+    },
+    {
+      "name": "iki_q75_ms",
+      "dtype": "float64",
+      "nulls": 0,
+      "min": 33.0,
+      "max": 2717.0,
+      "mean": 282.90764013374525,
+      "sum": 44505332.5
+    },
+    {
+      "name": "iki_min_ms",
+      "dtype": "float64",
+      "nulls": 0,
+      "min": -3575068.0,
+      "max": 248.0,
+      "mean": -697.7123205817664,
+      "sum": -109759916.0
+    },
+    {
+      "name": "iki_max_ms",
+      "dtype": "float64",
+      "nulls": 0,
+      "min": 1173.0,
+      "max": 431506221.0,
+      "mean": 61029.36696034682,
+      "sum": 9600773834.0
+    },
+    {
+      "name": "hold_mean_ms",
+      "dtype": "float64",
+      "nulls": 0,
+      "min": 2.4814814814814814,
+      "max": 1315.004530011325,
+      "mean": 119.58220362445185,
+      "sum": 18811954.78097702
+    },
+    {
+      "name": "hold_std_ms",
+      "dtype": "float64",
+      "nulls": 0,
+      "min": 1.699020408885459,
+      "max": 4327.023240584084,
+      "mean": 140.93237694575765,
+      "sum": 22170635.94684492
+    },
+    {
+      "name": "hold_median_ms",
+      "dtype": "float64",
+      "nulls": 0,
+      "min": 1.0,
+      "max": 268.0,
+      "mean": 105.67754300316564,
+      "sum": 16624557.0
+    },
+    {
+      "name": "top_letters",
+      "dtype": "object",
+      "nulls": 0,
+      "n_unique": null,
+      "note": "unhashable (per-row object); cardinality not computed"
+    },
+    {
+      "name": "file_name",
+      "dtype": "str",
+      "nulls": 0,
+      "n_unique": 157314
+    }
+  ]
+}

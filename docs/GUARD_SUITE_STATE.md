@@ -17,7 +17,7 @@ commit on any red guard, so the suite's state is a repository-wide fact, not a d
 
 Three of these were **my own defects**, found by guards I had just made able to run:
 `fig_error_structure.py` hardcoded an output path; `NOTES_v2.md` promised
-`scripts/check_handoff.py` at a path that does not exist from the repo root; and the
+`keystroke-observatory/scripts/check_handoff.py` at a path that does not exist from the repo root; and the
 `check_relative_paths` docstring false positive would have led me to delete a worked
 interpreter example.
 
