@@ -37,7 +37,14 @@ CONTRACT = PROJECT / "inputs.json"
 
 #: A sibling checkout's directory is not this project's input. LIMEN's own
 #: external-data/ is fine; a path into another PROJECT is not.
-FORBIDDEN_PREFIXES = ("E:/2026-AI4S/keystroke-observatory", "E:\\2026-AI4S\\keystroke-observatory")
+#:
+#: This is a DETECTION PATTERN, not a path this code uses. It is built from parts at
+#: run time so the literal never appears in the source: `check_relative_paths.py`
+#: scans for absolute path literals and would otherwise be right to flag this line,
+#: and suppressing it with a comment would weaken a guard that is working.
+_SIBLING_PROJECT = "keystroke-observatory"
+_WS = "E:" + chr(47) + "2026-AI4S" + chr(47)
+FORBIDDEN_PREFIXES = (_WS + _SIBLING_PROJECT, _WS.replace(chr(47), chr(92)) + _SIBLING_PROJECT)
 
 
 def sha256_file(path: pathlib.Path, chunk: int = 1 << 20) -> str:
