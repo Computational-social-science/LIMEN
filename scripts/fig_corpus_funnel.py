@@ -140,7 +140,7 @@ def main() -> int:
         ax1.set_xticks([25, 50, 75, 100])   # no 0 tick: it would collide with the y tick labels
         ax1.set_xticklabels(["25", "50", "75", "100"], fontsize=5.4)
         ax1.set_xlabel("share of records read (%)")
-        ax1.set_title("(a) record level: where each corpus's\nrecords are lost", fontsize=7.4)
+        ax1.set_title("Record level: where each corpus's\nrecords are lost", fontsize=7.4, loc="left")
         NS.style_axes(ax1, 'a')
 
         # ---- (b) item level, 100% stacked over attempted items
@@ -173,7 +173,7 @@ def main() -> int:
         ax2.set_xticks([25, 50, 75, 100])
         ax2.set_xticklabels(["25", "50", "75", "100"], fontsize=5.4)
         ax2.set_xlabel("share of the items a kept record\ncould support (%)")
-        ax2.set_title("(b) item level: the margin gate\nbites where there are ranked layers",
+        ax2.set_title("Item level: the margin gate\nbites where there are ranked layers", loc="left",
                       fontsize=7.4)
         NS.style_axes(ax2, 'b')
 
@@ -205,7 +205,7 @@ def main() -> int:
         ax3.set_xticklabels([format(t, ",") for t in tks], fontsize=5.4)
         ax3.set_xlim(1, top * 2.2)
         ax3.set_xlabel("items shipped (log scale)")
-        ax3.set_title("(c) what shipped, by layer --\nand the layer sets are not equal", fontsize=7.4)
+        ax3.set_title("What shipped, by layer --\nand the layer sets are not equal", fontsize=7.4, loc="left")
         NS.style_axes(ax3, 'c')
         lh = [Rectangle((0, 0), 1, 1, facecolor=LAYER_COLOR.get(k, "#999"), edgecolor="#444",
                         linewidth=0.3, label=("L2c reading" if k == "L2c" else k)) for k in layers]

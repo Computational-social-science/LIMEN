@@ -70,8 +70,21 @@ def measure(root: pathlib.Path) -> dict:
         out["build"] = "lake not found"
         return out
     try:
+        # `encoding="utf-8"` is REQUIRED, not cosmetic. With `text=True` alone,
+        # subprocess decodes the child's output with the platform locale codec --
+        # GBK on this machine -- and Lean writes UTF-8. The reader thread then dies
+        # with `UnicodeDecodeError: 'gbk' codec can't decode byte 0xa0`, the
+        # exception surfaces in a THREAD rather than at the call site, and the guard
+        # reported "Exception in thread Thread-1 (_readerthread)" instead of any
+        # verdict at all. A guard that cannot report is indistinguishable from one
+        # that passes, which is the failure this suite exists to prevent.
+        #
+        # `errors="replace"` so that even a genuinely mixed-encoding build log yields
+        # a verdict: the guard's subject is the ERROR COUNT, and mangling one
+        # non-ASCII byte in a diagnostic must not be able to suppress the whole check.
         proc = subprocess.run([str(lake), "build"], cwd=root, capture_output=True,
-                              text=True, timeout=600)
+                              text=True, encoding="utf-8", errors="replace",
+                              timeout=600)
         combined = proc.stdout + proc.stderr
         out["errors"] = len(re.findall(r"^error:", combined, re.M))
         out["build_ok"] = "Build completed successfully" in combined
