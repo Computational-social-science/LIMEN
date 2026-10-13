@@ -1,3 +1,21 @@
+> **CORRECTED 2026-10-13 by a planted-truth control. Two claims below do not
+> survive it** (`docs/PLANTED_TRUTH_CONTROL.md`).
+>
+> 1. "Not separable" is stated too strongly. A plant that damaged content
+>    words versus function words at matched damage -- a difference that must
+>    exist -- was **not detected** at n = 150. So the harness is underpowered
+>    for effects of that size, and the correct claim is a **bound**: no family
+>    difference above ~11 points of coverage (or ~6-10 points of accuracy)
+>    exists at this n. A 5-point difference would not have been seen.
+> 2. "At the two lower damage levels there is no measurable loss at all" is
+>    **wrong for rate 0.12**. Its coverage effect (-0.060) is BELOW the
+>    detection bound (0.101), so it is underpowered, not null. The 0.30 and
+>    0.50 effects stand: they exceed their MDEs by 1.6x and 2.0x.
+>
+> The headline -- coverage is far more sensitive than accuracy -- is
+> unaffected, and is strengthened: the coverage effect at rate 0.50 is ~2x
+> its detection bound while the accuracy effect is below its own.
+
 # Proposition A at the control-law endpoint: accuracy is the wrong instrument
 
 **Date**: 2026-10-13
