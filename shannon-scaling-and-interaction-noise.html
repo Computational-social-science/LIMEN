@@ -1,0 +1,1122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>From Neural Scaling to Interaction Channels</title>
+<meta name="description" content="A systematic formulation of the Shannon Scaling Law, its limits, and a keyboard-bounded research program on human–LLM noise.">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/contrib/auto-render.min.js"></script>
+<style>
+  :root {
+    --ink: #1c1915;
+    --muted: #5c564c;
+    --rule: #d9d3c7;
+    --paper: #f7f4ee;
+    --card: #fffdf8;
+    --accent: #6e2f2a;
+    --accent-soft: #f3e6e1;
+    --code: #f3efe6;
+    --max: 46rem;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+    font-size: 18.5px;
+    line-height: 1.62;
+  }
+  header.mast {
+    background: #241c18;
+    color: #f6f1e8;
+    padding: 2.6rem 1.4rem 2.2rem;
+  }
+  header.mast .wrap, main, footer {
+    max-width: 52rem;
+    margin: 0 auto;
+  }
+  header.mast p.kicker {
+    margin: 0 0 0.6rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-family: "Source Sans 3", "Segoe UI", Helvetica, Arial, sans-serif;
+    font-size: 0.72rem;
+    color: #d7b2a4;
+  }
+  header.mast h1 {
+    font-weight: 500;
+    font-size: clamp(1.8rem, 4vw, 2.55rem);
+    line-height: 1.15;
+    margin: 0 0 0.7rem;
+    letter-spacing: -0.02em;
+  }
+  header.mast .deck {
+    margin: 0;
+    max-width: 40rem;
+    color: #e6ddd0;
+    font-size: 1.05rem;
+    line-height: 1.45;
+  }
+  nav.toc {
+    max-width: 52rem;
+    margin: 1.4rem auto 0;
+    padding: 0 1.4rem;
+  }
+  nav.toc .panel {
+    background: var(--card);
+    border: 1px solid var(--rule);
+    border-radius: 10px;
+    padding: 1rem 1.25rem 0.6rem;
+  }
+  nav.toc h2 {
+    font-family: "Source Sans 3", "Segoe UI", Helvetica, Arial, sans-serif;
+    font-size: 0.78rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0 0 0.4rem;
+    border: 0;
+    padding-top: 0;
+  }
+  nav.toc ul { margin: 0.2rem 0 0.7rem 1.1rem; padding: 0; }
+  nav.toc li { margin: 0.18rem 0; }
+  nav.toc a {
+    color: var(--ink);
+    text-decoration: none;
+    font-family: "Source Sans 3", "Segoe UI", Helvetica, Arial, sans-serif;
+    font-size: 0.95rem;
+  }
+  nav.toc a:hover { color: var(--accent); }
+  main { padding: 0.4rem 1.4rem 3.5rem; }
+  main h1:first-child, main h1 {
+    /* title already in masthead; keep in-flow heading modest if duplicated */
+  }
+  article > h1 { display: none; }
+  h2 {
+    font-weight: 560;
+    font-size: 1.55rem;
+    margin: 2.4rem 0 0.7rem;
+    letter-spacing: -0.015em;
+    border-top: 1px solid var(--rule);
+    padding-top: 1.3rem;
+  }
+  h3 {
+    font-weight: 600;
+    font-size: 1.18rem;
+    margin: 1.7rem 0 0.45rem;
+  }
+  p { margin: 0.75rem 0; }
+  a { color: var(--accent); }
+  strong { font-weight: 650; }
+  em { font-style: italic; }
+  blockquote {
+    margin: 1.2rem 0;
+    padding: 0.2rem 0 0.2rem 1rem;
+    border-left: 3px solid var(--accent);
+    color: #2b241e;
+    background: linear-gradient(90deg, var(--accent-soft), transparent 80%);
+  }
+  blockquote p { margin: 0.55rem 0; }
+  ul, ol { margin: 0.6rem 0 0.8rem; padding-left: 1.3rem; }
+  li { margin: 0.28rem 0; }
+  li > ul, li > ol { margin: 0.2rem 0; }
+  hr { border: 0; border-top: 1px solid var(--rule); margin: 2rem 0; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0 1.3rem;
+    font-size: 0.92rem;
+    line-height: 1.45;
+    background: var(--card);
+  }
+  th, td {
+    text-align: left;
+    vertical-align: top;
+    padding: 0.55rem 0.7rem;
+    border-bottom: 1px solid var(--rule);
+  }
+  article > table:first-of-type thead { display: none; }
+  article > table:first-of-type td:first-child {
+    width: 9.5rem;
+    white-space: nowrap;
+    color: var(--muted);
+    font-family: "Source Sans 3", "Segoe UI", Helvetica, Arial, sans-serif;
+    font-size: 0.82rem;
+  }
+  th {
+    font-family: "Source Sans 3", "Segoe UI", Helvetica, Arial, sans-serif;
+    font-size: 0.78rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 650;
+    border-bottom: 2px solid #c9c0b2;
+  }
+  tr:last-child td { border-bottom: 0; }
+  code {
+    font-family: "IBM Plex Mono", "Source Code Pro", ui-monospace, Menlo, Consolas, monospace;
+    font-size: 0.84em;
+    background: var(--code);
+    padding: 0.08em 0.32em;
+    border-radius: 4px;
+  }
+  pre {
+    background: #241c18;
+    color: #f3ecdf;
+    padding: 1rem 1.1rem;
+    overflow-x: auto;
+    border-radius: 8px;
+    line-height: 1.45;
+    font-size: 0.82rem;
+  }
+  pre code {
+    background: transparent;
+    color: inherit;
+    padding: 0;
+    font-size: inherit;
+  }
+  .katex { font-size: 1.05em; }
+  .katex-display { margin: 1rem 0; overflow-x: auto; overflow-y: hidden; }
+  footer {
+    border-top: 1px solid var(--rule);
+    color: var(--muted);
+    font-family: "Source Sans 3", "Segoe UI", Helvetica, Arial, sans-serif;
+    font-size: 0.85rem;
+    padding: 1.2rem 1.4rem 2.4rem;
+  }
+  @media print {
+    body { background: white; font-size: 11.5pt; }
+    header.mast { background: white; color: black; padding: 0 0 1rem; }
+    header.mast .deck, header.mast p.kicker { color: #333; }
+    nav.toc { display: none; }
+    pre { background: #f4f4f4; color: black; }
+    a { color: black; text-decoration: none; }
+    h2 { break-after: avoid; }
+    table, pre, blockquote { break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+<header class="mast">
+  <div class="wrap">
+    <p class="kicker">Research synthesis · Shannon Scaling Law</p>
+    <h1>From Neural Scaling to Interaction Channels</h1>
+    <p class="deck">A systematic formulation of the Shannon Scaling Law, its limits, and a keyboard-bounded research program on human–LLM noise.</p>
+  </div>
+</header>
+<nav class="toc" aria-label="Contents">
+  <div class="panel">
+    <h2>Contents</h2>
+    <div class="toc">
+<ul>
+<li><a href="#abstract">Abstract</a></li>
+<li><a href="#1-the-argument-in-one-page">1. The argument in one page</a></li>
+<li><a href="#2-what-neural-scaling-laws-actually-state">2. What neural scaling laws actually state</a><ul>
+<li><a href="#21-the-empirical-core">2.1 The empirical core</a></li>
+<li><a href="#22-why-larger-is-better-needed-a-mechanism">2.2 Why “larger is better” needed a mechanism</a></li>
+</ul>
+</li>
+<li><a href="#3-the-shannon-scaling-law">3. The Shannon Scaling Law</a><ul>
+<li><a href="#31-what-monotonic-laws-cannot-say">3.1 What monotonic laws cannot say</a></li>
+<li><a href="#32-the-channel-ansatz">3.2 The channel ansatz</a></li>
+<li><a href="#33-what-the-exponents-are-used-to-mean">3.3 What the exponents are used to mean</a></li>
+<li><a href="#34-empirical-scope-stated-tightly">3.4 Empirical scope, stated tightly</a></li>
+<li><a href="#35-what-ssl-explains-in-one-sentence">3.5 What SSL explains, in one sentence</a></li>
+</ul>
+</li>
+<li><a href="#4-scaling-is-no-longer-only-a-story-about-n">4. Scaling is no longer only a story about \(N\)</a></li>
+<li><a href="#5-where-human-noise-would-have-to-enter">5. Where human noise would have to enter</a><ul>
+<li><a href="#51-two-published-objects-that-are-easy-to-conflate">5.1 Two published objects that are easy to conflate</a></li>
+<li><a href="#52-the-junction-stated-without-a-new-symbol">5.2 The junction, stated without a new symbol</a></li>
+<li><a href="#53-why-classical-channel-assumptions-do-not-transfer-for-free">5.3 Why classical channel assumptions do not transfer for free</a></li>
+</ul>
+</li>
+<li><a href="#6-six-propositions-and-the-rule-that-governs-all-of-them">6. Six propositions, and the rule that governs all of them</a><ul>
+<li><a href="#61-layer-i-theory">6.1 Layer I — theory</a></li>
+<li><a href="#62-layer-ii-measurement">6.2 Layer II — measurement</a></li>
+<li><a href="#63-layer-iii-intervention">6.3 Layer III — intervention</a></li>
+<li><a href="#64-the-rule">6.4 The rule</a></li>
+</ul>
+</li>
+<li><a href="#7-the-keyboard-channel-as-the-laboratory-object">7. The keyboard channel as the laboratory object</a><ul>
+<li><a href="#71-why-this-boundary-is-a-scientific-gain">7.1 Why this boundary is a scientific gain</a></li>
+<li><a href="#72-three-layers">7.2 Three layers</a></li>
+<li><a href="#73-two-functional-forms-ssl-must-be-willing-to-lose">7.3 Two functional forms SSL must be willing to lose</a></li>
+<li><a href="#74-what-randomization-buys">7.4 What randomization buys</a></li>
+<li><a href="#75-three-propositions-that-can-be-run">7.5 Three propositions that can be run</a></li>
+<li><a href="#76-what-the-keyboard-program-explicitly-does-not-answer">7.6 What the keyboard program explicitly does not answer</a></li>
+</ul>
+</li>
+<li><a href="#8-critique-of-the-shannon-scaling-law-as-a-base">8. Critique of the Shannon Scaling Law as a base</a><ul>
+<li><a href="#81-the-analogy-is-stronger-than-the-derivation">8.1 The analogy is stronger than the derivation</a></li>
+<li><a href="#82-the-experimental-range-does-not-reach-the-claim-one-would-like-to-export">8.2 The experimental range does not reach the claim one would like to export</a></li>
+<li><a href="#83-the-paper-is-silent-on-the-object-of-sections-57">8.3 The paper is silent on the object of Sections 5–7</a></li>
+<li><a href="#84-deployment-phenomena-that-would-change-the-formula-are-outside-it">8.4 Deployment phenomena that would change the formula are outside it</a></li>
+</ul>
+</li>
+<li><a href="#9-what-is-allowed-to-count-as-a-solution">9. What is allowed to count as a solution</a><ul>
+<li><a href="#91-conceptual-operationalization">9.1 Conceptual operationalization</a></li>
+<li><a href="#92-theoretical-hygiene">9.2 Theoretical hygiene</a></li>
+<li><a href="#93-measurement">9.3 Measurement</a></li>
+<li><a href="#94-causality">9.4 Causality</a></li>
+<li><a href="#95-scale-and-extrapolation">9.5 Scale and extrapolation</a></li>
+<li><a href="#96-ethics-and-ecological-validity">9.6 Ethics and ecological validity</a></li>
+<li><a href="#97-admission-table">9.7 Admission table</a></li>
+</ul>
+</li>
+<li><a href="#10-what-would-follow-if-the-admission-table-were-met">10. What would follow if the admission table were met</a><ul>
+<li><a href="#101-scientific-content-of-a-real-solution">10.1 Scientific content of a real solution</a></li>
+<li><a href="#102-academic-consequences-if-the-results-are-real">10.2 Academic consequences, if the results are real</a></li>
+<li><a href="#103-magnitude-without-the-slogan">10.3 Magnitude, without the slogan</a></li>
+</ul>
+</li>
+<li><a href="#11-a-short-research-order">11. A short research order</a></li>
+<li><a href="#12-notation">12. Notation</a></li>
+<li><a href="#references">References</a></li>
+</ul>
+</div>
+
+  </div>
+</nav>
+<main>
+<article>
+<h1 id="from-neural-scaling-to-interaction-channels">From Neural Scaling to Interaction Channels</h1>
+<p><strong>A systematic formulation of the Shannon Scaling Law, its limits, and a keyboard-bounded research program on human–LLM noise</strong></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Document type</strong></td>
+<td>Research synthesis and problem formulation</td>
+</tr>
+<tr>
+<td><strong>Status</strong></td>
+<td>Reorganization of working notes into a single argument. Not an empirical study.</td>
+</tr>
+<tr>
+<td><strong>Epistemic labels</strong></td>
+<td><em>Established</em> (published result) · <em>Reported</em> (claim carried from the working notes or a secondary summary, not re-analyzed here) · <em>Proposition</em> (open) · <em>Constraint</em> (methodological rule)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="abstract">Abstract</h2>
+<p>Neural scaling laws began as empirical power laws relating loss to parameters, data, and compute. Two later results change what those laws can mean. Under strong representation superposition, loss scales inversely with model dimension for geometric reasons that do not depend on the fine structure of the data-frequency distribution. Separately, the Shannon Scaling Law (SSL) models training as transmission over a noisy channel and thereby represents non-monotonic failures—catastrophic overtraining and quantization-induced degradation—that monotonic power laws cannot.</p>
+<p>The working notes ask whether noise introduced when humans interact with a deployed model, and in particular when they type an intention on a keyboard, belongs in that same capacity formula. This document argues that the question is well posed only after four distinctions are enforced.</p>
+<ol>
+<li>Training noise, supervision noise, and deployment-time input noise are different channels. SSL currently formalizes the first. Human-Bounded Intelligence formalizes a floor on the second. Neither result already contains the third.</li>
+<li>“Interaction noise” is not yet a variable. It becomes one only if its physical, cognitive, and contextual layers are separable, if the resulting term is identifiable in the SSL denominator, and if an intervention changes it without changing the confounders that usually travel with it.</li>
+<li>The keyboard channel is the narrow object on which those tests can actually be run. QWERTY geometry, keystroke timing, and intent ambiguity are different mechanisms; prompt-level perturbation injection makes the first experimentally assignable.</li>
+<li>Keyboard noise need not enter SSL as an additive power. Reported token-survival and thinking-budget effects are equally consistent with an erasure channel whose damage can be partly bought back with inference compute. Which functional form is correct is itself a result, not a modeling preference.</li>
+</ol>
+<p>Six general propositions and three keyboard propositions are stated below. Six constraints define what would count as solving them. A conditional reading of the scientific stakes follows: a partial, identified solution would found a research program on human–machine channel capacity; a relabeling of existing loss curves would not. The document closes with a structured critique of the SSL paper as a base that cannot be extended by citation alone.</p>
+<hr />
+<h2 id="1-the-argument-in-one-page">1. The argument in one page</h2>
+<p>The notes read as a sequence of topics. They are one argument, nested as follows.</p>
+<pre><code class="language-text">Monotonic scaling laws          describe loss, do not explain it,
+                                and cannot represent U-shaped failure
+        │
+        ├─ Superposition        geometric mechanism for the monotonic regime
+        │
+        └─ Shannon Scaling Law  information-theoretic mechanism for the
+                                non-monotonic regime, with an assumed
+                                three-term noise decomposition
+                    │
+                    │  meets
+                    ▼
+        Human-Bounded Intelligence
+                                human supervision that is not sufficient
+                                for a latent target induces a strictly
+                                positive error floor
+                    │
+                    │  the meeting is not yet a formula
+                    ▼
+        Interaction noise       too broad to be a term: nonstationary,
+                                reflexive, multimodal, intention-latent
+                    │
+                    │  restrict the object
+                    ▼
+        Keyboard channel        geometrically parameterized, partly
+                                observable in timing, randomizable
+                    │
+                    ▼
+        Propositions A–C        separability, scaling exponent, precoding
+                    │
+                    │  admitted only if
+                    ▼
+        Six constraints         separable, identifiable, intervenable,
+                                extrapolable — and not a new name for an old curve
+</code></pre>
+<p>The thesis that this structure supports:</p>
+<blockquote>
+<p>Do not insert a human-noise term into the Shannon Scaling Law until keyboard-channel noise has been shown to be separable, identifiable, intervenable, and extrapolable. The scientific object is that test, not the enlarged formula.</p>
+</blockquote>
+<p>Everything after this section is a specification of one layer of the diagram.</p>
+<hr />
+<h2 id="2-what-neural-scaling-laws-actually-state">2. What neural scaling laws actually state</h2>
+<h3 id="21-the-empirical-core">2.1 The empirical core</h3>
+<p><em>Established.</em> Kaplan et al. (2020) showed that, over a wide operating range, the cross-entropy loss of autoregressive language models falls as a power law in parameter count <span class="arithmatex">\(N\)</span>, dataset size <span class="arithmatex">\(D\)</span>, and training compute. The practical content of that observation is predictability: loss at a larger scale can be forecast from smaller runs, rather than discovered only after the run.</p>
+<p>Hoffmann et al. (2022), the Chinchilla study, changed the allocation rule inside that predictability. For a fixed compute budget <span class="arithmatex">\(C \approx 6ND\)</span>, loss is minimized when parameters and tokens are scaled together, not when almost all new compute is spent on parameters. The compute-optimal frontier is a joint <span class="arithmatex">\((N, D)\)</span> schedule.</p>
+<p>What these laws do <strong>not</strong> state:</p>
+<ul>
+<li>They do not identify a mechanism. A stable exponent is not a cause.</li>
+<li>They are monotonic in the fitted regime. They have no internal degree of freedom that turns further tokens or further parameters into <em>worse</em> loss.</li>
+<li>They do not allocate any quantity other than pretraining <span class="arithmatex">\(N\)</span>, <span class="arithmatex">\(D\)</span>, and <span class="arithmatex">\(C\)</span>. Inference-time compute, data redundancy, architectural inductive bias, and human input at deployment are outside the original variables.</li>
+</ul>
+<h3 id="22-why-larger-is-better-needed-a-mechanism">2.2 Why “larger is better” needed a mechanism</h3>
+<p><em>Established.</em> Liu, Liu, and Gore (2025; NeurIPS 2025 Best Paper Runner-up) propose representation superposition as a contributor to neural scaling. A model in superposition represents more features than it has dimensions. Features packed into a lower-dimensional space overlap; those geometric overlaps are a source of loss.</p>
+<p>Their result splits by regime:</p>
+<table>
+<thead>
+<tr>
+<th>Regime</th>
+<th>When loss follows a power law in dimension</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Weak superposition</td>
+<td>Only if feature frequencies themselves are power-law distributed</td>
+</tr>
+<tr>
+<td>Strong superposition</td>
+<td>Generically. Loss scales inversely with dimension, <span class="arithmatex">\(L \propto 1/m\)</span>, across a broad class of frequency distributions</td>
+</tr>
+</tbody>
+</table>
+<p>Open-weight LLMs, on their measurements, sit in the strong-superposition regime, and the Chinchilla parameter law is consistent with inverse-dimension scaling once parameter count is converted to width. The mechanism is geometric interference, not a fact about any one dataset.</p>
+<p>Two limits of this explanation matter later. It accounts for a <em>monotonic</em> improvement with dimension. It does not, by itself, produce a U-shaped curve in tokens, quantization, or interaction length. And it is a claim about representation geometry during training and evaluation of the model, not about noise injected by a human at inference time.</p>
+<p>The working notes describe this paper as the NeurIPS 2025 Best Paper. The published designation is <strong>Best Paper Runner-up</strong>. The substantive claim is unchanged; the award label should not be inflated.</p>
+<hr />
+<h2 id="3-the-shannon-scaling-law">3. The Shannon Scaling Law</h2>
+<h3 id="31-what-monotonic-laws-cannot-say">3.1 What monotonic laws cannot say</h3>
+<p><em>Established.</em> Ouyang et al. (2026; arXiv:2605.23901, accepted at ICML 2026) start from failures that power laws fit only by changing the story after the fact:</p>
+<ul>
+<li><strong>Catastrophic overtraining.</strong> Additional pretraining can <em>hurt</em> downstream supervised fine-tuning.</li>
+<li><strong>Quantization-induced degradation.</strong> Aggressive post-training quantization can collapse larger models rather than merely shave a constant off their quality.</li>
+</ul>
+<p>Both are non-monotonic in a resource that classical scaling treats as beneficial. A law with only a decreasing power plus a floor cannot put a minimum in the interior of the resource axis.</p>
+<h3 id="32-the-channel-ansatz">3.2 The channel ansatz</h3>
+<p><em>Established as a modeling choice; not derived from a theorem that applies literally to SGD.</em></p>
+<p>The Shannon–Hartley capacity of a band-limited channel with additive white Gaussian noise is</p>
+<div class="arithmatex">\[
+C = B \log_2 \!\left(1 + \frac{S}{\mathcal{N}}\right),
+\]</div>
+<p>with bandwidth <span class="arithmatex">\(B\)</span>, signal power <span class="arithmatex">\(S\)</span>, and noise power <span class="arithmatex">\(\mathcal{N}\)</span>. SSL maps the symbols onto training as follows.</p>
+<table>
+<thead>
+<tr>
+<th>Channel quantity</th>
+<th>Training quantity</th>
+<th>Parametric form</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Bandwidth <span class="arithmatex">\(B\)</span></td>
+<td>Parameter count <span class="arithmatex">\(N\)</span></td>
+<td><span class="arithmatex">\(B \propto N^{\alpha}\)</span></td>
+</tr>
+<tr>
+<td>Signal power <span class="arithmatex">\(S\)</span></td>
+<td>Token count <span class="arithmatex">\(D\)</span></td>
+<td><span class="arithmatex">\(S \propto D^{\beta}\)</span></td>
+</tr>
+<tr>
+<td>Noise <span class="arithmatex">\(\mathcal{N}\)</span></td>
+<td>Three fitted contributions</td>
+<td>see below</td>
+</tr>
+</tbody>
+</table>
+<p>The three noise contributions, in the paper’s own decomposition, are:</p>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Name in SSL</th>
+<th>Intended content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><span class="arithmatex">\(d\, D^{\delta}\)</span></td>
+<td>Data-induced noise</td>
+<td>Typos, ambiguity, and contradiction already in the corpus. Sensitivity grows with <span class="arithmatex">\(D\)</span>.</td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(c\, (DN)^{\gamma}\)</span></td>
+<td>Model-interaction noise</td>
+<td>Training as a dynamic denoising process: a randomly initialized model is high-noise and low-capacity, and is progressively denoised. The term couples tokens and parameters.</td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(e\)</span></td>
+<td>Irreducible noise</td>
+<td>A constant standing in for architectural limits and residual system entropy. Analogous in role, not in derivation, to the irreducible-loss term of Chinchilla-style laws.</td>
+</tr>
+</tbody>
+</table>
+<p>The resulting capacity is</p>
+<div class="arithmatex">\[
+C_{\mathrm{LLM}}(N, D)
+  = a N^{\alpha}
+    \log_2\!\left(
+      1 + \frac{b D^{\beta}}{c\,(DN)^{\gamma} + d\, D^{\delta} + e}
+    \right),
+\tag{SSL}
+\]</div>
+<p>with positive fitted constants <span class="arithmatex">\(a,b,c,d,e,\alpha,\beta,\gamma,\delta\)</span>. Test loss is <strong>set</strong> equal to the reciprocal,</p>
+<div class="arithmatex">\[
+\mathcal{L}(N, D) = \frac{1}{C_{\mathrm{LLM}}(N, D)}.
+\tag{L}
+\]</div>
+<p>Equation (L) is an ansatz. The paper proposes it; it does not derive it from a coding theorem or from a learning-theoretic excess-risk bound. The working notes are right to mark this as a heuristic link. Capacity and loss move in opposite directions under (L), so any regime in which the denominator grows faster than the numerator produces a U-shape in <span class="arithmatex">\(\mathcal{L}\)</span>. That qualitative mechanism is the paper’s real contribution. The identification of <span class="arithmatex">\(\mathcal{L}\)</span> with <span class="arithmatex">\(1/C\)</span> is a choice of gauge.</p>
+<p>A six-parameter simplification, obtained by pruning constants that consistently fit near negligible values, is</p>
+<div class="arithmatex">\[
+C_{\mathrm{Simpl}}
+  = a N^{\alpha}
+    \log_2\!\left(
+      1 + \frac{D^{\beta}}{c\,(DN)^{\gamma} + D^{\delta}}
+    \right).
+\tag{SSL-s}
+\]</div>
+<p>The paper reports that (SSL-s) retains nearly the in-sample fit of the nine-parameter form (average <span class="arithmatex">\(R^2\)</span> about <span class="arithmatex">\(0.954\)</span> versus about <span class="arithmatex">\(0.966\)</span>).</p>
+<h3 id="33-what-the-exponents-are-used-to-mean">3.3 What the exponents are used to mean</h3>
+<p><em>Established as fitted regularities inside the paper’s experiments, not as universal constants.</em></p>
+<p>Two comparisons organize the discussion:</p>
+<ol>
+<li><strong>Along tokens.</strong> The data-noise exponent exceeds the signal exponent, <span class="arithmatex">\(\delta &gt; \beta\)</span>, across the reported scenarios. Under (SSL) and (L), U-shaped degradation along the token axis is then intrinsic to the fitted noise dynamics, not an extra external shock that must be added by hand.</li>
+<li><strong>Along parameters.</strong> The relation between the bandwidth exponent <span class="arithmatex">\(\alpha\)</span> and the model-noise exponent <span class="arithmatex">\(\gamma\)</span> crosses with signal-to-noise ratio. In high-SNR regimes (stable pretraining, mild fine-tuning), <span class="arithmatex">\(\alpha &gt; \gamma\)</span>: extra parameters buy more capacity than they import noise. In low-SNR regimes (aggressive fine-tuning step sizes), the inequality flips to <span class="arithmatex">\(\gamma &gt; \alpha\)</span>: making the model larger amplifies the perturbed channel faster than it widens it.</li>
+</ol>
+<p>The second comparison is the paper’s account of “scaling hurts.” The first is its account of “training longer hurts.” Neither comparison is a theorem about every architecture or every data distribution. Both are readings of fitted exponents under a specific ansatz.</p>
+<h3 id="34-empirical-scope-stated-tightly">3.4 Empirical scope, stated tightly</h3>
+<p><em>Established.</em></p>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>What was actually done</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Models</td>
+<td>Pythia, 160M–12B; OLMo2, 1B–32B</td>
+</tr>
+<tr>
+<td>Perturbations</td>
+<td>Gaussian weight noise (about 10–40 dB); GPTQ quantization (about 2–4 bit); supervised fine-tuning learning rates from <span class="arithmatex">\(10^{-5}\)</span> to <span class="arithmatex">\(10^{-3}\)</span></td>
+</tr>
+<tr>
+<td>Tasks under SFT</td>
+<td>GSM8K (math), SocialIQA (QA), StarCoder (code), in addition to pretraining loss</td>
+</tr>
+<tr>
+<td>In-sample fit</td>
+<td>High <span class="arithmatex">\(R^2\)</span> on the fitted regimes, including values reported up to about <span class="arithmatex">\(0.99\)</span> on pretraining and about <span class="arithmatex">\(0.98\)</span> average under quantization</td>
+</tr>
+<tr>
+<td>Extrapolation</td>
+<td>Fit on Pythia models <span class="arithmatex">\(\le 6.9\)</span>B and <span class="arithmatex">\(\le 180\)</span>B tokens; predict the held-out 12B model out to 307B tokens at pooled <span class="arithmatex">\(R^2 = 0.847\)</span>. Monotonic baselines collapse on the same split</td>
+</tr>
+</tbody>
+</table>
+<p>The extrapolation factor in parameters is about <span class="arithmatex">\(12/6.9 \approx 1.7\)</span>, and the token extrapolation from 180B to 307B is of the same order. That is a real out-of-sample test. It is not a test at frontier scale.</p>
+<p>A correction to the working notes: they describe the fit target as WikiText-2 test loss alone, with no downstream check. The paper’s SFT section does evaluate math, QA, and code. The critique that survives is narrower and is stated in Section 8: those tasks are still short, closed evaluations under weight or optimizer perturbations. They are not open-ended generation quality, multi-turn dialogue, or human input noise.</p>
+<h3 id="35-what-ssl-explains-in-one-sentence">3.5 What SSL explains, in one sentence</h3>
+<p>Under the ansatz (SSL)–(L), performance improves with scale only while signal outruns noise. Past that point, further tokens or further parameters in a noisy regime reduce capacity. Monotonic laws have no such point. That is the increment over Kaplan and Chinchilla.</p>
+<hr />
+<h2 id="4-scaling-is-no-longer-only-a-story-about-n">4. Scaling is no longer only a story about <span class="arithmatex">\(N\)</span></h2>
+<p>The notes place four neighboring lines of work beside SSL. They are not part of the interaction-noise argument. They matter only because they show that “scale the parameters” is already an incomplete design space, so an interaction term would be a further axis, not a decoration of the only axis.</p>
+<table>
+<thead>
+<tr>
+<th>Line</th>
+<th>Claim, as published or as stated in the notes</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Parallel scaling (ParScale; Chen et al., 2025, arXiv:2505.10475)</td>
+<td><span class="arithmatex">\(P\)</span> diverse, learnable input transformations, parallel forwards, and learned aggregation. <span class="arithmatex">\(P\)</span> streams behave like an <span class="arithmatex">\(\mathcal{O}(\log P)\)</span> parameter increase, with up to <span class="arithmatex">\(22\times\)</span> less memory growth and <span class="arithmatex">\(6\times\)</span> less latency growth than matching parameter scaling, in the reported comparison.</td>
+<td>Established</td>
+</tr>
+<tr>
+<td>Recursive inference scaling (RINS; Alabdulmohsin and Zhai, 2025, arXiv:2502.07503)</td>
+<td>A specific recursive depth, compute-matched, improves asymptotic level and scaling exponent, including a no-regret adapter regime in which the pretrained model is better even if recursion is not used at inference.</td>
+<td>Established</td>
+</tr>
+<tr>
+<td>Data density</td>
+<td>High redundancy is reported to slow scaling (sub-scaling). More tokens are not more information.</td>
+<td>Reported direction; no single law is adopted here</td>
+</tr>
+<tr>
+<td>Architecture versus parameters</td>
+<td>A position, called in the notes a “second scaling law,” that wisdom depends more on architecture than on parameter count.</td>
+<td>A position, not a named theorem in this document</td>
+</tr>
+<tr>
+<td>Neuroscience</td>
+<td>Phenomenological renormalization-group analyses of large neural-population recordings are cited in the notes as evidence of cross-modal scale-free structure, suggesting that biological population codes may obey scaling relations of their own.</td>
+<td>Reported direction; not used below</td>
+</tr>
+</tbody>
+</table>
+<p>SSL’s own slogan, once the exponents are taken seriously, is the same shift: prefer signal-to-noise ratio and information density over brute-force scale. ParScale and RINS are existence proofs that some of the relevant “scale” is parallel compute and recursive depth. They do not address a human at a keyboard.</p>
+<hr />
+<h2 id="5-where-human-noise-would-have-to-enter">5. Where human noise would have to enter</h2>
+<h3 id="51-two-published-objects-that-are-easy-to-conflate">5.1 Two published objects that are easy to conflate</h3>
+<p><strong>Object A — training-channel noise (SSL).</strong><br />
+Data-induced, model-interaction, and irreducible terms in the denominator of (SSL). All three are stories about how a corpus and an optimizer write a set of weights. None of them is a story about a person typing a prompt after the weights are frozen.</p>
+<p><strong>Object B — supervision-channel insufficiency (Human-Bounded Intelligence).</strong><br />
+Rodriguez Dominguez (2026, arXiv:2602.23446) argues that if every piece of information about a latent evaluation target <span class="arithmatex">\(Y^\ast\)</span> passes through a human supervision channel that is not sufficient for <span class="arithmatex">\(Y^\ast\)</span>, then any learner dominated by that channel has a strictly positive excess-risk floor:</p>
+<div class="arithmatex">\[
+\liminf_{n \to \infty} \mathcal{E}^\ast(f_{\hat\theta_n}) \ge \gamma_H &gt; 0.
+\]</div>
+<p>The floor <span class="arithmatex">\(\gamma_H\)</span> depends on the channel, not on capacity, sample size, or compute. The paper decomposes the human-side deficit into three structural sources, and obtains the same qualitative bound from six formalisms (operator theory, PAC-Bayes, information theory, causal inference, category theory, and a game-theoretic treatment of reinforcement learning from human feedback):</p>
+<table>
+<thead>
+<tr>
+<th>Source</th>
+<th>Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Annotation noise</td>
+<td>The label or demonstration is a noisy function of the intended target</td>
+</tr>
+<tr>
+<td>Preference distortion</td>
+<td>The human’s ranking is not the target ranking</td>
+</tr>
+<tr>
+<td>Semantic compression</td>
+<td>Natural language does not have the bandwidth to pass the target</td>
+</tr>
+</tbody>
+</table>
+<p>Auxiliary non-human signals—retrieval, program execution, tool returns, simulators—can lower or remove the floor when they restore information about <span class="arithmatex">\(Y^\ast\)</span> that the human channel never carried. The notes call this “folding” the floor. The theorem applies when human supervision is the dominating source of information about <span class="arithmatex">\(Y^\ast\)</span>. It is not a theorem about typos in a user prompt.</p>
+<h3 id="52-the-junction-stated-without-a-new-symbol">5.2 The junction, stated without a new symbol</h3>
+<p>SSL and Human-Bounded Intelligence meet at one question and only one:</p>
+<blockquote>
+<p>Is there a human contribution, at training time or at deployment time, that leaves a remainder in the SSL denominator which cannot be driven to zero by <span class="arithmatex">\(N\)</span> and <span class="arithmatex">\(D\)</span>, and is that remainder the same object as <span class="arithmatex">\(\gamma_H\)</span>, the same object as the constant <span class="arithmatex">\(e\)</span>, or a third object?</p>
+</blockquote>
+<p>Until that identity is shown, there are three noise vocabularies in play, not one.</p>
+<table>
+<thead>
+<tr>
+<th>Vocabulary</th>
+<th>When it is injected</th>
+<th>What removes it, if anything</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SSL data / model / irreducible</td>
+<td>During training, in the corpus or the optimization trajectory</td>
+<td>More scale only while SNR rises; <span class="arithmatex">\(e\)</span> is defined not to be removed</td>
+</tr>
+<tr>
+<td>HBI supervision floor</td>
+<td>Whenever the learning signal about <span class="arithmatex">\(Y^\ast\)</span> is human and insufficient</td>
+<td>Auxiliary channels that carry independent information about <span class="arithmatex">\(Y^\ast\)</span>; not scale</td>
+</tr>
+<tr>
+<td>Deployment interaction noise</td>
+<td>After training, in the human’s input to a frozen or lightly adapted model</td>
+<td>Unknown. Candidates: precoding, inference compute, context reset. Not known to be <span class="arithmatex">\(e\)</span></td>
+</tr>
+</tbody>
+</table>
+<p>The notes’ “fourth component” is a proposal to add the third row to the first row’s formula. Section 6 is the argument that the proposal is not yet legal. Section 7 is the only slice of the third row that is currently a laboratory object.</p>
+<h3 id="53-why-classical-channel-assumptions-do-not-transfer-for-free">5.3 Why classical channel assumptions do not transfer for free</h3>
+<p>Shannon–Hartley, as used to motivate (SSL), assumes a linear channel, additive noise of a fixed distribution, stationarity, and no memory. LLM training already violates these; the paper’s use of the formula is an analogy whose justification is predictive, not axiomatic. Human interaction violates them a second time, and differently:</p>
+<ul>
+<li>The human is nonstationary (fatigue, learning, strategy changes).</li>
+<li>The channel has feedback. The model’s output changes the next human input.</li>
+<li>The “encoder” is strategic, not a fixed conditional distribution <span class="arithmatex">\(P(x \mid \text{intent})\)</span>.</li>
+<li>Intention is latent. The clean symbol is not observed, so noise cannot be defined as a residual against a known symbol without an extra measurement model.</li>
+</ul>
+<p>A feedback channel, a nonstationary channel, or a control loop may be the right formalism. A memoryless AWGN formula with one extra positive term is a special case that has to be earned.</p>
+<hr />
+<h2 id="6-six-propositions-and-the-rule-that-governs-all-of-them">6. Six propositions, and the rule that governs all of them</h2>
+<h3 id="61-layer-i-theory">6.1 Layer I — theory</h3>
+<p><strong>Proposition 1 (independence).</strong><br />
+Is deployment-time human interaction noise absorbed by one of SSL’s three terms, or does it require a fourth term? Absorption is the default. A fourth term is permitted only if it makes a prediction that the three-term denominator cannot make.</p>
+<p><strong>Proposition 2 (the floor inside the formula).</strong><br />
+If a human channel imposes <span class="arithmatex">\(\gamma_H &gt; 0\)</span>, how does that floor appear in (SSL)? The notes’ candidate reading is that some noise contribution in the denominator is bounded below by a positive constant, so <span class="arithmatex">\(C_{\mathrm{LLM}}\)</span> cannot diverge as <span class="arithmatex">\(N, D \to \infty\)</span>, and therefore <span class="arithmatex">\(\mathcal{L}\)</span> cannot fall to zero under (L). The open mathematical question is whether that constant is <span class="arithmatex">\(e\)</span>, a piece of <span class="arithmatex">\(e\)</span>, or a distinct lower bound with a different dependence on the supervision channel. A further requirement, easy to miss: the estimated floor must be separated from ordinary Bayes error, estimation error, optimization error, and architectural irreducible error. One positive number fitted to a loss curve is not yet <span class="arithmatex">\(\gamma_H\)</span>.</p>
+<h3 id="62-layer-ii-measurement">6.2 Layer II — measurement</h3>
+<p><strong>Proposition 3 (an interaction exponent).</strong><br />
+Does human interaction noise accumulate as a power, and does its exponent exceed the exponent of the signal it rides on, in the same sense that <span class="arithmatex">\(\delta &gt; \beta\)</span> along tokens? If interaction round <span class="arithmatex">\(T\)</span> plays a role analogous to <span class="arithmatex">\(D\)</span>, (SSL) predicts an interior minimum: past some <span class="arithmatex">\(T\)</span>, more dialogue reduces capacity. Multi-turn error accumulation and “hallucination snowballing” are <em>reported</em> phenomena consistent with that shape. They are not yet a measurement of an exponent, and a U-shape is also what user fatigue, rising task difficulty, and a shifting model policy look like. The proposition is about the exponent under controls, not about the existence of some U-shaped plot.</p>
+<p><strong>Proposition 4 (a modality spectrum).</strong><br />
+Speech, typing, clicking, and selection have different noise laws. Can they be placed on one capacity spectrum by giving each modality its own map from behavior into <span class="arithmatex">\((N, D)\)</span> or into a more suitable pair (bandwidth, signal power), so that the theory says which modality to use for which task? This proposition is <strong>not</strong> operationalized by the keyboard restriction in Section 7. It is the reason the restriction is temporary. A spectrum is undefined until at least two modalities have been measured with the same identification strategy.</p>
+<h3 id="63-layer-iii-intervention">6.3 Layer III — intervention</h3>
+<p><strong>Proposition 5 (precoding).</strong><br />
+Shannon’s theorem says that rates below capacity can be driven to arbitrarily small error by encoding, at the price of encoder complexity. The human-facing analogue is an interaction protocol: structured prompts, intent confirmation, feedback calibration. Does such a protocol reduce effective noise at fixed channel capacity? Human-Bounded Intelligence supplies a sharper prediction than “cleaner prompts help”: auxiliary non-human signals should reduce the floor only insofar as they restore information about the latent target. A prompt format that makes the user more fluent without adding information about <span class="arithmatex">\(Y^\ast\)</span> need not move <span class="arithmatex">\(\gamma_H\)</span>.</p>
+<p><strong>Proposition 6 (a budget, not a slogan).</strong><br />
+Treat human supervision as one noisy channel and model scaling as another, under a joint budget. The design question—buy parameters, or buy human feedback—is then a constrained capacity maximization, not a preference. Any optimum is meaningless if it averages over users whose ability, preference, and task distribution are nonstationary. Heterogeneity is part of the proposition, not a robustness check to be added later.</p>
+<h3 id="64-the-rule">6.4 The rule</h3>
+<p><em>Constraint.</em> The failure mode the notes correctly isolate is circular enlargement of (SSL): define “interaction noise” as whatever made the loss worse, insert a term that fits the worsening, and declare the framework extended. The counter-rule is:</p>
+<blockquote>
+<p>A term enters (SSL) only after it is separable, identifiable, intervenable, and extrapolable. Otherwise the extension is a rename.</p>
+</blockquote>
+<p>The six constraints in Section 9 are that rule, expanded. Propositions 1–6 are not independent essays. Proposition 1 is illegal until separability holds. Proposition 2 is empty until the floor is estimated against the right baseline. Propositions 5 and 6 are causal claims and require an intervention, not a regression.</p>
+<hr />
+<h2 id="7-the-keyboard-channel-as-the-laboratory-object">7. The keyboard channel as the laboratory object</h2>
+<h3 id="71-why-this-boundary-is-a-scientific-gain">7.1 Why this boundary is a scientific gain</h3>
+<p>Restricting attention to “noise introduced when a human types an intention” is not a smaller version of the same problem. It moves the problem onto a channel that already has a geometry, a timing process, and decades of measurement.</p>
+<p>Three properties do the work:</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Why it matters for SSL</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>The noise mechanism factors</td>
+<td>Physical, cognitive, and contextual layers are not the same random variable. Proposition 1 can be tested on the factorization instead of on a label.</td>
+</tr>
+<tr>
+<td>One layer is randomly assignable</td>
+<td>Adjacent-key substitutions can be injected into a fixed prompt. In natural typing, errors are entangled with fatigue, difficulty, and strategy, so the entanglement cannot be conditioned away by observation alone.</td>
+</tr>
+<tr>
+<td>Cognitive state has a side channel</td>
+<td>Keystroke intervals, pauses, and keystroke count move with load. The mediator is not identical to the final erroneous string.</td>
+</tr>
+</tbody>
+</table>
+<p>Modalities that lack all three—open-ended speech in the wild, in particular—stay outside the first experiment. They are Proposition 4’s problem, addressed only after the keyboard identification strategy exists.</p>
+<h3 id="72-three-layers">7.2 Three layers</h3>
+<p><strong>Physical layer.</strong><br />
+On a QWERTY keyboard the substitution process is not uniform. The probability of striking <code>s</code> when aiming at <code>a</code> is far larger than the probability of striking <code>p</code>, and that fact is fixed by geometry, almost independent of what the typist is trying to say. A key-adjacency matrix parameterizes it. Engines in the class the notes call HIVE generate the standard edit family: neighbor substitution, transposition, deletion, insertion, duplication.</p>
+<p><strong>Cognitive layer.</strong><br />
+<code>their</code> → <code>thier</code> can be a stable spelling model or a failure of chunking under load. Keystroke dynamics separate these better than the string does. Difficult tasks are reported to slow typing, lengthen pauses, and increase keystroke count. The notes report a further correlation result: the correlation between inter-key interval and content complexity distinguishes compositional writing (<span class="arithmatex">\(\rho\)</span> in a range of roughly <span class="arithmatex">\(0.35\)</span>–<span class="arithmatex">\(0.55\)</span>) from mechanical transcription (<span class="arithmatex">\(\rho &lt; 0.15\)</span>). Those coefficients are carried from the working notes; they are not re-estimated here. The logical point does not depend on the exact interval: timing is a measurement of the mediator, and the mediator is not the corrupted token.</p>
+<p><strong>Contextual layer.</strong><br />
+This layer is not transmission error. It is residual uncertainty over intention given a keystroke sequence. Inside the keyboard boundary it has an operational definition that does not require a general theory of meaning: the number of distinct, plausible intentions compatible with the same keystroke sequence when context is withheld. A language model, in the classical noisy-channel spelling formulation, is exactly the prior that spends that uncertainty:</p>
+<div class="arithmatex">\[
+P(\text{intent} \mid \text{keys})
+  \propto
+  \underbrace{P(\text{keys} \mid \text{intent})}_{\text{physical and cognitive channel}}
+  \;
+  \underbrace{P(\text{intent})}_{\text{contextual disambiguation}}.
+\]</div>
+<p>The product is the right generative picture. It is not yet evidence that the two factors add inside the SSL denominator.</p>
+<h3 id="73-two-functional-forms-ssl-must-be-willing-to-lose">7.3 Two functional forms SSL must be willing to lose</h3>
+<p><em>Reported, then turned into a fork.</em> The notes extract two findings from keyboard-perturbation studies (HIVE and related work):</p>
+<ol>
+<li>Models absorb a large amount of QWERTY corruption before accuracy falls sharply. The count of damaged tokens, more than the type of edit, tracks the loss.</li>
+<li>Increasing the model’s thinking budget largely restores the lost performance.</li>
+</ol>
+<p>If both findings hold, keyboard noise is a poor candidate for a new additive power <span class="arithmatex">\(d_{\mathrm{int}} T^{\delta_{\mathrm{int}}}\)</span> dropped into (SSL). Two alternatives have to be carried as live hypotheses.</p>
+<p><strong>Form K1 — additive power.</strong><br />
+Interaction dose <span class="arithmatex">\(T\)</span> (edit rate, or round index, or a timing-derived cognitive-load proxy) contributes a term <span class="arithmatex">\(d_K T^{\delta_K}\)</span> in the denominator. This is the unique form in which Proposition 3 is a direct transcription of <span class="arithmatex">\(\delta &gt; \beta\)</span>. It predicts a smooth U-shape in <span class="arithmatex">\(T\)</span> and no special role for inference compute except insofar as inference compute is already inside <span class="arithmatex">\(N\)</span> or <span class="arithmatex">\(D\)</span>, which it is not.</p>
+<p><strong>Form K2 — erasure, with a compute rebate.</strong><br />
+Each token survives with probability <span class="arithmatex">\(1 - \pi\)</span>, or a prompt fails when the surviving fraction crosses a threshold. Capacity depends on the surviving information, not on an additive noise power. Inference compute <span class="arithmatex">\(R\)</span> (thinking tokens, reranking, a cleanup pass) buys back part of the erasure. The notes’ “re-pass” observation—that cleaning the instruction before the model sees it has only limited effect—says the rebate is incomplete. Incomplete recovery is informative: a perfect cleanup would have said the channel was invertible by a preprocessor; a partial cleanup says some of the damage is not a surface edit.</p>
+<p>Form K2 changes the <em>optimization</em> SSL is asked to support. If <span class="arithmatex">\(R\)</span> substitutes for lost input information, the relevant frontier is not only <span class="arithmatex">\((N, D)\)</span> but <span class="arithmatex">\((N, D, R)\)</span> at fixed budget, and a cleaner keyboard channel is a substitute for <span class="arithmatex">\(R\)</span>. That is a concrete version of Proposition 6 inside one modality: spend the next unit of budget on parameters, on thinking tokens, or on a precoder (autocomplete, constrained decoding, intent confirmation).</p>
+<p>A threshold version of K2 also predicts something K1 does not: little loss over a wide range of edit rates, then a sharp drop. An additive power predicts a smooth curve. The distinction is empirical and does not require new terminology.</p>
+<h3 id="74-what-randomization-buys">7.4 What randomization buys</h3>
+<p>In natural use, a typist’s error is caused by the same factors one would like to hold fixed: task difficulty, load, fatigue, strategy. Conditioning on the observed error does not separate “this edit type hurts the model” from “the state that produced this edit type also changed the task.”</p>
+<p>Injection removes that fork for the physical layer. The same prompt set can be randomly assigned to neighbor substitution, transposition, deletion, or a cognitive-style misspelling schedule, at a matched rate of damaged tokens. Performance differences at matched damage rate are then attributable to edit structure. Differences that appear only when damage rate changes, regardless of edit type, support the notes’ claim that token survival, not edit identity, is the carrier of loss.</p>
+<p>What randomization does <strong>not</strong> buy: a measurement of natural cognitive noise. Injected misspellings that <em>look</em> cognitive are not cognitive. Estimating the cognitive layer requires the timing side channel on real typing, with task difficulty independently controlled. Proposition A below is designed so that these two designs are not collapsed into one “keyboard study.”</p>
+<h3 id="75-three-propositions-that-can-be-run">7.5 Three propositions that can be run</h3>
+<p>These are the keyboard-sized versions of Propositions 1, 3, and 5. They do not replace Propositions 2, 4, and 6.</p>
+<p><strong>Proposition A (separability; the test for Proposition 1).</strong><br />
+On a fixed prompt set, measure loss under (i) pure physical noise: random adjacent-key edits at rate <span class="arithmatex">\(\pi\)</span>, and (ii) a cognitive-style schedule whose edit rate matches <span class="arithmatex">\(\pi\)</span> but whose edit locations follow spelling and chunking patterns, ideally on real keystroke traces with load instrumented. Ask whether the two loss increments add when both are present.</p>
+<ul>
+<li>Additivity supports writing two terms, or one term that depends only on <span class="arithmatex">\(\pi\)</span>.</li>
+<li>A large interaction, especially if timing-derived load changes the effect of a physical edit, argues against a single keyboard scalar in the SSL denominator.</li>
+<li>If matched-<span class="arithmatex">\(\pi\)</span> physical and cognitive schedules produce the same loss, the notes’ “damaged-token count dominates edit type” claim is confirmed on this slice, and a fourth SSL component indexed by edit type is unnecessary. A component indexed by survival rate may still be necessary.</li>
+</ul>
+<p><strong>Proposition B (exponent or threshold; the test for Proposition 3).</strong><br />
+Accumulate keyboard damage either within a prompt (rate <span class="arithmatex">\(\pi\)</span>) or across rounds (independent damage each round, context retained). Distinguish three outcomes:</p>
+<table>
+<thead>
+<tr>
+<th>Outcome</th>
+<th>Implication</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Smooth power in <span class="arithmatex">\(\pi\)</span> or in round index <span class="arithmatex">\(T\)</span>, with noise exponent above the signal exponent</td>
+<td>K1. <span class="arithmatex">\(T\)</span> can be discussed in the same grammar as <span class="arithmatex">\(D\)</span>, and a U-shape is a prediction, not a surprise.</td>
+</tr>
+<tr>
+<td>Flat region, then a cliff at a survival threshold</td>
+<td>K2. Do not report a power-law exponent as if it were the finding.</td>
+</tr>
+<tr>
+<td>U-shape that disappears once task difficulty and user policy are controlled</td>
+<td>The curve was a confound. SSL gains nothing.</td>
+</tr>
+</tbody>
+</table>
+<p>Round index <span class="arithmatex">\(T\)</span> is not data volume <span class="arithmatex">\(D\)</span>. Treating them as the same variable is a scale error, even if both happen to enter a logarithm.</p>
+<p><strong>Proposition C (the feasible set of precoding; the test for Proposition 5).</strong><br />
+Operational precoders on this channel are ordinary: real-time spell correction, autocomplete, keystroke-intent decoding, and a cleanup pass before the LLM. The scientific questions are the boundary, not the existence of a benefit.</p>
+<ul>
+<li>How much of the loss in Proposition B does each precoder remove, at matched residual edit rate?</li>
+<li>Does the residual, after the strongest precoder and a large thinking budget <span class="arithmatex">\(R\)</span>, go to zero? If it does, keyboard noise is not an HBI floor and should not be absorbed into <span class="arithmatex">\(e\)</span>. If a positive residual remains and tracks insufficiency of the typed string for the latent target—not the edit rate—that residual is the first keyboard-sized estimate of a floor that scale and <span class="arithmatex">\(R\)</span> do not buy.</li>
+<li>Does the precoder impose a cognitive cost that changes the timing process and thus the next round’s noise? That feedback is part of the result. A precoder that lowers edit rate and raises load can increase total loss.</li>
+</ul>
+<p>The notes already record that a cleanup pass is not sufficient. Proposition C asks for the curve of residual loss against precoder strength and against <span class="arithmatex">\(R\)</span>, not for another demonstration that spellcheck helps.</p>
+<h3 id="76-what-the-keyboard-program-explicitly-does-not-answer">7.6 What the keyboard program explicitly does not answer</h3>
+<table>
+<thead>
+<tr>
+<th>Left open</th>
+<th>Why the keyboard does not close it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Proposition 2 in full generality</td>
+<td>A keyboard residual is at most the floor of <em>this</em> channel. It does not identify <span class="arithmatex">\(\gamma_H\)</span> for preference data, demonstrations, or RLHF.</td>
+</tr>
+<tr>
+<td>Proposition 4</td>
+<td>One modality cannot define a spectrum.</td>
+</tr>
+<tr>
+<td>Proposition 6 in full generality</td>
+<td>The budget over <span class="arithmatex">\((N, R, \text{precoder})\)</span> under keyboard noise is a special case. It says nothing about the value of human preference labels.</td>
+</tr>
+<tr>
+<td>Speech, tool use, multi-user strategy</td>
+<td>Different observability, different assignment mechanism.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="8-critique-of-the-shannon-scaling-law-as-a-base">8. Critique of the Shannon Scaling Law as a base</h2>
+<p>The interaction program inherits SSL only where SSL is actually identified. The following limits are properties of the 2026 paper, not of information theory in general. Several of them are already acknowledged, in softer form, by the existence of the six-parameter reduction.</p>
+<h3 id="81-the-analogy-is-stronger-than-the-derivation">8.1 The analogy is stronger than the derivation</h3>
+<ul>
+<li>Shannon–Hartley does not apply to a nonlinear, nonstationary, coupled training dynamics. Predictive success does not convert the analogy into a theorem.</li>
+<li>Equation (L) is assumed. A different monotone map from capacity to loss would move the location of every fitted basin.</li>
+<li>The three noise terms are assumed to add and to be separately interpretable. Nothing in the fitting procedure tests that a coupled term was not simply absorbed into <span class="arithmatex">\(\gamma\)</span>, <span class="arithmatex">\(\delta\)</span>, and <span class="arithmatex">\(e\)</span>. “Model-interaction noise” in particular names a dynamic story that the scalar <span class="arithmatex">\(c(DN)^{\gamma}\)</span> only partially encodes.</li>
+<li><span class="arithmatex">\(N^{\alpha}\)</span> and <span class="arithmatex">\(D^{\beta}\)</span> are inherited from existing scaling practice. They are not implied by coding theory.</li>
+</ul>
+<p>Any fourth term added under these conditions inherits an under-identified denominator. That is the formal reason Proposition 1 cannot be settled inside the current fitting pipeline.</p>
+<h3 id="82-the-experimental-range-does-not-reach-the-claim-one-would-like-to-export">8.2 The experimental range does not reach the claim one would like to export</h3>
+<ul>
+<li>Scale stops at 12B (Pythia) and 32B (OLMo2). The clean extrapolation is a factor of roughly <span class="arithmatex">\(1.7\)</span> in parameters and a similar factor in tokens, at pooled <span class="arithmatex">\(R^2 = 0.847\)</span>. Useful against monotonic baselines; not a warrant for trillion-parameter or long-horizon forecasts.</li>
+<li>Perturbations are Gaussian weight noise, GPTQ, and SFT learning rate. Learning rate is a particularly impure noise proxy: it moves the optimization path and the task fit together. Distribution shift, data contamination, human input, and multi-turn drift are absent.</li>
+<li>The working notes say that only WikiText-2 loss was fit. That understates the paper. SFT results cover GSM8K, SocialIQA, and StarCoder. The fair residual objection is that these are still compact, closed tasks. They do not measure open-ended generation, reasoning chains as used in deployment, or a human in the loop.</li>
+<li>The full law has nine free parameters and needs variation across both <span class="arithmatex">\(N\)</span> and <span class="arithmatex">\(D\)</span> to identify them. The simplified law is evidence that several of those degrees of freedom are weakly used. It is also evidence that the three-term story is only partly resolved by the data: terms that can be pruned are terms the experiments did not pin down. Baseline comparisons include OpenAI-style, Chinchilla-style, and other perturbation-aware laws, but they do not exhaust recent scaling variants, and fit quality is not causal identification.</li>
+</ul>
+<h3 id="83-the-paper-is-silent-on-the-object-of-sections-57">8.3 The paper is silent on the object of Sections 5–7</h3>
+<p>This is not a complaint that the authors failed to write a different paper. It is a boundary on citation.</p>
+<ul>
+<li>The noise that SSL varies is weight noise, quantization noise, and optimizer noise. It is not typed, spoken, or selected human input.</li>
+<li>There is no multi-turn protocol, no human feedback loop, no intent drift, and no context-reset policy.</li>
+<li>Therefore no result in the paper answers Propositions 1–6. Extending the framework to interaction requires a new channel definition, a new noise measurement, and a new experiment. It cannot be done by reinterpreting <span class="arithmatex">\(e\)</span>.</li>
+</ul>
+<h3 id="84-deployment-phenomena-that-would-change-the-formula-are-outside-it">8.4 Deployment phenomena that would change the formula are outside it</h3>
+<p>Inference-time compute, chain-of-thought, tools, retrieval, and RLHF all change how much information reaches the decision. Under Human-Bounded Intelligence, some of them are exactly the auxiliary channels that move <span class="arithmatex">\(\gamma_H\)</span>. Under Form K2, thinking budget is a rebate on keyboard erasure. SSL as published has neither variable. Quantization in the paper is post-training (GPTQ), not quantization-aware or mixed-precision training. The impact statement’s claim that better laws reduce wasted compute is not accompanied by a decision-level cost analysis. Alignment, fairness, and privacy consequences of a noise model are named, if at all, only generically: a law that tells practitioners when scale still helps can just as easily be read as permission to scale.</p>
+<hr />
+<h2 id="9-what-is-allowed-to-count-as-a-solution">9. What is allowed to count as a solution</h2>
+<p>These constraints are the notes’ six principles, rewritten as admission rules for a result. A proposition is not “addressed” by a paragraph that respects the rule’s vocabulary. It is addressed by a measurement the rule would admit.</p>
+<h3 id="91-conceptual-operationalization">9.1 Conceptual operationalization</h3>
+<p><em>Constraint.</em> Split what the notes currently bundle as interaction noise:</p>
+<table>
+<thead>
+<tr>
+<th>Kind</th>
+<th>Example on the keyboard</th>
+<th>What it is not</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Observation noise</td>
+<td>A neighbor-key substitution</td>
+<td>The typist’s uncertainty about the task</td>
+</tr>
+<tr>
+<td>Process noise</td>
+<td>A load-driven rise in pause time and spelling failure</td>
+<td>The resulting string alone</td>
+</tr>
+<tr>
+<td>Intervention noise</td>
+<td>Extra errors caused by the precoder’s own friction</td>
+<td>The precoder’s average benefit</td>
+</tr>
+<tr>
+<td>Intention drift</td>
+<td>The target <span class="arithmatex">\(Y^\ast\)</span> changes between rounds</td>
+<td>A noisy encoding of a fixed target</td>
+</tr>
+<tr>
+<td>Preference distortion</td>
+<td>A typed “yes” that is compliance rather than the latent preference</td>
+<td>A typo</td>
+</tr>
+<tr>
+<td>Semantic compression</td>
+<td>The intention has no short typing that determines <span class="arithmatex">\(Y^\ast\)</span></td>
+<td>A transmission error</td>
+</tr>
+</tbody>
+</table>
+<p>No result may define the noise term as “the part of the loss we did not explain.” Additivity has to be tested (Proposition A), not asserted so that the term fits in a denominator.</p>
+<h3 id="92-theoretical-hygiene">9.2 Theoretical hygiene</h3>
+<p><em>Constraint.</em></p>
+<ul>
+<li>A power-law fit is a description. It does not become a mechanism by being written inside a logarithm copied from Shannon–Hartley.</li>
+<li>State the channel assumptions that were used, and state which of stationarity, memorylessness, and one-way transmission was false in the experiment.</li>
+<li>Keep Bayes error, estimation error, optimization error, architectural <span class="arithmatex">\(e\)</span>, and <span class="arithmatex">\(\gamma_H\)</span> in separate columns. Report the column that moved.</li>
+<li>Prefer the three-term SSL denominator whenever it predicts the new data. A fourth parameter must buy a prediction the nested model misses, on a pre-specified comparison (likelihood ratio or an equivalent model-comparison statistic), not a higher <span class="arithmatex">\(R^2\)</span> on the fitting sample alone.</li>
+</ul>
+<h3 id="93-measurement">9.3 Measurement</h3>
+<p><em>Constraint.</em></p>
+<ul>
+<li>Intention is latent. Any proxy—reconstructed target, user confirmation, task label—needs a stated relation to <span class="arithmatex">\(Y^\ast\)</span>, and a check that the proxy is not itself a noisier copy of the model’s output.</li>
+<li>Report the signal-to-noise ratio of the <em>evaluation</em> channel. SSL’s own lesson is that a noisy benchmark makes scaling predictions look worse than the system under test. Accuracy alone hides that.</li>
+<li>For every exponent: confidence interval, sensitivity to the fitting window, and a pre-registered comparison against a threshold (or other non-power) alternative. Proposition B is lost if only the power law is fit.</li>
+<li>Pre-register interaction studies. Order effects, demand characteristics, and users playing the protocol are the default, not the caveat.</li>
+</ul>
+<h3 id="94-causality">9.4 Causality</h3>
+<p><em>Constraint.</em> A U-shape is not an exponent. Admit a causal claim for Propositions 3, 5, and 6 only under an assignment mechanism: randomized edit injection, randomized precoder, randomized allocation of a supervision budget, or a credible natural experiment. Because the model’s reply changes the human’s next keystroke, the unit of analysis is a feedback system. A static regression of loss on round index estimates a mixture of the channel and the users’ policy.</p>
+<h3 id="95-scale-and-extrapolation">9.5 Scale and extrapolation</h3>
+<p><em>Constraint.</em></p>
+<ul>
+<li><span class="arithmatex">\(N\)</span>, <span class="arithmatex">\(D\)</span>, <span class="arithmatex">\(T\)</span>, wall-clock fatigue, and modality are different axes. An exponent in <span class="arithmatex">\(T\)</span> does not transfer to <span class="arithmatex">\(D\)</span> by renaming.</li>
+<li>An exponent is “the” interaction exponent only if it is stable across the tasks, user groups, and keyboards named in the pre-registration. Otherwise it is a local fit, which is still a result, if labeled as local.</li>
+<li>Do not export a laboratory keyboard result to a trillion-parameter model, a week-long conversation, or a production client. State the largest factor actually tested, as Section 3.4 does for SSL itself (<span class="arithmatex">\( \approx 1.7 \times \)</span>).</li>
+<li>An optimal budget that ignores user heterogeneity is an average of different problems.</li>
+</ul>
+<h3 id="96-ethics-and-ecological-validity">9.6 Ethics and ecological validity</h3>
+<p><em>Constraint.</em> The human is not a noise source in the moral sense, even when a keystroke is a noise source in the channel sense. Typing carries intention, adaptation, and invention; a model that treats all residual as <span class="arithmatex">\(\mathcal{N}\)</span> will “correct” away the part of the signal that was never an error. Consent, privacy of keystroke timing, and a ban on protocols that manipulate the typist are admission conditions, not a closing paragraph.</p>
+<p>Laboratory injection differs from production typing. Proposition A’s injected arm and its natural-typing arm answer different questions; only the second has ecological claim. Precoders have side effects—cognitive load, changed phrasing, users writing toward the autocorrect—and those side effects are outcomes. A capacity gain that degrades the user’s control of what was meant is not a pure gain on Proposition 5.</p>
+<h3 id="97-admission-table">9.7 Admission table</h3>
+<table>
+<thead>
+<tr>
+<th>Proposition</th>
+<th>Minimum evidence that counts</th>
+<th>What does not count</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1 / A</td>
+<td>A separability test with a nested comparison against three-term SSL</td>
+<td>A new symbol in the denominator</td>
+</tr>
+<tr>
+<td>2</td>
+<td>A floor estimated against Bayes, optimization, and architectural baselines, with a stated identity to <span class="arithmatex">\(e\)</span> or a rejection of that identity</td>
+<td>Any positive asymptotic loss</td>
+</tr>
+<tr>
+<td>3 / B</td>
+<td>A pre-registered distinction between power, threshold, and confounded U-shape</td>
+<td>A plot that bends</td>
+</tr>
+<tr>
+<td>4</td>
+<td>At least two modalities identified with the same measurement model</td>
+<td>A qualitative ranking of “speech is noisier”</td>
+</tr>
+<tr>
+<td>5 / C</td>
+<td>A randomized precoder curve, including residual loss and user-side cost</td>
+<td>A before/after spellcheck demo</td>
+</tr>
+<tr>
+<td>6</td>
+<td>A randomized or otherwise identified budget allocation under heterogeneity</td>
+<td>An opinion on whether to buy GPUs or annotators</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="10-what-would-follow-if-the-admission-table-were-met">10. What would follow if the admission table were met</h2>
+<p>This section is conditional on Section 9. It is not a claim that the conditions are close to being met.</p>
+<h3 id="101-scientific-content-of-a-real-solution">10.1 Scientific content of a real solution</h3>
+<p>A result that passed the admission table would do four things, and only these four.</p>
+<ol>
+<li><strong>Put training scale and interaction scale in one ledger.</strong> Pretraining, fine-tuning, alignment, deployment, and multi-turn use would be comparable as channel-capacity problems only to the extent that each noise term had been identified. The design variable would be the capacity of the closed human–model loop, not <span class="arithmatex">\(N\)</span> alone.</li>
+<li><strong>Force an extension of the channel model, not a metaphor.</strong> The required mathematics is the capacity of a nonstationary feedback channel with a latent semantic input, plus a coding theorem for protocols that try to protect intention, plus a lower bound that separates <span class="arithmatex">\(\gamma_H\)</span> from <span class="arithmatex">\(e\)</span>. That is an extension of information theory into a regime Shannon–Hartley does not cover. It is not an application of Shannon–Hartley.</li>
+<li><strong>Turn three slogans into quantities.</strong> “Can alignment be perfect?”, “Does scale erase human noise?”, and “Must long conversations eventually degrade?” become: is <span class="arithmatex">\(\gamma_H = 0\)</span> under this supervision channel; does <span class="arithmatex">\(\partial \mathcal{L} / \partial N\)</span> remove the interaction term or only the terms already in (SSL); does the identified interaction exponent produce an interior minimum in <span class="arithmatex">\(T\)</span>.</li>
+<li><strong>Make the unit of analysis a triple.</strong> Source, channel, and destination are optimized together. A model is not intelligent in isolation under this program; a loop is more or less capable.</li>
+</ol>
+<p>Connections to the information bottleneck, to cognitive load, and to scale-free structure in neural populations are plausible <em>after</em> the keyboard identification exists. They are not consequences of adopting the vocabulary.</p>
+<h3 id="102-academic-consequences-if-the-results-are-real">10.2 Academic consequences, if the results are real</h3>
+<p>The program would sit across theory venues (NeurIPS, ICML, ICLR), human–computer interaction (CHI, UIST), dialogue (ACL), fairness and accountability (FAccT), and cognitive science. The methodological export is more specific than “interdisciplinarity”: causal identification for closed-loop, nonstationary systems; scaling analysis that refuses to mix axes; SNR reporting for evaluation channels; pre-registration as the default for interactive experiments.</p>
+<p>Practical consequences follow only from the same evidence:</p>
+<table>
+<thead>
+<tr>
+<th>Decision</th>
+<th>What a positive result would actually license</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Benchmarks</td>
+<td>Report evaluation-channel noise, not only accuracy</td>
+</tr>
+<tr>
+<td>Protocols</td>
+<td>A quantitative rule for when retaining context destroys more signal than it adds, and a precoder whose residual was measured</td>
+</tr>
+<tr>
+<td>Budgets</td>
+<td>An identified tradeoff between <span class="arithmatex">\(N\)</span>, human feedback, and inference compute, with user heterogeneity in the objective</td>
+</tr>
+<tr>
+<td>Alignment</td>
+<td>An error budget that is allowed to be nonzero, if <span class="arithmatex">\(\gamma_H &gt; 0\)</span> was actually estimated</td>
+</tr>
+<tr>
+<td>Governance</td>
+<td>An information-theoretic description of what an evaluation measured, which is not by itself a regulatory standard</td>
+</tr>
+</tbody>
+</table>
+<h3 id="103-magnitude-without-the-slogan">10.3 Magnitude, without the slogan</h3>
+<p>The notes rank a complete solution with Shannon’s effect on communication engineering or with statistical mechanics’ effect on thermodynamics, and they mention a Turing-scale prize as the corresponding professional magnitude. Read against Section 9, that ranking is a statement about <em>kind</em>, not about proximity.</p>
+<ul>
+<li>Information theory mattered because it separated what rate is achievable from the gadgets of 1948 and gave engineers a bound they could design against. A human–model capacity theorem would matter in the same way: it would say what cannot be bought with scale, and what can be bought with a better channel. It would not, by itself, train a stronger model.</li>
+<li>A complete solution is not the expected outcome. Humans are nonstationary, the loop is reflexive, and intention is unobserved. The realistic product is a program that accumulates partial bounds.</li>
+<li>Partial results already split cleanly, and each is large enough to stand: an identified floor (alignment theory), a precoding bound on a real channel (interaction design), an identified supervision budget (the economics of human feedback).</li>
+<li>A formula with no experiment that meets Section 9 is a relabeling. Its magnitude is approximately zero, regardless of the vocabulary.</li>
+</ul>
+<p>The sentence the notes are reaching for, stripped of promotional tone:</p>
+<blockquote>
+<p>The question “how large can a language model be?” is replaced by “how capable, how reliable, and how interpretable can this human–model channel be, and which resource buys the next increment?”</p>
+</blockquote>
+<p>That replacement is the contribution. It happens only at the rate the admission table is satisfied.</p>
+<hr />
+<h2 id="11-a-short-research-order">11. A short research order</h2>
+<p>The dependency order is stricter than a list of interesting questions.</p>
+<ol>
+<li><strong>Fix the measurement model on the keyboard</strong> (Section 7.2): adjacency matrix, timing proxy, operational definition of contextual ambiguity. No exponent before the likelihood.</li>
+<li><strong>Run Proposition A</strong> at matched damage rate, injected physical edits versus load-instrumented natural typing. This decides whether a keyboard term is even a single term.</li>
+<li><strong>Run Proposition B</strong> against the pre-registered trio {power, threshold, confound}. This decides K1 versus K2 versus “nothing to add.”</li>
+<li><strong>Only if A and B identify a term</strong>, write it into a nested extension of (SSL) or (SSL-s) and demand an out-of-sample likelihood gain. This is the earliest moment Proposition 1 can be answered, and the answer is allowed to be “do not add it.”</li>
+<li><strong>Run Proposition C</strong> on the term that survived, with residual loss after precoding and after thinking budget <span class="arithmatex">\(R\)</span>. Interpret a nonzero, scale-stable residual as a <em>candidate</em> floor (Proposition 2), not as <span class="arithmatex">\(e\)</span>, until the baselines in Section 9.2 are reported.</li>
+<li><strong>Leave Propositions 4 and 6</strong> until a second modality survives the same sequence, or until a real supervision budget—not a keyboard precoder—is randomly assigned.</li>
+</ol>
+<p>Step 4 is the step the working notes are tempted to do first. It is the step that converts the program back into a rename.</p>
+<hr />
+<h2 id="12-notation">12. Notation</h2>
+<table>
+<thead>
+<tr>
+<th>Symbol</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><span class="arithmatex">\(N\)</span></td>
+<td>Parameter count</td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(D\)</span></td>
+<td>Training tokens</td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(C\)</span></td>
+<td>Training compute, in the Chinchilla sense, when so marked</td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(C_{\mathrm{LLM}}\)</span></td>
+<td>SSL capacity, equation (SSL). Not compute.</td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(\mathcal{L}\)</span></td>
+<td>Test loss, tied to capacity only by the ansatz (L)</td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(\alpha, \beta\)</span></td>
+<td>Bandwidth and signal exponents</td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(\gamma, \delta\)</span></td>
+<td>Model-interaction and data-noise exponents</td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(e\)</span></td>
+<td>Irreducible SSL noise term</td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(T\)</span></td>
+<td>Interaction rounds, or another stated interaction dose. Not interchangeable with <span class="arithmatex">\(D\)</span>.</td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(\pi\)</span></td>
+<td>Token damage rate under keyboard perturbation</td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(R\)</span></td>
+<td>Inference-time compute (thinking budget)</td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(Y^\ast\)</span></td>
+<td>Latent evaluation target</td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(\gamma_H\)</span></td>
+<td>Human-Bounded Intelligence floor. Not the SSL exponent <span class="arithmatex">\(\gamma\)</span>.</td>
+</tr>
+<tr>
+<td>K1, K2</td>
+<td>Additive-power versus erasure-with-rebate models of keyboard noise</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="references">References</h2>
+<ol>
+<li>Kaplan, J., McCandlish, S., Henighan, T., Brown, T. B., Chess, B., Child, R., Gray, S., Radford, A., Wu, J., and Amodei, D. (2020). Scaling laws for neural language models. arXiv:2001.08361.</li>
+<li>Hoffmann, J., Borgeaud, S., Mensch, A., Buchatskaya, E., Cai, T., Rutherford, E., Casas, D. d. L., Hendricks, L. A., Welbl, J., Clark, A., Hennigan, T., Noland, E., Millican, K., van den Driessche, G., Damoc, B., Guy, A., Osindero, S., Simonyan, K., Elsen, E., Rae, J. W., Vinyals, O., and Sifre, L. (2022). Training compute-optimal large language models. arXiv:2203.15556.</li>
+<li>Liu, Y., Liu, Z., and Gore, J. (2025). Superposition yields robust neural scaling. arXiv:2505.10465. NeurIPS 2025 Best Paper Runner-up.</li>
+<li>Ouyang, X., Liu, D., Cai, Y., Liu, J., Yang, Y., Zheng, C., Hartvigsen, T., and Ma, Y. (2026). LLMs as noisy channels: A Shannon perspective on model capacity and scaling laws. arXiv:2605.23901. Accepted at ICML 2026.</li>
+<li>Chen, M., Hui, B., Cui, Z., Yang, J., Liu, D., Sun, J., Lin, J., and Liu, Z. (2025). Parallel scaling law for language models. arXiv:2505.10475.</li>
+<li>Alabdulmohsin, I. and Zhai, X. (2025). Recursive inference scaling: A winning path to scalable inference in language and multimodal systems. arXiv:2502.07503.</li>
+<li>Rodriguez Dominguez, A. (2026). Human supervision as an information bottleneck: A unified theory of error floors in human-guided learning. arXiv:2602.23446.</li>
+<li>Shannon, C. E. (1948). A mathematical theory of communication. <em>Bell System Technical Journal</em>, 27, 379–423, 623–656.</li>
+</ol>
+<p>Items in the text marked <em>reported</em> that concern keyboard perturbation engines (HIVE), keystroke–load correlations, and thinking-budget recovery are retained as claims of the working notes. They are not given bibliographic entries here, because this synthesis does not re-identify the source experiments. They should be cited from the primary studies before any of Propositions A–C is pre-registered.</p>
+</article>
+</main>
+<footer>
+  Companion file: shannon-scaling-and-interaction-noise.md. Mathematics rendered with KaTeX. Epistemic labels in the text — Established, Reported, Proposition, Constraint — are part of the argument, not styling.
+</footer>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    if (window.renderMathInElement) {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: "$$", right: "$$", display: true},
+          {left: "\\[", right: "\\]", display: true},
+          {left: "\\(", right: "\\)", display: false},
+          {left: "$", right: "$", display: false}
+        ],
+        throwOnError: false
+      });
+    }
+  });
+</script>
+</body>
+</html>
