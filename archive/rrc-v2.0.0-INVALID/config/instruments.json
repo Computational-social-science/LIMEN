@@ -1,0 +1,382 @@
+{
+  "generated_by": "scripts/build_instrument_manifest.py",
+  "why": "The report listed the data and not the instruments. This is the instrument list, derived from the imports in scripts/ so it cannot omit a dependency that is actually used.",
+  "n_python_files_scanned": 108,
+  "instruments": [
+    {
+      "import": "GlotScript",
+      "distribution": "GlotScript",
+      "version": "2.0",
+      "role": "instrument",
+      "purpose": "measures the writing system actually present in a line, which is what enforces each arm's script declaration (the purity gate)",
+      "citation": "Kargaran, A. H., Yvon, F. & Schütze, H. (2024). GlotScript. LREC-COLING 2024, 7774-7784.",
+      "used_in": [
+        "build_rrc.py",
+        "rrc_qc.py"
+      ],
+      "n_files": 2
+    },
+    {
+      "import": "alphabetic",
+      "distribution": "alphabetic",
+      "version": null,
+      "role": "instrument",
+      "purpose": "classifies text as alphabet / abjad / abugida / syllabary / logographic; supplies the script-type field. It reports French as AZERTY and the Japanese writing system as mixed rather than syllabic",
+      "citation": null,
+      "used_in": [
+        "build_rrc.py"
+      ],
+      "n_files": 1
+    },
+    {
+      "import": "docx",
+      "distribution": "python-docx",
+      "version": "1.2.0",
+      "role": "library",
+      "purpose": "DOCX output for the manuscript pipeline",
+      "citation": null,
+      "used_in": [
+        "build_docx.py",
+        "build_figures_office.py",
+        "build_si_documents.py"
+      ],
+      "n_files": 3
+    },
+    {
+      "import": "lxml",
+      "distribution": "lxml",
+      "version": "6.0.2",
+      "role": "library",
+      "purpose": "XML handling for the document pipeline",
+      "citation": null,
+      "used_in": [
+        "check_documents.py",
+        "omml.py"
+      ],
+      "n_files": 2
+    },
+    {
+      "import": "markdown_it",
+      "distribution": "markdown-it-py",
+      "version": "4.0.0",
+      "role": "library",
+      "purpose": "markdown rendering for the document pipeline",
+      "citation": null,
+      "used_in": [
+        "build_manuscript_html.py",
+        "build_manuscript_html_v1_superseded.py"
+      ],
+      "n_files": 2
+    },
+    {
+      "import": "matplotlib",
+      "distribution": "matplotlib",
+      "version": "3.10.8",
+      "role": "library",
+      "purpose": "figure generation",
+      "citation": null,
+      "used_in": [
+        "build_lean_figures.py",
+        "build_lean_figures2.py",
+        "build_partition_figure.py",
+        "build_phase2_figures.py",
+        "build_stage2_figures.py",
+        "fig_corpus_funnel.py",
+        "fig_keystroke_channel.py",
+        "fig_measurement_summary.py",
+        "fig_reading_displacement.py",
+        "qc_fig_keystroke_channel.py",
+        "qc_report_figures.py",
+        "qc_stage2_figures.py"
+      ],
+      "n_files": 12
+    },
+    {
+      "import": "numpy",
+      "distribution": "numpy",
+      "version": "2.4.1",
+      "role": "library",
+      "purpose": "array arithmetic",
+      "citation": null,
+      "used_in": [
+        "build_lean_figures.py",
+        "fig_corpus_funnel.py",
+        "fig_keystroke_channel.py",
+        "fig_measurement_summary.py",
+        "fig_reading_displacement.py"
+      ],
+      "n_files": 5
+    },
+    {
+      "import": "playwright",
+      "distribution": "playwright",
+      "version": "1.63.0",
+      "role": "instrument",
+      "purpose": "renders the report in a real browser and asserts that every section has content; the only check that can distinguish a section which is present and empty from one which rendered",
+      "citation": "Playwright, browser automation library for Chromium, Firefox and WebKit (Apache-2.0).",
+      "used_in": [
+        "check_report_renders.py"
+      ],
+      "n_files": 1
+    },
+    {
+      "import": "pymupdf",
+      "distribution": "pymupdf",
+      "version": "1.28.2",
+      "role": "library",
+      "purpose": "reads the source PDFs, which is how a citation is checked against the paper it names rather than against a second memory of it",
+      "citation": null,
+      "used_in": [
+        "qc_report_citations.py"
+      ],
+      "n_files": 1
+    },
+    {
+      "import": "pypinyin",
+      "distribution": "pypinyin",
+      "version": "0.55.0",
+      "role": "instrument",
+      "purpose": "the reading of a Han character, which is what the input-method channel's candidate set is built from and what its frequency rank is defined over",
+      "citation": "pypinyin, Python library for Han-to-pinyin conversion (MIT).",
+      "used_in": [
+        "build_rrc.py",
+        "ime_error_generator.py",
+        "measure_collision_evidence.py",
+        "rrc_qc.py"
+      ],
+      "n_files": 4
+    },
+    {
+      "import": "regex",
+      "distribution": "regex",
+      "version": "2026.2.28",
+      "role": "instrument",
+      "purpose": "grapheme-cluster segmentation via \\X. Required, not cosmetic: slicing by code point splits a combining accent from its base, so len() and slice indices disagree with what a reader sees as a character",
+      "citation": "regex, Python module for extended regular expressions (Apache-2.0).",
+      "used_in": [
+        "build_rrc.py",
+        "rrc_qc.py"
+      ],
+      "n_files": 2
+    },
+    {
+      "import": "scienceplots",
+      "distribution": "SciencePlots",
+      "version": null,
+      "role": "library",
+      "purpose": "the Nature-style matplotlib style used for every figure",
+      "citation": "SciencePlots.",
+      "used_in": [
+        "build_lean_figures.py",
+        "build_lean_figures2.py",
+        "build_partition_figure.py",
+        "build_stage2_figures.py",
+        "fig_corpus_funnel.py",
+        "fig_keystroke_channel.py",
+        "fig_measurement_summary.py",
+        "fig_reading_displacement.py"
+      ],
+      "n_files": 8
+    },
+    {
+      "import": "torch",
+      "distribution": "torch",
+      "version": "2.13.0+cu126",
+      "role": "instrument",
+      "purpose": "the tensor runtime the measurement runs on",
+      "citation": null,
+      "used_in": [
+        "eval_rrc_d1.py"
+      ],
+      "n_files": 1
+    },
+    {
+      "import": "transformers",
+      "distribution": "transformers",
+      "version": "5.19.0",
+      "role": "instrument",
+      "purpose": "loads and drives the checkpoint under measurement, with trust_remote_code for the checkpoint's own architecture definition",
+      "citation": null,
+      "used_in": [
+        "eval_rrc_d1.py"
+      ],
+      "n_files": 1
+    },
+    {
+      "import": "wordfreq",
+      "distribution": "wordfreq",
+      "version": null,
+      "role": "instrument",
+      "purpose": "lexical frequency for real-word filtering and for the English arms' word-level cross-check; a published frequency resource, separate from the corpus-observed character frequency used for the reading channel",
+      "citation": "Speer, J. (2022). wordfreq: a Python library for accessing the world's languages' word frequencies.",
+      "used_in": [
+        "build_rrc.py",
+        "ime_error_generator.py",
+        "o1_recoverability.py",
+        "phase2_recoverability.py"
+      ],
+      "n_files": 4
+    }
+  ],
+  "internal_modules": [
+    {
+      "module": "derive_panels",
+      "purpose": "figure panel derivation",
+      "used_in": [
+        "build_manuscript_html.py"
+      ]
+    },
+    {
+      "module": "keyboard_channel",
+      "purpose": "the keyboard-adjacency channel, built from the 136M Keystrokes estimate",
+      "used_in": [
+        "build_rrc.py",
+        "rrc_qc.py"
+      ]
+    },
+    {
+      "module": "measure_collision_evidence",
+      "purpose": "measures the impossibility theorem's antecedent",
+      "used_in": [
+        "check_collision_evidence.py"
+      ]
+    },
+    {
+      "module": "merge_ratings",
+      "purpose": "rating aggregation",
+      "used_in": [
+        "o1_dry_run.py"
+      ]
+    },
+    {
+      "module": "nature_style",
+      "purpose": "the journal figure specification: widths, type sizes, tick weights, palette, the shared axes styling and the four-format output set every figure uses",
+      "used_in": [
+        "fig_corpus_funnel.py",
+        "fig_keystroke_channel.py",
+        "fig_measurement_summary.py",
+        "fig_reading_displacement.py",
+        "qc_report_figures.py"
+      ]
+    },
+    {
+      "module": "o1_auto_indices",
+      "purpose": "automatic index construction for O1",
+      "used_in": [
+        "o1_dry_run.py"
+      ]
+    },
+    {
+      "module": "o1_calibration",
+      "purpose": "the readability-calibration machinery for the O1 instrument",
+      "used_in": [
+        "make_rater_pack.py",
+        "merge_ratings.py",
+        "o1_auto_indices.py",
+        "o1_dry_run.py"
+      ]
+    },
+    {
+      "module": "o1_recoverability",
+      "purpose": "the recoverability index",
+      "used_in": [
+        "phase2_recoverability.py"
+      ]
+    },
+    {
+      "module": "o3_leakage_probe",
+      "purpose": "the leakage probe",
+      "used_in": [
+        "o3_consistency_audit.py"
+      ]
+    },
+    {
+      "module": "omml",
+      "purpose": "Office MathML emission for the DOCX pipeline",
+      "used_in": [
+        "build_docx.py",
+        "check_documents.py"
+      ]
+    },
+    {
+      "module": "si_render",
+      "purpose": "supplementary-information rendering",
+      "used_in": [
+        "build_docx.py",
+        "build_manuscript_html.py",
+        "build_si_documents.py"
+      ]
+    },
+    {
+      "module": "typo_noise",
+      "purpose": "the noise channel model shared by the phase-2 measurement scripts",
+      "used_in": [
+        "o1_agent_rater.py",
+        "o1_auto_indices.py",
+        "o1_calibration.py",
+        "o1_recoverability.py",
+        "orthogonality_check.py"
+      ]
+    }
+  ],
+  "artefacts": [
+    {
+      "path": "config/rrc.json",
+      "purpose": "the manifest every count in the report is read from",
+      "exists": true
+    },
+    {
+      "path": "data/rrc/*.jsonl",
+      "purpose": "the shipped items, one file per arm",
+      "exists": true
+    },
+    {
+      "path": "data/processed/han_char_frequency.json",
+      "purpose": "corpus-observed character frequency, the reading channel's rank denominator",
+      "exists": true
+    },
+    {
+      "path": "data/processed/keystroke_channel.json",
+      "purpose": "the empirical keystroke channel estimate",
+      "exists": true
+    },
+    {
+      "path": "data/processed/rrc_profile.json",
+      "purpose": "the numeric profile",
+      "exists": true
+    },
+    {
+      "path": "data/processed/falsifier_f3_coverage.json",
+      "purpose": "the layer-coverage analysis",
+      "exists": true
+    },
+    {
+      "path": "config/datasets.json",
+      "purpose": "the provenance registry",
+      "exists": true
+    },
+    {
+      "path": "config/data_manifest.json",
+      "purpose": "the file-level manifest of the corpora on disk",
+      "exists": true
+    }
+  ],
+  "vendored": [
+    {
+      "dir": "infra/amazon-noise",
+      "n_files": 5
+    },
+    {
+      "dir": "infra/cldr-keyboards",
+      "n_files": 19
+    },
+    {
+      "dir": "infra/iso639-3",
+      "n_files": 1
+    },
+    {
+      "dir": "infra/noiseqa",
+      "n_files": 5
+    }
+  ]
+}

@@ -1,0 +1,229 @@
+{
+  "dataset": "RRC",
+  "version": "2.0.0",
+  "built_utc": "2026-10-10T13:11:08Z",
+  "seed": 20261016,
+  "n_options": 5,
+  "question_form": "state is the observed corrupted form; choose which candidate is its root",
+  "decoy_rule": "on the ranked layers, the most character-similar other roots (Dice bigram coefficient), one formula across the alphabetic arms; the IME layer's candidates come from the reading index instead -- the characters sharing the reading of the errored position -- and the unrelated-form control (L4) draws a shuffled sample of the pool",
+  "validity_constraint": "on the ranked layers (L2, L3del, L3) an item is kept only if the root is the closest candidate to the state under the arm's measure, so every retained item has a positive margin; the constraint does NOT apply to L1 (other attested error realisations of the same root -- not ranked, not decoys) or to L4 (a shuffled sample of the pool -- the unrelated-form control, where the root is not expected to be nearest). For the IME layer (L2c) the candidates are homophones by construction, so a similarity margin is 0 or 1 throughout and is recorded as null; that layer's difficulty is measured instead, by `group_size` (how many characters the channel offers for the reading) and `group_rank` (where in that group the root falls when the group is ordered by corpus frequency, which is the order an input method actually presents). Applying the constraint to every layer without this scoping cut rrc-zh from 12,351 items to 294.",
+  "frequency_tables": {
+    "why": "Frequency is domain-specific, so each Chinese arm is ranked against its own source rather than against a shared list. Measured top tens differ almost completely between the two domains, and ranking one arm against the other's domain produced an apparent contradiction in the rank analysis that was an artefact of a mismatched denominator.",
+    "per_arm": {
+      "rrc-en": "(none)",
+      "rrc-en-word": "(none)",
+      "rrc-ru": "(none)",
+      "rrc-ja": "(none)",
+      "rrc-zh": "cscd",
+      "rrc-zh-gh": "github_han"
+    },
+    "tables": {
+      "cscd": {
+        "source": "cscd/train.tsv",
+        "detail": "training split only",
+        "rows_read": 30000,
+        "rows_with_han": null,
+        "han_total": 2989950,
+        "distinct_characters": 4876,
+        "ten_commonest": "的一在中国人有是日了"
+      },
+      "github_han": {
+        "source": "GitHub_Typo_Corpus/github-typo-corpus.v1.0.0.jsonl",
+        "detail": "the arm's own release. Not a held-out split: this release IS the arm's source, so the frequency and the items share rows. Stated, not glossed.",
+        "rows_read": 203270,
+        "rows_with_han": 3960,
+        "han_total": 552161,
+        "distinct_characters": 2614,
+        "ten_commonest": "的用一是个数在以中有"
+      }
+    }
+  },
+  "provenance_kind": "observed human error only; no simulated noise",
+  "arms": {
+    "rrc-en": {
+      "script": "alphabetic",
+      "language": "English",
+      "depth": "shallow",
+      "lang_code": "en",
+      "corpus": "GitHub Typo Corpus prose (.md/.rst), lexicon-validated",
+      "n_items": 2337,
+      "source_records": 1404,
+      "file": "data/rrc/rrc-en.jsonl",
+      "sha256": "07d76e28e2a68e2859d1291edbd70bcc7a8a50cccec3cd8d0f86b930657b7d7f",
+      "chance": 0.2,
+      "dropped": 0,
+      "dropped_script": 0,
+      "dropped_margin": 110,
+      "dropped_duplicate": 381,
+      "dropped_unit": 0,
+      "dropped_no_layer": 0,
+      "records_with_layer": 1404,
+      "items_attempted": 2828,
+      "layer_offered": {
+        "L2": 1404,
+        "L4": 1404,
+        "L1": 20
+      },
+      "per_layer": {
+        "L2": 1106,
+        "L4": 1216,
+        "L1": 15
+      }
+    },
+    "rrc-en-word": {
+      "script": "alphabetic",
+      "language": "English",
+      "depth": "shallow",
+      "lang_code": "en",
+      "corpus": "Birkbeck missp.dat (word-level; retained for comparison)",
+      "n_items": 84001,
+      "source_records": 36133,
+      "file": "data/rrc/rrc-en-word.jsonl",
+      "sha256": "fdf1c27a4964046f7dd93c2c7cf52cda3c424ff3d55f5cae4ff1cfb349da59f6",
+      "chance": 0.2,
+      "dropped": 17,
+      "dropped_script": 0,
+      "dropped_margin": 16448,
+      "dropped_duplicate": 0,
+      "dropped_unit": 0,
+      "dropped_no_layer": 0,
+      "records_with_layer": 36116,
+      "items_attempted": 100449,
+      "layer_offered": {
+        "L2": 36116,
+        "L4": 36116,
+        "L1": 28217
+      },
+      "per_layer": {
+        "L4": 36116,
+        "L2": 19668,
+        "L1": 28217
+      }
+    },
+    "rrc-ru": {
+      "script": "alphabetic (Cyrillic)",
+      "language": "Russian",
+      "depth": "shallow (segmental, non-Latin)",
+      "lang_code": "ru",
+      "corpus": "GitHub Typo Corpus, Cyrillic lines",
+      "n_items": 302,
+      "source_records": 1046,
+      "file": "data/rrc/rrc-ru.jsonl",
+      "sha256": "a1028ce56ec05fd5507911be0682610660a9d78efbac03b034e17a95c1c4b48e",
+      "chance": 0.2,
+      "dropped": 0,
+      "dropped_script": 73,
+      "dropped_margin": 199,
+      "dropped_duplicate": 311,
+      "dropped_unit": 638,
+      "dropped_no_layer": 0,
+      "records_with_layer": 335,
+      "items_attempted": 812,
+      "layer_offered": {
+        "L2": 335,
+        "L4": 335,
+        "L1": 142
+      },
+      "per_layer": {
+        "L4": 219,
+        "L1": 63,
+        "L2": 20
+      }
+    },
+    "rrc-ja": {
+      "script": "syllabic",
+      "language": "Japanese",
+      "depth": "deep",
+      "lang_code": "ja",
+      "corpus": "JWTD test.jsonl (kana/kanji revisions)",
+      "n_items": 1076,
+      "source_records": 7701,
+      "file": "data/rrc/rrc-ja.jsonl",
+      "sha256": "626d109d1f136541d870adaea82b58703af7274139abd073f4e24e1aa4bbee65",
+      "chance": 0.2,
+      "dropped": 0,
+      "dropped_script": 2126,
+      "dropped_margin": 0,
+      "dropped_duplicate": 1965,
+      "dropped_unit": 3616,
+      "dropped_no_layer": 0,
+      "records_with_layer": 1959,
+      "items_attempted": 3041,
+      "layer_offered": {
+        "L1": 1082,
+        "L4": 1959
+      },
+      "per_layer": {
+        "L1": 288,
+        "L4": 788
+      }
+    },
+    "rrc-zh": {
+      "script": "logographic",
+      "language": "Chinese",
+      "depth": "deepest",
+      "lang_code": "zh",
+      "corpus": "CSCD all.tsv (IME errors)",
+      "n_items": 11590,
+      "source_records": 18406,
+      "file": "data/rrc/rrc-zh.jsonl",
+      "sha256": "832e89ebff55da9d573cb9376a49bf52bc0e9ebde70bb9601638cf77a374bbf3",
+      "chance": 0.2,
+      "dropped": 0,
+      "dropped_script": 0,
+      "dropped_margin": 0,
+      "dropped_duplicate": 28918,
+      "dropped_unit": 600,
+      "dropped_no_layer": 0,
+      "records_with_layer": 17806,
+      "items_attempted": 40508,
+      "layer_offered": {
+        "L2c": 15517,
+        "L4": 17806,
+        "L1": 7185
+      },
+      "per_layer": {
+        "L2c": 4335,
+        "L4": 5652,
+        "L1": 1603
+      }
+    },
+    "rrc-zh-gh": {
+      "script": "logographic",
+      "language": "Chinese",
+      "depth": "deepest",
+      "lang_code": "zh",
+      "corpus": "GitHub Typo Corpus, Han lines",
+      "n_items": 1532,
+      "source_records": 4991,
+      "file": "data/rrc/rrc-zh-gh.jsonl",
+      "sha256": "854bf164a0e04b3df71a4acf330d127fb15c6f693a4ec9445fdc4432e166e51d",
+      "chance": 0.2,
+      "dropped": 0,
+      "dropped_script": 1209,
+      "dropped_margin": 0,
+      "dropped_duplicate": 617,
+      "dropped_unit": 2313,
+      "dropped_no_layer": 0,
+      "records_with_layer": 1469,
+      "items_attempted": 2149,
+      "layer_offered": {
+        "L2c": 546,
+        "L4": 1469,
+        "L1": 134
+      },
+      "per_layer": {
+        "L2c": 343,
+        "L4": 1115,
+        "L1": 74
+      }
+    }
+  },
+  "files": {},
+  "known_limitations": [
+    "Confusability is character-level; a proxy for the linguistic confusability the depth axis describes, not a measurement of it.",
+    "Birkbeck states are single tokens while JWTD and CSCD states are sentence-length, so the arms differ in object size even with a shared decoy rule.",
+    "Birkbeck is a pre-LLM-era spelling corpus; its errors are not keyboard-shaped."
+  ],
+  "total_items": 100838
+}

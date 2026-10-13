@@ -1,0 +1,14 @@
+{
+  "scripts/export_report_state.py": "e96cb77a381817f29a0dda2138f41c1cbfd7249ce071846203eb086af249c9c2",
+  "scripts/check_ranked_layers_agree.py": "1f40434f15f3dda10416abb79a25135cae75bf1b2cbc42305ddbdeeb4fd563e4",
+  "scripts/regen_data_statement.py": "37ecd816a54c25465d07a08330c7466bfedf2baebddf2421b9f6ad38e1693211",
+  "scripts/qc_data_statement.py": "1da870a43e52929ced2a30b6189c97d76cc2dd4ad498680e0419b15ffcad98ec",
+  "scripts/eval_rrc_d1.py": "47e95235c707381ea29455c9f15d05afbd84ee78a27701410a79768088d1c7b7",
+  "scripts/check_build_reproducibility.py": "75e869e82ffb9a675b44dcb7d37fd7ed2e928522f628d3b1a58436540299b78d",
+  "scripts/build_instrument_manifest.py": "207d7e3494db99334325ec8a48a98092455b6a252b1a62437c3cd11ba5307c3c",
+  "scripts/analyze_measurement.py": "cd3ea5510df8adf43d5ec294689d0f08480ac8cfa3400d2b9ab56ac01336150c",
+  "scripts/rrc_qc.py": "194c6fa3ac4a390a80c488172983f00ee42cd5ab740e5097a3f4520f3bab7ab3",
+  "scripts/profile_rrc.py": "db3ec35ec82a08a45595e52e012f92c551b05c87b741c9e5cc2bad35025be292",
+  "docs/RRC_DATA_STATEMENT.md": "1bbfd88d5253387908e69448dcf3da64d8f8ffe68cbadb7a7116c5a06368b9ed",
+  "config/instruments.json": "6c64f41dea4d44038c4ee4510f80d88c4149598afa6407c67e2749bf90a22c97"
+}
