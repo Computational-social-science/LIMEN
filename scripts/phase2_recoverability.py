@@ -58,6 +58,54 @@ from o1_recoverability import MAX_CANDIDATE_EDITS, ZIPF_FLOOR, RAYNER_ANCHOR_MEA
 # inventory, which is the largest. The value used is reported with every result.
 DEFAULT_PAIR_LIMIT = 6000
 
+# THE LEVEL GRIDS. Both are OPERATIONAL - they are counts of corrupted units, so neither passes through a
+# channel, which is the property section 6.5 showed an index-derived level cannot have.
+#
+# LEVEL_GRID is the rate at which intended forms are corrupted, for the two channels whose corruption is a
+# substitution. It deliberately spans a wide range because the whole point of the sweep is to find where the
+# index stops discriminating, rather than to assume where that is.
+LEVEL_GRID = (0.02, 0.05, 0.10, 0.20, 0.35, 0.50, 0.75, 1.00)
+
+# SR_LADDER is the published Scramble Ratio scale (section 6.6). It is not swept: the levels ARE these five
+# points, and SR = 1 is the Rayner et al. (2006) interior-scrambled condition.
+SR_LADDER = (0.0, 0.25, 0.5, 0.75, 1.0)
+
+# THE FROZEN LEVELS. Single source of truth: the pre-registration cites these, no document retypes them.
+# Every one is OPERATIONAL - a count of corrupted units - so none passes through a channel. Sections 6.5-6.7
+# record the measurements that forced that: an index-derived level inherits the identity of whichever noise
+# model is loaded, and swept against the rate the index does not vary monotonically with severity on any
+# channel. The English ladder is published; the two rate grids are supplied, with the Chinese one bracketing
+# the 0.0196 per-character rate CSCD-NS actually attains.
+FROZEN_LEVELS = {
+    "en": {
+        "levels": [0.0, 0.25, 0.5, 0.75, 1.0],
+        "axis": "Scramble Ratio (fraction of interior letters scrambled, first and last fixed)",
+        "level_source": "operational; Wang et al. (ACL 2025 Findings). SR = 1 is the Rayner et al. (2006) "
+                        "interior-scrambled condition",
+        "shape_source": "none estimated - the manipulation is the shape",
+        "index_usable": False,
+        "index_note": "mean posterior is 0.9995-1.0000 across the ladder and the ablated channel control is "
+                      "0.985-1.000, so the channel contributes at most +0.0144 (section 6.5, 6.7)",
+    },
+    "ja": {
+        "levels": [0.02, 0.05, 0.10, 0.20],
+        "axis": "fraction of intended forms corrupted",
+        "level_source": "supplied by the experimenter; never read off the corpus",
+        "shape_source": "JWTD directed pre -> post kanji-conversion spectrum",
+        "anchor_note": "no per-token rate is available: JWTD's 45.7 % is a share of TRAIN RECORDS by category, "
+                       "a property of corpus assembly rather than a per-token rate; the grid is bracketed by "
+                       "the Chinese one and stated as a choice",
+    },
+    "zh": {
+        "levels": [0.005, 0.02, 0.05, 0.10],
+        "axis": "fraction of intended forms corrupted",
+        "level_source": "supplied by the experimenter; never read off the corpus",
+        "shape_source": "CSCD-NS conditional substitution spectrum",
+        "anchor_note": "brackets the 0.0196 per-character rate the corpus attains (1.953 % of characters per "
+                       "sentence, section 4), with points below and above it",
+    },
+}
+
 
 def zipf_of(token: str, lang: str) -> float:
     """Published lexical frequency. wordfreq needs MeCab for Japanese; that dependency is recorded in
@@ -160,7 +208,8 @@ CHANNELS = {
 }
 
 
-def index_over_pairs(pairs, lang: str, vocab: list[str], limit: int, channel: str = "composed") -> dict:
+def index_over_pairs(pairs, lang: str, vocab: list[str], limit: int, channel: str = "composed",
+                     fit_pairs=None, label: str = "", ablate_channel: bool = False) -> dict:
     """Mean posterior mass on the intended form, over held-out pairs, under a COMPOSITIONAL channel.
 
     THE CONSTRUCTION, AND WHY IT IS THIS ONE
@@ -186,16 +235,21 @@ def index_over_pairs(pairs, lang: str, vocab: list[str], limit: int, channel: st
         return {"status": "no pairs"}
 
     pairs = sorted(pairs, key=lambda t: -t[2])
-    cut = max(1, int(len(pairs) * 0.8))
-    train, test = pairs[:cut], pairs[cut:]
-    if not test:
-        test = pairs[-1:]
+    if fit_pairs is not None:
+        # THE ANCHOR CASE. The stimuli being scored are not the corpus the channel is fitted on, so there is
+        # no leakage to split away: fitting on the whole corpus and scoring every stimulus is the correct
+        # design, and it is what makes the anchor row and the three channel rows ONE instrument rather than
+        # four numbers produced by two different procedures. Section 6.5 records why that distinction matters.
+        fit, test, split_mode = fit_pairs, pairs, "channel fitted on a separate corpus; every stimulus scored"
+    else:
+        cut = max(1, int(len(pairs) * 0.8))
+        fit, test, split_mode = pairs[:cut], pairs[cut:] or pairs[-1:], "pairs split 80/20; channel fitted on the training portion"
 
     # ── fit the compositional channel: aligned character pairs, weighted by the pair's count
     fitted: _c.Counter = _c.Counter()
     intended_unit_totals: _c.Counter = _c.Counter()
     n_aligned = 0
-    for committed, intended, count in train:
+    for committed, intended, count in fit:
         c, w = committed.strip(), intended.strip()
         if not c or not w or len(c) != len(w):
             continue
@@ -215,6 +269,13 @@ def index_over_pairs(pairs, lang: str, vocab: list[str], limit: int, channel: st
     V = max(len(fitted), 1)
 
     def unit_logprob(cu: str, iu: str) -> float:
+        # NEGATIVE CONTROL FOR "IS THE CHANNEL DOING ANY WORK". With the channel ablated to a constant, the
+        # posterior is driven by the prior alone; if the index barely moves, the channel term is inert for
+        # this stimulus class and the number says nothing about the channel. Section 6.5 uses this to test
+        # whether a corpus-fitted substitution channel can price a PERMUTATION, which is a different process
+        # from the one it was fitted on.
+        if ablate_channel:
+            return 0.0
         num = fitted.get((cu, iu), 0) + SMOOTH_K
         den = intended_unit_totals.get(iu, 0) + SMOOTH_K * V
         return math.log(num / den)
@@ -226,24 +287,46 @@ def index_over_pairs(pairs, lang: str, vocab: list[str], limit: int, channel: st
             return float("-inf")
         return sum(unit_logprob(cu, iu) for cu, iu in zip(committed, intended))
 
-    def candidates_of(committed: str, cap: int = 4000) -> list[str]:
-        """Every form a reader could plausibly be reading: substitute, at any subset of positions, a unit
-        the channel maps to that position's committed unit."""
+    def candidates_of(committed: str, cap: int = 4000, max_positions: int = 1) -> list[str]:
+        """Every form a reader could plausibly be reading: substitute, at up to `max_positions` positions, a
+        unit the channel maps to that position's committed unit.
+
+        WHY THE DEPTH IS BOUNDED AND REPORTED RATHER THAN LEFT TO RECURSE. The first version let the
+        substitution frontier expand transitively — substitute a unit, then substitute the result again, and so
+        on. On a two-character Japanese word that turns a handful of single-position alternatives into
+        thousands, because each substituted form generates its own alternatives; measured over the injected
+        sample the candidate set averaged 2,400 for Japanese and 1,100 for Chinese, which dilutes the posterior
+        for a reason that has nothing to do with the corruption being harder.
+
+        One position is also what the channel says. P(committed | intended) is fitted from pairs that differ at
+        the position being counted, so a form two substitutions away is not a reading the channel proposed — it
+        is a reading of a reading. Bounding at one position keeps the candidate set the channel's own.
+        """
         out = {committed}
-        frontier = [(committed, 0)]
-        while frontier:
-            cur, i = frontier.pop()
-            if i >= len(cur):
-                continue
-            for alt in from_unit.get(cur[i], ()):
-                if alt == cur[i]:
+        positions = range(min(max_positions, len(committed)))
+        frontier = [(committed, 0)] if max_positions <= 0 else None
+        if max_positions <= 0:
+            while frontier:
+                cur, i = frontier.pop()
+                if i >= len(cur):
                     continue
-                nxt = cur[:i] + alt + cur[i + 1:]
-                if nxt not in out:
-                    out.add(nxt)
-                    frontier.append((nxt, 0))
-                    if len(out) >= cap:
-                        return list(out)
+                for alt in from_unit.get(cur[i], ()):
+                    if alt == cur[i]:
+                        continue
+                    nxt = cur[:i] + alt + cur[i + 1:]
+                    if nxt not in out:
+                        out.add(nxt)
+                        frontier.append((nxt, 0))
+                        if len(out) >= cap:
+                            return list(out)
+            return list(out)
+        for i in positions:
+            for alt in from_unit.get(committed[i], ()):
+                if alt == committed[i]:
+                    continue
+                out.add(committed[:i] + alt + committed[i + 1:])
+                if len(out) >= cap:
+                    return list(out)
         return list(out)
 
     rs: list[float] = []
@@ -281,9 +364,10 @@ def index_over_pairs(pairs, lang: str, vocab: list[str], limit: int, channel: st
     if not rs:
         return {"status": "no pairs evaluated"}
     return {
-        "channel_fitted_on": f"aligned character pairs from {n_aligned} training pairs",
+        "channel_fitted_on": f"aligned character pairs from {n_aligned} pairs in the fitting corpus",
+        "split_mode": split_mode,
         "channel_units_parameterised": len(fitted),
-        "pairs_fitted": len(train),
+        "pairs_fitted": len(fit),
         "pairs_scored": len(rs),
         "share_of_scored_pairs_whose_committed_unit_the_channel_has_seen":
             round(n_cand_saw_committed / max(used, 1), 6),
@@ -343,11 +427,143 @@ def _index_over_pairs_pairlevel(pairs, lang: str, vocab: list[str], limit: int) 
     }
 
 
+def anchor_pairs(docs: int = 60) -> list[tuple[str, str, int]]:
+    """The Rayner interior-scramble scored as (committed, intended) WORD pairs.
+
+    SAME STIMULI, SAME PERTURBATION as Phase I's `--anchor`: the first 60 rows of the same pack file, the
+    same `rayner_scramble`, the same seed. What changes is the estimator that scores them, which is the point
+    - see section 6.5. Only words longer than three characters are included, because those are the ones the
+    manipulation actually touches; including the untouched short words would dilute the anchor with pairs no
+    manipulation was applied to.
+    """
+    import csv
+    import random
+    import re
+    from o1_recoverability import rayner_scramble
+
+    pack = sorted((REPO_ROOT / "measurement" / "o1_packs").glob("o1_*_lam005_seed0_raterA.csv"))
+    if not pack:
+        return []
+    rows = [ln for ln in pack[0].read_text(encoding="utf-8").splitlines() if not ln.startswith("#")]
+    rng = random.Random(0)
+    out: list[tuple[str, str, int]] = []
+    for r in list(csv.DictReader(rows))[:docs]:
+        for w in re.findall(r"\S+", r.get("clean", "")):
+            if len(w) > 3:
+                out.append((rayner_scramble(w, rng), w, 1))
+    return out
+
+
+def injection_spectrum(pairs) -> dict[str, list[tuple[str, float]]]:
+    """The empirical conditional distribution P(committed | intended), straight from the corpus.
+
+    THE SHAPE COMES FROM THE CORPUS AND ONLY THE SHAPE DOES. Section 6.1 records that the Chinese corpus
+    carries an error in ~46 % of sentences because that is how it was assembled, so its SHARE of substitutions
+    is a property of the annotation plan and not a rate. What is usable is which committed form goes with which
+    intended form, and in what proportion relative to one another. This function returns exactly that and never
+    normalises it into a per-token probability."""
+    by_intended: dict[str, list[tuple[str, float]]] = {}
+    for committed, intended, count in pairs:
+        c, w = committed.strip(), intended.strip()
+        if not c or not w:
+            continue
+        by_intended.setdefault(w, []).append((c, int(count)))
+    for w, opts in by_intended.items():
+        tot = sum(n for _, n in opts)
+        by_intended[w] = sorted(((c, n / tot) for c, n in opts), key=lambda t: -t[1])
+    return by_intended
+
+
+def inject_at_rate(pairs, lam: float, rng) -> list[tuple[str, str, int]]:
+    """Corrupt the intended forms at rate lam, drawing each committed form from the empirical spectrum.
+
+    THIS IS THE NOISE-INJECTION THE LEVEL SEARCH USED TO IMPLICITLY ASSUME, made explicit. lam is supplied by
+    the caller - it is never read off the corpus - which is what lets the rate and the shape come from different
+    places. For a language whose corruption is a character substitution the pair is a character; for Japanese it
+    is a kanji word, and the sample is drawn in the DIRECTION the corpus records, because section 6.3 measured
+    that 15.9 % of wrong forms are the wrong form of more than one correct word, so a wrong-to-right lookup
+    would mis-attribute them.
+    """
+    spec = injection_spectrum(pairs)
+    out: list[tuple[str, str, int]] = []
+    for intended, opts in spec.items():
+        if rng.random() < lam:
+            r = rng.random()
+            acc = 0.0
+            chosen = opts[0][0]
+            for c, p in opts:
+                acc += p
+                if r <= acc:
+                    chosen = c
+                    break
+            if chosen != intended:
+                out.append((chosen, intended, 1))
+    return out
+
+
+def inject_sr(text_words: list[str], sr: float, rng) -> list[tuple[str, str, int]]:
+    """Rayner-style interior scramble at Scramble Ratio sr: first and last letter fixed.
+
+    SR IS OPERATIONAL - it counts characters, so it passes through no channel. That is why the English arm's
+    levels come from it (section 6.6) after section 6.5 showed an index-derived level would inherit the
+    channel's identity. For sr = 1 every interior character is rearranged, which is the Rayner et al. (2006)
+    interior-scrambled condition."""
+    out: list[tuple[str, str, int]] = []
+    for w in text_words:
+        if len(w) < 4:
+            continue
+        interior = list(w[1:-1])
+        k = int(round(sr * len(interior)))
+        if k <= 0:
+            continue
+        idx = list(range(len(interior)))
+        rng.shuffle(idx)
+        chosen_pos = sorted(idx[:k])
+        # permute the chosen positions among themselves
+        vals = [interior[i] for i in chosen_pos]
+        rng.shuffle(vals)
+        for pos, v in zip(chosen_pos, vals):
+            interior[pos] = v
+        cand = w[0] + "".join(interior) + w[-1]
+        if cand != w:
+            out.append((cand, w, 1))
+    return out
+
+
+def english_stimulus_words(limit: int = 1200) -> list[str]:
+    """Words for the SR ladder: the same pack rows Phase I's anchor used, so the ladder is built on the same
+    stimuli the anchor was."""
+    import csv
+    import re
+
+    pack = sorted((REPO_ROOT / "measurement" / "o1_packs").glob("o1_*_lam005_seed0_raterA.csv"))
+    if not pack:
+        return []
+    rows = [ln for ln in pack[0].read_text(encoding="utf-8").splitlines() if not ln.startswith("#")]
+    words: list[str] = []
+    for r in list(csv.DictReader(rows))[:60]:
+        for w in re.findall(r"[A-Za-z]+", r.get("clean", "")):
+            if len(w) > 3:
+                words.append(w.lower())
+        if len(words) >= limit:
+            break
+    return words[:limit]
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=(__doc__ or "").split("\n")[0])
     ap.add_argument("--channel", choices=sorted(CHANNELS), default=None, help="one channel (default: all)")
     ap.add_argument("--limit", type=int, default=DEFAULT_PAIR_LIMIT,
                     help="pairs to evaluate per channel (reported with every result)")
+    ap.add_argument("--anchor", action="store_true",
+                    help="also score the Rayner interior-scramble with THIS estimator, so the anchor row and "
+                         "the channel rows come from one instrument (section 6.5)")
+    ap.add_argument("--ablate-channel", action="store_true",
+                    help="NEGATIVE CONTROL: set the channel term to a constant, so the posterior is driven by "
+                         "the prior alone. If the index does not move, the channel is inert for these stimuli.")
+    ap.add_argument("--levels", action="store_true",
+                    help="sweep the corruption rate per channel and report the index curve the operational "
+                         "levels are read off (section 6.7)")
     ap.add_argument("--json", type=pathlib.Path, default=None)
     args = ap.parse_args()
 
@@ -384,7 +600,117 @@ def main() -> int:
               f"{pairs[0][0]} -> {pairs[0][1]}  (count {pairs[0][2]})")
         print()
 
-    print(f"  ANCHOR for this index (Phase I, measured): {RAYNER_ANCHOR_MEAN_R}")
+    if args.levels:
+        import random as _random
+        print("=" * 78)
+        print("LEVEL CURVES - the index as a function of the corruption rate")
+        print("=" * 78)
+        print("  The channel is fitted on the REAL corpus and the injected sample is scored with it, so what")
+        print("  the curve measures is the intrinsic ambiguity of that corpus's own corruption process -")
+        print("  which is the quantity a level is read off. The rate is supplied here and never read off the")
+        print("  corpus (section 6.1); only the SHAPE is.")
+        print()
+        levels_out: dict = {}
+        for name in names:
+            cfg = CHANNELS[name]
+            src = cfg["pairs"](None)
+            if not src:
+                continue
+            vocab = top_vocabulary(cfg["lang"])
+            curve = []
+            print(f"  {cfg['label']}")
+            print(f"    {'rate':>6}  {'mean_post':>10}  {'median':>8}  {'MAP':>6}  {'cands':>8}  {'sat':>6}")
+            for lam in LEVEL_GRID:
+                rng = _random.Random(20261008)
+                inj = inject_at_rate(src, lam, rng)
+                if len(inj) < 20:
+                    print(f"    {lam:>6.2f}  (only {len(inj)} injected pairs - too few to score)")
+                    curve.append({"rate": lam, "n_injected": len(inj)})
+                    continue
+                res = index_over_pairs(inj, cfg["lang"], vocab, args.limit, fit_pairs=src)
+                curve.append({
+                    "rate": lam, "n_injected": len(inj),
+                    "mean_posterior": res.get("mean_posterior_on_intended"),
+                    "median_posterior": res.get("median_posterior_on_intended"),
+                    "map_share": res.get("share_where_intended_is_MAP"),
+                    "mean_candidates": res.get("mean_candidates"),
+                    "saturated_share": res.get("share_of_scored_pairs_that_saturated_to_one_candidate"),
+                })
+                print(f"    {lam:>6.2f}  {res['mean_posterior_on_intended']:>10.4f}  "
+                      f"{res['median_posterior_on_intended']:>8.4f}  {res['share_where_intended_is_MAP']:>6.3f}  "
+                      f"{res['mean_candidates']:>8.2f}  "
+                      f"{res['share_of_scored_pairs_that_saturated_to_one_candidate']:>6.3f}")
+            levels_out[name] = {"label": cfg["label"], "curve": curve}
+            print()
+
+        # The English arm's levels are NOT read off a curve: section 6.5 shows a substitution channel is inert
+        # for a permutation, so any curve here would be reporting the prior. The ladder is the published
+        # operational scale instead, and the curve is reported beside it only to document that fact.
+        words = english_stimulus_words()
+        if words:
+            en_src = CHANNELS["en"]["pairs"](None)
+            en_vocab = top_vocabulary("en")
+            print("  English (alphabetic; the published SR ladder, with the index reported beside it)")
+            print(f"    {'SR':>6}  {'mean_post':>10}  {'cands':>8}   note")
+            sr_curve = []
+            for sr in SR_LADDER:
+                rng = _random.Random(20261008)
+                inj = inject_sr(words, sr, rng)
+                if len(inj) < 20:
+                    print(f"    {sr:>6.2f}  (only {len(inj)} injected pairs)")
+                    sr_curve.append({"sr": sr, "n_injected": len(inj)})
+                    continue
+                res = index_over_pairs(inj, "en", en_vocab, args.limit, fit_pairs=en_src)
+                abl = index_over_pairs(inj, "en", en_vocab, args.limit, fit_pairs=en_src, ablate_channel=True)
+                sr_curve.append({
+                    "sr": sr, "n_injected": len(inj),
+                    "mean_posterior": res.get("mean_posterior_on_intended"),
+                    "mean_candidates": res.get("mean_candidates"),
+                    "channel_ablated": abl.get("mean_posterior_on_intended"),
+                })
+                print(f"    {sr:>6.2f}  {res['mean_posterior_on_intended']:>10.4f}  "
+                      f"{res['mean_candidates']:>8.2f}   ablated {abl['mean_posterior_on_intended']:.4f}  "
+                      f"(channel contributes {res['mean_posterior_on_intended'] - abl['mean_posterior_on_intended']:+.4f})")
+            levels_out["en_sr_ladder"] = {
+                "label": "English (alphabetic; published SR ladder)",
+                "curve": sr_curve,
+                "level_source": "operational - Wang et al. (ACL 2025 Findings) Scramble Ratio; SR=1 is the "
+                                "Rayner et al. (2006) interior-scrambled condition",
+                "why_not_index_derived": "section 6.5: the substitution channel is inert for a permutation, so "
+                                         "the ablated column is shown beside every row",
+            }
+            print()
+        out["level_curves"] = levels_out
+        out["FROZEN_LEVELS"] = FROZEN_LEVELS
+
+    if args.anchor:
+        print("=" * 78)
+        print("Rayner et al. (2006) interior-scrambled, scored by THIS estimator")
+        print("=" * 78)
+        ap_pairs = anchor_pairs(60)
+        if not ap_pairs:
+            print("  no stimuli found under measurement/o1_packs")
+        else:
+            en_fit = CHANNELS["en"]["pairs"](None)      # the whole English source corpus
+            en_vocab = top_vocabulary("en")
+            res = index_over_pairs(ap_pairs, "en", en_vocab, args.limit, fit_pairs=en_fit,
+                                   ablate_channel=args.ablate_channel)
+            if not args.ablate_channel:
+                abl = index_over_pairs(ap_pairs, "en", en_vocab, args.limit, fit_pairs=en_fit,
+                                       ablate_channel=True)
+                res["NEGATIVE_CONTROL_channel_ablated_to_a_constant"] = abl["mean_posterior_on_intended"]
+                res["channel_term_contribution"] = round(
+                    res["mean_posterior_on_intended"] - abl["mean_posterior_on_intended"], 6)
+            # The continuity check that a single-instrument design makes possible: the value this project
+            # previously reported for this condition, produced by Phase I's own word-level construction.
+            res["phase1_value_under_its_own_construction"] = RAYNER_ANCHOR_MEAN_R
+            res["stimuli"] = f"{len(ap_pairs)} word pairs from the first 60 pack rows, seed 0"
+            out["anchor_rayner_interior_scrambled"] = res
+            for k, v in res.items():
+                print(f"  {k:<52}: {v}")
+        print()
+
+    print(f"  ANCHOR for this index (Phase I construction, measured): {RAYNER_ANCHOR_MEAN_R}")
     if args.json:
         out_path = args.json if args.json.is_absolute() else (REPO_ROOT / args.json)
         out_path.parent.mkdir(parents=True, exist_ok=True)

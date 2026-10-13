@@ -213,12 +213,19 @@ def figure7() -> pathlib.Path:
         ax.text(0.24, yy, desc, fontsize=6.6, va="center", color=MUTED)
 
     ax.set_title("What the manuscript's claims rest on", loc="left", fontsize=8.4, fontweight="bold")
-    fig.text(0.5, 0.012,
-             f"{total} claims in the protocol's provenance table, counted from the table itself. "
-             f"A claim whose status cannot be read from the table is not counted here, so the bar is a "
-             f"lower bound rather than a summary.",
-             ha="center", fontsize=6.2, color=MUTED)
-    fig.tight_layout()
+    # EXPLICIT MARGINS AFTER tight_layout, AND A FOOTER THAT FITS INSIDE THEM.
+    # `tight_layout()` sizes AXES; it does not measure figure-level text. The footer below is centred
+    # at x=0.5 as a single long line, so it ran from -0.024 to 1.024 -- wider than the saved canvas --
+    # and the y-tick labels sat at x=-0.012, just off the left edge. Because `write_formats` saves with
+    # `bbox_inches=None`, nothing re-crops the canvas and both defects reach the delivered file. The
+    # footer is split so each line is under half the figure width and the margins are reserved to hold
+    # it, rather than relying on the automatic pass to notice text it does not lay out.
+    fig.subplots_adjust(left=0.062, right=0.995, top=0.90, bottom=0.20)
+    fig.text(0.5, 0.045,
+             f"{total} claims in the protocol's provenance table,\n"
+             f"counted from the table itself; a claim whose status cannot be\n"
+             f"read from it is not counted, so the bar is a lower bound.",
+             ha="center", va="bottom", fontsize=6.2, color=MUTED, linespacing=1.45)
     p = write_formats(fig, "fig7_stage2_evidence_chain")
     plt.close(fig)
     print(f"  fig7: {total} claims -> " + ", ".join(f"{k} {v}" for k, v in zip(order, vals)))

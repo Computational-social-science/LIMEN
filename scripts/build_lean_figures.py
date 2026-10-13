@@ -146,6 +146,11 @@ def figure4(lam: float = 0.18) -> pathlib.Path:
     ax.set_ylabel("proportion")
     ax.set_ylim(0, max(max(cov), max(acc)) * 1.25)
     ax.set_title("b  the threshold quantities do", loc="left", color=ACCENT2, fontweight="bold")
+    # SEPARATE THE ORIGIN CORNER. Measured on the drawn canvas, this panel's y-tick '0.0' occupies
+    # y=[0.1365,0.1687] and its x-tick '0.0' occupies y=[0.1061,0.1383] at the same x -- they meet by
+    # 0.0018 of the figure, and the layout audit reports it as a collision. Padding the x labels down
+    # moves them clear of the y labels without moving either tick, so no value on the axis changes.
+    ax.tick_params(axis="x", pad=7)
     ax.legend(frameon=False, loc="center right", fontsize=6.4)
     ax.text(0.5, 0.08,
             f"coverage moves by {100 * (max(cov) - min(cov)):.1f} points\nunder the SAME family",

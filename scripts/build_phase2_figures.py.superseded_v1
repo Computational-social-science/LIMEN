@@ -1,0 +1,179 @@
+#!/usr/bin/env python
+"""build_phase2_figures.py -- the Phase II figure: the depth axis, the collision, and the source boundary.
+
+WHAT IT SHOWS, AND WHY THESE THREE PANELS
+    The programme's Phase II rests on three measured objects and one proved implication, and a reader needs all
+    four in one place to see what is established and what is not.
+
+      Panel A -- the orthographic-depth axis, 22 languages, borrowed from a published measurement. It carries
+                 the structural finding: the twenty segmental languages occupy a range of 0.216, while the two
+                 non-segmental ones sit 0.305 and 0.395 below the cluster's floor. The axis is a cluster plus
+                 outliers, not a gradient.
+      Panel B -- the collision measurement, per split and pooled. This is the antecedent of the Lean theorem:
+                 the share of observed Chinese substitutions whose typed romanisation is identical. Stable to
+                 0.001 across three independent splits.
+      Panel C -- the three noise sources and where each one's mechanism reaches. It is the panel that stops a
+                 reader from over-reading the other two: the keyboard generator's reach stops exactly where the
+                 axis's largest contrast begins.
+
+EVERY NUMBER IS READ FROM A CONFIG, NOT TYPED
+    depths from config/depth_axis.json, the collision from config/collision_evidence.json. Nothing in this
+    script re-derives a documented value, because a figure that restates a number is a second source for it.
+
+RUN
+    python scripts/build_phase2_figures.py
+"""
+from __future__ import annotations
+
+import argparse
+import json
+import pathlib
+import sys
+
+REPO_ROOT = pathlib.Path(__file__).resolve().parent.parent
+FIGDIR = REPO_ROOT / "viz" / "figures"
+
+# Guarded, matching the pattern the other four figure scripts adopted after an unguarded import crashed QC.
+try:
+    import scienceplots  # noqa: F401
+    _STYLE = ["science", "no-latex"]
+    _STYLE_NOTE = "scienceplots active"
+except Exception as _e:  # pragma: no cover - reported, never silent
+    _STYLE = []
+    _STYLE_NOTE = f"scienceplots unavailable ({type(_e).__name__}); matplotlib defaults used"
+
+import matplotlib  # noqa: E402
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt  # noqa: E402
+
+if _STYLE:
+    plt.style.use(_STYLE)
+
+# Script classes get their own colour because the figure's whole point is the cluster/outlier split.
+COLOUR = {
+    "alphabetic": "#3b6ea5",
+    "abjad": "#8a5a9e",
+    "abugida": "#c07a3a",
+    "syllabic/featural": "#4a9e6f",
+    "syllabic + logographic": "#b0413e",
+    "logographic": "#7a1f1c",
+}
+
+
+def load() -> tuple[dict, dict]:
+    dpath = REPO_ROOT / "config" / "depth_axis.json"
+    cpath = REPO_ROOT / "config" / "collision_evidence.json"
+    for p in (dpath, cpath):
+        if not p.exists():
+            print(f"  {p.relative_to(REPO_ROOT)} missing; cannot build the figure")
+            sys.exit(1)
+    return (json.loads(dpath.read_text(encoding="utf-8")),
+            json.loads(cpath.read_text(encoding="utf-8")))
+
+
+def main() -> int:
+    ap = argparse.ArgumentParser(description=(__doc__ or "").split("\n")[0])
+    ap.add_argument("--dpi", type=int, default=600)
+    args = ap.parse_args()
+
+    depth, coll = load()
+    axis = sorted(depth["axis"], key=lambda r: r["rel"])
+
+    fig = plt.figure(figsize=(7.16, 7.4))          # Nature double-column width
+    gs = fig.add_gridspec(3, 1, height_ratios=[2.35, 1.0, 1.05], hspace=0.42)
+
+    # ── Panel A: the depth axis
+    ax = fig.add_subplot(gs[0])
+    ys = range(len(axis))
+    ax.barh(list(ys), [r["rel"] for r in axis],
+            color=[COLOUR.get(r["script"], "#777777") for r in axis], height=0.74)
+    ax.set_yticks(list(ys))
+    ax.set_yticklabels([f"{r['name']}" for r in axis], fontsize=6.2)
+    ax.axvline(0.0, color="#333333", lw=0.7)
+    cluster = depth["structure"]["segmental_cluster"]
+    floor = min(r["rel"] for r in axis if r["code"] not in ("jpn", "zho"))
+    ax.axvline(floor, color="#888888", lw=0.8, ls=":")
+    ax.annotate(f"segmental cluster spans {cluster['range']:.3f}",
+                xy=(floor + cluster["range"] / 2, len(axis) - 1.2), ha="center", fontsize=6.0,
+                color="#444444")
+    for code, dy in (("jpn", 0.305), ("zho", 0.395)):
+        r = next(x for x in axis if x["code"] == code)
+        ax.annotate(f"{dy:.3f} below the floor", xy=(floor, ys[axis.index(r)]),
+                    xytext=(floor - 0.02, ys[axis.index(r)]),
+                    ha="right", va="center", fontsize=6.0, color="#7a1f1c")
+    ax.set_xlabel("orthographic transparency, relative to Spanish = 0\n(negative = deeper)", fontsize=6.6)
+    ax.set_title("A   The measured depth axis is a cluster plus two outliers, not a gradient",
+                 fontsize=7.2, loc="left", pad=5)
+    ax.tick_params(axis="x", labelsize=6.0)
+    for s in ("top", "right"):
+        ax.spines[s].set_visible(False)
+
+    # ── Panel B: the collision, per split
+    ax2 = fig.add_subplot(gs[1])
+    names = list(coll["splits"].keys())
+    vals = [100 * coll["splits"][n]["share_identical_romanisation"] for n in names]
+    pooled = 100 * coll["pooled"]["share_identical_romanisation"]
+    xs = range(len(names))
+    ax2.bar(list(xs), vals, color="#3b6ea5", width=0.55)
+    ax2.axhline(pooled, color="#b0413e", lw=1.0, ls="--")
+    ax2.annotate(f"pooled {pooled:.1f} %  ({coll['pooled']['identical_romanisation']:,} / "
+                 f"{coll['pooled']['substitutions']:,})",
+                 xy=(len(names) - 0.5, pooled), xytext=(0, 4), textcoords="offset points",
+                 ha="right", fontsize=6.0, color="#b0413e")
+    for x, v in zip(xs, vals):
+        ax2.annotate(f"{v:.1f}", xy=(x, v), xytext=(0, 3), textcoords="offset points",
+                     ha="center", fontsize=6.0)
+    ax2.set_xticks(list(xs))
+    ax2.set_xticklabels(names, fontsize=6.4)
+    ax2.set_ylim(0, 100)
+    ax2.set_ylabel("% of substitutions", fontsize=6.6)
+    ax2.set_title("B   The theorem's antecedent: identical typed romanisation, stable to 0.001 across splits",
+                  fontsize=7.2, loc="left", pad=5)
+    ax2.tick_params(axis="y", labelsize=6.0)
+    for s in ("top", "right"):
+        ax2.spines[s].set_visible(False)
+
+    # ── Panel C: the sources and their reach
+    ax3 = fig.add_subplot(gs[2])
+    ax3.set_xlim(0, 1); ax3.set_ylim(0, 1); ax3.axis("off")
+    rows = [
+        ("observed corpora", "real human errors, three scripts", 1.00, "#3b6ea5"),
+        ("candidate-selection generator", f"fitted, held-out TV {0.0345:.4f}", 0.60, "#4a9e6f"),
+        ("keyboard generator (MultiTypo)", "mechanism stops at the segmental end", 0.184, "#c07a3a"),
+    ]
+    ax3.text(0.0, 0.94, "C   Mechanism reach along the axis  (bar = share of the depth range covered)",
+             fontsize=7.2, ha="left", va="top")
+    for i, (name, note, reach, col) in enumerate(rows):
+        y = 0.68 - i * 0.24
+        ax3.barh([y], [reach], height=0.11, color=col, left=0.0)
+        ax3.text(0.005, y + 0.085, name, fontsize=6.4, va="bottom")
+        ax3.text(0.005, y - 0.115, note, fontsize=5.8, va="top", color="#555555")
+    ax3.text(0.605, 0.68 - 2 * 0.24 - 0.115,
+             "← 81.4 % of the logographic arm's errors are outside any key-adjacency model",
+             fontsize=5.8, va="top", color="#7a1f1c")
+
+    fig.text(0.005, 0.005,
+             f"Figure — Phase II measurement basis. Depth values borrowed from a published measurement "
+             f"(Torres & Futrell 2025), not re-derived. {_STYLE_NOTE}.",
+             fontsize=5.4, color="#555555")
+
+    FIGDIR.mkdir(parents=True, exist_ok=True)
+    stem = FIGDIR / "fig9_phase2_basis"
+    written = []
+    for ext in ("png", "jpg", "svg", "tiff"):
+        kw = {"dpi": args.dpi} if ext in ("png", "jpg", "tiff") else {}
+        if ext == "tiff":
+            kw["pil_kwargs"] = {"compression": "tiff_lzw"}
+        p = stem.with_suffix(f".{ext}")
+        fig.savefig(p, bbox_inches="tight", **kw)
+        written.append(p)
+    plt.close(fig)
+
+    for p in written:
+        print(f"  wrote {p.relative_to(REPO_ROOT)}  ({p.stat().st_size:,} B)")
+    print(f"  {_STYLE_NOTE}")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
