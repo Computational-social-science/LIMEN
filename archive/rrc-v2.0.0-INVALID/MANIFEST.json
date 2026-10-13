@@ -1,0 +1,36 @@
+{
+  "retired_utc": "2026-10-11",
+  "reason": "invalid measurement instrument",
+  "files": {
+    "rrc-en-word.jsonl": {
+      "items": 84001,
+      "bytes": 55660862,
+      "sha256": "fdf1c27a4964046f7dd93c2c7cf52cda3c424ff3d55f5cae4ff1cfb349da59f6"
+    },
+    "rrc-en.jsonl": {
+      "items": 2337,
+      "bytes": 1680578,
+      "sha256": "07d76e28e2a68e2859d1291edbd70bcc7a8a50cccec3cd8d0f86b930657b7d7f"
+    },
+    "rrc-ja.jsonl": {
+      "items": 1076,
+      "bytes": 740553,
+      "sha256": "626d109d1f136541d870adaea82b58703af7274139abd073f4e24e1aa4bbee65"
+    },
+    "rrc-ru.jsonl": {
+      "items": 302,
+      "bytes": 207323,
+      "sha256": "a1028ce56ec05fd5507911be0682610660a9d78efbac03b034e17a95c1c4b48e"
+    },
+    "rrc-zh-gh.jsonl": {
+      "items": 1532,
+      "bytes": 1074507,
+      "sha256": "854bf164a0e04b3df71a4acf330d127fb15c6f693a4ec9445fdc4432e166e51d"
+    },
+    "rrc-zh.jsonl": {
+      "items": 11590,
+      "bytes": 6906230,
+      "sha256": "832e89ebff55da9d573cb9376a49bf52bc0e9ebde70bb9601638cf77a374bbf3"
+    }
+  }
+}

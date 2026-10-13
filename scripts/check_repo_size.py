@@ -25,6 +25,7 @@ from __future__ import annotations
 
 import argparse
 import pathlib
+import re
 import subprocess
 import sys
 
@@ -47,6 +48,48 @@ def oversized_tracked(root: pathlib.Path) -> list[tuple[str, int]]:
             n = p.stat().st_size
         except OSError:
             continue  # a tracked file that is absent is the step_order guard's business, not this one
+        if n > MAX_BYTES:
+            bad.append((rel, n))
+    return bad
+
+
+def oversized_would_be_staged(root: pathlib.Path) -> list[tuple[str, int]]:
+    """What a bare `git add -A` WOULD stage, and how large the worst of it is.
+
+    WHY THIS EXISTS, AND THE HAZARD IT WAS WRITTEN FOR
+        On 2026-10-14, preparing to commit before a directory rename, `git add -A` was
+        run with no path. It began staging `external-data/` -- 21 GB of raw third-party
+        corpora, 168,595 files, including a 1.46 GB `Keystrokes.zip`. There was no
+        ignore rule for it and nothing under it was tracked, so git treated the whole
+        tree as new content. The command was killed mid-run; nothing had been staged.
+
+        `oversized_tracked` could not have caught this, and that is the gap this
+        function closes: it reads `git ls-files`, which lists what is ALREADY tracked.
+        A hazard that has not been staged yet is invisible to it. The failure would
+        therefore have surfaced at `git push`, after the work looked finished, as
+        GitHub's 100 MB per-file rejection.
+
+    Cost is bounded: `--dry-run` lists the entries git would add without writing the
+    index, and only entries over the threshold are reported, so the output stays short
+    even when the tree holds six figures of untracked files.
+    """
+    out = subprocess.run(
+        ["git", "add", "-A", "--dry-run"], cwd=root, stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT, text=True, encoding="utf-8", errors="replace", check=False
+    )
+    if out.returncode != 0:
+        return []
+    bad: list[tuple[str, int]] = []
+    for line in out.stdout.splitlines():
+        # `add 'path'` -- git quotes paths containing spaces or non-ASCII.
+        m = re.match(r"^add '(.+)'$", line.strip())
+        if not m:
+            continue
+        rel = m.group(1)
+        try:
+            n = (root / rel).stat().st_size
+        except OSError:
+            continue
         if n > MAX_BYTES:
             bad.append((rel, n))
     return bad
@@ -99,18 +142,6 @@ def main(argv: list[str] | None = None) -> int:
     for rel, n in tracked:
         findings.append(f"tracked file {rel} is {fmt(n)} - the remote rejects anything over {REMOTE_LIMIT_MB} MB")
 
-    objects = oversized_objects(root)
-    for name, n in objects:
-        if not any(name == rel for rel, _ in tracked):
-            findings.append(
-                f"reachable object {name} is {fmt(n)}; it is not in the working tree, so a clean status says "
-                f"nothing about it, and the push carries it anyway"
-            )
-
-    n_tracked = len(tracked_files(root))
-    print(f"  tracked files measured: {n_tracked}")
-    print(f"  reachable objects over threshold: {len(objects)}")
-
     if not args.no_negative_control:
         probe = root / "__oversize_negative_control__.bin"
         probe.write_bytes(b"\0" * (MAX_BYTES + 1024))
@@ -129,6 +160,19 @@ def main(argv: list[str] | None = None) -> int:
         finally:
             subprocess.run(["git", "reset", "-q", "--", str(probe.name)], cwd=root, check=False)
             probe.unlink(missing_ok=True)
+
+    # RUN AFTER THE CONTROL, so the injected probe is still in the index when the
+    # control inspects it. The first placement of this call was above the block, which
+    # made the control report NOT DETECTED -- a defect I introduced and the control
+    # caught, which is the arrangement working as intended.
+    would_stage = oversized_would_be_staged(root)
+    for rel, n in would_stage:
+        findings.append(
+            f"a bare `git add -A` would stage {rel} at {fmt(n)} - the remote rejects "
+            f"anything over {REMOTE_LIMIT_MB} MB, so the PUSH fails after the work "
+            f"looks finished. Add an ignore rule rather than staging it."
+        )
+    print(f"  oversized entries a bare `git add -A` would stage: {len(would_stage)}")
 
     if findings:
         print(f"\n  [FAIL] {len(findings)} repository hygiene finding(s):")

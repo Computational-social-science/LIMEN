@@ -100,3 +100,43 @@ Hermes-Setup.exe
 data/processed/keystroke_stats_v2/keystroke_section_stats.parquet
 data/processed/keystroke_stats_v2_smoke/keystroke_section_stats.parquet
 data/processed/keystroke_stats/keystroke_session_stats.parquet
+
+# keystroke-observatory IS AN INDEPENDENT PROJECT that happens to sit inside this
+# checkout on this machine. It has its own repository and its own remote
+# (Computational-social-science/keystroke-observatory), so LIMEN must not track
+# anything under it -- and it did: `git mv` of the pipeline into the project left
+# SEVEN files tracked by BOTH repositories (three pipeline scripts and four
+# MANIFEST/SUMMARY files). Two repositories claiming the same paths is contamination
+# in both directions, and it is invisible because each side looks correct on its own.
+# Excluded so a careless `git add -A` cannot re-create it.
+keystroke-observatory/
+
+# external-data/ IS RAW THIRD-PARTY CORPORA AND IS NOT TRACKED. It holds 21 GB: the
+# 136M Keystrokes corpus (168,593 files, 1.46 GB as a zip), the Alphabetic corpora,
+# the CLDR/ISO tables, and the reference PDFs.
+#
+# It had NO ignore rule, which was a live hazard rather than untidiness. `git add -A`
+# with no path stages every untracked file, so a single bare `git add -A` would have
+# tried to stage 168,595 corpus files -- and `Keystrokes.zip` alone is 1.46 GB, well
+# past GitHub's 100 MB per-file hard limit, so the PUSH would fail after the work
+# looked finished. Found while preparing to commit the working tree before a
+# directory rename; the add was killed mid-run and nothing had been staged.
+#
+# Nothing under external-data/ is tracked (0 files), so excluding it changes no
+# history. The corpora are re-obtainable from their publishers, which is the same
+# basis on which the raw jfleg dump is already excluded.
+external-data/
+
+# THE RETIRED RRC CORPUS IS KEPT AS EVIDENCE AND IS TOO LARGE TO TRACK.
+# `archive/rrc-v2.0.0-INVALID/` holds the corpus that R3 retired, with WHY_RETIRED.md
+# and per-file sha256 in MANIFEST.json. It is EVIDENCE, not a build input: four guards
+# and four documents cite it (POSTMORTEM_RRC_VALIDITY.md, POSITIONING.md, METHODS_LOG.md,
+# DATASET_REBUILD_DESIGN.md, audit_item_validity.py, check_object_drift.py,
+# check_funnel_conservation.py, check_frequency_provenance.py), so it must stay on disk.
+#
+# But `rrc-en-word.jsonl` alone is 53.08 MB, and `git add -A` with no path would stage
+# it. Found by check_repo_size.py's `oversized_would_be_staged`, added the same day for
+# exactly this class. The JSONL payloads are excluded; WHY_RETIRED.md, MANIFEST.json and
+# the construction scripts stay tracked, so the evidence a reader needs is in git and
+# the bulk that would break a push is not.
+archive/rrc-v2.0.0-INVALID/*.jsonl

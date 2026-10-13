@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RRC — Technical Report</title>
+<style>
+  :root{
+    --bg:#ffffff; --panel:#f7f8fa; --panel2:#eef1f5; --ink:#12161c; --dim:#5a6472;
+    --line:#d8dee7; --accent:#1b3a6b; --accent2:#476b9d; --warn:#8a5a00; --bad:#8f2020;
+    --ok:#1d6b3a; --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --serif:Georgia,"Times New Roman",serif;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --bg:#0f1216; --panel:#161b22; --panel2:#1c232c; --ink:#e6edf3; --dim:#9aa7b6;
+           --line:#2b333d; --accent:#7fa8dd; --accent2:#5b7fae; --warn:#d9a441; --bad:#e06c6c;
+           --ok:#57b37a; }
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:14.5px/1.65 var(--sans)}
+  .wrap{max-width:1140px;margin:0 auto;padding:34px 26px 70px}
+  header{border-bottom:2.5px solid var(--accent);padding-bottom:15px;margin-bottom:4px}
+  h1{font-size:25px;margin:0 0 6px;letter-spacing:-.015em;line-height:1.25}
+  h2{font-size:15px;margin:42px 0 12px;padding-bottom:7px;border-bottom:1px solid var(--line);
+     text-transform:uppercase;letter-spacing:.075em;color:var(--accent);font-weight:700}
+  h3{font-size:15px;margin:27px 0 8px;font-weight:650}
+  p{margin:9px 0;text-align:justify;font-family:var(--serif)}
+  .sub{color:var(--dim);font-size:13px;font-family:var(--sans)}
+  .fig{margin:18px 0 22px;padding:0}
+  .fig img{width:100%;height:auto;display:block;border:1px solid var(--line);
+    border-radius:8px;background:#fff}
+  .fig figcaption{color:var(--dim);font-size:12.5px;line-height:1.62;margin-top:9px;
+    padding-left:2px}
+  .fig figcaption strong{color:var(--ink)}
+  .fig figcaption code{font-size:11.5px}
+  code,kbd{font-family:var(--mono);font-size:12.5px;background:var(--panel2);
+           padding:1px 5px;border-radius:3px}
+  pre{font-family:var(--mono);font-size:12px;background:var(--panel);border:1px solid var(--line);
+      border-radius:6px;padding:12px 14px;overflow:auto;line-height:1.5}
+  /* NATURE THREE-LINE TABLE. A rule above the header, one below it, one at the foot; no rule between
+     data rows and no header shading. The rules carry the structure. A shaded, uppercased header is a
+     web convention that competes with the journal's own type, so headers stay sentence case. */
+  table{border-collapse:collapse;width:100%;font-size:13px;margin:10px 0;font-family:var(--sans);
+        border-top:1px solid var(--ink);border-bottom:1px solid var(--ink)}
+  th,td{padding:7px 9px;text-align:left;vertical-align:top}
+  thead th{border-bottom:1px solid var(--ink)}
+  th{font-weight:650;font-size:11.5px;letter-spacing:.03em;color:var(--ink)}
+  td.num,th.num{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums}
+  .grid{display:grid;gap:12px}
+  .tiles{grid-template-columns:repeat(auto-fit,minmax(158px,1fr))}
+  .tile{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px 14px}
+  .tile .k{font-size:10.5px;text-transform:uppercase;letter-spacing:.065em;color:var(--dim)}
+  .tile .v{font-size:21px;font-family:var(--mono);margin-top:3px;letter-spacing:-.02em}
+  .tile .n{font-size:11px;color:var(--dim);margin-top:2px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:8px;
+        padding:15px 17px;margin:10px 0}
+  .pill{display:inline-block;font-size:11px;padding:1px 7px;border-radius:10px;
+        border:1px solid var(--line);background:var(--panel2);font-family:var(--mono)}
+  .ok{color:var(--ok);border-color:var(--ok)}
+  .warn{color:var(--warn);border-color:var(--warn)}
+  .bad{color:var(--bad);border-color:var(--bad)}
+  .banner{background:var(--panel2);border:1px solid var(--line);border-left:3px solid var(--accent);
+          border-radius:4px;padding:11px 15px;margin:14px 0;font-size:13px}
+  .banner.bad{border-left-color:var(--bad)}
+  .banner.warn{border-left-color:var(--warn)}
+  .prop{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--accent);
+        border-radius:4px;padding:12px 16px;margin:15px 0}
+  .prop .lbl{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--accent);
+             font-weight:700;display:block;margin-bottom:5px}
+  .proof{font-size:13px;color:var(--dim);margin:9px 0 0;padding-left:13px;
+         border-left:2px solid var(--line);font-family:var(--serif)}
+  ol,ul{margin:8px 0;padding-left:24px}
+  li{margin:4px 0;font-family:var(--serif)}
+  .dim{color:var(--dim)}
+  .mono{font-family:var(--mono)}
+  .refs{font-size:12.5px;font-family:var(--serif)}
+  .refs li{margin:8px 0}
+  footer{margin-top:50px;padding-top:15px;border-top:1px solid var(--line);
+         color:var(--dim);font-size:12px}
+  .mathcount{font-size:11px;color:var(--dim);text-align:right;margin-top:3rem}
+  .mathfail{border:1px solid var(--bad);color:var(--bad);padding:8px;margin:8px 0}
+
+  /* ── navigation ─────────────────────────────────────────────────────────────
+     The table of contents is built FROM the document's own headings at load time, so it cannot
+     drift from what the report contains. A hand-written list would be a second copy of the
+     structure and would go stale the first time a section moved. */
+  #progress{position:fixed;top:0;left:0;height:3px;width:0;background:var(--accent);z-index:50;
+            transition:width .12s linear}
+  #toc{position:fixed;top:0;left:0;width:246px;height:100vh;overflow-y:auto;
+       padding:22px 8px 40px 18px;border-right:1px solid var(--line);background:var(--bg);
+       font-family:var(--sans);z-index:40}
+  #toc .ttl{font-size:10.5px;text-transform:uppercase;letter-spacing:.09em;color:var(--dim);
+            margin:0 0 12px 4px}
+  #toc a{display:block;padding:4px 8px;margin:1px 0;color:var(--dim);text-decoration:none;
+         font-size:12.5px;line-height:1.35;border-left:2px solid transparent;border-radius:0 3px 3px 0}
+  #toc a:hover{color:var(--ink);background:var(--panel)}
+  #toc a.sec{font-weight:650;color:var(--ink);margin-top:9px}
+  #toc a.sub{padding-left:19px;font-size:12px}
+  #toc a.active{color:var(--accent);border-left-color:var(--accent);background:var(--panel)}
+  #toc .num{display:inline-block;min-width:20px;font-family:var(--mono);font-size:11px;opacity:.75}
+  #toc .meta{margin-top:16px;padding-top:11px;border-top:1px solid var(--line);font-size:11px;
+             color:var(--dim);line-height:1.5}
+  body{}
+
+  @media (max-width:1200px){#toc{width:206px}.wrap{margin-left:206px}}
+  @media (min-width:1201px){.wrap{margin-left:246px}}
+  /* On a narrow screen the rail would eat the text, so it becomes a collapsible drawer. */
+  @media (max-width:820px){
+    #toc{width:auto;right:0;height:auto;max-height:62vh;border-right:0;
+         border-bottom:1px solid var(--line);padding:10px 16px 14px}
+    #toc.collapsed a,#toc.collapsed .meta{display:none}
+    #toc .ttl{cursor:pointer;margin-bottom:6px}
+    #toc .ttl::after{content:" ▾";color:var(--accent)}
+    #toc.collapsed .ttl::after{content:" ▸"}
+    .wrap{margin-left:0;padding-top:60px}
+  }
+  @media print{#toc,#progress{display:none}.wrap{margin-left:0}}
+
+  @media print{body{padding:0}.wrap{max-width:none;padding:0}
+    h2{page-break-after:avoid}table{page-break-inside:avoid}}
+/* -- dataset explorer (d3). Colours come from the report's own variables so the interactive
+        views sit inside the document rather than beside it. */
+  .dx-tabs{display:flex;flex-wrap:wrap;gap:5px;margin:2px 0 12px}
+  .dx-tab{font:11.5px var(--mono);padding:3px 10px;border:1px solid var(--line);border-radius:12px;
+    background:var(--panel);color:var(--dim);cursor:pointer}
+  .dx-tab:hover{border-color:var(--accent2);color:var(--ink)}
+  .dx-tab.is-active{background:var(--accent);border-color:var(--accent);color:#fff}
+  .dx-view{margin:16px 0 22px}
+  .dx-view h4{font-size:13px;margin:0 0 3px;font-weight:650}
+  .dx-cap{font-size:12.5px;color:var(--dim);margin:0 0 9px;font-family:var(--serif);text-align:justify}
+  .dx-lab{font:11px var(--sans);fill:var(--ink)}
+  .dx-val{font:11px var(--mono);fill:var(--dim)}
+  .dx-note{font:10.5px var(--sans);fill:var(--dim)}
+  .dx-colhead{font:600 11px var(--sans);fill:var(--ink)}
+  .dx-cellval{font:10.5px var(--mono);fill:#20304a}
+  .dx-missing{font:10.5px var(--sans);fill:var(--dim);font-style:italic}
+  .dx-tip{position:fixed;left:0;top:0;opacity:0;transition:opacity .1s;pointer-events:none;
+    background:#12161c;color:#e6edf3;font:11.5px var(--sans);padding:6px 9px;border-radius:5px;
+    max-width:260px;z-index:50;line-height:1.45}
+  .dx-error{font:12px var(--mono);color:var(--bad);border:1px solid var(--bad);
+    border-radius:6px;padding:10px 12px;background:var(--panel)}
+/* -- item browser. Same variables as the explorer so the two read as one section. */
+  .ib-head{display:flex;flex-wrap:wrap;gap:7px;align-items:baseline;margin-bottom:10px}
+  .ib-id{font:11.5px var(--mono);color:var(--ink)}
+  .ib-tag{font:10.5px var(--mono);color:var(--dim);border:1px solid var(--line);border-radius:9px;
+    padding:1px 7px;background:var(--panel2)}
+  .ib-prov{cursor:help}
+  .ib-ask{font-family:var(--serif);font-size:13.5px;margin:0 0 10px}
+  .ib-state{display:flex;align-items:baseline;gap:12px;background:var(--panel2);border:1px solid var(--line);
+    border-radius:7px;padding:12px 15px;margin-bottom:13px}
+  .ib-state-lab{font:10.5px var(--sans);text-transform:uppercase;letter-spacing:.06em;color:var(--dim)}
+  .ib-state-val{font:21px/1.35 var(--mono);color:var(--ink);word-break:break-word}
+  .ib-cands{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px;margin-bottom:13px}
+  .ib-cand{display:flex;align-items:baseline;gap:9px;text-align:left;cursor:pointer;
+    background:var(--panel);border:1px solid var(--line);border-radius:7px;padding:9px 12px;
+    font:14px var(--mono);color:var(--ink)}
+  .ib-cand:hover:not(:disabled){border-color:var(--accent2);background:var(--panel2)}
+  .ib-cand:disabled{cursor:default}
+  .ib-cand.is-root{border-color:var(--ok);border-width:2px;background:#eef7f1}
+  .ib-cand.is-wrong{border-color:var(--bad);border-width:2px;background:#fbeeee}
+  .ib-letter{font:600 10.5px var(--sans);color:var(--dim);border:1px solid var(--line);
+    border-radius:3px;padding:0 4px}
+  .ib-reveal{display:flex;flex-wrap:wrap;gap:16px;align-items:baseline;margin-bottom:12px}
+  .ib-root{font:600 13px var(--mono);color:var(--ok)}
+  .ib-diff{font:11.5px var(--mono);color:var(--dim)}
+  .ib-nav{display:flex;align-items:center;gap:14px;border-top:1px solid var(--line);padding-top:11px}
+  .ib-pos{font:11.5px var(--mono);color:var(--dim)}
+  .ib-count{font:11.5px var(--sans);color:var(--dim);margin-top:4px}
+  @media (prefers-color-scheme: dark){
+    .ib-cand.is-root{background:#16281d}
+    .ib-cand.is-wrong{background:#2a1a1a}
+  }
+</style>
+<script>
+window.MathJax = {
+  tex: {
+    inlineMath: [['$', '$']],
+    displayMath: [['$$', '$$']],
+    processEscapes: true,
+    processEnvironments: true,
+    packages: {'[+]': ['ams', 'boldsymbol', 'textmacros', 'noerrors', 'noundefined']}
+  },
+  options: {
+    skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+    renderActions: {addMenu: []}
+  },
+  chtml: {scale: 1.0, displayAlign: 'center'},
+  startup: {
+    pageReady: function () {
+      return MathJax.startup.defaultPageReady().then(function () {
+        var n = document.querySelectorAll('mjx-container').length;
+        var d = document.querySelectorAll('mjx-container[display="true"]').length;
+        var badge = document.createElement('p');
+        badge.className = 'mathcount';
+        badge.textContent = 'math rendered: ' + n + ' expression(s), ' + d + ' display';
+        document.body.appendChild(badge);
+        if (n === 0) {
+          var warn = document.createElement('p');
+          warn.className = 'mathfail';
+          warn.textContent = 'No mathematics was rendered. The TeX source below is still readable.';
+          document.body.insertBefore(warn, document.body.firstChild);
+        }
+      });
+    }
+  }
+};
+</script>
+<script src="../mathjax/tex-mml-chtml.js" id="MathJax-script"></script>
+</head>
+<body>
+<div id="progress"></div>
+<nav id="toc" aria-label="Report contents">
+  <p class="ttl" id="toc-ttl">Contents</p>
+  <div id="toc-list"></div>
+  <div class="meta" id="toc-meta"></div>
+</nav>
+<div class="wrap">
+
+<header>
+  <h1 id="title">Root Recovery Corpus — Technical Report</h1>
+  <div class="sub" id="subtitle">loading state…</div>
+</header>
+
+<div id="banner"></div>
+
+<h2>Introduction</h2>
+
+<p><strong>Motivation.</strong> A language model that answers under a confidence gate fails in two
+different ways, and only one of them is usually studied. It can be wrong and say so, in which case
+the gate declines and the cost is availability; or it can be wrong and be confident, in which case
+the error arrives looking like an answer. Which of the two happens is a property of the
+<em>channel</em> the text came through — how the intended form was transformed into the observed
+one, and how many other forms the transformation makes equally plausible. That quantity is
+script-dependent, and it is not observable from clean text: a corpus of clean sentences cannot
+distinguish a model that never errs from one that errs invisibly.</p>
+
+<p><strong>The object is the channel, not the error.</strong> Under the noisy-channel frame, an
+observer sees a corrupted form $s$ and must recover the intended form $r$; by Bayes the decision
+depends on $P(s \mid r)$ and $P(r)$, and only the first is a property of the channel. A resource
+built to support a claim about the channel must therefore expose the likelihood rather than merely
+supply corrupt strings — and it must supply, per script, the <em>candidate structure</em>: which
+other forms the channel admits, and whether they are ordered. §2 states the frame formally,
+including a proposition (§2.4) establishing that the ordering quantity used for the keyboard
+channel is <em>identically zero</em> on the Chinese reading channel, so a different quantity — the
+frequency rank in the character group the input method offers — is required there.</p>
+
+<p><strong>Why observed rather than generated.</strong> The published multilingual typo work this
+report measures against implements a fixed set of operations over a fixed set of scripts, and every
+one of those scripts is alphabetic, abjad or abugida. <em>Two figures that are commonly quoted for
+that work — how many operations it implements and how many scripts it supports — were <strong>not
+confirmed</strong> by this report's bibliographic verification, and are therefore not restated
+here</em> (§8). The comparison below does not depend on either: run against this project's languages
+those generators raise <code>Unsupported language</code> for Chinese and Japanese, and measured
+against real typing the single mechanism they model —
+substitution between adjacent keys — accounts for 9.2 % of observed edits, while deletion and
+insertion together account for about two thirds (§4.6). Those generators are not defective; they
+were built to inject a controlled perturbation, which is what an ablation needs. But a study built
+on them measures robustness to adjacent-key substitution, and the inference from that to
+"robustness to typing error" does not follow. A resource that supports the wider claim has to be
+built from forms that people actually produced.</p>
+
+<p><strong>What the corpus is.</strong> The <em>Root Recovery Corpus</em> (RRC) is a
+fixed-choice resource built from records of observed human error, in six arms spanning four
+languages and four writing systems. Each item shows one corrupted form $s$ and five candidates,
+exactly one of which is the root; the task is to identify it. Because the answer is discrete and
+unique, chance is defined per item at $1/K = 0.20$ and accuracy and confidence are measurable on
+the same trial, which is what a calibration claim requires. Every item carries its layer, its
+difficulty under the channel's own measure, and the corpus it came from, so a result can be
+attributed to a named source rather than to a resource in general. The construction is a
+filtration (§3): each stage can only remove items, and the count it removed is recorded, so the
+funnel from source records to shipped items is auditable at every step. Cardinalities, layer
+coverage, length and difficulty distributions and the measured keystroke channel are in §4.</p>
+
+<p><strong>What it makes testable.</strong> The claim the corpus exists to test is that a model's
+errors are visible to its own confidence as a function of the orthographic depth of the script it
+reads, rather than of the model. RRC is the parameter-estimation layer of that chain: it supplies
+the channel's candidate structure and a per-item ceiling against which a calibration result can be
+read. Three falsifiers are available with no new data and their criteria are fixed in advance
+(§5.3) — no separation on the ranked layers; no rank effect on the reading channel, which would
+make that layer uninformative rather than hard; and a cross-script difference that does not survive
+restricting to shared layers. The third has already been answered structurally: <strong>no two arms
+share a ranked layer</strong>, so the strongest comparison the corpus currently supports is on its
+control layer, and this is reported as a limit rather than worked around.</p>
+
+<p><strong>What it does not claim.</strong> Orthographic depth is the hypothesis, not a label the
+corpus carries: no item is annotated with it, and the corpus supplies a measurable candidate
+structure instead (§2.7). RRC does not support statements about $P(r)$, about population error
+rates, or about parity between scripts — the writers are not a characterised sample, the arms are
+not aligned to one another, and their layer coverage differs. Each of these is stated where it
+applies and again in §6.1, because a limit that is discovered by a reader rather than disclosed by
+the authors is a defect in the resource.</p>
+
+<p><strong>How to read this report.</strong> §1 lists what the corpus is built from and what it is
+built with — data sources, instruments, internal machinery, and the artefacts every figure is read
+from. §2 is the formal framework. §3 is the construction. §4 is the numeric profile. §5 states what
+has been measured and what would falsify the central claim. §6 is quality control. §7 reproduces
+every number from scratch and §8 carries the references. Every figure in §4 is read from a shipped
+artefact at load time rather than transcribed, and the page reports the age of the data it is
+showing.</p>
+
+<h2>1 · Sources, instruments and dependencies</h2>
+<p class="dim">A corpus is only meaningful relative to the instruments that read it. Section 1.1
+lists the data; 1.2 the tools that compute with it; 1.3 the internal machinery; 1.4 the artefacts
+every figure is read from. The instrument list is <strong>derived from the imports in
+<code>scripts/</code></strong> rather than written by hand, and the build fails if an import is
+undeclared — a tool that computes a number has to be named as surely as the corpus that supplies
+it. Full citations are in §8.</p>
+
+<h3>1.1 Data sources</h3>
+<p>Every arm is built from a corpus of <strong>observed</strong> human error. No arm is built from
+generated noise, and §8 lists the sources that were considered and rejected together with the reason —
+a corpus is defined as much by what it excludes, and a rejection stated without its reason is an
+omission. The table gives where each source came from, what was taken from it, and the licence that
+travels with any redistribution. That last column matters: the largest single source is
+non-commercial, so the constraint is on reuse of the data rather than on this analysis, and it is
+stated rather than buried.</p>
+<div id="sources"></div>
+
+<h3>1.2 Instruments and libraries</h3>
+<p class="sub">Third-party tools, resolved to a distribution and a version, with what each one
+computes and where it is used. A row whose version is absent was imported but its distribution
+could not be resolved on this host.</p>
+<div id="instruments"></div>
+
+<h3>1.3 Internal modules</h3>
+<p>The project's own modules. They are listed apart from §1.2 so that a reader citing this report's
+instruments does not have to separate an external tool from a local one, and so that §1.2 can be read
+as a dependency list in the ordinary sense.</p>
+<div class="card"><div id="internal"></div></div>
+
+<h3>1.4 Artefacts and vendored standards</h3>
+<div class="grid" style="grid-template-columns:1fr 1fr">
+  <div class="card"><h4 style="margin-top:0">Artefacts every figure is read from</h4>
+    <div id="artefacts"></div></div>
+  <div class="card"><h4 style="margin-top:0">Vendored upstream data</h4>
+    <div id="vendored"></div></div>
+</div>
+
+<h2>2 · Formal framework</h2>
+<p>This section fixes the estimand <em>before</em> anything is measured, so that the measurement in §5
+is able to fail. That ordering is the paradigm. The object of study here is a <strong>channel</strong>
+— a conditional distribution over what a writer produces given what they intended — and a model's
+accuracy on these items is evidence <em>about</em> that channel rather than the quantity being
+reported. A benchmark asks whether a model is good. This report asks what a corpus can and cannot
+show, and it is written so that a reader who disagrees with the answer can see exactly which step
+they would have to reject.</p>
+
+<p>Three classical results carry the framework. Each is used only where it applies, and each
+constrains something specific:</p>
+<ul>
+<li><strong>The noisy channel.</strong> Treating a corrupted form as evidence about an intended form
+is the decomposition of Shannon's communication model, and applying it to orthographic error is the
+founding move of statistical spelling correction <span class="cite" data-cite="kernighan1990">(Kernighan, Church &amp; Gale, 1990)</span>. §2.1 writes it
+in the form this corpus can actually estimate.</li>
+<li><strong>Orthographic depth.</strong> The claim that writing systems differ in how transparently
+they encode sound, and that this changes what reading requires, is the orthographic depth hypothesis
+<span class="cite" data-cite="katz1992">(Katz &amp; Frost, 1992)</span>; <span class="cite" data-cite="frost1994">(Frost, 1994)</span>. It enters here as the <em>hypothesis under test</em>, not as a
+premise: §2.7 is explicit that depth is not a label this corpus carries.</li>
+<li><strong>Neighbourhood confusability.</strong> That the difficulty of a form depends on how many
+similar forms exist is the orthographic-neighbourhood effect <span class="cite" data-cite="coltheart1977">(Coltheart, Davelaar, Jonasson &amp;
+Besner, 1977)</span>. It is why the ranked layers use a nearest-neighbour decoy rule — and §2.4 shows why
+that rule cannot be carried to the reading channel unchanged.</li>
+</ul>
+
+<p>Two consequences govern how the rest of the report reads. First, <strong>a quantity is reported
+only where the corpus can identify it.</strong> §2.8 states what the framework cannot support, and
+§5.3 states in advance what would falsify a depth claim; both are written before the results so that
+neither can be adjusted after them. Second, <strong>the literature is used critically rather than as
+authority.</strong> Where a published instrument covers only part of a phenomenon, this report
+measures the size of the uncovered part instead of assuming it away: §5.1 does that for the
+keyboard-noise generators, and §4.6 measures the real channel directly against the rate its own
+publisher reported.</p>
+
+<h3>2.1 The channel</h3>
+<p>A writer intends a form $r \in \mathcal{R}$ — the <strong>root</strong>. An error-generating
+process, the <strong>channel</strong> $C$, emits an observed form $s \sim C(\cdot \mid r)$ with
+$s \in \Sigma^{*}$, where $\Sigma$ is the script's character set. A reader observing $s$ must
+recover $r$. By Bayes,</p>
+$$P(r \mid s) \;=\; \frac{P(s \mid r)\,P(r)}{\sum_{r' \in \mathcal{R}} P(s \mid r')\,P(r')}.$$
+<p>Two quantities are separable and both are needed: the <strong>likelihood</strong>
+$P(s \mid r)$, a property of the channel, and the <strong>prior</strong> $P(r)$, a property of the
+language. A corpus that supports a claim about the channel must expose the likelihood; one that
+merely supplies corrupted strings conflates the two, and a difference between two such corpora
+cannot then be attributed to either.</p>
+
+<h3>2.2 Why the fixed-choice form is the right elicitation</h3>
+<p>RRC supplies, with each $s$, a candidate set $\mathcal{A}(s) \subset \mathcal{R}$ with
+$|\mathcal{A}(s)| = K = 5$ and $r \in \mathcal{A}(s)$ exactly once. The item asks for
+$\arg\max_{a \in \mathcal{A}(s)} P(a \mid s)$. Assuming a flat prior over the supplied candidates —
+which is what presenting them as equally available asserts — the decision reduces to</p>
+$$\arg\max_{a \in \mathcal{A}(s)} P(s \mid a),$$
+<p>so <strong>the item is a discrete likelihood comparison, not a generation task</strong>. Three
+consequences follow, and each is why this form was chosen:</p>
+<ol>
+  <li><strong>Chance is defined per item</strong> at $1/K = 0.20$, not per corpus.</li>
+  <li><strong>A per-item ceiling exists</strong>: one correct answer, so accuracy and confidence are
+      measurable on the same trial — which is what a calibration claim requires.</li>
+  <li><strong>The candidate space is supplied, not inferred</strong>, so a failure cannot be
+      attributed to a failure of recall.</li>
+</ol>
+
+<h3>2.3 Difficulty: the margin, and where it is defined</h3>
+<p>Let $d : \mathcal{R} \times \Sigma^{*} \to \mathbb{R}$ be a similarity. Define the
+<strong>margin</strong></p>
+$$m(s) \;=\; d(r, s) \;-\; \max_{a \in \mathcal{A}(s),\, a \neq r} d(a, s).$$
+<p>$m(s) &gt; 0$ means the stated metric alone identifies the truth. $m(s) \le 0$ means some decoy
+fits the observation at least as well, and the item then <strong>has no answer under that
+metric</strong>. The builder requires $m &gt; 0$ on the ranked layers and records how many items
+were removed. This is a statement about a metric, not about truth: an item with $m \le 0$ may still
+have a unique true root. It is excluded because the corpus cannot then claim that metric as its
+difficulty scale.</p>
+
+<h3>2.4 The margin is identically zero on the reading channel</h3>
+<div class="prop">
+  <span class="lbl">Proposition</span>
+  <p style="margin:0">If $\mathcal{A}(s)$ is the set of characters sharing the reading of the
+  errored position, then $m(s) = 0$ for every item, under either natural choice of $d$.</p>
+  <div class="proof">
+    <p><em>Proof.</em> By the membership condition, $\mathrm{rd}(a) = \mathrm{rd}(r)$ for every
+    $a \in \mathcal{A}(s)$.</p>
+    <p><em>Case 1 — $d$ reading-based.</em> Then $d(a,s) = d(r,s)$ for every $a$, so
+    $\max_a d(a,s) = d(r,s)$ and $m = 0$.</p>
+    <p><em>Case 2 — $d$ glyph-based; take the character-bigram Dice coefficient.</em> For a single
+    character $x$ the bigram set is $\{x\}$, so for distinct characters
+    $|\,\mathrm{bi}(x) \cap \mathrm{bi}(y)\,| = 0$ and $d(x,y) = 0$. Elements of $\mathcal{A}(s)$
+    are distinct characters, so every term vanishes and $m = 0$. $\square$</p>
+  </div>
+</div>
+<p>The margin is therefore not a quantity that is merely hard to estimate on this layer — it is
+<strong>identically zero</strong>, because the channel's candidates are exchangeable by
+construction. Recording <code>margin: null</code> is the accurate record; computing a zero and
+averaging it would report a difficulty the layer does not have. This is why the manifest scopes the
+validity constraint to the ranked layers and states that scope explicitly.</p>
+
+<h3>2.5 The reading channel's actual difficulty: frequency rank</h3>
+<p>An input method presents candidates <strong>ordered by frequency</strong>. Let</p>
+$$G(\rho) = (c_1, c_2, \dots, c_n), \qquad \mathrm{freq}(c_1) \ge \mathrm{freq}(c_2) \ge \dots \ge
+\mathrm{freq}(c_n)$$
+<p>be the characters carrying reading $\rho$, so ordered. Define the item's difficulty as the root's
+rank,</p>
+$$\mathrm{rank}(r) \;=\; \min\{\,i : c_i = r\,\}, \qquad 1 \le \mathrm{rank}(r) \le n .$$
+<p>Rank $1$ is the character the input method offers first, making the choice nearly free;
+$\mathrm{rank} = n$ is the last candidate, the hardest the channel can be. Unlike the margin, this
+quantity <strong>exists and varies</strong> on this layer, and it is estimated from the same corpus
+the items are drawn from — which is also the correct denominator, since the channel's difficulty is
+defined relative to the domain the writer is typing in, not to the language in general.</p>
+
+<div class="prop">
+  <span class="lbl">Corollary — the fixed-choice form understates this channel</span>
+  <p style="margin:0">The item's chance level is $1/K = 1/5$, while the channel's own choice set has
+  size $n$, so the channel's chance level is $1/n$. Measured here, $\mathrm{median}(n) = 14$, giving
+  $1/14 \approx 0.071$. A model scoring $0.20$ on these items is therefore <strong>not at chance in
+  the channel — it is roughly $2.8\times$ above it</strong>.</p>
+</div>
+<p>Presenting five options where the writer faced fourteen <strong>compresses the channel</strong>,
+and this must be stated wherever an accuracy figure from this layer is compared with one from
+another. It is a property of the elicitation, not of the language.</p>
+
+<h3>2.6 The two axes, and why one list would not do</h3>
+<p>A layer is a point in the product</p>
+$$\text{layer} \;=\; \underbrace{\text{operation}}_{\{\text{sub},\,\text{ins},\,\text{del},\,
+\text{trans}\}} \;\times\; \underbrace{\text{channel}}_{\text{script-dependent}} .$$
+<p>The four operations are not this project's invention; they are the standard four of the published error taxonomy this report follows, which rests on one source (§8). The <strong>channel is what the
+script determines</strong>, and the two channels that are not
+keyboard-adjacency are the ones no published generator covers:</p>
+<table>
+  <thead><tr><th>script class</th><th>candidate structure $\mathcal{A}(s)$</th>
+    <th>published basis</th></tr></thead>
+  <tbody>
+    <tr><td>alphabetic, abjad, abugida</td>
+        <td>the roots one adjacent-key edit away</td>
+        <td><span class="cite" data-cite="zhao2026">MulTypo (Zhao, Liu, Altinger, Sch&uuml;tze &amp; Hedderich, ACL 2026)</span> over kbdlayout.info</td></tr>
+    <tr><td>Han (<span class="mono">Hans</span>)</td>
+        <td>characters sharing the reading of the errored position</td>
+        <td><span class="pill warn">not published</span> measured here</td></tr>
+    <tr><td>Japanese (<span class="mono">Jpan</span>)</td>
+        <td>the kana flick group</td>
+        <td><span class="pill warn">not published</span> from CLDR flick data</td></tr>
+  </tbody>
+</table>
+<p class="sub">Run on this project's languages, the published generator produces typos for
+<span class="mono">english</span> and <span class="mono">russian</span> and raises
+<span class="mono">Unsupported language</span> for <span class="mono">chinese</span> and
+<span class="mono">japanese</span>. The non-alphabetic rows are the part of this design for which no
+prior instrument exists.</p>
+
+<h3>2.7 Depth is the hypothesis, not a label the corpus carries</h3>
+<p>Orthographic depth — the regularity of the grapheme-to-phoneme mapping — is the quantity the
+research question is about. It is <strong>not</strong> a property this corpus encodes, and no item
+is labelled with it. What the corpus supplies per arm is the <strong>channel's candidate
+structure</strong>: how many forms are admissible, and whether they are ranked. That is measurable,
+and it is what a depth claim has to be read against. Stating it the other way round — assigning a
+depth label and then citing the label as a finding — would be assuming the conclusion.</p>
+
+<h3>2.8 What the corpus can and cannot support</h3>
+$$\text{RRC supports } P(s \mid r) \text{ per script, with a per-item ceiling.}$$
+$$\text{RRC does not support } P(r), \text{ population error rates, or cross-script parity.}$$
+<p>The first is what a channel parameter estimate is. The second follows from the construction: the
+writers are not a characterised sample, the arms are not aligned, and the layers are not the same
+across arms — so an arm difference confounds script with layer coverage until that is handled
+explicitly.</p>
+
+<h2>3 · Construction as a filtration</h2>
+<p>Each stage is a map that can only remove items, and the count it removed is recorded, so the
+funnel from source records to shipped items is auditable at every step.</p>
+<div class="card"><div id="funnel"></div></div>
+<figure class="fig">
+  <img src="../figures/fig_corpus_funnel.png"
+       alt="Three panels. (a) 100 percent stacked bars, one per arm, splitting the records read into
+            those dropped as empty or identical, dropped by the script gate, dropped for having no
+            layer available, and those that produced at least one question. (b) the same shape at the
+            item level: of the questions a kept record could support, how many shipped and how many
+            the margin gate and the dedupe removed. (c) what shipped, by layer, on a log axis.">
+  <figcaption>
+    <strong>The funnel, as two stages that each close.</strong>
+    <em>(a)</em> The record level. Every row a loader returned leaves through exactly one door:
+    dropped as empty or identical, dropped by the script-purity gate, dropped because no layer could
+    be built for it, or carried forward with at least one question.
+    <em>(b)</em> The item level, over the questions a kept record could support. The two segments
+    besides the shipped one are the <em>validity constraint</em>, which removes ranked-layer items
+    where a decoy fits the state at least as well as the root, and <em>dedupe</em>, which removes a
+    question the source offers twice.
+    <em>(c)</em> What shipped, by layer — drawn because the layer sets are visibly not equal across
+    arms, which is the restriction §5.4 states in words.
+    A record is a pair read from a corpus and a question is one item, and a record can yield several; the two are counted separately because they are different units and a single cumulative bar would subtract one from the other. The corpus reads <span id="fun-note"></span>.
+  </figcaption>
+</figure>
+<p class="sub">Four gates deserve a note. The <strong>unit-consistency gate</strong> fires before every
+other count, and it is the <strong>largest single loss in the corpus</strong>: 7,167 of 69,681
+records. On <code>rrc-ja</code> it removes 3,616 of 7,701, because that source's errors are frequently
+whole-phrase rewrites whose <em>state</em> and <em>root</em> are not the same kind of object, so the
+pair is not a substitution at all. The <strong>script-purity gate</strong> removes rows whose
+writing system does not match the arm's declaration, which is why the Russian and GitHub-Chinese
+arms lose the largest fractions there — their sources are the most mixed. <strong>No layer
+available</strong> is a gate that exists and <em>does not fire on this data</em>: every record
+surviving the two gates above yields at least one question. It is reported rather than dropped from
+the account, because a count that is always zero is a measurement, not a gap — and stating it is what
+shows the 3,616 records on <code>rrc-ja</code> were removed by unit consistency rather than by a
+missing layer. The <strong>validity constraint</strong> acts at the item level, removing
+ranked-layer items where a decoy fits the state at least as well as the
+root; this narrows what the arm covers, and it is a real bias in what remains rather than a neutral
+clean-up. <strong>Canonical form</strong> is applied once, at the boundary where records enter,
+because the GitHub material carries CJK Compatibility Ideographs (<span class="mono">U+FA08</span>
+for 行) — legacy encodings of characters Unicode also carries in unified form, so without
+normalisation the same character appears as two different strings.</p>
+
+<h2>4 · Dataset profile</h2>
+<p>This section describes what was built, in numbers, before any model sees it. The order is
+deliberate: an arm's size, its layer coverage and its difficulty distribution are properties of the
+<em>corpus</em>, and a reader who wants to judge a result in §5 needs them first. Two features of this
+profile are findings in their own right rather than housekeeping. The layer sets are <strong>not equal
+across arms</strong> (§4.2), which restricts every cross-arm comparison to the one layer all six
+share. And the reading channel's difficulty is a <strong>frequency rank</strong> rather than a
+similarity margin (§4.5), which is why a cross-script comparison of "difficulty" here is not a
+comparison of like quantities — a point §5.11 depends on.</p>
+<div class="grid tiles" id="tiles"></div>
+<h3>4.1 Arms</h3>
+<p>One row per arm: its language, its source, how many records entered, how many questions shipped,
+and the loss at each gate. Because the gates are recorded separately, an arm that is small because its
+source is <em>script-mixed</em> and an arm that is small because its errors are <em>whole-phrase
+rewrites</em> are distinguishable here — the first loses records to the script-purity gate, the second
+to unit consistency. They are not the same finding, and §3 says which arm is which.</p>
+<div style="overflow-x:auto"><table id="armTable"></table></div>
+<h3>4.2 Layer coverage</h3>
+<p>The layer sets are <strong>not equal across arms</strong>: four arms carry a ranked layer, two
+carry the reading layer, and only the unrelated-form control is common to all six. This is a
+constraint on what can be concluded rather than a defect in the build, and it is the reason every
+cross-arm claim in §5 is drawn on the control layer alone — the one comparison the design supports
+without also varying the layer.</p>
+<div class="card"><div id="layerChart"></div></div>
+<h3>4.3 Length distributions</h3>
+<p class="sub">Reported as ladders rather than means: the arms differ by orders of magnitude in
+object size, and a mean over such a mixture describes nothing in the data.</p>
+<div style="overflow-x:auto"><table id="lenTable"></table></div>
+<h3>4.4 Difficulty on the ranked layers</h3>
+<p>The validity constraint, and the margin it produces, per arm. This is difficulty as the
+<em>corpus</em> encodes it, before any model is involved — the quantity §5 then tests behaviour
+against, on the understanding that a quantity nothing tracks is a quantity the channel defines and
+the model does not use.</p>
+<div class="card"><div id="consistency"></div></div>
+<h3>4.5 The reading channel: group size and rank</h3>
+<p>The reading layer has no similarity margin at all: its candidates are homophones by construction,
+so a margin is 0 or 1 throughout and carries nothing. Its difficulty is therefore measured on the
+channel's own terms — how many characters the channel offers for a reading, and where the intended
+character falls when that group is ordered by corpus-observed frequency. Those are the two quantities
+an input method actually presents to a writer, and §2.5 derives why no string-similarity measure can
+stand in for them.</p>
+<div class="card"><div id="imeCard"></div></div>
+<h3>4.6 The measured keystroke channel</h3>
+<div class="card" id="channelCard"></div>
+<figure class="fig">
+  <img src="../figures/fig_keystroke_channel.png"
+       alt="Panel (a): the corpus's published uncorrected-error rate beside the rate measured here
+            under the matching definition, which agree at 1.02x. Panel (b): the composition of that
+            rate — deletion 37.2 percent, insertion 29.5, shift state 16.2, key adjacency 9.2,
+            other substitution 7.9. Panel (c): the substitution matrix.">
+  <figcaption>
+    <strong>The keyboard channel, measured rather than assumed.</strong>
+    <em>(a)</em> The publisher's own uncorrected-error rate beside the one measured here from the
+    same corpus under a matching definition <span id="kbd-validate"></span>. This is a validation and
+    it belongs first: the decomposition in the next panel can only be believed if the reading of the
+    corpus reproduces the number its publisher reported.
+    <em>(b)</em> The composition of that rate, which is the new content
+    <span id="kbd-compose"></span>. That is the measurement behind §5.1's claim that the published
+    generators model the smaller part of real error.
+    <em>(c)</em> The substitution matrix, which is the channel itself rather than a summary of it.
+    Drawn by <code>scripts/fig_keystroke_channel.py</code> from
+    <code>data/processed/keystroke_channel.json</code> and audited for label overlap and font size by
+    the guard suite.
+  </figcaption>
+</figure>
+
+<h4>4.5 · The dataset, interactively</h4>
+
+<p>The figures elsewhere in this report show what was <em>measured</em>. This section shows the
+<em>dataset</em> itself, because its structure is what makes those measurements interpretable: where
+items came from, which gate removed how many, and which layers two arms actually share. All three
+views read the same exported state as every table above and redraw on resize; no count is written
+into the markup, so a view cannot disagree with the tables.</p>
+
+<div class="dx-view">
+  <p class="dx-cap"><b>a · The filtration, arm by arm.</b> Each arm is a chain of gates applied to
+  its source corpus, and bar length is the count surviving that stage — so where the loss happens is
+  visible, not just how much. Select an arm:</p>
+  <div class="dx-tabs" id="dx-funnel-tabs" role="tablist" aria-label="Select an arm"></div>
+  <div class="card"><div id="dx-funnel"></div></div>
+</div>
+
+<div class="dx-view">
+  <p class="dx-cap"><b>b · Layer coverage across arms.</b> A cross-script comparison is defined only
+  on layers both arms offer, and the layers are not shared evenly. Hover a cell for its count; a hatched
+  cell is a layer that arm does not offer — absent, not zero.</p>
+  <div class="card"><div id="dx-layers"></div></div>
+</div>
+
+<div class="dx-view">
+  <p class="dx-cap"><b>c · Distributional signature.</b> Choose a statistic to compare across arms.
+  A statistic an arm does not report is named as missing rather than drawn as zero, so an absent value
+  cannot be misread as a small one.</p>
+  <label class="dx-cap" for="dx-stat-select">statistic · </label>
+  <select id="dx-stat-select" style="font:12px var(--mono);padding:3px 6px;border:1px solid var(--line);
+    border-radius:5px;background:var(--panel);color:var(--ink);margin-bottom:8px"></select>
+  <div class="card"><div id="dx-stats"></div></div>
+</div>
+
+<h4>4.6 · The corpus, item by item</h4>
+
+<p>The views above are aggregates. This one shows what an <em>item</em> is, because a reader can study
+every summary in this report and still not know what the instrument is actually handed. The task is the
+one the corpus poses: an observed corrupted form, and several candidates exactly one of which is its
+root. The correct candidate is not marked until you choose, so the difficulty you experience is the
+item's own rather than the answer key's; the recorded difficulty is shown afterwards.</p>
+
+<div class="dx-view">
+  <div class="dx-tabs" id="ib-tabs" role="tablist" aria-label="Select an arm"></div>
+  <div class="dx-tabs" id="ib-layers" role="tablist" aria-label="Filter by layer"></div>
+  <div class="card" id="ib-stage"></div>
+  <div id="ib-note"></div>
+</div>
+
+<h2>5 · What this corpus makes testable, and what has been measured</h2>
+
+<figure class="fig">
+  <img src="../figures/fig_measurement_summary.png"
+       alt="Four panels. (a) horizontal bars: the accuracy drop when the ranked layer is compared with
+            the unrelated-form control, paired by state; four of five arms drop by 0.14 to 0.24 with
+            chi-square 28 to 62, one arm of 20 pairs does not. (b) a slope chart: every arm's accuracy
+            on the control layer, against chance, with the pairs that differ connected. (c) scatter of
+            accuracy against the median probability on the correct candidate, one point per arm and
+            layer, rising with it. (d) scatter of accuracy against the median probability on the
+            candidate chosen, every point above the diagonal.">
+  <figcaption>
+    <strong>The four claims of this section, in four panels.</strong>
+    <em>(a)</em> Each arm's accuracy on its ranked layer beside the same arm's accuracy on the
+    unrelated-form control, paired by state so the same states, the same surface forms and the same
+    number of options are compared and only the decoy rule differs.
+    <span id="sum-paired"></span> This is the one contrast here that needs no
+    arm-to-arm assumption, which is why it is first.
+    <em>(b)</em> Accuracy on the control layer — the only layer all six arms share, and therefore the
+    only place a cross-script comparison can be drawn without the layer sets differing too (§5.4).
+    <span id="sum-cross"></span>
+    <em>(c)</em> Accuracy against the median probability the model assigns the correct candidate.
+    This is the axis the corpus was built to carry (§2.4), and behaviour follows it.
+    <em>(d)</em> Accuracy against the probability assigned to whichever candidate was chosen. Every
+    point lies above the diagonal, so on every arm and layer the model is more confident than it is
+    correct — including where it is at or below chance. A wrong answer that still carries high
+    probability is the failure the protocol names, and it is not visible in accuracy alone.
+    <br><strong>How to read the sampling.</strong> <em>(a)</em> and <em>(b)</em> draw whole states, because
+    the pairing is at state level and a quota per item would break it; <em>(c)</em> and <em>(d)</em> are
+    per-item rates under the balanced scheme that puts both channels on the same footing (§5.11). Every
+    point is read from <code>measurement/out/measurement_report_bal.json</code> and
+    <code>_bs.json</code> by <code>scripts/fig_measurement_summary.py</code>, so no panel can disagree
+    with the table beside it. Specification compliance is checked by <code>check_nature_figure_spec.py</code>; label overlap and font size by <code>qc_report_figures.py</code>.
+  </figcaption>
+</figure>
+
+<h3>5.1 The published generators model the smaller part of real error</h3>
+<p>Both published keyboard generators are built on adjacent-key substitution. Measured on real
+typing, that mechanism is under a tenth of errors, while deletion and insertion together are about
+two thirds:</p>
+<div class="card" id="sigChannel"></div>
+<p>This is not a defect in those generators — they were built to inject a controlled perturbation,
+and a controlled perturbation is what an ablation needs. It is a limit on what they can establish: a
+synthetic study built on them measures robustness to adjacent-key substitution, and the inference
+from that to "robustness to typing error" does not follow. The corpus here exists to supply the
+denominator.</p>
+
+<h3>5.2 The reading channel is wide, and the fixed-choice form hides it</h3>
+<p>The measurement in §2.5 is the second result. The channel offers a median of fourteen characters
+for a reading; the item shows five. The consequence is quantitative: a model at the item's chance
+level is not at the channel's, and any cross-layer comparison that ignores this will read the
+compression as a difficulty difference. Where the two arms that carry this layer agree on the order
+of magnitude of $n$, that is independent support that the quantity is a property of the channel
+rather than of one arm's sampling.</p>
+
+<h3>5.3 What would falsify a depth claim</h3>
+<p>The corpus is built so the depth hypothesis can fail rather than be illustrated. Three falsifiers
+are available with no new data:</p>
+<ol>
+  <li><strong>No separation on the ranked layers.</strong> If confidence does not separate correct
+      from incorrect answers on L2 beyond what $m$ already predicts, the claim that depth governs
+      the visibility of error is not supported by these arms.</li>
+  <li><strong>A rank effect that does not exist.</strong> On the reading channel, difficulty is
+      measured by rank, not by a margin (§2.4). If accuracy on rank-1 items equals accuracy on
+      rank-$n$ items, the channel's own ordering carries no difficulty, and the layer is
+      uninformative rather than hard.</li>
+  <li><strong>A layer-coverage explanation.</strong> Because the arms do not carry the same layers,
+      any cross-script difference must survive restricting to layers both arms contain. If it does
+      not, the difference is an artefact of coverage, and §4.2 states which layers are shared.</li>
+</ol>
+
+<h3>5.4 The confound that must be handled before any cross-script claim</h3>
+<p>The arms do not carry the same layers; each arm's coverage is in §4.2. A comparison between
+scripts that ignores this compares layer coverage as much as script. The statement records the
+alignment status explicitly: <strong>items in different arms are not aligned to one another</strong>,
+and this is a property a user must know before pooling them.</p>
+
+<h3>5.5 What was measured, and with what</h3>
+<p>The instrument is <code>LiquidAI/d1-3B</code> <span class="cite" data-cite="liquid2026">(Liquid AI, 2026)</span> loaded natively in bfloat16,
+offline, on one RTX
+4070 — the checkpoint's own modules driving its own decision readout, not a server's. Every item
+is presented as the fixed-choice question §2.2 describes: the observed form is the state, the
+candidates are the question's criteria, and the readout is the probability of each option
+<em>code</em>. That last point is load-bearing. Because the probabilities are read from the
+option tokens (A, B, C …) and not from the candidate strings, a multi-token candidate cannot
+distort the readout — which matters here, since a Han character may or may not be a single token
+and the comparison across scripts would otherwise be confounded by tokenisation rather than by
+script. <span id="meas-summary"></span></p>
+
+<p><strong>What is reported, and why it is a pair.</strong> Accuracy alone would not answer the
+question this report asks. A model's confidence is not its accuracy — modern networks are
+systematically over-confident where they are wrong <span class="cite" data-cite="guo2017">(Guo, Pleiss, Sun &amp; Weinberger, 2017)</span> — and
+although language models do carry genuine signal about what they know, that signal is imperfectly
+calibrated <span class="cite" data-cite="kadavath2022">(Kadavath et al., 2022)</span>. So the quantity carried through §5 is the pair (probability on
+the root, probability on the candidate chosen). Only the pair separates being wrong from being wrong
+and confident, and it is the second case the protocol names. Read critically, neither citation is
+being leaned on for more than it shows: Guo et al. measure calibration under distribution shift in
+classification, and Kadavath et al. measure whether a model can <em>report</em> its own knowledge —
+neither is a claim about token-level probabilities on a forced choice, which is what is measured
+here.</p>
+
+<h3>5.6 The control layer across scripts</h3>
+<p>On L4 — unrelated forms drawn from each arm's own pool — every arm uses the <em>same</em> decoy
+rule and the arms' state lengths are comparable, so this is the one cross-arm comparison the
+corpus supports without qualification. The result is a gradient, and the widest gap is between
+the shallow and deepest scripts:</p>
+<div id="meas-crossarm"></div>
+<p><span id="meas-crossarm-note"></span></p>
+
+<h3>5.7 The probability given to the truth</h3>
+<p>Accuracy says whether the model was right; it does not say how much probability it gave to
+being right. The quantity that makes a silent failure visible is the pair (low <span
+class="mono">p_root</span>, high <span class="mono">p_max</span>) — wrong and confident on the same
+trial. The two move together across scripts, and on the reading channel the first collapses to
+the point where the model effectively excludes the correct character while still reporting high
+confidence in its own answer:</p>
+<div id="meas-proot"></div>
+
+<h3>5.8 The instrument checks come before the result</h3>
+<p>An accuracy is a fact about the prompt as much as about the channel, so three checks were run
+before any number above was read, and each is reported with what it would have condemned.</p>
+<div id="meas-diagnostics"></div>
+
+<h3>5.9 The layer contrast the design does not support</h3>
+<p>L1 is other attested realisations of the same root; L4 is a shuffled sample of the pool. Both
+are attached to a state, and the tempting reading is that the difference between them measures
+how much harder the task becomes when the decoys are channel-plausible. The reason the contrast is unavailable is structural: inside an arm the two layers'
+state lengths barely overlap — for <code>rrc-en</code>, L4 spans 62–68 tokens against L1's 69–70,
+with <em>no</em> overlap at all — so layer and length are collinear and no adjustment of one for
+the other is stable. Fitting a length-adjusted logistic regression returns coefficients of the
+order of <span class="mono">1e28</span>, which is the signature of separation, not evidence. The
+contrast is therefore reported as unavailable rather than estimated, and the sampling defect that
+produced it is fixed: <code>eval_rrc_d1.py</code> can now sample <em>states</em> and take every
+layer built from each, which is the unit the build actually pairs. L2/L2c and L4 share a state by
+construction, so that contrast is the one the design supports, and it is tested as a paired one
+(McNemar) rather than as two proportions.</p>
+<div id="meas-paired"></div>
+
+<h3>5.10 The reading channel's rank effect, and what it turned out to be about</h3>
+<p>The falsifier is therefore straightforward: items whose root is offered first should be easier than
+items whose root is offered late. Measured on the deepest script, with each arm ranked against its own
+corpus <em>and with a balanced quota per rank value</em> — rank 1 is a fifth of the layer naturally
+and the tail only a handful, so an unbalanced sample cannot see the shape — the answer is
+<strong>not one answer</strong>, and the difference between the two arms is in the shape of the curve
+rather than only its sign.</p>
+<div id="meas-f2"></div>
+<p>Both arms were ranked against their <em>own</em> source, so a mismatched denominator is not the explanation. What separates them is which candidate the model
+actually chooses. Comparing the rank of the chosen candidate against a uniform choice over that
+item's own five candidates — the only null that isolates a frequency preference from accuracy —
+the arms diverge sharply:</p>
+<div id="meas-pref"></div>
+<p>Neither arm declines monotonically in rank. <code>rrc-zh-gh</code> gives 0.522, 0.167, 0.409, 0.345, 0.333 and 0.100 across ranks 1 to 6 (115, 72, 44, 29, 18 and 10 items), falling, rising and falling again; <code>rrc-zh</code> gives 0.175, 0.067, 0.100, 0.083, 0.125 and 0.208 at 120 items per point, falling then rising, which is also non-monotone. The rank curve therefore does not separate the two arms and is not used as evidence about the rank channel. What the section reports is the mechanism below — the displacement and the direction of preference.</p>
+<p>On <code>rrc-zh-gh</code> the model picks the <em>commonest</em> candidate about twice as often
+as chance and the rarest slightly less often than chance, which is what an input method's ordering
+rewards. On <code>rrc-zh</code> the
+model picks the <em>rarest</em> candidate in half of all items and the commonest in fewer than one
+in ten, so a rank-1 root — the character the input method would offer first — is the one it is
+<em>least</em> likely to choose. The two arms therefore prefer opposite ends of the same candidate list, which the preference table below measures directly — and, as the panel below shows, that preference does <strong>not</strong> produce a monotone rank curve in either arm.</p>
+<p>The mechanism is now measured, and it is not "the model ignores the state". Its choice tracks the
+state's own rarity — the rank of the character actually present in the corrupted form correlates
+with the rank of the candidate it picks, at <span class="mono">+0.26</span> on <code>rrc-zh</code> and <span class="mono">+0.23</span> on <code>rrc-zh-gh</code> — and it is shifted <em>toward the rarer end</em> of the group by an amount that
+differs by arm:</p>
+<div id="meas-shift"></div>
+<figure class="fig">
+  <img src="../figures/fig_reading_displacement.png"
+       alt="Panel (a): the rank of the candidate chosen against the rank of the character shown,
+            one line per Chinese arm, above a dashed diagonal for choosing exactly what was shown.
+            Panel (b): accuracy against the rank of the character shown, with the chance line at
+            0.2.">
+  <figcaption>
+    <strong>The reading channel applies a displacement, not a preference.</strong>
+    <em>(a)</em> Both axes are the frequency rank of a character within its reading group, so the
+    dashed line is "chose exactly what was shown". The model's line rises with the shown rank —
+    it uses the state — but it sits above the diagonal, and the vertical gap is the displacement:
+    <span id="disp-pair"></span>
+    <em>(b)</em> What that costs, against the rank of the form shown, with chance at 0.2. Where the
+    displacement is large and the root is common, the shift moves the answer out of reach.
+    <em>(c)</em> The rank falsifier itself — accuracy against the rank of the <em>answer</em>, at a
+    balanced quota per rank value. Neither arm declines monotonically: both fall and then rise, so the rank curve does not separate them and is not relied on as evidence about the rank channel. The shape is read
+    off the panel rather than quoted here. Panels (a) and (b) are read from
+    the reproducible corpus, <code>measurement/out/measurement_report_fix.json</code>
+    (<span id="fig-note"></span>), regenerated by <code>scripts/fig_reading_displacement.py</code>. Its specification compliance &mdash; DPI, figure width, tick widths, bar-lined axes and panel labels &mdash; is checked by <code>check_nature_figure_spec.py</code> in the guard suite. Label overlap and font size are checked by <code>qc_report_figures.py</code>.
+  </figcaption>
+  </figure>
+<p>Read together with the preference table above, this is a single mechanism with two parameters. On
+<code>rrc-zh</code> the model displaces its answer about nine rank positions rarer than the form it
+was shown; when the root happens to be the commonest character of the group, that displacement moves
+away from the answer, and accuracy on those items is <span class="mono">0.062</span>. On
+<code>rrc-zh-gh</code> the displacement is about one position, which leaves rank-1 items unharmed. The displacement explains the <em>direction of preference</em> and the correlation with the shown rank — the two things it was measured on. It does <strong>not</strong> explain the rank curve: neither arm declines monotonically in rank, so the displacement and the curve are separate observations.</p>
+<p>What is <em>not</em> determined is why the displacement differs. Three controls were run and none
+of them separates the arms: the candidate slot (uniform in both, §5.8), the distractors' frequency
+relative to the root (rank-1 items: 0.23 against 0.28; rank-greater-than-1: 2.31 against 2.68), and
+the state's own rarity distribution (the two arms' states are binned by the same ranks and their
+medians are comparable). A codepoint distance between the chosen character and the state's was tried
+as a shape proxy and is not evidence either way — CJK is not ordered by shape, so the null it gives
+is uninformative.</p>
+<p>The honest statement is therefore two-part. <strong>The rank falsifier is decided for one Chinese
+arm and undecided for the other</strong>, because the quantity that would decide it is arm-dependent
+in a way the corpus does not yet explain. <strong>And the measured behaviour is a displacement, not
+a preference</strong>: the model is not choosing the rarest candidate, it is choosing a candidate
+rarer than the one it was shown, by an amount that is stable within an arm and different between
+them. That displacement is a concrete, testable object and is reported as the finding, not as a
+failure to find one.</p>
+
+<p class="dim" style="margin-top:10px"><strong>What is not relied on.</strong> The <em>rank-1-versus-rest</em> contrast on <code>rrc-zh</code> is unstable — its confidence interval crosses zero — so it is not relied on, and the rank curve is reported as uninformative in both reading arms. The corpus itself is reproducible: <code>rrc-zh</code> and <code>rrc-zh-gh</code> rebuild to identical bytes, and the curves above are those builds.</p>
+
+<h3>5.11 The same test on the other channel, and what the two together say</h3>
+<p>Each channel has its own difficulty quantity and the test has to use the right one: the ranked
+layers carry a <em>margin</em> (the similarity gap between the root and the nearest decoy), while the
+reading channel has no margin at all — its candidates are homophones by construction, so the margin is
+identically zero or one (§2.4) — and its difficulty is the root's frequency rank. Running each
+channel's own quantity against accuracy under <em>the same sampling scheme</em> — a balanced quota per
+level of that quantity on both — puts the two results side by side for the first time. Sampling one
+channel at a quota and leaving the other on the corpus's own distribution would compare the schemes
+as much as the channels:</p>
+<div id="meas-margin"></div>
+<p><strong>Two</strong> of the four arms that can be tested are monotone in their own channel's difficulty quantity — both ranked arms, <code>rrc-en-word</code> cleanly and <code>rrc-en</code> with one inversion between its two easiest bands. <strong>Neither reading arm is.</strong> <code>rrc-zh-gh</code> is the small-displacement arm, at about one rank position, and it is <em>not</em> monotone in rank; the displacement therefore does not separate the arms that track their channel's ordering from those that do not. What the displacement does explain is the direction of preference and the correlation with the shown rank. The rank curve is reported here as undecided in both reading arms.</p>
+<p>This is stated as one reading of two measurements, not as a mechanism established. It is
+falsifiable in a specific way: a third Chinese arm from a third corpus should show a displacement
+near one and a monotone rank curve, or a displacement near nine and a non-monotone one, and the pair
+should move together. Building that arm is the test.</p>
+
+<h2>6 · Quality control</h2>
+<p>Each check is listed with what it would catch, because a check whose failure mode is unstated
+cannot be evaluated by a reader. The suite's governing rule is that <strong>a guard must be shown to
+fail</strong>: every entry is run twice, once as written and once against a deliberately injected
+defect, and a guard that passes both is reported as broken rather than counted as a pass. The
+consequence is unusual and worth stating plainly — a green suite is not evidence that the data is
+right, it is evidence that the checks would have noticed if it were wrong. Two of the defects recorded
+in §6.1 were found this way rather than by inspecting the data, and both were faults in the
+instrumentation rather than in the corpus.</p>
+<div id="qc"></div>
+<h3>6.1 Known limitations, carried verbatim from the manifest</h3>
+<ul id="limits"></ul>
+
+<h2>7 · Reproduce</h2>
+<p>Everything reported here is produced by the scripts in <code>scripts/</code> from data on disk, in
+the order §7.2 gives. Three properties are load-bearing for reproduction and are stated rather than
+left for the reader to infer:</p>
+<ul>
+<li><strong>The corpus is a function of its inputs.</strong> The builder takes a fixed seed, and
+publishes per arm both the SHA-256 of the file it wrote and the count removed at each gate. Two runs
+from the same inputs produce the same items. §7.1 records the one place where that currently fails to
+hold, and it is stated as a limitation rather than smoothed over.</li>
+<li><strong>The guards are part of the method, not a check on it.</strong> A check that cannot fail is
+treated as a defective check (§6). This is what makes the suite's output evidence rather than
+reassurance.</li>
+<li><strong>No number is transcribed by hand.</strong> Every figure and table reads an artefact listed
+in §1.4, and the report's own tables recompute their arithmetic at render time, so a table that stops
+adding up says so instead of printing a plausible total.</li>
+</ul>
+
+<h3>7.1 Cost, timing, and two ways the measurement gets slower</h3>
+<p>The instrument is a 3B model on one 12 GB card, so throughput is part of what a reader needs in
+order to plan a replication, and two effects moved it by more than an order of magnitude during the
+runs reported here. Both affect <em>duration</em>, not results, and both are recorded rather than
+smoothed over.</p>
+<div id="repro-timing"></div>
+
+<h3>7.2 The commands</h3>
+<p>In order. Each step is independent of those after it, and the guard suite runs last because it
+validates artefacts rather than producing them — so a failure there is a statement about the corpus,
+not about the pipeline's ability to run.</p>
+<pre id="repro"></pre>
+
+<h2>8 · References</h2>
+<div class="refs" id="refs"></div>
+
+<footer id="footer"></footer>
+</div>
+
+<script src="state.js"></script>
+<script src="report.js"></script>
+<script src="vendor/d3.v7.9.0.min.js"></script>
+<script src="dataset_explorer.js"></script>
+<script src="samples.js"></script>
+<script src="item_browser.js"></script>
+</body>
+</html>

@@ -1,0 +1,30 @@
+{
+  "_what": "candidate-selection (input-method) error generator, the third noise source",
+  "assumption": "candidates ranked by published corpus frequency (wordfreq); no real input method's ordering is available",
+  "fitted_on": "external-data/cscd/train.tsv",
+  "scored_on": "external-data/cscd/test.tsv",
+  "candidate_pool": {
+    "syllables": 398,
+    "characters": 4184
+  },
+  "fit_coverage": 0.794559,
+  "held_out_coverage": 0.793908,
+  "rank_distribution": {
+    "1": 0.288896,
+    "2": 0.20861,
+    "3": 0.121842,
+    "4": 0.066988,
+    "5": 0.040143,
+    "6": 0.273521
+  },
+  "held_out_rank_distribution": {
+    "1": 0.308919,
+    "2": 0.180369,
+    "3": 0.131041,
+    "4": 0.072247,
+    "5": 0.036373,
+    "6": 0.271051
+  },
+  "total_variation_train_vs_held_out": 0.034481,
+  "max_abs_diff": 0.028242
+}

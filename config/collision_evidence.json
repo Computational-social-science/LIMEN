@@ -1,0 +1,62 @@
+{
+  "_what": "the collision evidence for the Phase II impossibility theorem's antecedent",
+  "theorem": "NHB/PhaseII/SilentError.lean -- no_decoder_avoids_silent_error",
+  "definition": "share of observed character substitutions whose intended and committed characters share an identical ROMANISATION, i.e. where the keystrokes carried no error and the collision is at the input method's candidate selection",
+  "corpus": "external-data/cscd (CSCD-NS)",
+  "splits": {
+    "train": {
+      "substitutions": 15143,
+      "identical_romanisation": 12334,
+      "share_identical_romanisation": 0.814502,
+      "unromanisable": 4,
+      "examples": [
+        "到->道",
+        "惟->唯",
+        "通->同",
+        "置->植",
+        "版->板",
+        "带->戴",
+        "是->式",
+        "枝->支"
+      ]
+    },
+    "dev": {
+      "substitutions": 2554,
+      "identical_romanisation": 2078,
+      "share_identical_romanisation": 0.813626,
+      "unromanisable": 0,
+      "examples": [
+        "渡->度",
+        "度->渡",
+        "惟->唯",
+        "明->名",
+        "勘->堪",
+        "标->表",
+        "学->雪",
+        "期->起"
+      ]
+    },
+    "test": {
+      "substitutions": 2528,
+      "identical_romanisation": 2057,
+      "share_identical_romanisation": 0.813687,
+      "unromanisable": 0,
+      "examples": [
+        "在->再",
+        "这->着",
+        "即->及",
+        "灯->等",
+        "于->与",
+        "考->拷",
+        "确->却",
+        "合->和"
+      ]
+    }
+  },
+  "pooled": {
+    "substitutions": 20225,
+    "identical_romanisation": 16469,
+    "share_identical_romanisation": 0.814289
+  },
+  "quoted_in_documents_as": "81.4 %"
+}

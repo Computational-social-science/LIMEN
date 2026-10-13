@@ -1,0 +1,125 @@
+{
+  "entries": [
+    {
+      "num": 1,
+      "status": "VERIFIED",
+      "entry": "Hagiwara, M. & Mita, M. (2020). GitHub Typo Corpus: A Large-Scale Multilingual Dataset of Misspellings and Grammatical Errors. In *Proceedings of the Twelfth Language Resources and Evaluation Conference (LREC 2020)*, 6761–6768. European Language Resources Association. https://aclanthology.org/2020.lrec-1.835/",
+      "note": "Entry correct; venue is LREC 2020 (not 'Proceedings of LREC 2020'), pages 6761–6768 confirmed via ACL Anthology."
+    },
+    {
+      "num": 2,
+      "status": "VERIFIED",
+      "entry": "Tanaka, Y., Murawaki, Y., Kawahara, D. & Kurohashi, S. (2020). Building a Japanese Typo Dataset from Wikipedia's Revision History. In *Proceedings of the 58th Annual Meeting of the Association for Computational Linguistics: Student Research Workshop (ACL 2020 SRW)*, 230–236. Association for Computational Linguistics. https://aclanthology.org/2020.acl-srw.31/",
+      "note": "Entry correct; full venue name includes 'Student Research Workshop', pages 230–236 confirmed via ACL Anthology."
+    },
+    {
+      "num": 3,
+      "status": "VERIFIED",
+      "entry": "Dhakal, V., Feit, A. M., Kristensson, P. O. & Oulasvirta, A. (2018). Observations on Typing from 136 Million Keystrokes. In *Proceedings of the 2018 CHI Conference on Human Factors in Computing Systems (CHI 2018)*, Paper 208, 1–12. ACM. https://doi.org/10.1145/3173574.3174220",
+      "note": "Entry incomplete; missing DOI and full venue name (CHI 2018, Montreal). Paper has article number 208, 12 pages."
+    },
+    {
+      "num": 4,
+      "status": "VERIFIED",
+      "entry": "Ritchie, S., van Esch, D., Okonkwo, U., Vashishth, S. & Drummond, E. (2024). LinguaMeta: Unified metadata for thousands of languages. In *Proceedings of the 2024 Joint International Conference on Computational Linguistics, Language Resources and Evaluation (LREC-COLING 2024)*, 10530–10538. ELRA and ICCL. https://aclanthology.org/2024.lrec-main.921/",
+      "note": "Entry correct; pages 10530–10538 confirmed via ACL Anthology and DBLP."
+    },
+    {
+      "num": 5,
+      "status": "VERIFIED",
+      "entry": "van Esch, D., Lucassen, T., Ruder, S., Caswell, I. & Rivera, C. (2022). Writing System and Speaker Metadata for 2,800+ Language Varieties. In *Proceedings of the Thirteenth Language Resources and Evaluation Conference (LREC 2022)*, 5035–5046. European Language Resources Association. https://aclanthology.org/2022.lrec-1.538/",
+      "note": "Entry correct; pages 5035–5046 confirmed via ACL Anthology and DBLP."
+    },
+    {
+      "num": 6,
+      "status": "VERIFIED",
+      "entry": "Kargaran, A. H., Yvon, F. & Schütze, H. (2024). GlotScript: A Resource and Tool for Low Resource Writing System Identification. In *Proceedings of the 2024 Joint International Conference on Computational Linguistics, Language Resources and Evaluation (LREC-COLING 2024)*, 7774–7784. ELRA and ICCL. https://aclanthology.org/2024.lrec-main.687/",
+      "note": "Entry correct; pages 7774–7784 confirmed via ACL Anthology."
+    },
+    {
+      "num": 7,
+      "status": "VERIFIED",
+      "entry": "Zhao, R., Liu, Y., Altinger, L., Schütze, H. & Hedderich, M. A. (2026). Evaluating Robustness of Large Language Models Against Multilingual Typographical Errors. In *Proceedings of the 64th Annual Meeting of the Association for Computational Linguistics (ACL 2026)*. Association for Computational Linguistics. https://aclanthology.org/2026.acl-long.729/ (arXiv:2510.09536v3)",
+      "note": "Paper EXISTS but author list and title differ from cited version. The actual paper is 'Evaluating Robustness of Large Language Models Against Multilingual Typographical Errors' by Raoyuan Zhao, Yihong Liu, Lena Altinger, Hinrich Schütze, Michael A. Hedderich (ACL 2026). The cited 'MuLTYPO: a multilingual typo generator with human evaluation' appears to be the name of the introduced algorithm (MulTypo), not the paper title. The paper introduces MulTypo and validates it via human evaluation."
+    },
+    {
+      "num": 8,
+      "status": "UNVERIFIED",
+      "entry": "Gardner, P. (1992). Typing errors and spelling errors: a review. [Venue unknown; no matching record found in major databases.]",
+      "note": "No verifiable record found for this exact title/author/year in ACL Anthology, PubMed, PsycINFO, or Google Scholar. Likely a misattribution or incomplete citation. Closest match: Gardner (1992) on 'Reading and writing' but not typing/spelling errors review."
+    },
+    {
+      "num": 9,
+      "status": "VERIFIED",
+      "entry": "Lisbach, B. & Meyer, V. (2013). *Linguistic Identity Matching*. Springer. ISBN 978-3-8348-2095-2. https://link.springer.com/book/10.1007/978-3-8348-2095-2",
+      "note": "Entry was missing publisher, place, ISBN. Verified as Springer book (Berlin/Heidelberg), 2013, ISBN 978-3-8348-2095-2 (eBook)."
+    },
+    {
+      "num": 10,
+      "status": "VERIFIED",
+      "entry": "Ravichander, A., Dalmia, S., Ryskina, M., Metze, F., Hovy, E. & Black, A. W. (2021). NoiseQA: Challenge Set Evaluation for User-Centric Question Answering. In *Proceedings of the 16th Conference of the European Chapter of the Association for Computational Linguistics: Main Volume (EACL 2021)*, 2976–2992. Association for Computational Linguistics. https://aclanthology.org/2021.eacl-main.259/ (arXiv:2102.08345)",
+      "note": "Entry correct; pages 2976–2992 confirmed via ACL Anthology and arXiv."
+    },
+    {
+      "num": 11,
+      "status": "VERIFIED",
+      "entry": "Bexte, M., Laarmann-Quante, R., Horbach, A. & Zesch, T. (2022). LeSpell - A Multi-Lingual Benchmark Corpus of Spelling Errors to Develop Spellchecking Methods for Learner Language. In *Proceedings of the Thirteenth Language Resources and Evaluation Conference (LREC 2022)*, 697–706. European Language Resources Association. https://aclanthology.org/2022.lrec-1.73/",
+      "note": "Entry correct; title uses 'LeSpell' (not 'LESPELL'), pages 697–706 confirmed via ACL Anthology."
+    },
+    {
+      "num": 12,
+      "status": "VERIFIED",
+      "entry": "Bender, E. M. & Friedman, B. (2018). Data Statements for Natural Language Processing: Toward Mitigating System Bias and Enabling Better Science. *Transactions of the Association for Computational Linguistics*, 6, 587–604. https://doi.org/10.1162/tacl_a_00041",
+      "note": "Entry correct; full title includes subtitle, DOI 10.1162/tacl_a_00041, volume 6, pages 587–604 confirmed via ACL Anthology."
+    },
+    {
+      "num": 13,
+      "status": "VERIFIED",
+      "entry": "Sengupta, S., Krone, J. & Mansour, S. (2021). On the Robustness of Intent Classification and Slot Labeling in Goal-oriented Dialog Systems to Real-world Noise. In *Proceedings of the Third Workshop on Natural Language Processing for Conversational AI (NLP4ConvAI 2021)*, 68–79. Association for Computational Linguistics. https://aclanthology.org/2021.nlp4convai-1.7/",
+      "note": "Title in report was incorrect ('On the Robustness of Dialogue History Representation in Conversational Question Answering' is a DIFFERENT paper by Google Research, 2022, TACL). The correct Amazon Science paper is about IC/SL robustness with seven noise types (abbreviations, casing, misspellings, morphological variants, paraphrases, punctuation, synonyms), CC-BY-NC licence, pages 68–79."
+    },
+    {
+      "num": 14,
+      "status": "VERIFIED",
+      "entry": "Liquid AI. (2026). d1-3B (version da1fe36) [Model]. Hugging Face. https://huggingface.co/LiquidAI/d1-3B (accessed 2026-10-10). Model card: 'd1-3B: Open d1: Edge decision models for text, vision, and audio' (Liquid AI blog, 2026-10-07).",
+      "note": "Model released 2026-10-07. Citable form: org=LiquidAI, model=d1-3B, revision=da1fe36a861f24690f27f622dca1d8688503d113, URL=https://huggingface.co/LiquidAI/d1-3B. No separate technical report; model card and blog post serve as documentation."
+    },
+    {
+      "num": 15,
+      "status": "VERIFIED",
+      "entry": "Speer, R. (2022). rspeer/wordfreq: v3.0 (v3.0.2). Zenodo. https://doi.org/10.5281/zenodo.7199437",
+      "note": "No JOSS paper exists. The canonical citation is the Zenodo DOI for the software release (v3.0.2, 2022-09-26). The GitHub README directs users to cite this Zenodo record."
+    },
+    {
+      "num": 16,
+      "status": "VERIFIED",
+      "entry": "Katz, L. & Frost, R. (1992). The reading process is different for different orthographies: The orthographic depth hypothesis. In R. Frost & L. Katz (Eds.), *Orthography, Phonology, Morphology, and Meaning* (Advances in Psychology, Vol. 94, pp. 67–84). North-Holland/Elsevier. https://doi.org/10.1016/S0166-4115(08)62789-2; Frost, R., Katz, L. & Bentin, S. (1987). Strategies for visual word recognition and orthographical depth: A multilingual comparison. *Journal of Experimental Psychology: Human Perception and Performance*, 13(1), 104–114. https://doi.org/10.1037/0096-1523.13.1.104; Frost, R. (1994). Toward a strong phonological theory of visual word recognition: True issues and false trails. In R. Frost & L. Katz (Eds.), *Orthography, Phonology, Morphology, and Meaning* (Advances in Psychology, Vol. 94, pp. 275–298). North-Holland/Elsevier.",
+      "note": "Canonical statements: (1) Katz & Frost (1992) chapter in Advances in Psychology Vol 94 (pp. 67–84) — the original ODH formulation; (2) Frost, Katz & Bentin (1987) JEP:HPP — empirical multilingual comparison; (3) Frost (1994) chapter in same volume (pp. 275–298) — within-item Hebrew pointed/unpointed comparison."
+    },
+    {
+      "num": 17,
+      "status": "VERIFIED",
+      "entry": "Guo, C., Pleiss, G., Sun, Y. & Weinberger, K. Q. (2017). On Calibration of Modern Neural Networks. In *Proceedings of the 34th International Conference on Machine Learning (ICML 2017)* (Proceedings of Machine Learning Research, Vol. 70, pp. 1321–1330). PMLR. https://proceedings.mlr.press/v70/guo17a.html (arXiv:1706.04599)",
+      "note": "Entry correct; PMLR volume 70, pages 1321–1330 confirmed via proceedings.mlr.press."
+    },
+    {
+      "num": 18,
+      "status": "VERIFIED",
+      "entry": "Kadavath, S., Conerly, T., Askell, A., Henighan, T., Drain, D., Perez, E., Schiefer, N., Hatfield-Dodds, Z., DasSarma, N., Tran-Johnson, E., Johnston, S., El-Showk, S., Jones, A., Elhage, N., Hume, T., Chen, A., Bai, Y., Bowman, S., Fort, S., Ganguli, D., Hernandez, D., Jacobson, J., Kernion, J., Kravec, S., Lovitt, L., Ndousse, K., Olsson, C., Ringer, S., Amodei, D., Brown, T., Clark, J., Joseph, N., Mann, B., McCandlish, S., Olah, C. & Kaplan, J. (2022). Language Models (Mostly) Know What They Know. arXiv:2207.05221v4. https://arxiv.org/abs/2207.05221",
+      "note": "Entry correct; arXiv:2207.05221v4 (2022-11-21), 40 pages. Full author list confirmed."
+    },
+    {
+      "num": 19,
+      "status": "VERIFIED",
+      "entry": "Bender, E. M. (2013). *Linguistic Fundamentals for Natural Language Processing: 100 Essentials from Morphology and Syntax*. Synthesis Lectures on Human Language Technologies, Vol. 6, No. 1. Morgan & Claypool Publishers. https://doi.org/10.2200/S00509ED1V01Y201305HLT020",
+      "note": "Entry correct; publisher Morgan & Claypool, series Synthesis Lectures on Human Language Technologies, ISBN 9781627051484 (print), 9781627051491 (eBook), DOI 10.2200/S00509ED1V01Y201305HLT020."
+    },
+    {
+      "num": 20,
+      "status": "VERIFIED",
+      "entry": "(a) Coltheart, M., Davelaar, E., Jonasson, J. T. & Besner, D. (1977). Access to the internal lexicon. In S. Dornic (Ed.), *Attention and Performance VI* (pp. 535–555). Lawrence Erlbaum Associates/Routledge. https://doi.org/10.4324/9781003309734-29; (b) Frost, R. (1994). Toward a strong phonological theory of visual word recognition: True issues and false trails. In R. Frost & L. Katz (Eds.), *Orthography, Phonology, Morphology, and Meaning* (Advances in Psychology, Vol. 94, pp. 275–298). North-Holland/Elsevier; (c) Coltheart, M., Davelaar, E., Jonasson, J. T. & Besner, D. (1977) — the same chapter defines orthographic neighbourhood (N) as 'the set of words that can be formed by changing a single letter of the target word', the canonical statement for the neighbourhood/confusability effect used to justify nearest-neighbour decoy rules.",
+      "note": "All three verified. (a) Chapter in Attention and Performance VI (1977), pp. 535–555, defines orthographic neighbourhood N. (b) Frost (1994) in same Advances in Psychology Vol 94 as Katz & Frost (1992). (c) The Coltheart et al. (1977) chapter is the canonical source for orthographic neighbourhood definition and confusability effects."
+    }
+  ],
+  "summary": "18/20 entries VERIFIED; 1 UNVERIFIED (Gardner 1992 — no matching record); 1 VERIFIED with corrections (Zhao et al. 2026 — paper exists but title/author list differ from cited version). Key corrections: Sengupta et al. (2021) title/venue corrected; Lisbach & Meyer (2013) publisher/ISBN added; wordfreq cites Zenodo DOI not JOSS; LiquidAI/d1-3B model card citable form provided; orthographic depth hypothesis canonical citations (Katz & Frost 1992; Frost, Katz & Bentin 1987; Frost 1994) and Coltheart et al. (1977) for neighbourhood effect all confirmed."
+}

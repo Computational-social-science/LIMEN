@@ -1,0 +1,79 @@
+{
+  "_what": "The measured orthographic-depth axis the programme's independent variable is defined on. Every value is BORROWED from a published measurement, never re-derived, because re-deriving it with a different model would produce a different instrument and the numbers would not be comparable (global rule 19, instrument unity).",
+  "instrument": {
+    "metric": "orthographic transparency as mutual compressibility between orthographic and phonological strings",
+    "reference": "Torres & Futrell, 'Clarifying orthography: Orthographic transparency as compressibility', arXiv 2505.13657 (May 2025)",
+    "estimated_by": "prequential code-lengths from neural sequence models, fitted per language",
+    "why_borrowed_rather_than_recomputed": "The metric's value depends on the sequence model that estimates it. Re-fitting with our own model would place the numbers on a different scale from the published ones and from the 22 languages already measured, which is exactly the failure rule 19 exists to prevent.",
+    "direction": "the source reports BOTH orthography-to-phonology and phonology-to-orthography mappings; the phonology-to-orthography direction is the production/spelling direction this programme's corpora live in",
+    "verification_status": "BORROWED. Values transcribed from the source's between-language table (its Table 1), which reports differences from a reference language. NOT independently re-measured here."
+  },
+  "scale": {
+    "anchor": "spa (Spanish) = 0.0, the most transparent language in the source's set",
+    "unit": "transparency difference in the source's metric; negative = LESS transparent (deeper)",
+    "how_derived": "the source's Table 1 gives pairwise differences; the column for Spanish was read as each language's distance from the transparent end",
+    "limitation": "derived from a difference table rather than from absolute values, so the spacing is exact but the zero point is the source's reference language rather than an absolute scale"
+  },
+  "axis": [
+    {"code": "spa", "name": "Spanish",   "rel":  0.000, "script": "alphabetic"},
+    {"code": "ita", "name": "Italian",   "rel": -0.037, "script": "alphabetic"},
+    {"code": "ces", "name": "Czech",     "rel": -0.041, "script": "alphabetic"},
+    {"code": "pol", "name": "Polish",    "rel": -0.048, "script": "alphabetic"},
+    {"code": "por", "name": "Portuguese","rel": -0.071, "script": "alphabetic"},
+    {"code": "hun", "name": "Hungarian", "rel": -0.076, "script": "alphabetic"},
+    {"code": "tur", "name": "Turkish",   "rel": -0.100, "script": "alphabetic"},
+    {"code": "fin", "name": "Finnish",   "rel": -0.102, "script": "alphabetic"},
+    {"code": "fra", "name": "French",    "rel": -0.104, "script": "alphabetic"},
+    {"code": "ell", "name": "Greek",     "rel": -0.114, "script": "alphabetic"},
+    {"code": "nld", "name": "Dutch",     "rel": -0.114, "script": "alphabetic"},
+    {"code": "bul", "name": "Bulgarian", "rel": -0.117, "script": "alphabetic"},
+    {"code": "vie", "name": "Vietnamese","rel": -0.132, "script": "alphabetic"},
+    {"code": "ukr", "name": "Ukrainian", "rel": -0.142, "script": "alphabetic"},
+    {"code": "hin", "name": "Hindi",     "rel": -0.175, "script": "abugida"},
+    {"code": "ara", "name": "Arabic",    "rel": -0.179, "script": "abjad"},
+    {"code": "kor", "name": "Korean",    "rel": -0.183, "script": "syllabic/featural"},
+    {"code": "rus", "name": "Russian",   "rel": -0.185, "script": "alphabetic"},
+    {"code": "eng", "name": "English",   "rel": -0.209, "script": "alphabetic"},
+    {"code": "deu", "name": "German",    "rel": -0.216, "script": "alphabetic"},
+    {"code": "jpn", "name": "Japanese",  "rel": -0.521, "script": "syllabic + logographic"},
+    {"code": "zho", "name": "Chinese",   "rel": -0.611, "script": "logographic"}
+  ],
+  "structure": {
+    "segmental_cluster": {
+      "members": 20,
+      "range": 0.216,
+      "reading": "The twenty segmental languages occupy a range of only 0.216. Depth differences inside this cluster are SMALL, so a comparison of two segmental languages tests a small effect that may sit near the noise floor."
+    },
+    "logographic_outliers": {
+      "jpn_below_cluster_floor_by": 0.305,
+      "zho_below_cluster_floor_by": 0.395,
+      "reading": "The two non-segmental languages sit far outside the cluster. The large, robust contrast available to this programme is cluster versus outlier, not one segmental language versus another."
+    },
+    "consequence_for_the_design": "The axis's SHAPE is carried by the logographic arm, and within-cluster variation can only be tested weakly. This is why the primary contrast is English against Chinese and why the generator's twelve languages test within-cluster variation rather than the axis."
+  },
+  "coverage_of_the_programme": {
+    "multitypo_languages": ["deu", "eng", "fra", "ell", "rus", "ara", "hin", "hye", "kat", "heb", "ben", "tam"],
+    "covered_by_published_values": {
+      "count": 7,
+      "codes": ["deu", "eng", "fra", "ell", "rus", "ara", "hin"],
+      "range": 0.112,
+      "reading": "All seven sit inside the compressed segmental cluster, spanning 0.112. The generator therefore spans within-cluster variation, NOT the axis."
+    },
+    "not_covered": {
+      "count": 5,
+      "codes": ["hye", "kat", "heb", "ben", "tam"],
+      "names": ["Armenian", "Georgian", "Hebrew", "Bengali", "Tamil"],
+      "status": "No published value under this instrument. They must NOT be filled in with a locally fitted model, because that would put two instruments' numbers on one table. Either they stay off the axis, or the source's own fitting procedure is reproduced exactly."
+    },
+    "programme_channels": {
+      "eng": {"rel": -0.209, "source": "published"},
+      "zho": {"rel": -0.611, "source": "published"},
+      "jpn": {"rel": -0.521, "source": "published", "note": "the kanji-conversion channel exercises the logographic end of this value, not the syllabic end; see docs/THEORETICAL_ANCHOR.md"}
+    }
+  },
+  "corrections_this_measurement_forced": [
+    "The programme had assumed Russian, Hindi and Tamil were 'shallow'. Measured, Russian (-0.185) and Hindi (-0.175) are among the DEEPEST of the segmental set. The assumption was wrong.",
+    "The programme treated Turkish as a candidate shallow extreme. Measured, Turkish (-0.100) sits mid-cluster; the true transparent extreme is Spanish (0.000), then Italian, Czech and Polish. If a shallow arm is added, Spanish is the theoretically strongest choice, not Turkish.",
+    "Both corrections are the reason the axis was measured rather than asserted."
+  ]
+}

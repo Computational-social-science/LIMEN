@@ -1,0 +1,184 @@
+{
+  "_what": "Phase I's recoverability index applied to the Phase II channels' attested corruption pairs. Levels are NOT set here; see docs/PHASE_II_NOISE_EVIDENCE.md section 6.",
+  "anchor_measured_for_this_index": 0.448,
+  "anchor_citation": "Rayner, White, Johnson & Liversedge (2006), interior-scrambled condition",
+  "pair_limit": 1500,
+  "channels": {
+    "zh": {
+      "label": "Chinese (logographic; CSCD-NS substitutions)",
+      "language": "zh",
+      "channel_fitted_on": "aligned character pairs from 1200 pairs in the fitting corpus",
+      "split_mode": "pairs split 80/20; channel fitted on the training portion",
+      "channel_units_parameterised": 1200,
+      "pairs_fitted": 1200,
+      "pairs_scored": 300,
+      "share_of_scored_pairs_whose_committed_unit_the_channel_has_seen": 0.54,
+      "share_of_scored_pairs_that_saturated_to_one_candidate": 0.0,
+      "mean_posterior_on_intended": 0.325862,
+      "median_posterior_on_intended": 0.11613,
+      "share_where_intended_is_MAP": 0.323333,
+      "mean_candidates": 3.14,
+      "vocabulary": 40000,
+      "zipf_floor": 1.0,
+      "anchor_for_comparison": 0.448
+    }
+  },
+  "level_curves": {
+    "zh": {
+      "label": "Chinese (logographic; CSCD-NS substitutions)",
+      "curve": [
+        {
+          "rate": 0.02,
+          "n_injected": 46,
+          "mean_posterior": 0.346718,
+          "median_posterior": 0.172024,
+          "map_share": 0.369565,
+          "mean_candidates": 4.674,
+          "saturated_share": 0.0
+        },
+        {
+          "rate": 0.05,
+          "n_injected": 113,
+          "mean_posterior": 0.363688,
+          "median_posterior": 0.199759,
+          "map_share": 0.336283,
+          "mean_candidates": 4.628,
+          "saturated_share": 0.0
+        },
+        {
+          "rate": 0.1,
+          "n_injected": 233,
+          "mean_posterior": 0.36525,
+          "median_posterior": 0.215765,
+          "map_share": 0.403433,
+          "mean_candidates": 5.069,
+          "saturated_share": 0.0
+        },
+        {
+          "rate": 0.2,
+          "n_injected": 452,
+          "mean_posterior": 0.354275,
+          "median_posterior": 0.196582,
+          "map_share": 0.376106,
+          "mean_candidates": 4.989,
+          "saturated_share": 0.0
+        },
+        {
+          "rate": 0.35,
+          "n_injected": 769,
+          "mean_posterior": 0.358284,
+          "median_posterior": 0.185232,
+          "map_share": 0.379714,
+          "mean_candidates": 4.853,
+          "saturated_share": 0.0
+        },
+        {
+          "rate": 0.5,
+          "n_injected": 1106,
+          "mean_posterior": 0.36728,
+          "median_posterior": 0.20147,
+          "map_share": 0.388788,
+          "mean_candidates": 4.883,
+          "saturated_share": 0.0
+        },
+        {
+          "rate": 0.75,
+          "n_injected": 1655,
+          "mean_posterior": 0.349542,
+          "median_posterior": 0.16049,
+          "map_share": 0.365333,
+          "mean_candidates": 5.104,
+          "saturated_share": 0.0
+        },
+        {
+          "rate": 1.0,
+          "n_injected": 2174,
+          "mean_posterior": 0.366606,
+          "median_posterior": 0.186712,
+          "map_share": 0.383333,
+          "mean_candidates": 5.275,
+          "saturated_share": 0.0
+        }
+      ]
+    },
+    "en_sr_ladder": {
+      "label": "English (alphabetic; published SR ladder)",
+      "curve": [
+        {
+          "sr": 0.0,
+          "n_injected": 0
+        },
+        {
+          "sr": 0.25,
+          "n_injected": 68,
+          "mean_posterior": 1.0,
+          "mean_candidates": 25.779,
+          "channel_ablated": 0.999977
+        },
+        {
+          "sr": 0.5,
+          "n_injected": 418,
+          "mean_posterior": 0.999769,
+          "mean_candidates": 25.11,
+          "channel_ablated": 0.99574
+        },
+        {
+          "sr": 0.75,
+          "n_injected": 698,
+          "mean_posterior": 0.999604,
+          "mean_candidates": 25.215,
+          "channel_ablated": 0.9945
+        },
+        {
+          "sr": 1.0,
+          "n_injected": 814,
+          "mean_posterior": 0.999551,
+          "mean_candidates": 25.187,
+          "channel_ablated": 0.992183
+        }
+      ],
+      "level_source": "operational - Wang et al. (ACL 2025 Findings) Scramble Ratio; SR=1 is the Rayner et al. (2006) interior-scrambled condition",
+      "why_not_index_derived": "section 6.5: the substitution channel is inert for a permutation, so the ablated column is shown beside every row"
+    }
+  },
+  "FROZEN_LEVELS": {
+    "en": {
+      "levels": [
+        0.0,
+        0.25,
+        0.5,
+        0.75,
+        1.0
+      ],
+      "axis": "Scramble Ratio (fraction of interior letters scrambled, first and last fixed)",
+      "level_source": "operational; Wang et al. (ACL 2025 Findings). SR = 1 is the Rayner et al. (2006) interior-scrambled condition",
+      "shape_source": "none estimated - the manipulation is the shape",
+      "index_usable": false,
+      "index_note": "mean posterior is 0.9995-1.0000 across the ladder and the ablated channel control is 0.985-1.000, so the channel contributes at most +0.0144 (section 6.5, 6.7)"
+    },
+    "ja": {
+      "levels": [
+        0.02,
+        0.05,
+        0.1,
+        0.2
+      ],
+      "axis": "fraction of intended forms corrupted",
+      "level_source": "supplied by the experimenter; never read off the corpus",
+      "shape_source": "JWTD directed pre -> post kanji-conversion spectrum",
+      "anchor_note": "no per-token rate is available: JWTD's 45.7 % is a share of TRAIN RECORDS by category, a property of corpus assembly rather than a per-token rate; the grid is bracketed by the Chinese one and stated as a choice"
+    },
+    "zh": {
+      "levels": [
+        0.005,
+        0.02,
+        0.05,
+        0.1
+      ],
+      "axis": "fraction of intended forms corrupted",
+      "level_source": "supplied by the experimenter; never read off the corpus",
+      "shape_source": "CSCD-NS conditional substitution spectrum",
+      "anchor_note": "brackets the 0.0196 per-character rate the corpus attains (1.953 % of characters per sentence, section 4), with points below and above it"
+    }
+  }
+}

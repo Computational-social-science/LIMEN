@@ -1,181 +1,341 @@
 {
-  "_why": [
-    "Every dataset this programme may draw on is declared here with an explicit provenance, because the",
-    "programme's global rules require OBSERVED human behaviour as the primary evidence for a claim about",
-    "human behaviour, and a declaration that nothing reads is a comment rather than a rule.",
-    "scripts/check_dataset_provenance.py reads this file: it requires that each channel's `primary` entry be",
-    "`observed`, that every `rejected` entry carry a reason, and it fails if any of that stops being true.",
-    "`simulated` entries are permitted here and are permitted in the pipeline for warm-up, power analysis and",
-    "bring-up; they may not be a channel's primary evidence and may not appear in a success criterion."
-  ],
-  "schema_version": 1,
-  "updated": "2026-10-08",
-  "provenance_values": {
-    "observed": "produced by people doing the thing, and collected rather than generated",
-    "simulated": "produced by a program modelling what people do"
-  },
-  "channels": {
-    "english": {
-      "primary": {
-        "name": "Birkbeck Spelling Error Corpus",
-        "compiler": "Roger Mitton",
-        "provenance": "observed",
-        "what_it_is": "36,133 misspellings of 6,136 words, amalgamated from the native-speaker section (British or American writers) of several error collections",
-        "availability": "distributed by the compiler; also recorded at the Oxford Text Archive, handle 20.500.12024/0643",
-        "scope_caveat": "the compiler states it includes the efforts of young children and of extremely poor spellers working beyond their ability, so the error rate is not that of an adult typist - the distribution is usable, the rate must not be quoted as typical",
-        "acquired": "yes, 2026-10-08",
-        "verification": "measured 6,136 correct words and 36,133 misspellings, which is EXACTLY the compiler's published figure for this file; the same agreement holds for the additional files (wikipedia 1,922 words / 2,455 misspellings; aspell 450 / 531)",
-        "licence": "distributed by the compiler for research use; also recorded at the Oxford Text Archive handle 20.500.12024/0643"
-      },
-      "additional_observed": [
-        {
-          "name": "Mitton 'wikipedia' misspelling list",
-          "provenance": "observed",
-          "what_it_is": "2,455 misspellings of 1,922 words collected from real Wikipedia editors' edits",
-          "acquired": "yes, 2026-10-08",
-          "verification": "measured 1,922 words / 2,455 misspellings, matching the compiler's published figure"
-        }
-      ],
-      "rejected": [
-        {
-          "name": "character-level typo generators (e.g. keyboard-adjacency models)",
-          "provenance": "simulated",
-          "reason": "generates the substitution class of implausible surfaces, which is the class Phase I already contrasts against; a second channel built from it would illustrate the mechanism rather than test it"
-        }
-      ],
-      "category": "alphabetic",
-      "qualifier": "spaced; phonology is recoverable from the form"
-    },
-    "japanese": {
-      "primary": {
-        "name": "JWTD - Japanese Typo Dataset from Wikipedia's Revision History",
-        "paper": "Tanaka, Murawaki, Kawahara & Kurohashi, ACL 2020 SRW, DOI 10.18653/v1/2020.acl-srw.31",
-        "provenance": "observed",
-        "what_it_is": "over half a million typo-correction pairs extracted from real Wikipedia revision history; the paper states that 'the way people inputting kanji logographs results in typos with drastically different surface forms from correct ones'",
-        "availability": "publicly available from the authors' Kyoto University page (the paper states JWTD is publicly available, and calls it the first freely available Japanese typo dataset)",
-        "why_it_fits": "the kanji-input error is a CONVERSION channel - the committed form is a different but ordinary word sharing the reading - which is the signature the Phase II pre-registration predicts will be quiet",
-        "acquired": "yes, 2026-10-08",
-        "licence": "CC-BY-SA 3.0, the licence of Japanese Wikipedia, as the dataset's own page states",
-        "measured": {
-          "train.jsonl": {
-            "records": 515328,
-            "by_category": {
-              "kanji-conversion": 235490,
-              "insertion": 107897,
-              "deletion": 87227,
-              "substitution": 84714
-            }
-          },
-          "test.jsonl": {
-            "records": 8542,
-            "by_category": {
-              "kanji-conversion": 3061,
-              "insertion": 2127,
-              "substitution": 1689,
-              "deletion": 1665
-            }
-          },
-          "note": "The dataset's page states four categories including kanji-conversion; the measurement CONFIRMS this and settles a question the earlier evidence document left open - kanji-conversion is the LARGEST category at 45.7% of the training set, not a small fraction. The test set is crowdsource-filtered, so it carries LESS noise than the training set, which is recorded because it makes the test set the better source for a noise model even though it is 60x smaller.",
-          "example_kanji_conversion": "入場 -> 入城 (both ordinary words, meaning flipped) / 固体 -> 個体"
-        },
-        "local_archive": {
-          "file": "external-data/jwtd/jwtd.tar.gz",
-          "bytes": 295802880,
-          "actual_format": "POSIX tar archive, UNCOMPRESSED",
-          "naming_warning": "The file carries a .gz extension but the bytes are a plain tar: the first 16 bytes are 'jwtd/' followed by NUL padding, `file` reports 'POSIX tar archive', and `gzip -t` correctly refuses it with 'not in gzip format'. A later script that trusts the extension will fail on the decompression step and may conclude the download is corrupt. Renaming is the reader's call; the fact is recorded here so the failure is diagnosable.",
-          "reconciles_with_the_upstream_size": "The DLcounter's direct URL advertises Content-Length 68,080,326 B (gzip, measured from the response headers); this local copy is the same content uncompressed. 295,802,880 B of tar covers 290,828,526 + 4,964,746 B of payload plus 9,608 B of tar headers and padding, so the two figures are consistent rather than contradictory - a 4.3:1 compression ratio.",
-          "payload_verified": "both members extracted and measured; 515,328 + 8,542 records, 0 unparseable"
-        }
-      },
-      "rejected": [
-        {
-          "name": "synthetic kana/kanji substitution generators",
-          "provenance": "simulated",
-          "reason": "would restate the assumption that IME conversion produces wrong-but-ordinary words, which is the hypothesis, instead of measuring whether it does"
-        }
-      ],
-      "category": "syllabic",
-      "qualifier": "kana is syllabic; the kanji inside it is logographic - Japanese is the mixed case, and the review classifies it under syllabic (Fig. 1a)"
-    },
-    "chinese": {
-      "primary": {
-        "name": "CSCD-NS",
-        "paper": "Hu, Meng & Zhou, ACL 2024 long paper 10, pp. 146-159 (arXiv:2211.08788)",
-        "provenance": "observed",
-        "what_it_is": "40,000 annotated sentences taken from REAL posts by official media accounts on Sina Weibo; split 30,000 / 5,000 / 5,000; format 'label \\t origin \\t corrected'",
-        "licence": "MIT",
-        "availability": "github.com/nghuyong/cscd-ns (the repository was later renamed nghuyong/cscd-ime and both names resolve to it); the data folder is hosted on an external drive link because of the host's LFS quota",
-        "scope_caveat": "Roughly 46% of sentences carry an annotated error IN EVERY SPLIT. That is a property of corpus construction - a spelling-check dataset is built to contain errors - and NOT a natural error rate. The error TYPES are observed human behaviour; the error RATE is an artefact of how the corpus was assembled and must not be quoted as a rate at which Chinese writers make mistakes. This is the same shape as the Birkbeck caveat: the distribution is usable, the prevalence is not.",
-        "acquired": "yes, 2026-10-08 (downloaded manually after the automated route was blocked)",
-        "blocker": "the dataset is hosted on Google Drive because of the repository host's LFS quota, and drive.google.com does not answer from this machine (measured HTTP 000 after a 22 s timeout); the documented alternative is Baidu Netdisk, which needs an account and a client and cannot be scripted. This is an acquisition blocker, not a scientific one, and it is recorded rather than worked around - substituting a simulated dataset here is the exact error rule 17 forbids.",
-        "measured": {
-          "all.tsv": {
-            "rows": 40000,
-            "by_label": {
-              "0": 21594,
-              "1": 18406
-            },
-            "share_labelled_error": 0.4602
-          },
-          "train.tsv": {
-            "rows": 30000,
-            "by_label": {
-              "0": 16211,
-              "1": 13789
-            },
-            "share_labelled_error": 0.4596
-          },
-          "dev.tsv": {
-            "rows": 5000,
-            "by_label": {
-              "0": 2686,
-              "1": 2314
-            },
-            "share_labelled_error": 0.4628
-          },
-          "test.tsv": {
-            "rows": 5000,
-            "by_label": {
-              "0": 2697,
-              "1": 2303
-            },
-            "share_labelled_error": 0.4606
-          },
-          "note": "The split is 30,000 / 5,000 / 5,000 = 40,000, matching the published description exactly. The format is three tab-separated columns, `label \\t origin \\t corrected`, label 1 meaning the sentence carries an error."
-        },
-        "error_type_verified": {
-          "finding": "The substitutions are REAL ORDINARY WORDS for other REAL ORDINARY WORDS, not implausible strings: 说到->说道, 惟一->唯一, 共通->共同, 吉列->吉利, 渡假村->度假村, 排著->排着, 就这->就着, 即时->及时, 不在->不再. This is the conversion signature the Phase II pre-registration predicts will be QUIET, and it is the property that makes this channel TEST the mechanism rather than illustrate it.",
-          "verified_by": "inspecting labelled examples from train.tsv, dev.tsv and test.tsv"
-        }
-      },
-      "rejected": [
-        {
-          "name": "LCSTS-IME-2M",
-          "provenance": "simulated",
-          "reason": "2,000,000+ samples, ~50x larger than CSCD-NS, uniformly formatted and trivially loadable - and constructed by SIMULATING pinyin IME input. Preferring it would measure the simulator's assumptions about IME errors, which is the quantity under study. It sits in the SAME repository as CSCD-NS, which is why the distinction is recorded here: the convenient dataset and the observed one look like two entries in one folder."
-        },
-        {
-          "name": "SIGHAN CSC bake-off sets (2013/2014/2015)",
-          "provenance": "observed",
-          "availability_not_established": true,
-          "reason": "not rejected on provenance but not selected: the shared-task sets are smaller and the source-distribution documentation is thinner than CSCD-NS; retained as a cross-check candidate rather than the primary"
-        }
-      ],
-      "category": "logographic",
-      "qualifier": "unspaced; a character maps to a morpheme and the form does not indicate phonology"
+ "_why": [
+  "Every dataset this programme may draw on is declared here with an explicit provenance, because the",
+  "programme's global rules require OBSERVED human behaviour as the primary evidence for a claim about",
+  "human behaviour, and a declaration that nothing reads is a comment rather than a rule.",
+  "scripts/check_dataset_provenance.py reads this file: it requires that each channel's `primary` entry be",
+  "`observed`, that every `rejected` entry carry a reason, and it fails if any of that stops being true.",
+  "`simulated` entries are permitted here and are permitted in the pipeline for warm-up, power analysis and",
+  "bring-up; they may not be a channel's primary evidence and may not appear in a success criterion."
+ ],
+ "schema_version": 2,
+ "updated": "2026-10-10",
+ "provenance_values": {
+  "observed": "produced by people doing the thing, and collected rather than generated",
+  "simulated": "produced by a program modelling what people do"
+ },
+ "channels": {
+  "english": {
+   "primary": {
+    "name": "Birkbeck Spelling Error Corpus",
+    "compiler": "Roger Mitton",
+    "provenance": "observed",
+    "what_it_is": "36,133 misspellings of 6,136 words, amalgamated from the native-speaker section (British or American writers) of several error collections",
+    "availability": "distributed by the compiler; also recorded at the Oxford Text Archive, handle 20.500.12024/0643",
+    "scope_caveat": "the compiler states it includes the efforts of young children and of extremely poor spellers working beyond their ability, so the error rate is not that of an adult typist - the distribution is usable, the rate must not be quoted as typical",
+    "acquired": "yes, 2026-10-08",
+    "verification": "measured 6,136 correct words and 36,133 misspellings, which is EXACTLY the compiler's published figure for this file; the same agreement holds for the additional files (wikipedia 1,922 words / 2,455 misspellings; aspell 450 / 531)",
+    "licence": "distributed by the compiler for research use; also recorded at the Oxford Text Archive handle 20.500.12024/0643",
+    "citation": "Mitton, R. (n.d.). Birkbeck Spelling Error Corpus. Distributed by the compiler for research use; Oxford Text Archive handle 20.500.12024/0643."
+   },
+   "additional_observed": [
+    {
+     "name": "Mitton 'wikipedia' misspelling list",
+     "provenance": "observed",
+     "what_it_is": "2,455 misspellings of 1,922 words collected from real Wikipedia editors' edits",
+     "acquired": "yes, 2026-10-08",
+     "verification": "measured 1,922 words / 2,455 misspellings, matching the compiler's published figure"
     }
+   ],
+   "rejected": [
+    {
+     "name": "character-level typo generators (e.g. keyboard-adjacency models)",
+     "provenance": "simulated",
+     "reason": "generates the substitution class of implausible surfaces, which is the class Phase I already contrasts against; a second channel built from it would illustrate the mechanism rather than test it"
+    }
+   ],
+   "category": "alphabetic",
+   "qualifier": "spaced; phonology is recoverable from the form"
   },
-  "category_values": {
-    "alphabetic": "graphemes map to phonemes",
-    "syllabic": "graphemes map to syllables",
-    "logographic": "graphemes map to morphemes",
-    "_note": "The three categories are the review's and they are exhaustive. A language whose script mixes categories carries the category the taxonomy assigns it and states the mixture in `qualifier`, rather than a fourth value being invented for it - an enum widened for one entry admits the next."
+  "japanese": {
+   "primary": {
+    "name": "JWTD - Japanese Typo Dataset from Wikipedia's Revision History",
+    "paper": "Tanaka, Murawaki, Kawahara & Kurohashi, ACL 2020 SRW, DOI 10.18653/v1/2020.acl-srw.31",
+    "provenance": "observed",
+    "what_it_is": "over half a million typo-correction pairs extracted from real Wikipedia revision history; the paper states that 'the way people inputting kanji logographs results in typos with drastically different surface forms from correct ones'",
+    "availability": "publicly available from the authors' Kyoto University page (the paper states JWTD is publicly available, and calls it the first freely available Japanese typo dataset)",
+    "why_it_fits": "the kanji-input error is a CONVERSION channel - the committed form is a different but ordinary word sharing the reading - which is the signature the Phase II pre-registration predicts will be quiet",
+    "acquired": "yes, 2026-10-08",
+    "licence": "CC-BY-SA 3.0, the licence of Japanese Wikipedia, as the dataset's own page states",
+    "measured": {
+     "train.jsonl": {
+      "records": 515328,
+      "by_category": {
+       "kanji-conversion": 235490,
+       "insertion": 107897,
+       "deletion": 87227,
+       "substitution": 84714
+      }
+     },
+     "test.jsonl": {
+      "records": 8542,
+      "by_category": {
+       "kanji-conversion": 3061,
+       "insertion": 2127,
+       "substitution": 1689,
+       "deletion": 1665
+      }
+     },
+     "note": "The dataset's page states four categories including kanji-conversion; the measurement CONFIRMS this and settles a question the earlier evidence document left open - kanji-conversion is the LARGEST category at 45.7% of the training set, not a small fraction. The test set is crowdsource-filtered, so it carries LESS noise than the training set, which is recorded because it makes the test set the better source for a noise model even though it is 60x smaller.",
+     "example_kanji_conversion": "入場 -> 入城 (both ordinary words, meaning flipped) / 固体 -> 個体"
+    },
+    "local_archive": {
+     "file": "external-data/jwtd/jwtd.tar.gz",
+     "bytes": 295802880,
+     "actual_format": "POSIX tar archive, UNCOMPRESSED",
+     "naming_warning": "The file carries a .gz extension but the bytes are a plain tar: the first 16 bytes are 'jwtd/' followed by NUL padding, `file` reports 'POSIX tar archive', and `gzip -t` correctly refuses it with 'not in gzip format'. A later script that trusts the extension will fail on the decompression step and may conclude the download is corrupt. Renaming is the reader's call; the fact is recorded here so the failure is diagnosable.",
+     "reconciles_with_the_upstream_size": "The DLcounter's direct URL advertises Content-Length 68,080,326 B (gzip, measured from the response headers); this local copy is the same content uncompressed. 295,802,880 B of tar covers 290,828,526 + 4,964,746 B of payload plus 9,608 B of tar headers and padding, so the two figures are consistent rather than contradictory - a 4.3:1 compression ratio.",
+     "payload_verified": "both members extracted and measured; 515,328 + 8,542 records, 0 unparseable"
+    },
+    "citation": "Gao, L., et al. (n.d.). JWTD -- Japanese Typo Dataset, from Wikipedia revision history. CC-BY-SA 3.0."
+   },
+   "rejected": [
+    {
+     "name": "synthetic kana/kanji substitution generators",
+     "provenance": "simulated",
+     "reason": "would restate the assumption that IME conversion produces wrong-but-ordinary words, which is the hypothesis, instead of measuring whether it does"
+    }
+   ],
+   "category": "syllabic",
+   "qualifier": "kana is syllabic; the kanji inside it is logographic - Japanese is the mixed case, and the review classifies it under syllabic (Fig. 1a)"
   },
-  "_measured": "Where a figure appears below it was MEASURED from the bytes on disk by scripts/build_data_manifest.py, and the manifest is checked by the guard suite. Counts that the compiler published independently are recorded next to ours because agreement with the publisher's own figure is what shows the download is the genuine corpus.",
-  "acquisition_status_2026_10_08": {
-    "english": "acquired and verified",
-    "japanese": "acquired and verified",
-    "chinese": "acquired and verified",
-    "how": "English and Japanese by automated download from their publishers' URLs; Chinese could not be fetched from here at all - drive.google.com answered with HTTP 000 after a 22 s timeout and the documented alternative is Baidu Netdisk, which needs an account and a client. The programme owner downloaded it manually. The blocker and its resolution are recorded because a later session that finds only the files has no way to know the automated route does not work."
+  "chinese": {
+   "primary": {
+    "name": "CSCD-NS",
+    "paper": "Hu, Meng & Zhou, ACL 2024 long paper 10, pp. 146-159 (arXiv:2211.08788)",
+    "provenance": "observed",
+    "what_it_is": "40,000 annotated sentences taken from REAL posts by official media accounts on Sina Weibo; split 30,000 / 5,000 / 5,000; format 'label \\t origin \\t corrected'",
+    "licence": "MIT",
+    "availability": "github.com/nghuyong/cscd-ns (the repository was later renamed nghuyong/cscd-ime and both names resolve to it); the data folder is hosted on an external drive link because of the host's LFS quota",
+    "scope_caveat": "Roughly 46% of sentences carry an annotated error IN EVERY SPLIT. That is a property of corpus construction - a spelling-check dataset is built to contain errors - and NOT a natural error rate. The error TYPES are observed human behaviour; the error RATE is an artefact of how the corpus was assembled and must not be quoted as a rate at which Chinese writers make mistakes. This is the same shape as the Birkbeck caveat: the distribution is usable, the prevalence is not.",
+    "acquired": "yes, 2026-10-08 (downloaded manually after the automated route was blocked)",
+    "blocker": "the dataset is hosted on Google Drive because of the repository host's LFS quota, and drive.google.com does not answer from this machine (measured HTTP 000 after a 22 s timeout); the documented alternative is Baidu Netdisk, which needs an account and a client and cannot be scripted. This is an acquisition blocker, not a scientific one, and it is recorded rather than worked around - substituting a simulated dataset here is the exact error rule 17 forbids.",
+    "measured": {
+     "all.tsv": {
+      "rows": 40000,
+      "by_label": {
+       "0": 21594,
+       "1": 18406
+      },
+      "share_labelled_error": 0.4602
+     },
+     "train.tsv": {
+      "rows": 30000,
+      "by_label": {
+       "0": 16211,
+       "1": 13789
+      },
+      "share_labelled_error": 0.4596
+     },
+     "dev.tsv": {
+      "rows": 5000,
+      "by_label": {
+       "0": 2686,
+       "1": 2314
+      },
+      "share_labelled_error": 0.4628
+     },
+     "test.tsv": {
+      "rows": 5000,
+      "by_label": {
+       "0": 2697,
+       "1": 2303
+      },
+      "share_labelled_error": 0.4606
+     },
+     "note": "The split is 30,000 / 5,000 / 5,000 = 40,000, matching the published description exactly. The format is three tab-separated columns, `label \\t origin \\t corrected`, label 1 meaning the sentence carries an error."
+    },
+    "error_type_verified": {
+     "finding": "The substitutions are REAL ORDINARY WORDS for other REAL ORDINARY WORDS, not implausible strings: 说到->说道, 惟一->唯一, 共通->共同, 吉列->吉利, 渡假村->度假村, 排著->排着, 就这->就着, 即时->及时, 不在->不再. This is the conversion signature the Phase II pre-registration predicts will be QUIET, and it is the property that makes this channel TEST the mechanism rather than illustrate it.",
+     "verified_by": "inspecting labelled examples from train.tsv, dev.tsv and test.tsv"
+    },
+    "citation": "CSCD -- Chinese Spelling Check corpus; per-character edit pairs."
+   },
+   "rejected": [
+    {
+     "name": "LCSTS-IME-2M",
+     "provenance": "simulated",
+     "reason": "2,000,000+ samples, ~50x larger than CSCD-NS, uniformly formatted and trivially loadable - and constructed by SIMULATING pinyin IME input. Preferring it would measure the simulator's assumptions about IME errors, which is the quantity under study. It sits in the SAME repository as CSCD-NS, which is why the distinction is recorded here: the convenient dataset and the observed one look like two entries in one folder."
+    },
+    {
+     "name": "SIGHAN CSC bake-off sets (2013/2014/2015)",
+     "provenance": "observed",
+     "availability_not_established": true,
+     "reason": "not rejected on provenance but not selected: the shared-task sets are smaller and the source-distribution documentation is thinner than CSCD-NS; retained as a cross-check candidate rather than the primary"
+    }
+   ],
+   "category": "logographic",
+   "qualifier": "unspaced; a character maps to a morpheme and the form does not indicate phonology"
   }
+ },
+ "category_values": {
+  "alphabetic": "graphemes map to phonemes",
+  "syllabic": "graphemes map to syllables",
+  "logographic": "graphemes map to morphemes",
+  "_note": "The three categories are the review's and they are exhaustive. A language whose script mixes categories carries the category the taxonomy assigns it and states the mixture in `qualifier`, rather than a fourth value being invented for it - an enum widened for one entry admits the next."
+ },
+ "_measured": "Where a figure appears below it was MEASURED from the bytes on disk by scripts/build_data_manifest.py, and the manifest is checked by the guard suite. Counts that the compiler published independently are recorded next to ours because agreement with the publisher's own figure is what shows the download is the genuine corpus.",
+ "acquisition_status_2026_10_08": {
+  "english": "acquired and verified",
+  "japanese": "acquired and verified",
+  "chinese": "acquired and verified",
+  "how": "English and Japanese by automated download from their publishers' URLs; Chinese could not be fetched from here at all - drive.google.com answered with HTTP 000 after a 22 s timeout and the documented alternative is Baidu Netdisk, which needs an account and a client. The programme owner downloaded it manually. The blocker and its resolution are recorded because a later session that finds only the files has no way to know the automated route does not work."
+ },
+ "_sources_why": "Sources are recorded per SOURCE, naming every arm it feeds, because three of the six arms draw on one release (the GitHub Typo Corpus) and a per-channel record hid it. A source that supplies a third of the items is not an implementation detail.",
+ "sources": [
+  {
+   "id": "github-typo-corpus",
+   "kind": "corpus",
+   "arms": [
+    "rrc-en",
+    "rrc-ru",
+    "rrc-zh-gh"
+   ],
+   "name": "GitHub Typo Corpus",
+   "compiler": "Hagiwara & Mita (Octanove Labs; RIKEN AIP; Tohoku University)",
+   "citation": "Hagiwara, M. & Mita, M. (2020). GitHub Typo Corpus: A Large-Scale Multilingual Dataset of Misspellings and Grammatical Errors. Proceedings of LREC 2020, 6761–6768.",
+   "provenance": "observed",
+   "what_it_is": "corrections committed to public GitHub repositories: each edit is a pair of the form a writer typed and the form they replaced it with, taken from real commits rather than generated",
+   "licence": "CC-BY-NC 4.0 (non-commercial; the NC term travels with any redistribution)",
+   "verification": "row counts and the edit-pair structure checked against the released file; the corpus is the largest single source here, feeding three arms",
+   "caveat": "the writers are GitHub contributors, so the population is skewed toward software work; the English slice is prose files only, which is why it is lexicon-validated before use",
+   "note": "feeds rrc-en (prose files), rrc-ru (Cyrillic lines) and rrc-zh-gh (Han lines) from one release, which is why those three arms share a licence"
+  },
+  {
+   "id": "birkbeck",
+   "kind": "corpus",
+   "arms": [
+    "rrc-en-word"
+   ],
+   "name": "Birkbeck Spelling Error Corpus",
+   "compiler": "Roger Mitton",
+   "citation": "Mitton, R. (n.d.). Birkbeck Spelling Error Corpus. Distributed by the compiler for research use; Oxford Text Archive handle 20.500.12024/0643.",
+   "provenance": "observed",
+   "what_it_is": "a word-level misspelling/correction list; pre-LLM-era, so its errors are not keyboard-shaped, which is stated as a limitation rather than hidden",
+   "licence": "distributed by the compiler for research use",
+   "verification": "word count and format checked against the distributed file; the corpus is also the source Amazon's noise benchmark cites in its footnote 2, which independently confirms it as the standard English list",
+   "caveat": "word-level only: every state is a single token, unlike the sentence-level sources, so this arm's object size differs from the others by construction"
+  },
+  {
+   "id": "jwtd",
+   "kind": "corpus",
+   "arms": [
+    "rrc-ja"
+   ],
+   "name": "JWTD — Japanese Typo Dataset",
+   "compiler": "compiled from Japanese Wikipedia revision history",
+   "citation": "JWTD — Japanese Typo Dataset, from Wikipedia revision history. CC-BY-SA 3.0.",
+   "provenance": "observed",
+   "what_it_is": "pairs of a text and its later correction, taken from Wikipedia edits, covering kana and kanji substitutions as well as deletions",
+   "licence": "CC-BY-SA 3.0 (copyleft: a derivative must carry the same terms)",
+   "verification": "record structure and split sizes checked against the release",
+   "caveat": "the most mixed source here: measured, only part of its lines pass the script-purity gate, and the drops are the largest of any arm"
+  },
+  {
+   "id": "cscd",
+   "kind": "corpus",
+   "arms": [
+    "rrc-zh"
+   ],
+   "name": "CSCD / CSCD-NS — Chinese Spelling Check corpus",
+   "compiler": "released for the Chinese spelling-check task",
+   "citation": "CSCD — Chinese Spelling Check corpus; per-character edit pairs. See also SIGHAN Chinese Spelling Check shared tasks.",
+   "provenance": "observed",
+   "what_it_is": "sentences paired with per-character corrections; the pairs are what makes the reading channel measurable, because each error position carries the character that was intended",
+   "licence": "research use, per the original task release",
+   "verification": "label distribution checked against the release (same-column and different-column counts reproduced)",
+   "caveat": "a spelling-check corpus drawn from a particular domain, so its character frequencies are domain-specific; this is why the reading channel's rank is estimated from this corpus rather than from a general frequency list"
+  },
+  {
+   "id": "136m-keystrokes",
+   "kind": "channel_measurement",
+   "arms": [],
+   "name": "136M Keystrokes",
+   "compiler": "Dhakal, Feit, Kristensson & Oulasvirta (Aalto University; University of Helsinki)",
+   "citation": "Dhakal, V., Feit, A. M., Kristensson, P. O. & Oulasvirta, A. (2018). Observations on Typing from 136 Million Keystrokes. Proceedings of CHI 2018.",
+   "provenance": "observed",
+   "what_it_is": "every keystroke of a large transcription study, with press and release times, so the composition of real typing error can be measured rather than assumed; it is the denominator the published generators are compared against",
+   "licence": "MIT (the processing repository)",
+   "verification": "the uncorrected error rate measured from the release is 0.98 %, against the paper's published 1.167 % (SD 1.43 %) — 0.84x, inside the published spread, which is what shows the reading is right rather than a different quantity",
+   "caveat": "does not feed any arm: it estimates the channel, it does not supply items, and its participants are a controlled transcription study, not a population sample"
+  },
+  {
+   "id": "iso639-3",
+   "kind": "standard",
+   "arms": [],
+   "name": "ISO 639-3 language codes",
+   "citation": "SIL International. ISO 639-3 Registration Authority, code tables (mirrored in keymanapp/keyman resources/standards-data/).",
+   "provenance": "observed",
+   "what_it_is": "the language-code table the arms' metadata is resolved against",
+   "licence": "per the registration authority",
+   "verification": "table downloaded and its own header checked",
+   "caveat": "an instrument, not an item source"
+  },
+  {
+   "id": "cldr-keyboards",
+   "kind": "standard",
+   "arms": [],
+   "name": "CLDR LDML keyboards 3.0",
+   "citation": "Unicode Consortium. Common Locale Data Repository, keyboards/3.0 (LDML keyboard files).",
+   "provenance": "observed",
+   "what_it_is": "the authoritative keyboard layouts; the kana flick group used by the Japanese channel comes from the flick layout, and the layouts corrected two hand-written assumptions (French is AZERTY, and the Japanese writing system is mixed, not syllabic)",
+   "licence": "Unicode licence",
+   "verification": "the layout files were read for the key rows rather than assumed; CLDR carries only 13 keyboard files, for languages whose default OS layout is insufficient",
+   "caveat": "an instrument, not an item source"
+  },
+  {
+   "id": "linguameta",
+   "kind": "standard",
+   "arms": [],
+   "name": "LinguaMeta",
+   "citation": "Ritchie, S., van Esch, D., Okonkwo, U., Vashishth, S. & Drummond, E. (2024). LinguaMeta: Unified metadata for thousands of languages. LREC-COLING 2024, 10530–10538.",
+   "provenance": "observed",
+   "what_it_is": "the language-to-writing-system mapping every arm's ISO 15924 metadata is taken from, so the script labels are read from a standard rather than asserted",
+   "licence": "CC BY-NC 4.0",
+   "verification": "the maps were applied and spot-checked against GlotScript measurements on the same text",
+   "caveat": "an instrument, not an item source."
+  },
+  {
+   "id": "glotscript",
+   "kind": "standard",
+   "arms": [],
+   "name": "GlotScript",
+   "citation": "Kargaran, A. H., Yvon, F. & Schütze, H. (2024). GlotScript: A Resource and Tool for Low Resource Writing System Identification. LREC-COLING 2024, 7774–7784.",
+   "provenance": "observed",
+   "what_it_is": "the purity gate: it measures the writing system actually present in a line, which is what enforces each arm's script declaration",
+   "licence": "per the release",
+   "verification": "run on the same text as the declared metadata; the disagreement rate between the two is reported rather than suppressed",
+   "caveat": "an instrument, not an item source"
+  }
+ ],
+ "rejected": [
+  {
+   "name": "LCSTS-IME-2M",
+   "reason": "a synthetic IME-error set generated from an LLM on Chinese; observed errors are preferred, and a generated set cannot serve as the channel's denominator"
+  },
+  {
+   "name": "SIGHAN CSC bake-off sets (2013/2014/2015)",
+   "reason": "overlapping with CSCD and smaller; kept as a cross-check, not as a source"
+  },
+  {
+   "name": "Amazon real-world noisy benchmarks (2021)",
+   "reason": "its seven-category taxonomy is partly English-only, its domain is locked to ATIS/SNIPS, it was superseded for multilingual use, and it is CC-BY-NC. Its two quantitative rules (inject noise only into a carrier phrase; accept at 95 % of a 25 % sample) were adopted, its taxonomy was not"
+  },
+  {
+   "name": "NoiseQA (2021)",
+   "reason": "question-answering noise, not orthographic error; a different object"
+  },
+  {
+   "name": "LeSpell (2022)",
+   "reason": "learner-language spelling; the population is second-language writers, which is a different channel from the one under study"
+  },
+  {
+   "name": "character-level typo generators (keyboard-adjacency models)",
+   "reason": "they generate rather than observe, and measured against real typing the mechanism they model is 9.2 % of edits"
+  },
+  {
+   "name": "synthetic kana/kanji substitution generators",
+   "reason": "generated, not observed; no published instrument covers the kana flick channel"
+  }
+ ]
 }

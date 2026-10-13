@@ -18,12 +18,15 @@ The dry run is the real check: it performs the negotiation and the object transf
 without updating the ref, so a size rejection or a missing remote surfaces here
 rather than after the work looks finished.
 
-## 2. keystroke-observatory — blocked by a missing remote
+## 2. keystroke-observatory — RESOLVED 2026-10-14
 
 | | |
 |---|---|
 | remote | `https://github.com/limen-research/keystroke-observatory.git` |
-| **`git push --dry-run origin main`** | **FAILS** — `remote: Repository not found.`, exit 128 |
+| recorded remote | `https://github.com/limen-research/keystroke-observatory.git` — **the org does not exist** (404) |
+| **now points at** | `https://github.com/Computational-social-science/keystroke-observatory` |
+| visibility | **private** — publication is a separate, irreversible decision |
+| **`git push origin main`** | **succeeds** — `a20a71a..37c57d0  main -> main` |
 | `git ls-remote origin` | same failure, so the repository does not exist at that URL |
 
 **This is not a credential or network problem.** LIMEN's dry run to a different
@@ -36,7 +39,9 @@ the CI workflow. So the intended destination cannot be recovered from the projec
 itself; it exists only on this machine, and a fresh clone would carry a remote
 nobody chose deliberately.
 
-**The decision this needs, which is the owner's and not mine:**
+**Resolved.** The owner's instruction was that keystroke-observatory syncs to GitHub
+as an independent repository, so it was created under the account the available
+credential can write to, and pushed. The three options that were open:
 
 1. **Create `limen-research/keystroke-observatory`** and push. Keeps the URL as
    recorded, and matches the project's independent status.
@@ -47,9 +52,10 @@ nobody chose deliberately.
    answer, but it should be recorded as a choice rather than left as a dangling
    remote that fails on first use.
 
-Whichever is chosen, the URL should be written into the project (`README.md` and
-`pyproject.toml`'s `[project.urls]`, which v1 had and v2 dropped) so the destination
-is a property of the repository rather than of one working copy.
+The URL is now written into the project — `README.md` states it with the visibility,
+and the dashboard project's `keystroke-observatory/pyproject.toml` `[project.urls]` is restored. v1 had that section and v2
+dropped it, which is precisely why the destination had existed only in one clone's
+`.git/config` and could not be reconstructed from the repository itself.
 
 ## 3. What is now sync-safe in both
 

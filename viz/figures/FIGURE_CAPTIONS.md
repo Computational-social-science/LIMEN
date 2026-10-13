@@ -29,3 +29,26 @@ The two failure classes, drawn on the two diagnostics that separate them. **(a)*
 ## fig7_stage2_evidence_chain
 
 **A third of this manuscript's claims rest on a machine-checked proof, and the assumptions are visible as assumptions.** The protocol's provenance table classifies every claim by its authority, and this figure counts that table: **16 claims PROVED** — each naming a theorem the kernel checked, with the table's generator failing if such a theorem does not exist — **6 MEASURED** off the confirmatory or pre-run record, **6 ASSUMED** and carried as assumptions rather than as results, and **6 TO BE TESTED** in Phase II. The count matches the generator's own independent total of 34, which is the property that makes the figure worth drawing: it is derived from the table rather than summarised from it. **No claim about the effect of noise on accuracy, silent error or coverage appears as PROVED** — those are the empirical claims, settled by the confirmatory run and by nothing else, and a figure that blurred that distinction would misrepresent the work it describes.
+
+## Figure 9 — Phase II measurement basis
+
+**The measured depth axis is a cluster plus two outliers, and 81.4 % of the logographic arm's observed
+errors left no trace in the keystrokes.** **(a)** Orthographic transparency for the 22 languages
+of the borrowed measurement, relative to Spanish = 0, negative = deeper; bars coloured by script class
+(blue, segmental; orange, the two non-segmental languages). The 20 segmental languages span
+**0.216** (dotted line marks the cluster floor at
+-0.216), whereas Japanese and Chinese sit **0.305** and
+**0.395** below it. **The available contrast is therefore cluster versus
+outlier, not one segmental language against another.** **(b)** Share of observed Chinese character
+substitutions whose intended and committed characters carry an **identical typed romanisation**, per split
+and pooled (dashed line, *n* = 16,469 of
+20,225); the value is stable to 0.001 across the three independent splits.
+
+**Design.** Depth values are **borrowed** from a published measurement (Torres & Futrell, 2025) and are
+**not re-derived here**: the metric is estimated from a per-language neural sequence model, so re-fitting it
+locally would place the numbers on a different scale from the 22 languages already measured. The collision
+in (b) is the antecedent of the impossibility theorem formalised in the sibling repository `lean-nhb`
+(`NHB/PhaseII/`): where the keystrokes carry no error, two distinct intended messages produce the same
+observable, and the theorem shows no decoder and no gate avoids a silent error there. **Panel (b) is the
+measurement; the theorem supplies only the consequence.** Sources: `config/depth_axis.json`,
+`config/collision_evidence.json`. Reproduce with `python scripts/build_phase2_figures.py`.

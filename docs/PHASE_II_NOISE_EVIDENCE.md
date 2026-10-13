@@ -142,8 +142,10 @@ are DESIGN constraints, and a design constraint written into code is a design co
 CSCD-NS carries an annotated error in **~46 % of sentences in every split** (0.4596 train / 0.4628 dev /
 0.4606 test), because a spelling-check dataset is assembled to contain errors. **So the corpus supplies the
 substitution inventory and its relative spectrum, and supplies no rate at all.** The Chinese level must
-therefore be **set by the index**, never read off the corpus and never obtained by normalising the spectrum
-into a per-character probability. An implementation that treats "share of substitutions in the corpus" as
+therefore be **supplied by the experimenter and never read off the corpus**, and the spectrum must never be
+normalised into a per-character probability. *(Section 6.7 fixes those supplied rates and section 6.5/6.7
+record why the level is operational rather than read off the index: an index-derived level inherits the
+channel's identity, and measured across the rate grid the index does not vary monotonically with severity.)* An implementation that treats "share of substitutions in the corpus" as
 "probability a character is corrupted" will produce levels that describe the annotators' sampling plan.
 
 **This is the only one of the three channels where inventory and rate come from different places**, and it is
@@ -154,9 +156,9 @@ the one where conflating them is most tempting, because the spectrum is right th
 Birkbeck's 36,133 misspellings are **36,133 distinct pairs** — no error form recurs, so the corpus records
 **types, not rates**. There is nothing to sample a shape from. The English inventory is usable for what it is
 (a list of attested non-word corruptions) and cannot supply a frequency spectrum, which means the English
-channel's noise shape cannot be estimated from this corpus by frequency at all. **Phase I did not need it to** —
-its levels came from the recoverability index against a published anchor, where English levels already are —
-and that is the route Phase II keeps for this channel rather than inventing a rate to fill the gap.
+channel's noise shape cannot be estimated from this corpus by frequency at all. **Phase I did not need it and neither does Phase II** — the
+English arm's levels come from the published Scramble Ratio ladder (section 6.6), which is operational and
+estimates no shape at all, so nothing has to be invented to fill the gap.
 
 ### 6.3 Japanese: the corruption is not injective, and it is directional
 
@@ -223,17 +225,18 @@ saturation diagnostic that would have hidden them is reported with every run:
 | English (Birkbeck) | **0.3513** | 0.0000 | 0.3517 | 29.99 | 0.000 |
 | Japanese (JWTD) | **0.3062** | 0.0538 | 0.3500 | 123.91 | 0.000 |
 | Chinese (CSCD-NS) | **0.2718** | 0.0563 | 0.2783 | 106.13 | 0.000 |
-| *Measured under this index at the Rayner et al. (2006) interior-scrambled condition* | *0.4480* | — | — | — | — |
 
-**0.4480 is measured under this index, at the Rayner et al. (2006) interior-scrambled condition — it is not a
-number published in Rayner et al. (2006).** The citation names the stimulus condition the index was pointed at,
-not the source of the value.
+**These three rows ARE comparable to one another** — one procedure applied to each language's own attested
+error process. **An anchor row is deliberately absent**: section 6.5 shows, by ablation, that the human-validated
+anchor cannot be moved onto this scale, and that the English arm therefore keeps Phase I's own construction
+instead.
 
-**Read against the anchor measured under this index, the ordering is monotone and in the direction the taxonomy
-predicts**: recoverability falls from alphabetic to syllabic to logographic (0.3513 > 0.3062 > 0.2718), and all
-three sit below that alphabetic anchor. **What makes this more than a coincidence of three numbers is that it emerges from three
-independently collected corpora, three different corruption units (within-word, kanji word, character), and
-three writing systems** — nothing in the construction enforces the order.
+**Read against Phase I's own English construction, where the anchor is measured under this index (0.4480), the
+ordering across these three rows is monotone and in the direction the taxonomy predicts**: recoverability falls
+from alphabetic to syllabic to logographic (0.3513 > 0.3062 > 0.2718). **What makes this more than a coincidence
+of three numbers is that it emerges from three independently collected corpora, three different corruption units
+(within-word, kanji word, character), and three writing systems** — nothing in the construction enforces the
+order.
 
 **Two limits that must travel with these numbers.** First, the **English arm is not the same construct as
 Phase I's**: Phase I scored English words against a typo channel over a vocabulary, giving the 0.4480 anchor
@@ -248,6 +251,143 @@ matters, because a saturated pair contributes a manufactured 1.0.
 **These are channel properties, measured on the noisy channel alone, and they are what section 6's level-setting
 argument needs. They are not Phase II results**: no model has been run, and the pre-registration's hypotheses
 are about the instrument, not about the channel.
+
+### 6.5 The anchor cannot be moved onto the channel scale, and the attempt proves why
+
+**The section 6.4 table compared four rows that were not measured by one instrument**, and the check that
+settles it is an ablation rather than an argument.
+
+Phase I's anchor value (0.4480, measured under this index) was produced by **Phase I's own channel** — a typo model built from perturbed
+English words, scoring word-level candidates from a frequency vocabulary. The three channel columns were
+produced by **a character channel fitted from each corpus**, scoring candidates generated compositionally. Two
+differences: the channel's source and the candidate construction.
+
+**Re-scoring the anchor with the estimator the three columns use, on the same stimuli and the same perturbation
+(the same pack file, the same `rayner_scramble`, the same seed), gives 0.8799 against the 0.4480 that Phase I
+measured under its own construction.** The
+gap is 0.43, which is far too large to be a technical difference between two implementations of one estimator.
+
+**So the ablation was run to find out what the 0.8799 measures.** With the channel term set to a constant — the
+posterior then driven by the prior alone — the same stimuli score **0.9472**, so the channel's entire
+contribution is **−0.0673**. **The channel is close to inert for this stimulus class, and what the 0.8799
+mostly measures is the prior.**
+
+**The reason is a mismatch of process, and it is the substantive point.** The corpus channels model
+**substitution** — what a reader commits instead of the intended form. Rayner's manipulation is a
+**permutation** — the same letters, re-ordered. **A substitution channel has no statistics for a permutation,
+and no amount of re-scoring will give it any.** The index is a property of the triple (stimulus, channel,
+prior); changing the channel changes the value even for identical stimuli, so **an anchor value calibrates the
+pair (condition, channel) and never the condition alone.**
+
+**Three consequences, and they are design decisions rather than code changes.**
+
+1. **The English arm keeps Phase I's own construction.** It is the only arm for which a human-validated anchor
+   exists, it is continuous with Phase I, and re-using the validated instrument is the project's rule.
+2. **The Chinese and Japanese arms are set by a criterion intrinsic to each channel**, because **no
+   human-validated anchor exists for either** and manufacturing one from the Alphabetic anchor would import
+   exactly the error this section documents.
+3. **The three channel columns remain comparable to one another** — the same procedure applied to each
+   language's own attested error process, which is a legitimate cross-language comparison. **The anchor row is
+   removed from that table**, because its presence implied a scale it does not share.
+
+**Recorded as the negative control it is.** The ablation is wired into `scripts/phase2_recoverability.py`
+(`--ablate-channel`) and reported beside every anchor run, so a future reader cannot quote the anchor number
+without the diagnostic that shows what it is made of.
+
+### 6.6 The English arm's levels come from a published operational scale, not from an index
+
+Section 6.5 left the English arm's level-setting open: the human-validated anchor cannot be moved onto the
+corpus channels' scale, so a level derived from the index would inherit that problem.
+
+**Wang, Gu, Wei, Gao, Song & Chen (ACL 2025 Findings, "Word Form Matters: LLMs' Semantic Reconstruction under
+Typoglycemia") supplies the instrument that removes the problem instead of working around it.** It defines
+
+> **Scramble Ratio (SR) = N_scrambled / N_candidate**, the fraction of a word's interior characters that have
+> been scrambled, with five levels **SR ∈ {0, 0.25, 0.5, 0.75, 1}**, and a second axis **Context Integrity (CI)
+> ∈ {0, 0.25, 0.5, 0.75, 1}**, over SQuAD stimuli restricted to words of at least ten characters with the first
+> and last letters fixed.
+
+**SR is operational: it counts characters, so it passes through no channel at all.** That is exactly the
+property section 6.5 shows the index cannot supply, and it means the English arm's levels can be set by a
+published, reproducible manipulation magnitude rather than by a quantity whose value depends on which model of
+noise happens to be loaded. **Rayner et al. (2006)'s interior-scrambled condition is the SR = 1 end of this
+ladder**, so adopting SR also preserves continuity with the Phase I anchor instead of discarding it.
+
+**And the same paper states the gap Phase II fills, in its own Limitations section:**
+
+> "our analysis is limited to English, and it remains uncertain whether morphologically rich languages exhibit
+> similar dependencies on word form. Future work could explore broader model architectures, diverse
+> perturbation types, and cross-linguistic analyses."
+
+**Its central finding — that LLMs rely on word form and barely on context, with attention reallocating to form
+rather than to context as scrambling rises — is established in an alphabetic script only.** Phase II's three
+channels are the cross-linguistic test, and they test something sharper than morphology: **whether a reliance on
+"word form" survives when form is a different object entirely**, a character whose shape carries meaning rather
+than a letter string whose order must be recovered.
+
+**Two limits, stated because they bound what can be borrowed.**
+
+1. **The paper's instrument does not cross scripts.** `SemRecScore` is the cosine similarity between the original
+   word's token representation and the last subword token of the scrambled sequence; it presupposes a word with
+   an interior whose order can be perturbed and a tokenizer that fragments it. **A Chinese character has no
+   interior to scramble and Chinese tokenization is character-level**, so the instrument has no definition
+   there. Phase II's dependent variables are behavioural (accuracy, silent error, coverage), not representational,
+   which is why they do transfer.
+2. **SR and CI are adopted as a level-setting device, not as a hypothesis.** Nothing in this section asserts the
+   paper's conclusions; **the project's rule is that a published mechanism is a candidate to test, not a premise
+   to build on**, and the paper's own limitation says its finding has not been checked outside English — which is
+   the check Phase II runs.
+
+### 6.7 The frozen levels, and why the index is not what sets them
+
+**Both level grids are operational.** Each is a count of corrupted units, so neither passes through a channel —
+the property section 6.5 shows an index-derived level cannot have. This section records the measurement that
+forced the conclusion rather than assuming it.
+
+**The index was swept against the corruption rate, per channel, with the channel fitted on the real corpus and
+the injected sample scored by it.** The candidate set is bounded at one substituted position, because letting
+the substitution frontier recurse inflated it to 2,400 candidates for Japanese and 1,100 for Chinese — the same
+degeneracy as 6.4(a) arriving through a different door, and diluting the posterior for a reason unrelated to
+the corruption being harder. Bounded, the candidate sets are **11.8–13.3 (Japanese), 4.6–5.3 (Chinese),
+24.9–25.6 (English)**, and no pair saturates at any rate.
+
+| Channel | rate 0.02 | 0.20 | 0.50 | 1.00 | shape |
+|---|---|---|---|---|---|
+| Japanese | 0.318 | 0.344 | 0.425 | **0.461** | rises |
+| Chinese | 0.347 | 0.354 | 0.367 | **0.367** | flat |
+| English | 0.407 | 0.336 | 0.337 | **0.349** | flat |
+
+**What the curves say, and it is not what a level-setting index would need to say.** The index does not vary
+monotonically with the corruption rate on **any** channel. Chinese and English are flat across the whole range.
+Japanese rises, and the rise is a **composition effect rather than a severity effect**: the rate selects a
+nested subset of intended forms in descending order of their attested pair count, so the forms added at higher
+rates are rarer ones whose confusion partners are less shared — measurably easier to identify, which is the
+opposite of what more corruption should do. **An instrument whose reading moves with which forms were sampled
+rather than with how hard they were corrupted cannot set a level.**
+
+**On the permutation arm the index is not merely flat but uninformative.** Across the published SR ladder the
+mean posterior is **0.9995–1.0000**, and with the channel ablated to a constant it is 0.985–1.000, so the
+channel's entire contribution never exceeds **+0.0144**. **This is section 6.5's prediction, independently
+reproduced at five scrambling levels**: a substitution channel carries no statistics for a permutation.
+**That measurement is why the English arm's levels are the published ladder and not an index reading.**
+
+**The frozen levels.**
+
+| Arm | Levels | Source of the level | Source of the shape |
+|---|---|---|---|
+| **English** | **SR ∈ {0, 0.25, 0.5, 0.75, 1.0}** | Wang et al. (ACL 2025 Findings) Scramble Ratio; **SR = 1 is Rayner et al. (2006)** | the scramble itself — no shape is estimated |
+| **Japanese** | **rate ∈ {0.02, 0.05, 0.10, 0.20}** | supplied here, **never read off the corpus** | JWTD's directed `pre → post` spectrum |
+| **Chinese** | **rate ∈ {0.005, 0.02, 0.05, 0.10}** | supplied here; **brackets the 0.0196 per-character rate the corpus attains** | CSCD-NS's conditional substitution spectrum |
+
+**The Chinese grid is anchored by the corpus's own measured rate rather than centred arbitrarily** — 1.953 % of
+characters per sentence (section 4) sits inside the grid, with two points below and one above. **Japanese has no
+comparable per-token figure to anchor to**: its 45.7 % is the share of TRAIN RECORDS whose category is
+kanji-conversion, which is a property of how the corpus was assembled and not a per-token rate, so its grid is
+bracketed by the Chinese one and stated as a choice.
+
+**What the index is for, now that it is not setting levels.** It characterises each channel — the 0.3513 /
+0.3062 / 0.2718 table in section 6.4, saturation 0.000, one procedure applied to three independently collected
+corpora. **That is a descriptive result about the three error processes, and it is reported as one.**
 
 ---
 
