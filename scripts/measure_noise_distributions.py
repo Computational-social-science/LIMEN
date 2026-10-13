@@ -32,7 +32,14 @@ import pathlib
 import sys
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parent.parent
-EXTERNAL = REPO_ROOT.parent / "external-data"
+# THE PROJECT'S OWN external-data COMES FIRST. Resolving the PARENT's copy
+# meant this read a sibling tree that happens to hold the same three datasets;
+# LIMEN's own copy is the complete one (21.4 GB vs 1.1 GB). A lookup that works
+# because two trees overlap is a lookup that breaks when either moves.
+EXTERNAL = next(
+    (p for p in (REPO_ROOT / "external-data", REPO_ROOT.parent / "external-data")
+     if p.is_dir()),
+    REPO_ROOT / "external-data")
 
 
 def _spectrum(counter: collections.Counter, thresholds=(2, 3, 5, 10, 50, 100, 1000)) -> dict:

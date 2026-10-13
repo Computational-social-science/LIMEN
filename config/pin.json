@@ -28,7 +28,7 @@
   },
   "how_to_run": {
     "command": "unset PYTHONPATH && export HF_ENDPOINT=https://hf-mirror.com && C:/Python314/python.exe smoke_predict.py",
-    "workdir": "E:/2026-AI4S/autoresearch/measurement",
+    "workdir": "E:/2026-AI4S/LIMEN/measurement",
     "offline_verified": "HF_HUB_OFFLINE=1 produces a byte-identical stdout in 7 s wall time - the confirmatory path needs no network after the first download",
     "required_workaround_pythonpath": "A foreign venv on PYTHONPATH raises ImportError: cannot import name '_regex'. Unset PYTHONPATH; do not reinstall anything.",
     "required_workaround_endpoint": "huggingface.co times out on this host (measured); https://hf-mirror.com works."

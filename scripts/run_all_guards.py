@@ -149,6 +149,13 @@ GUARDS: list[tuple[str, tuple[str, ...], str]] = [
     # committed requirements.txt has drifted from what the code actually imports.
     ("list_dependencies.py", ("--check",),
      "requirements.txt matches the third-party imports the source actually makes"),
+    # LIMEN's inputs are large third-party corpora and a pinned model, none of which can
+    # be tracked. This verifies that they are declared, present, and that each search
+    # order tries the project's OWN copy before any sibling checkout -- the accidental
+    # dependency three scripts had on E:\2026-AI4S\external-data, which worked only
+    # because two trees happened to overlap.
+    ("check_inputs.py", (),
+     "the declared inputs are present, and no search order prefers a sibling checkout"),
     ("check_manuscript_html.py", (),
      "the rendered page is not lying: numbering, sentinels, math integrity, note completeness"),
     ("build_provenance_table.py", ("--check",),

@@ -26,7 +26,12 @@ import subprocess
 import sys
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parent.parent
-EXTERNAL = REPO_ROOT.parent / "external-data"   # a SIBLING of the repo: data is not committed
+# Data is not committed, but the project's OWN external-data is the canonical copy;
+# the parent's is a fallback for a checkout that keeps its data elsewhere.
+EXTERNAL = next(
+    (p for p in (REPO_ROOT / "external-data", REPO_ROOT.parent / "external-data")
+     if p.is_dir()),
+    REPO_ROOT / "external-data")
 MANIFEST = REPO_ROOT / "config" / "data_manifest.json"
 
 

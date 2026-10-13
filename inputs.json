@@ -1,0 +1,73 @@
+{
+  "_what": "The INPUT CONTRACT for LIMEN.",
+  "_why": "LIMEN's inputs are large third-party corpora and a pinned model, none of which can be tracked in git. Independence cannot mean 'the bytes ship inside the repository'; it must mean 'the project declares exactly what it needs, can verify it, and prefers its own copies over a sibling checkout'. This file is that declaration; scripts/check_inputs.py verifies it.",
+  "_sibling_rule": "Where an input exists both inside this project and in a sibling directory, the search order puts THIS project's copy first. A lookup that works only because two trees happen to overlap is a lookup that breaks when either one moves, and it fails silently -- the output is correct and the reason is wrong.",
+
+  "corpus": {
+    "name": "136M Keystrokes",
+    "citation": "Dhakal, Feit, Kristensson & Oulasvirta, 'Observations on Typing from 136 Million Keystrokes', CHI 2018",
+    "doi": "10.1145/3173574.3174220",
+    "files": {
+      "participant_files": {
+        "description": "168,593 participant files. LIMEN's science scripts (trans_aware, error_structure2, decisive_tests, pos_all_classes) read these DIRECTLY; the project never invokes the keystroke-observatory pipeline.",
+        "kind": "directory",
+        "pattern": "*_keystrokes.txt",
+        "expected_count": 168593,
+        "search_order": [
+          "C:/keystroke-corpus/files",
+          "<project>/external-data/Keystrokes/Keystrokes/files"
+        ]
+      }
+    }
+  },
+
+  "noise_evidence": {
+    "name": "Channel noise evidence corpora",
+    "_why": "measure_noise_distributions.py measures substitution rates from three published error corpora. Each is small; all three live under external-data/.",
+    "files": {
+      "birkbeck": {
+        "description": "Birkbeck spelling error corpus (missp.dat) -- the English substitution source.",
+        "kind": "file",
+        "search_order": [
+          "<project>/external-data/birkbeck/missp.dat",
+          "E:/2026-AI4S/external-data/birkbeck/missp.dat"
+        ]
+      },
+      "jwtd": {
+        "description": "Japanese Word Typo Dataset (JWTD) -- the Japanese substitution source.",
+        "kind": "directory",
+        "pattern": "*",
+        "search_order": [
+          "<project>/external-data/jwtd/jwtd",
+          "E:/2026-AI4S/external-data/jwtd/jwtd"
+        ]
+      },
+      "cscd": {
+        "description": "Chinese Spelling Check Dataset (CSCD) -- the Chinese substitution source.",
+        "kind": "directory",
+        "pattern": "*",
+        "search_order": [
+          "<project>/external-data/cscd",
+          "E:/2026-AI4S/external-data/cscd"
+        ]
+      }
+    }
+  },
+
+  "instrument": {
+    "name": "laya",
+    "_why": "The measurement instrument. Already pinned with per-file sha256 in config/pin_laya.json; declared here so a single command reports every input's status.",
+    "files": {
+      "laya_snapshot": {
+        "description": "The pinned model snapshot. The revision is an immutable commit sha, NOT a branch: Hub main had moved by the time this was pinned, and a run must not follow main.",
+        "kind": "directory",
+        "pattern": "*",
+        "expected_count": 5,
+        "search_order": [
+          "C:/Users/Administrator/.cache/huggingface/hub/models--convaiinnovations--laya/snapshots/55cf4c4ebb4ebe31b2550e8bdf3bd21b99753851"
+        ],
+        "pin_file": "config/pin_laya.json"
+      }
+    }
+  }
+}

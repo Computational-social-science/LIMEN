@@ -48,7 +48,9 @@ import pathlib
 import sys
 
 REPO = pathlib.Path(__file__).resolve().parents[1]
-CORPORA = pathlib.Path(os.environ.get("RRC_CORPORA_DIR") or (REPO.parent / "external-data"))
+CORPORA = pathlib.Path(os.environ.get("RRC_CORPORA_DIR") or (
+    (REPO / "external-data") if (REPO / "external-data").is_dir()
+    else (REPO.parent / "external-data")))
 OUT = REPO / "data" / "processed" / "han_char_frequency.json"
 
 CSCD_TRAIN = CORPORA / "cscd" / "train.tsv"
