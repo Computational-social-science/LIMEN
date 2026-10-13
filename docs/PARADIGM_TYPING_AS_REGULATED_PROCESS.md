@@ -1,3 +1,26 @@
+> **STATUS 2026-10-13: PARTLY SUPERSEDED. Read this banner before the body.**
+>
+> This document is the measurement record of 2026-10-12 and its empirical core
+> stands. Three things in it have since been corrected or licensed, and the
+> corrections are NOT applied inline below:
+>
+> 1. **The class mix in section 3 uses the 2-opcode convention** (transposition
+>    8.9%), which the document itself contradicts in section 10 (one event per
+>    error, transposition 4.6%). The verifier flagged exactly this. **Use one
+>    event per error: deletion 34.1%, insertion 27.2%, case 16.5%, adjacent
+>    9.0%, other 8.6%, transposition 4.6%** -- the figures in
+>    `figures/fig_error_structure.*` already do.
+> 2. **"Not separable" (section 8) is now a LICENSED BOUND, not an assertion.**
+>    A calibrated plant at matched damage fired on coverage (p = 0.033), so the
+>    harness has been shown able to detect a matched-damage difference; the
+>    family gap is below ~8 points of coverage at n = 280.
+>    See `docs/PROPOSITION_A_POWERED.md`.
+> 3. **lambda's referent is now fixed** as produced noise per clean-text
+>    character, with a measured human reference of 9.14% produced vs 1.37%
+>    surviving (6.66x). See `docs/PHASE_I_AMENDMENT_4_LAMBDA_REFERENT.md`.
+>
+> The empirical claims of sections 2, 4, 5, 6, 7 and 9 are unaffected.
+
 # The Paradigm: Typing Error as a Regulated Process, Not a Noisy Channel
 
 **Date**: 2026-10-12
@@ -114,11 +137,11 @@ silently corrupts a measurement.)
 
 | class | N_en assumes | measured | ratio |
 |---|---|---|---|
-| deletion | 20% | **32.6%** | 1.63x |
-| insertion | 20% | **26.0%** | 1.30x |
+| deletion | 20% | **34.1%** | 1.71x |
+| insertion | 20% | **27.2%** | 1.36x |
 | case | **absent** | **15.8%** | — |
-| transposition | 25% | 8.9% | 0.35x |
-| adjacent-key | 35% | **8.6%** | **0.25x** |
+| transposition | 25% | 4.6% | 0.18x |
+| adjacent-key | 35% | **9.0%** | **0.26x** |
 | other substitution | **absent** | 8.2% | — |
 
 `other substitution` is a residual bin, not a mechanism, and is not given a

@@ -133,6 +133,15 @@ GUARDS: list[tuple[str, tuple[str, ...], str]] = [
      "the handoff note's recorded tip and protocol version are still the facts"),
     ("check_handoff_freshness.py", ("--negative-test",),
      "the handoff guard catches a stale protocol version in the note"),
+    # A session added seven measurement documents in two days and each new run
+    # corrected a number in an older one, which was left in place. This guard
+    # recomputes the registered claims from their artefacts and refuses a
+    # supersession chain that does not resolve.
+    ("check_doc_numbers.py", (),
+     "each document's quoted numbers match their source artefact, and each "
+     "superseded document names a successor that exists and is newer"),
+    ("check_doc_numbers_selftest.py", (),
+     "the stale-number guard fires on all six registered defect classes"),
     ("check_manuscript_html.py", (),
      "the rendered page is not lying: numbering, sentinels, math integrity, note completeness"),
     ("build_provenance_table.py", ("--check",),

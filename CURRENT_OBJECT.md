@@ -256,6 +256,17 @@ retired instrument did and where it went.
 5. **A number appears without provenance.** Every external number carries a source (model id + commit
    + SHA256, or a document plus date). Generated text is not a source.
 6. **A phase is re-opened after the next phase's results were seen.** The staging rule is one-way.
+7. **A live document carries a number that a later run corrected.** This is the drift that is easiest
+   to create and hardest to notice, because every individual document looked right when it was
+   written. In one session seven measurement documents were added over two days and each new run
+   corrected a number in an older one; the older one was left in place, and one document ended up
+   quoting the class mix under one convention in section 3 and another in section 10 — 330 lines
+   apart, self-contradictory, and both plausible on their own. **The cure is mechanical, not
+   editorial:** a claim that can be recomputed is registered in `scripts/check_doc_numbers.py` with
+   its source artefact, and a superseded document must name a successor that exists and is newer.
+   The guard's own self-test must be able to fire on all six defect classes before it counts. A
+   document whose argument is superseded while its numbers still check out is the residual case,
+   and it is handled by the successor rule rather than by prose.
 
 ---
 
