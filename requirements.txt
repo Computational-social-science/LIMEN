@@ -1,0 +1,22 @@
+# Third-party dependencies, DERIVED from the source by scripts/list_dependencies.py.
+# Do not hand-edit: a hand-written list drifts from the code, and a drifted list is
+# how qc_stage2_figures came to audit a render the project does not ship.
+#
+# The interpreter is pinned separately by .guard-python.
+
+dask
+python-docx
+huggingface_hub
+joblib
+laya
+lxml
+markdown_it
+matplotlib
+numpy
+pandas
+playwright
+pymupdf
+pypinyin
+scienceplots
+torch
+wordfreq

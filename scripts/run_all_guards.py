@@ -142,6 +142,13 @@ GUARDS: list[tuple[str, tuple[str, ...], str]] = [
      "superseded document names a successor that exists and is newer"),
     ("check_doc_numbers_selftest.py", (),
      "the stale-number guard fires on all six registered defect classes"),
+    # There was no dependency manifest at all, which is how qc_stage2_figures came to
+    # audit a re-render in the default matplotlib style while claiming to audit "the
+    # figures that are actually written" -- a missing import became a wrong audit
+    # instead of an error. This regenerates the list from the source and fails if the
+    # committed requirements.txt has drifted from what the code actually imports.
+    ("list_dependencies.py", ("--check",),
+     "requirements.txt matches the third-party imports the source actually makes"),
     ("check_manuscript_html.py", (),
      "the rendered page is not lying: numbering, sentinels, math integrity, note completeness"),
     ("build_provenance_table.py", ("--check",),
