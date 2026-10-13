@@ -140,3 +140,11 @@ external-data/
 # the construction scripts stay tracked, so the evidence a reader needs is in git and
 # the bulk that would break a push is not.
 archive/rrc-v2.0.0-INVALID/*.jsonl
+
+# UNDERSCORE-PREFIXED FILES ARE TRANSIENT BY THE PROJECT'S OWN RULE.
+# `check_step_order.py` states it: "Anything underscore-prefixed or explicitly temporary
+# now counts", because a commit once included its own commit-message temp file. A bare
+# `git add -A` during the 2026-10-14 cleanup pulled in `archive/one-shot/_add_unit_check.py`
+# and `_fix_units.py`, and the guard caught it on the next full run -- the rule working,
+# one commit late. Excluded so the same sweep cannot re-add them.
+_*.py
