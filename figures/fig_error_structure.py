@@ -206,7 +206,7 @@ ax.text(0.99, 0.30, '63.6% of sentences contain\nat least one backspace',
         transform=ax.transAxes, ha='right', va='bottom', fontsize=4.6, color='0.35',
         linespacing=1.3)
 
-out = Path(r'E:\2026-AI4S\autoresearch\figures')
+out = HERE          # the script's own directory: no absolute path, so the project can move
 out.mkdir(parents=True, exist_ok=True)
 fig.savefig(out/'fig_error_structure.pdf')                      # exact figsize, no tight bbox
 fig.savefig(out/'fig_error_structure.png', dpi=600)

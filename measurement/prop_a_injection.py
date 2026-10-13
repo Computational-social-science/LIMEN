@@ -36,7 +36,7 @@ Usage:
 """
 from __future__ import annotations
 
-import argparse, hashlib, json, pathlib, random, sys, time
+import argparse, ast, hashlib, json, pathlib, random, sys, time
 from collections import Counter
 
 REPO = pathlib.Path(__file__).resolve().parent.parent
@@ -44,6 +44,7 @@ sys.path.insert(0, str(REPO / "measurement"))
 
 REVIEWED_SHA = "55cf4c4ebb4ebe31b2550e8bdf3bd21b99753851"
 QUESTIONS = ["intent"]
+TAUS = (0.80, 0.90)   # protocol 3.3 thresholds, as in measurement/run_phase1.py
 QWERTY_ROWS = ("qwertyuiop", "asdfghjkl", "zxcvbnm")
 ADJ = {}
 for row in QWERTY_ROWS:
@@ -197,8 +198,16 @@ def main() -> int:
     with out_path.open("w", encoding="utf-8", newline="\n") as fh:
         for k, item in enumerate(items, 1):
             state = item["state"]
-            q0 = {"intent": json.loads(item["intent"].replace("'", '"'))} \
-                 if isinstance(item["intent"], str) else {"intent": item["intent"]}
+            # The bank stores `intent` either as a dict or as its Python repr; handle
+            # both rather than assuming, because the first version assumed a string
+            # and crashed on dict entries.
+            spec = item["intent"]
+            if isinstance(spec, str):
+                try:
+                    spec = json.loads(spec)
+                except json.JSONDecodeError:
+                    spec = ast.literal_eval(spec)
+            q0 = {"intent": spec}
             gold = item.get("intent_gold")
             n_tok = len(tokens_of(state))
             target = max(1, round(args.rate * n_tok))
@@ -210,8 +219,14 @@ def main() -> int:
                     noisy, dmg = calibrate(state, arm, target, random.Random(f"{item['item_id']}|{arm}|{args.seed}"))
                 try:
                     res = router.predict(noisy, q0)
-                    ans = (res.get("answers") or {}).get("intent")
-                    probs = (res.get("probabilities") or {}).get("intent") or {}
+                    # The response nests per-question answers: answers["intent"]
+                    # carries "choice" and "probabilities". Reading
+                    # res["probabilities"] returns nothing and silently makes c
+                    # None, which then reports SilentError and Coverage as exactly
+                    # 0.0 -- a ceiling artefact that looks like a clean result.
+                    ans_obj = (res.get("answers") or {}).get("intent") or {}
+                    ans = ans_obj.get("choice")
+                    probs = ans_obj.get("probabilities") or {}
                 except Exception as e:
                     fh.write(json.dumps({"item_id": item["item_id"], "arm": arm,
                                          "status": "failure", "error": f"{type(e).__name__}: {e}"},
@@ -219,13 +234,23 @@ def main() -> int:
                     continue
                 chosen = ans if isinstance(ans, str) else (ans or {}).get("choice") if isinstance(ans, dict) else None
                 correct = (chosen == gold)
-                p_correct = float(probs.get(gold, 0.0)) if probs else None
+                # The programme's endpoint is the CONTROL LAW, not accuracy: c is the
+                # frozen confidence (protocol 3.3), and the estimands are
+                # SilentError@tau -- wrong AND confident -- and Coverage@eps -- the
+                # share answered while holding accepted-item error at <= eps.
+                # Definitions transcribed from measurement/run_phase1.py.
+                pmap = dict(probs) if probs else {}
+                c = max(pmap.values()) if pmap else None
+                silent = {str(t): (1 if (not correct and c is not None and c >= t) else 0) for t in TAUS}
+                action = {str(t): ("answer" if (c is not None and c >= t) else "defer") for t in TAUS}
                 row = {"item_id": item["item_id"], "domain": item.get("domain"),
                        "arm": arm, "rate_target": args.rate,
                        "tokens": n_tok, "tokens_damaged": dmg,
                        "damage_rate": dmg / max(n_tok, 1),
                        "chosen": chosen, "gold": gold, "correct": bool(correct),
-                       "p_gold": p_correct, "state_hash": hashlib.sha256(noisy.encode()).hexdigest()[:16]}
+                       "c": c, "p_gold": float(pmap.get(gold, 0.0)) if pmap and gold else None,
+                       "silent_error": silent, "action": action,
+                       "state_hash": hashlib.sha256(noisy.encode()).hexdigest()[:16]}
                 rows.append(row)
                 fh.write(json.dumps(row, ensure_ascii=False) + "\n")
             fh.flush()
@@ -241,8 +266,18 @@ def main() -> int:
         if not sub: continue
         acc = sum(r["correct"] for r in sub) / len(sub)
         dmg = sum(r["damage_rate"] for r in sub) / len(sub)
-        by[arm] = {"n": len(sub), "accuracy": acc, "mean_damage_rate": dmg}
-        print(f"  {arm:10} n={len(sub):4}  acc={acc:.4f}  mean damaged-token rate={dmg:.4f}")
+        sil = {}
+        for t in TAUS:
+            sil[str(t)] = sum(r["silent_error"][str(t)] for r in sub) / len(sub)
+        cov = {}
+        for t in TAUS:
+            ans_ = [r for r in sub if r["action"][str(t)] == "answer"]
+            cov[str(t)] = len(ans_) / len(sub)
+        by[arm] = {"n": len(sub), "accuracy": acc, "mean_damage_rate": dmg,
+                   "silent_error": sil, "coverage": cov}
+        print(f"  {arm:10} n={len(sub):4}  acc={acc:.4f}  "
+              f"SilentErr@0.8={sil['0.8']:.4f}  SilentErr@0.9={sil['0.9']:.4f}  "
+              f"Cov@0.8={cov['0.8']:.4f}  Cov@0.9={cov['0.9']:.4f}  dmg={dmg:.4f}")
     if "geometry" in by and "structure" in by:
         print(f"\n  MATCHED DAMAGE: geometry {by['geometry']['mean_damage_rate']:.4f} vs "
               f"structure {by['structure']['mean_damage_rate']:.4f}")

@@ -1,3 +1,15 @@
+> **SUPERSEDED ON THE SUBSTANTIVE POINT (2026-10-13).** This document scores
+> ACCURACY and concludes the two families are indistinguishable. That is
+> correct about accuracy and **wrong about the programme**, because accuracy
+> is not the estimand: the endpoints are SilentError@tau, Coverage@eps and
+> AUC(tau). Re-run at those endpoints (`docs/PROPOSITION_A_CONTROL_LAW.md`),
+> the same noise costs **28 points of coverage at p_Holm = 0.002** while
+> costing only 8.7 points of accuracy at p_Holm = 0.146. The family
+> conclusion below still holds -- no family difference survives Holm at any
+> endpoint -- but "no effect" is the wrong summary of this experiment.
+> Read the control-law document instead; this one is kept for the record of
+> the design and of the two calibration bugs it found.
+
 # Proposition A, model side: the two human error processes are NOT separable in model loss
 
 **Date**: 2026-10-13

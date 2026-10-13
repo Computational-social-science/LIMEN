@@ -30,6 +30,8 @@ USAGE
 from __future__ import annotations
 
 import argparse
+import ast
+import os
 import pathlib
 import re
 import sys
@@ -39,7 +41,20 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 # and stamped with its sha256, and `viz/katex/` is a vendored third-party distribution whose minified
 # bundle contains regular-expression fragments such as `l:/^` that the drive pattern would read as a
 # path on drive `l`. Neither is a file whose portability this project controls.
-SKIP_DIRS = {".git", "archive", "node_modules", "__pycache__", ".p2a-work", "dist", ".venv", "viz"}
+SKIP_DIRS = {".git", "archive", "node_modules", "__pycache__", ".p2a-work", "dist", ".venv", "viz",
+             # `infra/` holds upstream data reproduced verbatim from its publishers -- the CLDR
+             # LDML keyboard files, the ISO 639-3 tables, the Amazon noise TSVs. We do not
+             # author it and cannot edit it, so a path inside it is not ours to make relative.
+             # It is excluded for the same reason `viz` is: a vendored third-party tree.
+             "infra",
+             # `external-data/` is the raw corpora -- 168,595 files, mostly `.txt` -- and this
+             # guard walks the tree with rglob("*"). Including it made the guard TIME OUT at
+             # 600 s and report FAIL, so the pre-commit hook could never pass. Excluded on the
+             # same basis as `infra`: a vendored third-party tree we do not author, so an
+             # absolute path inside it is not ours to make relative.
+             "external-data",
+             # A frozen pre-rebuild copy of the tree. Evidence, not source.
+             "keystroke-observatory-PRE-REBUILD-BACKUP-20261012-181735"}
 SKIP_SUFFIX = {".pdf", ".docx", ".png", ".jpg", ".jpeg", ".zip", ".gz", ".safetensors", ".ico",
                ".xlsx", ".pptx", ".pyc", ".woff", ".woff2", ".ttf", ".eot"}
 
@@ -69,18 +84,55 @@ HISTORICAL = (
 )
 
 
+def strip_py_docstrings(text: str) -> str:
+    """Blank the CONTENTS of module/class/function docstrings, preserving line count.
+
+    A path inside a docstring is documentation: nothing executes it, so it cannot
+    break when the project moves. Line count is preserved so reported line numbers
+    still match the file. Falls back to the original text on a syntax error, which
+    is the safe direction -- an unparsable file is then scanned as before.
+    """
+    try:
+        tree = ast.parse(text)
+    except SyntaxError:
+        return text
+    lines = text.splitlines()
+    spans = []
+    for node in ast.walk(tree):
+        if isinstance(node, (ast.Module, ast.ClassDef, ast.FunctionDef, ast.AsyncFunctionDef)):
+            body = getattr(node, "body", None)
+            if body and isinstance(body[0], ast.Expr) and isinstance(body[0].value, ast.Constant) \
+                    and isinstance(body[0].value.value, str):
+                d = body[0]
+                spans.append((d.lineno - 1, d.end_lineno))
+    for start, end in spans:
+        for i in range(start, min(end, len(lines))):
+            lines[i] = ""
+    return "\n".join(lines)
+
+
 def iter_live_files():
-    for p in ROOT.rglob("*"):
-        if not p.is_file():
-            continue
-        rel = p.relative_to(ROOT)
-        if any(part in SKIP_DIRS for part in rel.parts):
-            continue
-        if rel.suffix.lower() in SKIP_SUFFIX:
-            continue
-        if rel.name == pathlib.Path(__file__).name:
-            continue
-        yield p
+    """Live source files, PRUNING skipped directories.
+
+    The walk must prune, not filter. `rglob("*")` descends into every directory
+    before a skip check can reject it, and `external-data/` holds 168,595 corpus
+    files on a USB-attached exFAT volume: a bare rglob over this tree exceeded
+    600 s, so this guard timed out and reported FAIL on every run -- which is what
+    made the pre-commit hook unusable. `os.walk` with `dirs[:]` reassignment never
+    enters a skipped directory at all, so the skip list actually saves the walk.
+    """
+    for dirpath, dirnames, filenames in os.walk(ROOT):
+        dirnames[:] = [d for d in dirnames if d not in SKIP_DIRS]
+        for name in filenames:
+            p = pathlib.Path(dirpath) / name
+            rel = p.relative_to(ROOT)
+            if any(part in SKIP_DIRS for part in rel.parts):
+                continue
+            if rel.suffix.lower() in SKIP_SUFFIX:
+                continue
+            if rel.name == pathlib.Path(__file__).name:
+                continue
+            yield p
 
 
 def scrub(text: str) -> str:
@@ -192,11 +244,22 @@ def scan():
         # A data file records what a run did; it is a record, not logic. Only a script that must
         # execute is blocking.
         is_doc = p.suffix.lower() in (".md", ".txt", ".json", ".jsonl", ".yaml", ".yml", ".toml")
-        for i, line in enumerate(raw.splitlines(), 1):
+        # A path in a DOCSTRING or a `#` COMMENT inside a .py file is documentation, not code:
+        # it cannot break when the project moves, because nothing reads it. Keying only off the
+        # file extension made this guard report three such lines in tests/conftest.py as
+        # "hardcoded in CODE", and the natural fix -- rewriting the prose -- would have deleted a
+        # worked interpreter example that a reader needs. The docstring is stripped first, then
+        # any line whose code part is empty or comment-only is treated as documentation.
+        body = raw
+        if p.suffix.lower() == ".py":
+            body = strip_py_docstrings(raw)
+        for i, line in enumerate(body.splitlines(), 1):
             if ENVREF.search(line):
                 # An env-var reference may legitimately expand to an absolute path.
                 continue
             code = scrub(line)
+            stripped = code.strip()
+            line_is_doc = is_doc or stripped == "" or stripped.startswith("#")
             for m in ABS.finditer(code):
                 tok = m.group(0)
                 if TILDE_OK.match(tok):
@@ -206,7 +269,7 @@ def scan():
                     any(h in low_all for h in ("migration record", "historical address",
                                               "retired with r1"))
                 where = f"{rel}:{i}"
-                if not is_doc:
+                if not line_is_doc:
                     blocking.append((where, tok, "hardcoded in CODE - breaks when the project moves"))
                 elif historical:
                     advisory.append((where, tok, "recorded as history (acceptable)"))

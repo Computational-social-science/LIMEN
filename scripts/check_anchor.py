@@ -33,6 +33,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 import pathlib
 import re
 import shutil
@@ -44,7 +45,17 @@ ANCHOR_REL = "protocol/NHB_Orthographic_Channels_JEV_Research_Protocol.md"
 ANCHOR_JSON = ROOT / "config" / "anchor.json"
 
 # Directories whose contents are not live documents and are not scanned for references.
-SKIP_DIR_PARTS = {".git", "archive", "node_modules", "__pycache__", ".p2a-work"}
+SKIP_DIR_PARTS = {".git", "archive", "node_modules", "__pycache__", ".p2a-work",
+                  # RE-DOWNLOADABLE RAW DATA IS NOT SOURCE. `external-data/` holds the raw
+                  # corpora -- 168,595 files, most of them `.txt` -- and this guard walks the
+                  # tree with rglob("*"). Including them made it TIME OUT at 600 s and report
+                  # FAIL, so the pre-commit hook could never pass and the guard that checks the
+                  # anchor's promises was silently absent. Excluded on the same basis .gitignore
+                  # already uses for the raw jfleg dump: re-obtainable, never hand-edited, and a
+                  # promise found inside a third-party corpus would not be ours to keep.
+                  "external-data",
+                  # A frozen copy of the tree taken before a rebuild. Evidence, not source.
+                  "keystroke-observatory-PRE-REBUILD-BACKUP-20261012-181735"}
 
 # A path token: backticked, or a bare path-like string.
 PATH_TOKEN = re.compile(
@@ -120,17 +131,27 @@ def _line_is_historical(line: str) -> bool:
 
 
 def live_files() -> list:
+    """Source files under the repository root, PRUNING skipped directories.
+
+    The walk must prune, not filter. `rglob("*")` descends into every directory
+    before a skip check can reject it, and `external-data/` holds 168,595 corpus
+    files on a USB-attached exFAT volume: a bare rglob over this tree exceeded
+    600 s, so this guard timed out and reported FAIL on every run, which is what
+    made the pre-commit hook unusable. `os.walk` with `dirs[:]` reassignment never
+    enters a skipped directory at all.
+    """
     out = []
-    for p in ROOT.rglob("*"):
-        if not p.is_file():
-            continue
-        rel = p.relative_to(ROOT)
-        if any(part in SKIP_DIR_PARTS for part in rel.parts):
-            continue
-        if rel.as_posix() == "scripts/check_anchor.py":
-            continue
-        if rel.suffix in (".md", ".json", ".py", ".toml"):
-            out.append(p)
+    for dirpath, dirnames, filenames in os.walk(ROOT):
+        dirnames[:] = [d for d in dirnames if d not in SKIP_DIR_PARTS]
+        for name in filenames:
+            p = pathlib.Path(dirpath) / name
+            rel = p.relative_to(ROOT)
+            if any(part in SKIP_DIR_PARTS for part in rel.parts):
+                continue
+            if rel.as_posix() == "scripts/check_anchor.py":
+                continue
+            if rel.suffix in (".md", ".json", ".py", ".toml"):
+                out.append(p)
     return out
 
 
