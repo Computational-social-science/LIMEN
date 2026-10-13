@@ -55,7 +55,7 @@ SKIP_DIRS = {".git", "archive", "node_modules", "__pycache__", ".p2a-work", "dis
              "external-data",
              # A frozen pre-rebuild copy of the tree. Evidence, not source.
              # DELETED 2026-10-13: a pre-rebuild tree copy was listed here; its cited
-             # files are kept in evidence/v1_superseded/v1_pages_snapshot/.
+             # files are kept in keystroke-observatory/evidence/v1_superseded/v1_pages_snapshot/.
              }
 SKIP_SUFFIX = {".pdf", ".docx", ".png", ".jpg", ".jpeg", ".zip", ".gz", ".safetensors", ".ico",
                ".xlsx", ".pptx", ".pyc", ".woff", ".woff2", ".ttf", ".eot"}

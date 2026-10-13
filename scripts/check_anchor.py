@@ -56,7 +56,7 @@ SKIP_DIR_PARTS = {".git", "archive", "node_modules", "__pycache__", ".p2a-work",
                   "external-data",
                   # A frozen copy of the tree taken before a rebuild. Evidence, not source.
                   # DELETED 2026-10-13: a pre-rebuild tree copy was listed here; its cited
-                  # files are kept in evidence/v1_superseded/v1_pages_snapshot/.
+                  # files are kept in keystroke-observatory/evidence/v1_superseded/v1_pages_snapshot/.
                   }
 
 # A path token: backticked, or a bare path-like string.
