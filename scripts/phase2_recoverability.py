@@ -48,7 +48,12 @@ import sys
 REPO_ROOT = pathlib.Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO_ROOT / "scripts"))
 sys.path.insert(0, str(REPO_ROOT / "measurement"))
-EXTERNAL = REPO_ROOT.parent / "external-data"
+# THIS PROJECT'S OWN external-data FIRST. Resolving the parent's copy meant this
+# read a sibling tree that is not ours; the project's own copy is the complete one.
+EXTERNAL = next(
+    (p for p in (REPO_ROOT / "external-data", REPO_ROOT.parent / "external-data")
+     if p.is_dir()),
+    REPO_ROOT / "external-data")
 
 # THE INDEX'S OWN CONSTANTS ARE IMPORTED, NOT RESTATED. Two implementations of one index that can drift apart
 # is two instruments; the anchor is only meaningful if every arm uses the same edit radius and the same floor.

@@ -241,7 +241,17 @@ def main():
     # ---- 1. PLANT ---------------------------------------------------------------
     truth = planted_matrix(pos, nb)
     recovery_rate = 0.0
-    word_src = pathlib.Path(r(pathlib.Path(__file__).resolve().parents[2] / "external-data" / "birkbeck" / "missp.dat").as_posix())
+    # THE PROJECT'S OWN COPY FIRST. `parents[2]` is the WORKSPACE, so this read
+    # E:\2026-AI4S\external-data\birkbeck -- a sibling tree, not this project's data.
+    # It has a fallback below, so the script never crashed; it silently measured the
+    # wrong corpus, which is worse.
+    _project = pathlib.Path(__file__).resolve().parents[1]
+    word_src = next(
+        (p for p in (_project / "external-data" / "birkbeck" / "missp.dat",
+                     pathlib.Path(__file__).resolve().parents[2] / "external-data"
+                     / "birkbeck" / "missp.dat")
+         if p.exists()),
+        _project / "external-data" / "birkbeck" / "missp.dat")
     base_words = read_correct_words(word_src, limit=4000) if word_src.exists() else []
     if not base_words:
         base_words = ["the", "model", "channel", "keyboard", "estimate", "corpus", "signal"]

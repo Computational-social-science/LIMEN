@@ -35,7 +35,12 @@ import pathlib
 import sys
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parent.parent
-EXTERNAL = REPO_ROOT.parent / "external-data"
+# THIS PROJECT'S OWN external-data FIRST. Resolving the parent's copy meant this
+# read a sibling tree that is not ours; the project's own copy is the complete one.
+EXTERNAL = next(
+    (p for p in (REPO_ROOT / "external-data", REPO_ROOT.parent / "external-data")
+     if p.is_dir()),
+    REPO_ROOT / "external-data")
 CONFIG = REPO_ROOT / "config" / "collision_evidence.json"
 
 # Splits are read separately so the value can be checked for stability across them rather than computed on a
