@@ -35,7 +35,26 @@ except ImportError:  # noqa: BLE001
 REPO = pathlib.Path(__file__).resolve().parents[1]
 REPORT = REPO / "viz" / "report" / "technical-report.html"
 REPORT_DIR = REPORT.parent
-PDF_DIR = REPO.parent / "external-data"
+# THE PROJECT'S OWN REFERENCE PDFS COME FIRST.
+#
+# This resolved `REPO.parent / "external-data"` -- E:\2026-AI4S\external-data, a SIBLING
+# directory -- so the citation check read its ground truth from outside the project. The
+# same accidental dependency three other scripts had, and the same reason it went
+# unnoticed: the sibling happened to be there and held all 11 PDFs.
+#
+# Found while auditing whether that sibling tree could be deleted. The first pass said
+# "nothing references it", which was wrong: this guard does, through a parent-relative
+# path that no text search for the literal would have surfaced.
+#
+# The PDFs are 13.2 MB in total, so they now live inside the project and are TRACKED --
+# unlike the corpora, this is small enough for git, which means a clone carries its own
+# citation ground truth and the check works anywhere.
+_PDF_CANDIDATES = (
+    REPO / "external-data" / "references",
+    REPO.parent / "external-data",
+)
+PDF_DIR = next((p for p in _PDF_CANDIDATES if p.is_dir() and any(p.glob("*.pdf"))),
+               _PDF_CANDIDATES[0])
 
 # The negative control corrupts this citation's venue, and names it by ANCHOR and by VENUE rather
 # than by a literal fragment of source. A literal is a statement about how the file happens to be

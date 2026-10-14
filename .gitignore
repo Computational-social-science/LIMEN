@@ -17,10 +17,16 @@ measurement/out/
 # paper2agent conversion scratch (working dirs, not deliverables)
 .p2a-work/
 
-# Source papers. They are INPUTS that live outside this repository's scope and are 1-10 MB each; a
-# clone should not carry them. Nothing in the pipeline reads them from here - the reference library
-# keeps its own extracted text under the skill directories.
+# Source papers, 1-10 MB each. MOST are excluded: they are reading material rather than
+# pipeline inputs, and the reference library keeps its own extracted text elsewhere.
+#
+# BUT THIS COMMENT USED TO SAY "Nothing in the pipeline reads them from here", AND THAT WAS
+# WRONG. `qc_report_citations.py` verifies the report's citations against the first page of
+# each reference PDF -- it reads them directly. Those 11 PDFs (13.2 MB) were resolved from a
+# SIBLING directory, so the citation check's ground truth lived outside the project and a
+# clone could not run it. They are now tracked, under external-data/references/.
 *.pdf
+!external-data/references/*.pdf
 # The Stage 2 figure PDF is a DELIVERABLE, not a build by-product: it carries the captions and is one of
 # the four formats the manuscript needs, so it is tracked even though PDFs generally are not.
 !viz/figures_stage2.pdf
@@ -122,10 +128,16 @@ keystroke-observatory/
 # looked finished. Found while preparing to commit the working tree before a
 # directory rename; the add was killed mid-run and nothing had been staged.
 #
-# Nothing under external-data/ is tracked (0 files), so excluding it changes no
-# history. The corpora are re-obtainable from their publishers, which is the same
-# basis on which the raw jfleg dump is already excluded.
-external-data/
+# The corpora are re-obtainable from their publishers, which is the same basis on
+# which the raw jfleg dump is already excluded.
+#
+# BUT THE REFERENCE PDFS ARE TRACKED. They are 13.2 MB in total -- small enough for
+# git, unlike the corpora -- and `qc_report_citations.py` verifies the report's
+# citations against their first pages. That guard used to read them from a SIBLING
+# directory, so the citation check's ground truth lived outside the project. Tracking
+# them means a clone carries its own ground truth and the check works anywhere.
+external-data/*
+!external-data/references/
 
 # THE RETIRED RRC CORPUS IS KEPT AS EVIDENCE AND IS TOO LARGE TO TRACK.
 # `archive/rrc-v2.0.0-INVALID/` holds the corpus that R3 retired, with WHY_RETIRED.md
