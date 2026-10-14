@@ -156,6 +156,9 @@ GUARDS: list[tuple[str, tuple[str, ...], str]] = [
     # because two trees happened to overlap.
     ("check_inputs.py", (),
      "the declared inputs are present, and no search order prefers a sibling checkout"),
+    ("check_inputs_selftest.py", (),
+     "the input guard fires on a sibling-before-own order, on a sibling resolution, "
+     "and on a missing input, while the clean contract passes"),
     ("check_manuscript_html.py", (),
      "the rendered page is not lying: numbering, sentinels, math integrity, note completeness"),
     ("build_provenance_table.py", ("--check",),
