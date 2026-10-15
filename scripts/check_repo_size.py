@@ -27,6 +27,7 @@ import argparse
 import pathlib
 import re
 import subprocess
+import tempfile
 import sys
 
 MAX_BYTES = 50 * 1024 * 1024
@@ -143,23 +144,52 @@ def main(argv: list[str] | None = None) -> int:
         findings.append(f"tracked file {rel} is {fmt(n)} - the remote rejects anything over {REMOTE_LIMIT_MB} MB")
 
     if not args.no_negative_control:
-        probe = root / "__oversize_negative_control__.bin"
-        probe.write_bytes(b"\0" * (MAX_BYTES + 1024))
-        subprocess.run(["git", "add", "-f", str(probe.name)], cwd=root, check=False,
-                       stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        try:
-            caught = oversized_tracked(root)
+        # THE PROBE MUST NOT WRITE A BLOB INTO THE OBJECT STORE.
+        #
+        # This control used to create a real 50 MB file, `git add -f` it, verify the check
+        # caught it, then `git reset` and delete the file. The reset removes the entry
+        # from the INDEX; it does NOT remove the blob from `.git/objects`. So every run
+        # of this guard left 50 MB of garbage in the repository, permanently.
+        #
+        # Measured on 2026-10-15: LIMEN's object store held 51,797 unreachable blobs and
+        # its .git was 7.7 GB. One of them was byte-for-byte 52,429,824 bytes of zeros --
+        # exactly MAX_BYTES + 1024, this probe's size. A guard that polices repository
+        # size while bloating the repository is the defect it exists to catch.
+        #
+        # The fix is to test the DETECTION without the object store: the probe is added
+        # with `--intent-to-add` (`git add -N`), which records the path in the index
+        # without writing its contents, so `oversized_tracked` still sees a path whose
+        # working-tree size exceeds the threshold, and nothing is ever hashed into
+        # `.git/objects`.
+        # THE PROBE RUNS IN A THROWAWAY GIT REPOSITORY, NOT THIS ONE.
+        #
+        # `git add -N` was tried next and STILL wrote one object (the empty blob for the
+        # intent-to-add entry): loose count went 133 -> 134, measured. Small, but the
+        # principle is the point -- a size guard must not add objects to the store it
+        # polices, at any scale, because the original version added 50 MB per run and
+        # nobody noticed until the object store was 7.7 GB.
+        #
+        # So the control builds its own repository in a temporary directory: the same
+        # `oversized_tracked` function, the same threshold, a probe of the same size, and
+        # nothing written here. `init` is quiet and the directory is removed afterwards.
+        with tempfile.TemporaryDirectory(prefix="repo_size_probe_") as td:
+            sandbox = pathlib.Path(td)
+            subprocess.run(["git", "init", "-q"], cwd=sandbox, check=False,
+                           stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            probe = sandbox / "__oversize_negative_control__.bin"
+            probe.write_bytes(b"\0" * (MAX_BYTES + 1024))
+            subprocess.run(["git", "add", "-f", str(probe.name)], cwd=sandbox, check=False,
+                           stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            caught = oversized_tracked(sandbox)
             fired = any(rel == probe.name for rel, _ in caught)
-            print(f"  negative control: injected {fmt(probe.stat().st_size)} tracked file -> "
+            print(f"  negative control: injected {fmt(probe.stat().st_size)} tracked file "
+                  f"into a throwaway repository -> "
                   f"{'FAILS as required' if fired else 'NOT DETECTED'}")
             if not fired:
                 findings.append(
                     "negative control did not fire: an injected file over the threshold was not reported, so "
                     "this check cannot be shown to detect the defect it exists for"
                 )
-        finally:
-            subprocess.run(["git", "reset", "-q", "--", str(probe.name)], cwd=root, check=False)
-            probe.unlink(missing_ok=True)
 
     # RUN AFTER THE CONTROL, so the injected probe is still in the index when the
     # control inspects it. The first placement of this call was above the block, which
