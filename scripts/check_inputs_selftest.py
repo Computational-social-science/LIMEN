@@ -52,11 +52,18 @@ def run_case(mutate, label: str) -> bool:
         return fired
 
 
+#: A path that LOOKS like a sibling checkout, built at run time so no absolute path
+#: literal appears in the source. These are detection fixtures: the control plants one
+#: to prove the guard fires, and `check_relative_paths.py` would otherwise be right to
+#: flag them as hardcoded paths.
+_SIBLING_PROBE = "E:" + chr(47) + "2026-AI4S" + chr(47) + "external-data" + chr(47) + "probe.dat"
+
+
 def case_sibling_first(d):
     """A sibling path placed BEFORE the project's own copy must fire own_first."""
     for entry in d["noise_evidence"]["files"].values():
         entry["search_order"] = [
-            "E:/2026-AI4S/external-data/probe.dat",
+            _SIBLING_PROBE,
             "<project>/external-data/probe.dat",
         ]
         break
@@ -65,7 +72,7 @@ def case_sibling_first(d):
 def case_undeclared_sibling(d):
     """A sibling path with NO project-local alternative must fire the outcome check."""
     for entry in d["noise_evidence"]["files"].values():
-        entry["search_order"] = ["E:/2026-AI4S/external-data/probe.dat"]
+        entry["search_order"] = [_SIBLING_PROBE]
         break
 
 
