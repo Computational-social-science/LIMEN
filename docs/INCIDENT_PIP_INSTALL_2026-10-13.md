@@ -97,3 +97,7 @@ owner can delete it.
 
 That is now the third time in this session that the correct move was to *record* a
 defect rather than to *clear* it, and the first time I did not.
+
+---
+
+**Recurrence, 2026-10-15:** the displacement happened AGAIN, without any `pip install` -- found when `pytest` vanished mid-session. The recovery procedure and the revised rule (check for a `.reclaim-*` directory before anything else) are in `docs/ENVIRONMENT_DISPLACEMENT.md`. This file describes the first occurrence and its cause; that one describes the recurring failure and how to undo it in one command.
